@@ -1,0 +1,11 @@
+'''
+Created on 29 Jun 2017
+
+@author: ernesto
+'''
+
+
+class Vcf(object):
+    '''
+    Class to represent a VCF file
+    '''

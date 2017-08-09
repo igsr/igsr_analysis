@@ -1,0 +1,9 @@
+INSTUPVCF
+/Users/ernesto/lib/igsr_analysis/VARIANT_CALLING/VCF/src/VCF.py
+INFOS:&&1|1|2|0&&2|3|2|1&&3|4|2|5&&3|6|2|5
+Vcf=1
+VCF=2
+vcf=4
+__init__=3
+Vcf.__init__=5
+bcftools_folder=6
