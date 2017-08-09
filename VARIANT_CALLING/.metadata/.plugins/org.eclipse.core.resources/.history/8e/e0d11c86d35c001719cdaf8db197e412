@@ -1,0 +1,31 @@
+from VcfQC import VcfQC
+
+import argparse
+import os
+import logging
+
+#get command line arguments
+
+parser = argparse.ArgumentParser(description='Script to get the number of variants falling within a particular region')
+
+parser.add_argument('--bcftools_folder', type=str, required=True, help='Folder containing the VCFtools binary' )
+parser.add_argument('--filename', type=str, required=True, help='Path to the VCF file that will be analysed' )
+parser.add_argument('--region', type=str, required=False, help='Get the number for this region' )
+parser.add_argument('--region_file', type=str, required=False, help='Get the number for regions in this BED file' )
+
+args = parser.parse_args()
+
+if __name__ == '__main__':
+    
+    vcfQC = VcfQC(vcf=args.filename,bcftools_folder=args.bcftools_folder)
+    
+    if args.region==None and args.region_file==None:
+        raise Exception("Error. I need either a region or a bed file in order to calculate the number of variants")
+    
+    if args.region:
+        vcfQC.number_variants_in_region(region=args.region)
+    elif args.region_file:
+        vcfQC.number_variants_in_region(region_file=args.region_file)
+    
+    print("h")
+

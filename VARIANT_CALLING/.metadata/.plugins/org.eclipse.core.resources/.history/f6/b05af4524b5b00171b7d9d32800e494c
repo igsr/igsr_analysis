@@ -1,0 +1,30 @@
+from VcfQC import VcfQC
+
+import argparse
+import os
+
+#get command line arguments
+
+parser = argparse.ArgumentParser(description='Script to get the variant density for a certain VCF file')
+
+parser.add_argument('--bedtools_folder', type=str, required=True, help='Folder containing the bedtools binary' )
+parser.add_argument('--filename', type=str, required=True, help='Path to the VCF file that will be analysed' )
+parser.add_argument('--length', type=str, required=False, help='Window length (in bp) that will be used for calculating the density' )
+parser.add_argument('--genome_file', type=str, required=False, help='File with genome sizes' )
+
+args = parser.parse_args()
+
+if __name__ == '__main__':
+    
+    vcfQC = VcfQC(vcf=args.filename,bcftools_folder=args.bcftools_folder)
+    
+    if args.region==None and args.region_file==None:
+        raise Exception("Error. I need either a region or a bed file in order to calculate the number of variants")
+    
+    if args.region:
+        vcfQC.number_variants_in_region(region=args.region)
+    elif args.region_file:
+        vcfQC.number_variants_in_region(region_file=args.region_file)
+    
+    print("h")
+
