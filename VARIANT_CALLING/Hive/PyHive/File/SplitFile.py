@@ -36,6 +36,8 @@ class SplitFile(eHive.BaseRunnable):
         file_layout=self.param_required('filelayout')
     
         if len(bits)!=len(file_layout):
+            print("Passed file contains the following bits: {0}".format(",".join(bits)))
+            print("Specified layout contains the following bits: {0}".format(",".join(file_layout)))
             raise Exception("Length is not the same for filename bits and its associated annotations that are passed using the file_layout param")
         
         d = dict(zip(file_layout, bits))
