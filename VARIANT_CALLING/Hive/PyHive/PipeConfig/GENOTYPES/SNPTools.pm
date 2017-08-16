@@ -27,8 +27,8 @@ sub default_options {
 	'bcftools_folder' => '~/bin/bcftools/',
 	'beagle_folder' => '~/bin/beagle/',
 	'store_attributes' => 'False',
-        'filelayout' => [ 'name','coords','status','type','extension'],
-	'newlayout' =>  [ 'name','coords','status','type'],
+        'filelayout' => [ 'prefix','coords','type1','type2','extension'],
+	'newlayout' =>  [ 'prefix','coords','type1','type2'],
 	'snptools_folder' => '~/bin/snptools/',
 	'lsf_queue'   => 'production-rh7'
     };
@@ -166,9 +166,10 @@ sub pipeline_analyses {
                 'snptools_folder' => $self->o('snptools_folder'),
                 'rawlist' => '#rawlist#',
 		'outprefix' => '#initial_filename#.pop_likelihood',
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir'),
+		'verbose' => 1
             },
-	    -rc_name => '500Mb',
+	    -rc_name => '2Gb',
 	    -flow_into => {
 		1 => {
 		    'chr_factory' => {
@@ -200,7 +201,8 @@ sub pipeline_analyses {
                 'snptools_folder' => $self->o('snptools_folder'),
                 'outprefix' => '#initial_filename#',
 		'chr' => '#chro#',
-		'work_dir' => $self->o('work_dir')
+		'work_dir' => $self->o('work_dir'),
+		'verbose' => 1
             },
             -rc_name => '500Mb',
 	    -flow_into => {
@@ -222,7 +224,7 @@ sub pipeline_analyses {
 		'window' => 12000,
 		'overlap' => 2000,
 		'niterations' => 15,
-		'verbose' => 'True' 
+		'verbose' => 1 
             },
 	    -flow_into => {
 		1 => {'vcf_reheader' => {
@@ -230,6 +232,7 @@ sub pipeline_analyses {
                       }
                 }
 	    },
+	    -rc_name => '15Gb'
         },
 
 	{   -logic_name => 'vcf_reheader',

@@ -15,17 +15,18 @@ class ChrFactory(eHive.BaseRunnable):
 
         files=[]
         ix=1
-        for line in open(faix):
-            if line.startswith("\n"):
-                continue
-            chro=line.split('\t')[0]
-            files.append(
-                {
-                    'chr': chro,
-                    'ix': ix
-                }
-            )
-            ix+=1
+        with open(faix) as f:
+            for line in f:
+                if line.startswith("\n"):
+                    continue
+                chro=line.split('\t')[0]
+                files.append(
+                    {
+                        'chr': chro,
+                        'ix': ix
+                    }
+                )
+                ix+=1
         self.param('files', files)
         
     def write_output(self):

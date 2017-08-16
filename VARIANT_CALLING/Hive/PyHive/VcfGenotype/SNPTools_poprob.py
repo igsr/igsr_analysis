@@ -7,7 +7,11 @@ class SNPTools_poprob(eHive.BaseRunnable):
     def run(self):
        vcf_g=VcfGenotype(vcf=self.param_required('vcf_file'),snptools_folder=self.param_required('snptools_folder'))
        
-       prob_f=vcf_g.run_snptools_poprob(outprefix=self.param_required('outprefix'), rawlist=self.param_required('rawlist'), outdir=self.param_required('work_dir'))
+       prob_f=""
+       if self.param_is_defined('verbose'):
+           prob_f=vcf_g.run_snptools_poprob(outprefix=self.param_required('outprefix'), rawlist=self.param_required('rawlist'), outdir=self.param_required('work_dir'), verbose=True)
+       else:
+           prob_f=vcf_g.run_snptools_poprob(outprefix=self.param_required('outprefix'), rawlist=self.param_required('rawlist'), outdir=self.param_required('work_dir'), verbose=False)
        
        self.param('prob_f', prob_f)
 

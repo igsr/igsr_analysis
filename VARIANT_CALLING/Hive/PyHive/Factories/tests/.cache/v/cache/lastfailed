@@ -1,1 +1,3 @@
-{}
+{
+  "test_factories.py::test_chrfactory": true
+}
