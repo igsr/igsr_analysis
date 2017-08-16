@@ -1,4 +1,0 @@
-MODULES_MANAGER_V2
-VcfFilter|/Users/ernesto/lib/igsr_analysis/VARIANT_CALLING/VCF/src/VcfFilter.py
-VcfNormalize|/Users/ernesto/lib/igsr_analysis/VARIANT_CALLING/VCF/src/VcfNormalize.py
-VcfQC|/Users/ernesto/lib/igsr_analysis/VARIANT_CALLING/VCF/src/VcfQC.py
