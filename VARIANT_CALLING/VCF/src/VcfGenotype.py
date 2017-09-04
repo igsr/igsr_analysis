@@ -205,7 +205,7 @@ class VcfGenotype(object):
 
         return outfile
 
-    def run_beagle(self, outprefix, window=None, overlap=None, niterations=None, outdir=None, verbose=False):
+    def run_beagle(self, outprefix, window=None, overlap=None, niterations=None, outdir=None, nthreads=None, verbose=False):
         '''
         Method that wraps Beagle (see https://faculty.washington.edu/browning/beagle/beagle.html)
         and will be used to call genotypes on a VCF file containing GT likelihoods
@@ -225,6 +225,9 @@ class VcfGenotype(object):
                      niterations=5
         outdir : str, optional
                  outdir for output files
+        nthreads : int, optional
+                   number of threads. If not specified then the nthreads parameter 
+                   will be set equal to the number of CPU cores on the host machine
         verbose : bool, optional
                   if true, then print the command line used for running Beagle
 
@@ -254,6 +257,9 @@ class VcfGenotype(object):
 
         if niterations is not None:
             command += " niterations={0}".format(niterations)
+
+        if nthreads is not None:
+            command += " nthreads={0}".format(nthreads)
 
         if verbose==True:
             print("Command used was: %s" % command)

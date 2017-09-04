@@ -21,7 +21,7 @@ def test_runBeagle(clean_tmp):
     work_dir= "data/outdir"
 
     command="perl {0}/standaloneJob.pl PyHive.VcfGenotype.run_Beagle -language python3 -vcf_file {1} -beagle_folder {2} -work_dir {3} -outprefix {4} \
-             -window {5} -overlap {6} -niterations {7} -verbose True".format(hive_scripts, vcf_f, beagle_folder, work_dir, 'test', 12000, 2000, 15 )
+             -window {5} -overlap {6} -niterations {7} -nthreads {8} -verbose True".format(hive_scripts, vcf_f, beagle_folder, work_dir, 'test', 12000, 2000, 15, 2)
     
     try:
         subprocess.check_output(command, shell=True)

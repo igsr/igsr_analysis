@@ -45,10 +45,20 @@ def test_run_snptools_prob2vcf(vcf_object):
                                      chro="chr1")
     assert os.path.exists("data/SNPTools/outdir/NA12878_chr1_1000000_1001000.vcf.gz")
 
-def test_run_beagle(vcf_object, clean_tmp):
+def test_run_beagle(vcf_object):
     vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000",
                           outdir="data/SNPTools/outdir/",
                           window=12000,
                           overlap=2000,
-                          niterations=15)
-    assert os.path.exists("data/SNPTools/outdir/NA12878_chr1_1000000_1001000.beagle.vcf.gz.vcf.gz")
+                          niterations=15,
+                          verbose=True)
+    assert os.path.exists("data/SNPTools/outdir/NA12878_chr1_1000000_1001000.beagle.vcf.gz")
+
+def test_run_beagle_multithreaded(vcf_object, clean_tmp):
+    vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000_mts",
+                          outdir="data/SNPTools/outdir/",
+                          window=12000,
+                          overlap=2000,
+                          niterations=15,
+                          nthreads=2)
+    assert os.path.exists("data/SNPTools/outdir/NA12878_chr1_1000000_1001000_mts.beagle.vcf.gz")
