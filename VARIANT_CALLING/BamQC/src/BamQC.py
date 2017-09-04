@@ -16,6 +16,8 @@ import subprocess
 from collections import defaultdict, OrderedDict
 import contextlib
 
+import pdb
+
 class BamQC(object):
     '''
     Class to do quality assessment on a BAM file
@@ -56,6 +58,16 @@ class BamQC(object):
     def get_contigs(self):
         '''
         Get all contigs from this BAM
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        A dictionary containing the following information:
+        
+            {'contig Name': length (in bp)}
         '''
         header, err = subprocess.Popen(["samtools", "view", "-H", self.bam],
                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -75,7 +87,15 @@ class BamQC(object):
 
     def list_of_samples(self):
         '''
-        Get a list with samples extracted from the header of the BAM file
+        Get the samples names from the header of the BAM file
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        List with the sample names
         '''
         header, err = subprocess.Popen(["samtools", "view", "-H", self.bam], stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
@@ -93,8 +113,15 @@ class BamQC(object):
 
     def list_of_readgroups(self):
         '''
-        Get a list with Read Groups extracted from the header of the BAM file
+        Get the Read Groups extracted from the header of the BAM file
 
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        List composed of the read groups
         '''
         readgroups = []
 
@@ -117,6 +144,20 @@ class BamQC(object):
     def get_simple_stats(self):
         '''
         Get a dict with stats on the BAM file as calculated by samtools flagstat
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        A dictionary containing the following information:
+             {
+             "total_no_reads": int
+             "no_duplicates": int
+             "total_no_mapped": int
+             "no_properly_paired":  int
+             }
         '''
         stats, err = subprocess.Popen(["samtools", "flagstat", self.bam],
                                       stdout=subprocess.PIPE,
@@ -149,23 +190,23 @@ class BamQC(object):
     def run_samtools_depth(self, chros):
         '''
         Calculate several coverage metrics on a whole genome sequencing BAM
-        file using samtools depth
+        file using 'samtools depth'
 
-         Parameters
+        Parameters
         ----------
         chros : list or string
-            List of contigs or just a single contig for calculating the coverage
+            List of contigs or just a single contig used for calculating the coverage
 
         Returns
         ------
         List of SDepth objects
 
         This method runs samtools depth on a BAM file and will calculate the following metrics:
-            Number of Bases mapped: This is the number of bases having at least one read mapped
-            Sum of depths of coverage: This is the sum of all the depths in each of the Bases mapped
-            Breadth of coverage: This is the result of dividing bases_mapped/length(contig)
-            (i.e. what portion of the contig has reads mapped)
-            Depth of coverage: This is the result of dividing sum_of_depths/length(contig)
+            * Number of Bases mapped: This is the number of bases having at least one read mapped
+            * Sum of depths of coverage: This is the sum of all the depths in each of the Bases mapped
+            * Breadth of coverage: This is the result of dividing bases_mapped/length(contig)
+              (i.e. what portion of the contig has reads mapped)
+            * Depth of coverage: This is the result of dividing sum_of_depths/length(contig)
         '''
 
         # Check to see if file exists
@@ -183,12 +224,12 @@ class BamQC(object):
             command = "%s/samtools depth -r %s %s | awk 'BEGIN {max = 0}"\
             "{if ($3>max) max=$3;sum+=$3;cnt++}END{print cnt \"\t\" sum \"\t\" max}'" \
             % (self.samtools_folder, c, self.bam)
-
+            
             bases_mapped, sum_of_depths, max = map(int, subprocess.Popen(command,
                                                                          stdout=subprocess.PIPE,
                                                                          shell=True).\
-                                                   communicate()[0].strip().split("\t"))
-
+                                                   communicate()[0].decode("utf-8").strip().split("\t"))
+            
             #create Coverage object to hold coverage info
             covO = SDepth()
             covO.contig = c
@@ -212,7 +253,7 @@ class BamQC(object):
         cov_list : list
             List containing the SDepth objects for which the stats will be aggregated.
 
-         Returns
+        Returns
         --------
         A SDepth object
 
@@ -236,9 +277,9 @@ class BamQC(object):
 
     def run_CollectHsMetrics(self, baits_file, outfile=None, cov_cap=None):
         '''
-         Run Picard's CollectHsMetrics on a Exome sequencing BAM file
+        Run Picard's CollectHsMetrics on a Exome sequencing BAM file
 
-         Parameters
+        Parameters
         ----------
         baits_file : str, required
             Str consisting on the path to the file containing the Exome baits.
@@ -278,10 +319,10 @@ class BamQC(object):
 
         if outfile:
             fh = open(outfile, 'w')
-            print(stdout, file=fh)
+            print(stdout.decode("utf-8"), file=fh)
 
         #process stdout
-        part = re.split('\n\n', stdout)
+        part = re.split('\n\n', stdout.decode("utf-8"))
 
         #process metrics
         metrics_keys = part[1].split('\n')[1].split('\t')
@@ -301,9 +342,9 @@ class BamQC(object):
 
     def run_CollectWgsMetrics(self, reference, outfile=None, cov_cap=None):
         '''
-         Run Picard's CollectWgsMetrics on a WGS BAM file
+        Run Picard's CollectWgsMetrics on a WGS BAM file
 
-         Parameters
+        Parameters
         ----------
         reference : str, required
             Str with Fasta file used as the reference.
@@ -325,6 +366,8 @@ class BamQC(object):
         command = ""
         if self.java_folder:
             command += self.java_folder+"/"
+
+        pdb.set_trace()
 
         command += "java -jar {0}/picard.jar CollectWgsMetrics I={1} OUTPUT="\
         "/dev/stdout R={2} QUIET=true".format(self.picard_folder, self.bam, reference)
