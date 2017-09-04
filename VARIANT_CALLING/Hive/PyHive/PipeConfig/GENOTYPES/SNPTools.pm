@@ -61,8 +61,8 @@ sub resource_classes {
         '5Gb' => { 'LSF' => '-C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"' },
         '8Gb' => { 'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"' },
         '12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
-	'15Gb' => { 'LSF' => '-C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
-	'20Gb' => { 'LSF' => '-C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
+	'15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
+	'20Gb' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
     };
 }
 
@@ -224,6 +224,7 @@ sub pipeline_analyses {
 		'window' => 12000,
 		'overlap' => 2000,
 		'niterations' => 15,
+		'nthreads' => 20,
 		'verbose' => 1 
             },
 	    -flow_into => {
@@ -232,7 +233,7 @@ sub pipeline_analyses {
                       }
                 }
 	    },
-	    -rc_name => '15Gb'
+	    -rc_name => '20Gb'
         },
 
 	{   -logic_name => 'vcf_reheader',
