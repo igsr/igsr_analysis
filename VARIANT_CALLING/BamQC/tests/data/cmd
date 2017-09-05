@@ -1,1 +1,0 @@
-grep -E '@SQ\tSN:chr1\t|^@HD|target.79$|target.80$' g1k_exome_consensus.grch38.sam > chr1.baits.sam

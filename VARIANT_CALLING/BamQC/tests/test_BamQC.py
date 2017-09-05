@@ -35,13 +35,12 @@ def test_chkindel_rg(bam_object):
     bam_object.run_chk_indel_rg(outfile="data/BamQC/test.chkindel_rg.txt")
     assert 0
 '''
-
 def test_get_simple_stats(bam_object):
     stats=bam_object.get_simple_stats()
-    assert stats['total_no_reads']==672
-    assert stats['no_duplicates']==14
-    assert stats['total_no_mapped']==667
-    assert stats['no_properly_paired']==645
+    assert stats['total_no_reads']==33
+    assert stats['no_duplicates']==0
+    assert stats['total_no_mapped']==33
+    assert stats['no_properly_paired']==32
 
 def test_get_contigs(bam_object):
     contigs=bam_object.get_contigs()
@@ -49,41 +48,42 @@ def test_get_contigs(bam_object):
 
 def test_list_of_samples(bam_object):
     samples=bam_object.list_of_samples()
-    assert samples[0]=='NA19006'
+    assert samples[0]=='exampleBAM.bam'
 
 def test_list_of_readgroups(bam_object):
     rgroups=bam_object.list_of_readgroups()
-    assert rgroups[0]=='ERR251631' or rgroups[0]=='ERR251632' 
-    assert rgroups[1]=='ERR251631' or rgroups[1]=='ERR251632'
+    assert rgroups[0]=='exampleBAM.bam'
 
 def test_run_samtools_depth(bam_object):
     depthO_l=bam_object.run_samtools_depth(chros='chr1')
     assert depthO_l[0].contig=='chr1'
-    assert depthO_l[0].bases_mapped==9139
-    assert depthO_l[0].breadth==3.6709235803525486e-05
-    assert depthO_l[0].depth==0.0002573984614865649
-    assert depthO_l[0].sum_of_depths==64081
-    assert depthO_l[0].length==248956422
-    assert depthO_l[0].max==16
+    assert depthO_l[0].bases_mapped==2052
+    assert depthO_l[0].breadth==0.02052
+    assert depthO_l[0].depth==0.02508
+    assert depthO_l[0].sum_of_depths==2508
+    assert depthO_l[0].length==100000
+    assert depthO_l[0].max==3
 
 def test_aggregate_stats(bam_object):
     depthO_l=bam_object.run_samtools_depth(chros='chr1')
     depthO=bam_object.aggregate_stats(depthO_l)
     assert depthO.contig=='chr1'
-    assert depthO.bases_mapped==9139
-    assert depthO.breadth==3.6709235803525486e-05
-    assert depthO.depth==0.0002573984614865649
-    assert depthO.sum_of_depths==64081
-    assert depthO.length==248956422
-    assert depthO.max==16
-
+    assert depthO.bases_mapped==2052
+    assert depthO.breadth==0.02052
+    assert depthO.depth==0.02508
+    assert depthO.sum_of_depths==2508
+    assert depthO.length==100000
+    assert depthO.max==3
 
 def test_run_CollectHsMetrics(bam_object):
     cMetrics=bam_object.run_CollectHsMetrics(baits_file='data/test.ival')
-    assert cMetrics.metrics['TOTAL_READS']=='672'
-    assert cMetrics.metrics['PF_UNIQUE_READS']=='658'
-    assert cMetrics.metrics['PF_UQ_BASES_ALIGNED']=='64081'
+    assert cMetrics.metrics['TOTAL_READS']=='33'
+    assert cMetrics.metrics['PF_UNIQUE_READS']=='33'
+    assert cMetrics.metrics['PF_UQ_BASES_ALIGNED']=='2508'
 
 def test_run_run_CollectWgsMetrics(bam_object):
-    cMetrics=bam_object.run_CollectWgsMetrics(reference='data/GRCh38_full_analysis_set_plus_decoy_hla.chr1.fa')
-    assert 0
+    cMetrics=bam_object.run_CollectWgsMetrics(reference='data/exampleFASTA.fasta')
+    assert cMetrics.metrics['MEAN_COVERAGE']=='0.00139'
+    assert cMetrics.metrics['PCT_1X']=='0.00139'
+    assert cMetrics.metrics['SD_COVERAGE']=='0.037257'
+

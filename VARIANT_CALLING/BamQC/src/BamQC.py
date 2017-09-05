@@ -107,7 +107,8 @@ class BamQC(object):
 
         if err != "":
             raise Exception(err)
-        samples = re.findall("SM:(\\w+)\\s", header)
+        
+        samples = re.findall("SM:([\w.]+)\s", header)
         samples = list(set(samples))
         return samples
 
@@ -137,7 +138,7 @@ class BamQC(object):
             raise Exception(err)
         for e in header.split('\n'):
             if e.startswith("@RG"):
-                readgroups.append(re.findall("ID:(\\w+)\\s", e)[0])
+                readgroups.append(re.findall("ID:([\w.]+)\s", e)[0])
 
         return list(set(readgroups))
 
@@ -318,8 +319,9 @@ class BamQC(object):
 
 
         if outfile:
-            fh = open(outfile, 'w')
-            print(stdout.decode("utf-8"), file=fh)
+            f = open(outfile, 'w')
+            f.write(stdout.decode("utf-8"))
+            f.close()
 
         #process stdout
         part = re.split('\n\n', stdout.decode("utf-8"))
@@ -367,8 +369,6 @@ class BamQC(object):
         if self.java_folder:
             command += self.java_folder+"/"
 
-        pdb.set_trace()
-
         command += "java -jar {0}/picard.jar CollectWgsMetrics I={1} OUTPUT="\
         "/dev/stdout R={2} QUIET=true".format(self.picard_folder, self.bam, reference)
 
@@ -385,8 +385,9 @@ class BamQC(object):
             raise Exception(stderr)
 
         if outfile:
-            fh = open(outfile, 'w')
-            print(stdout, file=fh)
+            f = open(outfile, 'w')
+            f.write(stdout.decode("utf-8"))
+            f.close()
 
         #process stdout
         part = re.split('\n\n', stdout)
@@ -439,9 +440,9 @@ class BamQC(object):
             raise Exception(stderr)
 
         if outfile:
-            fh = open(outfile, 'w')
-            print(stdout, file=fh)
-            fh.close()
+            f = open(outfile, 'w')
+            f.write(stdout.decode("utf-8"))
+            f.close()
 
         #initialize the list that will contain the Chk_indel objects
         data = []
