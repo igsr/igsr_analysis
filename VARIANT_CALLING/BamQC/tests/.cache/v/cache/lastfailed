@@ -1,5 +1,1 @@
-{
-  "test_BamQC.py::test_get_simple_stats": true,
-  "test_BamQC.py::test_run_CollectHsMetrics": true,
-  "test_BamQC.py::test_run_run_CollectWgsMetrics": true
-}
+{}
