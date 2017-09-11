@@ -334,6 +334,16 @@ class ReseqTrackDB(object):
 
         return attributes_list
 
+    def __str__(self):
+        sb = []
+        for key in self.__dict__:
+            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+
+        return ', '.join(sb)
+
+    def __repr__(self):
+        return self.__str__()
+
 class File(object):
     '''
     Class to represent a file in the ReseqTrack DB
@@ -629,6 +639,7 @@ class Collection(object):
                 print(exc[0], exc[1])
                 # Rollback in case there is any error
                 reseqdb.rollback()
+
     def __str__(self):
         sb = []
         for key in self.__dict__:
@@ -737,3 +748,13 @@ class Attribute(object):
             print(e[0], e[1])
             # Rollback in case there is any error
             reseqdb.rollback()
+
+    def __str__(self):
+        sb = []
+        for key in self.__dict__:
+            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+
+        return ', '.join(sb)
+
+    def __repr__(self):
+        return self.__str__()
