@@ -382,11 +382,12 @@ class BamQC(object):
         stderr = stderr.decode("utf-8")
 
         if not stdout:
+            print("Ups! Something went wrong when trying to run commend: {0}".format(command))
             raise Exception(stderr)
 
         if outfile:
             f = open(outfile, 'w')
-            f.write(stdout.decode("utf-8"))
+            f.write(stdout)
             f.close()
 
         #process stdout
@@ -405,6 +406,7 @@ class BamQC(object):
         df = pd.DataFrame(data=data[1:, 0:], columns=data[0, 0:])
 
         df = df.astype(int)
+
         return CMetrics(metrics=sd, cov_data=df)
 
     def run_chk_indel_rg(self, outfile=None):
@@ -441,7 +443,7 @@ class BamQC(object):
 
         if outfile:
             f = open(outfile, 'w')
-            f.write(stdout.decode("utf-8"))
+            f.write(stdout)
             f.close()
 
         #initialize the list that will contain the Chk_indel objects
@@ -625,15 +627,22 @@ class CMetrics(object):
         #getting basename from filename
         basename = os.path.basename(filename).split('.')[0]
 
+        #check if dataframe has the right columns
+        y_columnname=None
+        if (list(self.cov_data.columns)==['coverage', 'high_quality_coverage_count']):
+            y_columnname='high_quality_coverage_count'
+        elif (list(self.cov_data.columns)==['coverage', 'count']):
+            y_columnname='count'
+
         ax = None
         if xlim:
-            ax = self.cov_data[xlim[0]:xlim[1]].plot(x='coverage', y='count',
+            ax = self.cov_data[xlim[0]:xlim[1]].plot(x='coverage', y=y_columnname,
                                                      kind="bar", legend=False,
                                                      grid=True, figsize=(20, 10),
                                                      ylim=ylim, color="gold",
                                                      fontsize=14)
         else:
-            ax = self.cov_data.plot(x='coverage', y='count', kind="bar",
+            ax = self.cov_data.plot(x='coverage', y=y_columnname, kind="bar",
                                     legend=False, grid=True, figsize=(20, 10),
                                     ylim=ylim, color="gold", fontsize=14)
 
@@ -650,13 +659,23 @@ class CMetrics(object):
         fig = ax.get_figure()
         fig.savefig(filename, format='pdf')
 
+    def __str__(self):
+        sb = []
+        for key in self.__dict__:
+            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+
+        return ', '.join(sb)
+
+    def __repr__(self):
+        return self.__str__()
+
 class Chk_indel(object):
     '''
     Class to store information on the ratio of short insertion and deletion
     calculated by runnint Heng Li's chk_indel_rg
     '''
 
-    def __init__(self, RG, ins_in_short_homopolymer, del_in_short, ins_in_long, del_in_long):
+    def __init__(self, RG, ins_in_short_homopolymer, del_in_short, ins_in_long, del_in_long, outcome=None):
         '''
         Create a Chk_indel object
 
@@ -671,6 +690,7 @@ class Chk_indel(object):
                       ins_in_long
         del_in_long : float, required
                       del_in_long
+        outcome : PASS/FAILED, optional
 
         '''
         self.RG = RG
@@ -678,3 +698,36 @@ class Chk_indel(object):
         self.del_in_short = del_in_short
         self.ins_in_long = ins_in_long
         self.del_in_long = del_in_long
+        self.outcome = outcome
+
+    def calc_ratio(self):
+        '''
+        Method to calc ratio ins-in-short-homopolymer/del-in-short and check if it is > 5
+
+        Returns
+        -------
+        It returns PASS/FAILED depending on the outcome of the test
+        '''
+
+        inser=self.ins_in_short_homopolymer
+        delet=self.del_in_short
+
+        #increment inser and delet counts by 1 to avoid divisions by 0
+        if delet==0:
+            delet+=1
+            inser+=1
+        #calculating ratio: ins-in-short-homopolymer/del-in-short and checking if it is greater than 5
+        outcome="FAILED" if (float(inser)/float(delet))>5 else "PASS"
+
+        self.outcome=outcome        
+        return outcome
+
+    def __str__(self):
+        sb = []
+        for key in self.__dict__:
+            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+
+        return ', '.join(sb)
+
+    def __repr__(self):
+        return self.__str__()

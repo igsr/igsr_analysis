@@ -25,16 +25,10 @@ def bam_object(scope='module'):
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/BamQC/*')
+    files = glob.glob('data/out/*')
     for f in files:
         os.remove(f)
-'''
-TODO: Binary does not work in MAC, check in Linux
 
-def test_chkindel_rg(bam_object):
-    bam_object.run_chk_indel_rg(outfile="data/BamQC/test.chkindel_rg.txt")
-    assert 0
-'''
 def test_get_simple_stats(bam_object):
     stats=bam_object.get_simple_stats()
     assert stats['total_no_reads']==33
@@ -81,9 +75,12 @@ def test_run_CollectHsMetrics(bam_object):
     assert cMetrics.metrics['PF_UNIQUE_READS']=='33'
     assert cMetrics.metrics['PF_UQ_BASES_ALIGNED']=='2508'
 
-def test_run_run_CollectWgsMetrics(bam_object):
+def test_run_CollectWgsMetrics(bam_object):
     cMetrics=bam_object.run_CollectWgsMetrics(reference='data/exampleFASTA.fasta')
     assert cMetrics.metrics['MEAN_COVERAGE']=='0.00139'
     assert cMetrics.metrics['PCT_1X']=='0.00139'
     assert cMetrics.metrics['SD_COVERAGE']=='0.037257'
 
+def test_create_cov_barplot(bam_object, clean_tmp):
+    cMetrics=bam_object.run_CollectWgsMetrics(reference='data/exampleFASTA.fasta',outfile='data/out/out_runCollectWgsMetrics.txt')
+    cMetrics.create_cov_barplot('data/out/example.CollectWgsMetrics.barplot.pdf')

@@ -9,4 +9,3 @@ def pytest_addoption(parser):
     parser.addoption('--picard_folder', default='~/bin/',action='store_true', help='Folder with Picard jar file')
 
 
-
