@@ -680,6 +680,7 @@ class Attribute(object):
             self.value = float(value)
         else:
             self.value = value
+
         if units is None:
             self.units = 'NULL'
 

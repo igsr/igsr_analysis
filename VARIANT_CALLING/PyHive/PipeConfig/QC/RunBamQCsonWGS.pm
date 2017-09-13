@@ -127,7 +127,7 @@ sub pipeline_analyses {
                 'port' => $self->o('port'),
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
-		'store_attributes' => 'False'
+		'store_attributes' => 'True'
             },
         },
 

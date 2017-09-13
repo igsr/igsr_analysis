@@ -7,7 +7,7 @@ from BamQC import BamQC
 from ReseqTrackDB import *
 
 class RunPicardOnWGSfile(eHive.BaseRunnable):
-    """run Picard on a WGS BAM file"""
+    """run Picard's CollectWgsMetrics on a WGS BAM file"""
     
     def param_defaults(self):
         return {

@@ -1,4 +1,4 @@
-package PyHive::PipeConfig::VCFilterFreeBayes;
+package PyHive::PipeConfig::FILTER::VCFilterFreeBayes;
 
 use strict;
 use warnings;
