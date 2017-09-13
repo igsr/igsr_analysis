@@ -2,17 +2,17 @@
 
 =head1 NAME
 
-    Hive::PipeConfig::RunAllQCsonWGS
+    PyHive::PipeConfig::QC::RunBamQCsonWES
 
 =head1 SYNOPSIS
 
-    init_pipeline.pl Hive::PipeConfig::RunAllQCsonWGS -inputfile file_list -work_dir dir_name -db reseqtrack_db_name -pwd db_pwd
+    init_pipeline.pl PyHive::PipeConfig::RunBamQCsonWES -inputfile file_list -work_dir dir_name -db reseqtrack_db_name -pwd db_pwd
 
-    Run all QC tests on a WGS file. chkindel_rg, verifybamid, picard's CollectWgsMetrics
+    Run all QC tests on a WES (Whole Exome Sequencing BAM) file. chkindel_rg, verifybamid, picard's CollectHsMetrics
 
 =cut
 
-package Hive::PipeConfig::RunAllQCsonWGS;
+package PyHive::PipeConfig::QC::RunBamQCsonWES;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ sub default_options {
     return {
         %{ $self->SUPER::default_options() },               # inherit other stuff from the base class
 
-        'pipeline_name' => 'run_all_bamqcs_on_wgs',                   # name used by the beekeeper to prefix job names on the farm
+        'pipeline_name' => 'run_all_bamqcs_on_wes',                   # name used by the beekeeper to prefix job names on the farm
 
         # runnable-specific parameters' defaults:
         'hostname'   => 'mysql-g1kdcc-public',
@@ -37,11 +37,14 @@ sub default_options {
         'final_dir' => undef,
         'python_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
         'script_folder' => '/homes/ernesto/lib/reseq-personal/ernesto/igsr/BamQC/src/',
+	'store_attributes' => 'False',
         'chk_indel_rg_folder' => '/homes/ernesto/bin/',
 	'verifybamid_folder' => '/nfs/production/reseq-info/work/bin/verifyBamID_1.1.3/verifyBamID/bin/',
+	'genotype_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/QC_on_BAMs/DEVEL/genotypes_test/',
 	'java_folder'    => '/nfs/production/reseq-info/work/bin/java/jdk1.8.0_40/bin/',
         'picard_folder' => '/nfs/production/reseq-info/work/bin/picard-2.7.1/',
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
+	'targetfile' => '/nfs/production/reseq-info/work/zheng/grch38_bams_hsmetrics/g1k_exome_consensus.grch38.sam',
         'samtools_folder' => '/nfs/production/reseq-info/work/bin/samtools-1.3/',
         'lsf_queue'   => 'production-rh7',
     };
@@ -85,37 +88,53 @@ sub pipeline_analyses {
             -module     => 'Bio::EnsEMBL::Hive::RunnableDB::JobFactory',
             -parameters => {
                 'inputcmd'     => 'cat #file#',
-                'column_names' => [ 'filename' ],
+                'column_names' => [ 'filepath' ],
             },
             -flow_into => {
 		2 => WHEN(
                     '#run_chk_indel_rg#==1' => ['run_chk_indel_rg'],
                     '#run_verifybamid#==1' => ['run_verifybamid'],
-                    '#run_picard_on_wgsfile#==1' => ['run_picard_on_wgsfile'],
+                    '#run_picard_on_wesfile#==1' => ['run_picard_on_wesfile'],
                     ),
             },
         },
-
+	
         {   -logic_name => 'run_chk_indel_rg',
-            -module        => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+            -module        => 'PyHive.BamQC.RunChkIndelRg',
+	    -language   => 'python3',
             -parameters    => {
-                'hostname' => $self->o('hostname'),
+		'hostname' => $self->o('hostname'),
                 'username' => $self->o('username'),
                 'port' => $self->o('port'),
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
                 'python_folder' => $self->o('python_folder'),
-                'script_folder' => $self->o('script_folder'),
                 'chk_indel_rg_folder' => $self->o('chk_indel_rg_folder'),
-                'final_dir' => $self->o('final_dir'),
-                'cmd'       => '#python_folder#/python #script_folder#/run_chk_indel_rg.py --hostname #hostname# --username #username# --port #port# --pwd #pwd# --db #db# --exe #chk_indel_rg_folder# --filename #filename# --outdir #final_dir#',
+                'work_dir' => $self->o('work_dir'),
             },
 	    -analysis_capacity => 20,
             -rc_name => '500Mb',
+	    -flow_into => {
+		1 => ['store_chkindelrg_attribute']
+	    },
+        },
+
+	{   -logic_name => 'store_chkindelrg_attribute',
+            -module        => 'PyHive.Attribute.StoreAttribute',
+            -language   => 'python3',
+            -parameters    => {
+		'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+		'store_attributes' => 'True'
+            },
         },
 
 	{   -logic_name => 'run_verifybamid',
-            -module        => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+            -module        => 'PyHive.BamQC.RunVerifyBamId',
+	    -language   => 'python3',
             -parameters    => {
                 'hostname' => $self->o('hostname'),
                 'username' => $self->o('username'),
@@ -123,19 +142,33 @@ sub pipeline_analyses {
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
                 'genotype_folder' => $self->o('genotype_folder'),
-                'prefix' => $self->o('prefix'),
                 'python_folder' => $self->o('python_folder'),
-                'script_folder' => $self->o('script_folder'),
                 'verifybamid_folder' => $self->o('verifybamid_folder'),
-                'final_dir' => $self->o('final_dir'),
-                'cmd'       => '#python_folder#/python #script_folder#/run_verifybamid.py --hostname #hostname# --username #username# --port #port# --pwd #pwd# --db #db# --exe #verifybamid_folder# --filename #filename# --outdir #final_dir# --genotypes #genotype_folder# --prefix #prefix#',
+                'work_dir' => $self->o('work_dir')
             },
-	    -analysis_capacity => 20,
+	    -analysis_capacity => 1,
             -rc_name => '1Gb',
+	    -flow_into => {
+                1 => ['store_vfbamid_attribute']
+	    },
         },
 
-	{   -logic_name => 'run_picard_on_wgsfile',
-            -module        => 'Bio::EnsEMBL::Hive::RunnableDB::SystemCmd',
+	{   -logic_name => 'store_vfbamid_attribute',
+            -module        => 'PyHive.Attribute.StoreAttribute',
+            -language   => 'python3',
+            -parameters    => {
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'store_attributes' => 'True'
+            },
+        },
+	
+	{   -logic_name => 'run_picard_on_wesfile',
+            -module        => 'PyHive.BamQC.RunPicardOnWESfile',
+	    -language   => 'python3',
             -parameters    => {
                 'hostname' => $self->o('hostname'),
                 'username' => $self->o('username'),
@@ -143,19 +176,32 @@ sub pipeline_analyses {
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
                 'java_folder' => $self->o('java_folder'),
-                'python_folder' => $self->o('python_folder'),
-                'script_folder' => $self->o('script_folder'),
                 'picard_folder' => $self->o('picard_folder'),
-                'samtools_folder' => $self->o('samtools_folder'),
-                'final_dir' => $self->o('final_dir'),
-                'reference' => $self->o('reference'),
-                'cmd'       => '#python_folder#/python #script_folder#/run_picard_on_WGSfile.py --hostname #hostname# --username #username# --port #port# --pwd #pwd# --db #db# --picard #picard_folder# --java #java_folder# --samtools #samtools_folder# --filename #filename# --outdir #final_dir# --reference #reference# ',
+                'work_dir' => $self->o('work_dir'),
+                'baits_file' => $self->o('targetfile'),
             },
             -analysis_capacity => 20,
-            -rc_name => '12Gb'
+            -rc_name => '12Gb',
+	    -flow_into => {
+                1 => ['store_picard_attribute']
+            },
         },
+
+	{   -logic_name => 'store_picard_attribute',
+            -module        => 'PyHive.Attribute.StoreAttribute',
+            -language   => 'python3',
+            -parameters    => {
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'store_attributes' => 'True'
+            },
+        }
 
 	];
 }
 
 1;
+=cut
