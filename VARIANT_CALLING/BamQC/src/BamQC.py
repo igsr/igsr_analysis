@@ -629,20 +629,26 @@ class CMetrics(object):
 
         #check if dataframe has the right columns
         y_columnname=None
-        if (list(self.cov_data.columns)==['coverage', 'high_quality_coverage_count']):
+        if (list(self.cov_data.columns[1]))== 'high_quality_coverage_count':
             y_columnname='high_quality_coverage_count'
-        elif (list(self.cov_data.columns)==['coverage', 'count']):
+        elif (list(self.cov_data.columns[1]))=='count':
             y_columnname='count'
+
+        x_columnname=None
+        if (list(self.cov_data.columns[0]))== 'coverage':
+            x_columnname='coverage'
+        elif (list(self.cov_data.columns[0]))=='coverage_or_base_quality':
+            x_columnname='coverage_or_base_quality'
 
         ax = None
         if xlim:
-            ax = self.cov_data[xlim[0]:xlim[1]].plot(x='coverage', y=y_columnname,
+            ax = self.cov_data[xlim[0]:xlim[1]].plot(x=x_columnname, y=y_columnname,
                                                      kind="bar", legend=False,
                                                      grid=True, figsize=(20, 10),
                                                      ylim=ylim, color="gold",
                                                      fontsize=14)
         else:
-            ax = self.cov_data.plot(x='coverage', y=y_columnname, kind="bar",
+            ax = self.cov_data.plot(x=x_columnname, y=y_columnname, kind="bar",
                                     legend=False, grid=True, figsize=(20, 10),
                                     ylim=ylim, color="gold", fontsize=14)
 
