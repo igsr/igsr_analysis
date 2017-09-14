@@ -1,0 +1,5 @@
+~/bin/bcftools/bcftools view -h input.vcf.gz | grep -v chrUn | grep -v random |grep -v HLA- |grep -v _alt > header.pre.txt
+
+~/bin/bcftools/bcftools reheader -h header.pre.txt -o test.vcf.gz input.vcf.gz
+
+~/bin/bcftools/bcftools reheader -h header.post.txt -o test1.vcf.gz input.vcf.gz
