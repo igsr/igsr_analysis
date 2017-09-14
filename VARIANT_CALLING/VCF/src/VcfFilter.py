@@ -352,34 +352,43 @@ class VcfFilter(object):
 
         return outfile
 
-    def filter_by_variant_type(self, outprefix, type="snps", action="select"):
+    def filter_by_variant_type(self, outprefix, v_type="snps", biallelic=False, action="select"):
         '''
         Method to filter a VCF file by variant type. For example, to extract only the SNPs
 
         Parameters
         ----------
-        type : str, Required. Valid values are 'snps'/'indels','mnps','other'. Default=snps
+        v_type : str, Required. Valid values are 'snps'/'indels','mnps','other'. Default=snps
                               Extract/Filter (depending on the value of the 'action'
                               argument) a certain variant type
+        biallelic : bool, Optional
+                    Select only biallelic variants. Default=False
         action : str, Required. Valid values are 'select'/'exclude'. Default=select
         outprefix : str, Required. Prefix used for the output files
         '''
-        if type != "snps" and type != "indels" and type != "mnps" and type != "other":
+
+        if v_type != "snps" and v_type != "indels" and v_type != "mnps" and v_type != "other":
             raise Exception("type value is not valid. Valid values are 'snps'/"
                             "'indels'/'mnps'/'other'")
         if action != "select" and action != "exclude":
             raise Exception("action value is not valid. Valid values are 'select' or 'exclude'")
 
-        command = ""
+        command = "{0}/bcftools view ".format(self.bcftools_folder)
 
         if action == "select":
-            outprefix = outprefix + ".{0}.vcf.gz".format(type)
-            command = "{0}/bcftools view -v {1} {2} -o {3} -O z".format(self.bcftools_folder,
-                                                                        type, self.vcf, outprefix)
+            outprefix = outprefix + ".{0}.".format(v_type)
+            command += "-v {0} ".format(v_type)
         elif action == "exclude":
-            outprefix = outprefix + ".no{0}.vcf.gz".format(type)
-            command = "{0}/bcftools view -V {1} {2} -o {3} -O z".format(self.bcftools_folder,
-                                                                        type, self.vcf, outprefix)
+            outprefix = outprefix + ".no{0}.".format(v_type)
+            command += "-V {0} ".format(v_type)
+        if biallelic is True:
+            outprefix += "biallelic."
+            command += "-m2 -M2 "
+        
+        outprefix += "vcf.gz"
+
+        command += "{0} -o {1} -O z".format(self.vcf, outprefix)
+        
 
         try:
             subprocess.check_output(command, shell=True)
