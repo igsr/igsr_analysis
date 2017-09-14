@@ -4,7 +4,6 @@
 ##source=freeBayes v1.0.2-58-g054b257
 ##reference=/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa
 ##contig=<ID=chr1,length=248956422>
-##contig=<ID=chr2,length=242193529>
 ##phasing=none
 ##commandline="/nfs/production/reseq-info/work/bin/freebayes_20161014/freebayes/bin/freebayes --max-coverage 2000000 --min-alternate-count 3 --min-mapping-quality 1 --min-base-quality 3 --min-alternate-qsum 50 --genotyping-max-iterations 10 -f /nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa -r chr1:1..49992 -b /hps/nobackup/production/reseq-info/ernesto/variant_calling/vc_1000g_13022017/LC_EX_DIR2405/lc_ex_bam/lc_ex_bam.chr1.1.chr1.999825/lc_ex_bam.chr1.1.chr1.999825.transpose_bam.transposed.bam"
 ##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">
