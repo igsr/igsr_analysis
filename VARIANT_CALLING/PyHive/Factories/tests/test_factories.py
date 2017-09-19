@@ -1,9 +1,17 @@
 import os
 import pytest
 import subprocess
-from VcfQC import VcfQC
+import glob
 
 # test_factories.py
+
+@pytest.fixture
+def clean_tmp():
+    yield
+    print("Cleanup files")
+    files = glob.glob('data/outdir/*')
+    for f in files:
+        os.remove(f)
 
 def test_chrfactory():
     fa_ix= pytest.config.getoption("faix")
@@ -16,5 +24,34 @@ def test_chrfactory():
         assert True
     except subprocess.CalledProcessError as exc:
         assert False
+        raise Exception(exc.output)    
+
+def test_BeagleChunkFactory():
+    vcf_f= pytest.config.getoption("vcf_gts")
+    beaglechunks_folder=pytest.config.getoption("makeBGLCHUNKS_folder")
+    hive_scripts= pytest.config.getoption("hive_lib")+"/scripts/"
+    work_dir= "data/outdir"
+
+    command="perl {0}/standaloneJob.pl PyHive.Factories.BeagleChunkFactory -language python3 -filepath {1} -makeBGLCHUNKS_folder {2} -work_dir {3} -window {4} \
+    -overlap {5}".format(hive_scripts, vcf_f, beaglechunks_folder, work_dir, 100, 2)
+    try:
+        subprocess.check_output(command, shell=True)
+        assert True
+    except subprocess.CalledProcessError as exc:
+        assert False
         raise Exception(exc.output)
-    
+
+def test_BeagleChunkFactory_with_correctoption(clean_tmp):
+    vcf_f= pytest.config.getoption("vcf_gts_ucsc")
+    beaglechunks_folder=pytest.config.getoption("makeBGLCHUNKS_folder")
+    hive_scripts= pytest.config.getoption("hive_lib")+"/scripts/"
+    work_dir= "data/outdir"
+
+    command="perl {0}/standaloneJob.pl PyHive.Factories.BeagleChunkFactory -language python3 -filepath {1} -makeBGLCHUNKS_folder {2} -work_dir {3} -window {4} \
+    -overlap {5} -correct {6} -chro {7}".format(hive_scripts, vcf_f, beaglechunks_folder, work_dir, 100, 2, 1, 'chr22')
+    try:
+        subprocess.check_output(command, shell=True)
+        assert True
+    except subprocess.CalledProcessError as exc:
+        assert False
+        raise Exception(exc.output)

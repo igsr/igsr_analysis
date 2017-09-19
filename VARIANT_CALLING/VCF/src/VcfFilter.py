@@ -352,7 +352,7 @@ class VcfFilter(object):
 
         return outfile
 
-    def filter_by_variant_type(self, outprefix, v_type="snps", biallelic=False, action="select"):
+    def filter_by_variant_type(self, outprefix, v_type="snps", compress=True, biallelic=False, action="select"):
         '''
         Method to filter a VCF file by variant type. For example, to extract only the SNPs
 
@@ -361,6 +361,8 @@ class VcfFilter(object):
         v_type : str, Required. Valid values are 'snps'/'indels','mnps','other'. Default=snps
                               Extract/Filter (depending on the value of the 'action'
                               argument) a certain variant type
+        compress : bool, Optional
+                   If True then generate a vcf.gz file. Default=True 
         biallelic : bool, Optional
                     Select only biallelic variants. Default=False
         action : str, Required. Valid values are 'select'/'exclude'. Default=select
@@ -385,15 +387,18 @@ class VcfFilter(object):
             outprefix += "biallelic."
             command += "-m2 -M2 "
         
-        outprefix += "vcf.gz"
-
-        command += "{0} -o {1} -O z".format(self.vcf, outprefix)
-        
+        if compress is True:
+            outprefix += "vcf.gz"
+            command += "{0} -o {1} -O z".format(self.vcf, outprefix)
+        elif compress is False:
+            outprefix += "vcf"
+            command += "{0} -o {1} -O v".format(self.vcf, outprefix)
 
         try:
             subprocess.check_output(command, shell=True)
         except subprocess.CalledProcessError as exc:
-            print("Something went wrong while trying to select variants")
+            print("Something went wrong while trying to select variants\n")
+            print("Command used was: {0}".format(command))
             raise Exception(exc.output)
 
         return outprefix

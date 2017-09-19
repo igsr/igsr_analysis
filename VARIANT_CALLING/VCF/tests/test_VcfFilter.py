@@ -33,7 +33,7 @@ def test_filter_by_variant_type(vcf_object):
     assert os.path.isfile(outfile) is True
 
 
-def test_filter_by_variant_type_biallelic(vcf_object, clean_tmp):
+def test_filter_by_variant_type_biallelic(vcf_object):
     '''
     Test method filter_by_variant_type 
     using the biallelic option
@@ -43,4 +43,12 @@ def test_filter_by_variant_type_biallelic(vcf_object, clean_tmp):
 
     assert os.path.isfile(outfile) is True
 
+def test_filter_by_variant_type_biallelic_compressed(vcf_object, clean_tmp):
+    '''
+    Test method filter_by_variant_type
+    using the biallelic option
+    '''
 
+    outfile=vcf_object.filter_by_variant_type(outprefix='data/out/test', biallelic=True, compress=False)
+
+    assert os.path.isfile(outfile) is True
