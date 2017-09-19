@@ -21,7 +21,25 @@ class SplitVariants(eHive.BaseRunnable):
         else:
             outprefix=filepath
 
-        outfile=vcf.filter_by_variant_type(type=self.param_required('type'),outprefix=outprefix)
+        biallelic=None
+        if self.param_is_defined('biallelic'):
+            if self.param('biallelic')=="True":
+                biallelic=True
+            elif self.param('biallelic')=="False":
+                biallelic=False
+            else:
+                raise Exception("Error. biallelic option should be True or False")
+
+        compress=None
+        if self.param_is_defined('compress'):
+            if self.param('compress')=="True":
+                compress=True
+            elif self.param('compress')=="False":
+                compress=False
+            else:
+                raise Exception("Error. compress option should be True or False")
+
+        outfile=vcf.filter_by_variant_type(v_type=self.param_required('type'),outprefix=outprefix, biallelic=biallelic, compress=compress)
         
         self.param('out_vcf', outfile)
 
