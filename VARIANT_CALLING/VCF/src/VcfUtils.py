@@ -38,8 +38,9 @@ class VcfUtils(object):
             raise Exception("Either a vcf file or a list of vcf files should be used\
                              to initialize this class")
 
-        if os.path.isfile(vcf) is False:
-            raise Exception("File does not exist")
+        if vcf is not None:
+            if os.path.isfile(vcf) is False:
+                raise Exception("File does not exist")
 
         self.vcf = vcf
         self.vcflist = vcflist
@@ -123,6 +124,9 @@ class VcfUtils(object):
 
         variants_str=""
         for path, label in zip(self.vcflist, labels):
+            if os.path.isfile(path) == False:
+                print("Error reading from {0}".format(path))
+                raise Exception("File does not exist")
             variants_str+="-V:{0} {1} ".format(label,path)
         
         command = ""
