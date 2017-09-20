@@ -80,10 +80,15 @@ def test_make_beagle_chunks():
     outfile=vcf_object.make_beagle_chunks(window=100,overlap=20,outfile='data/BEAGLE/outdir/chunks.coords')
     assert os.path.exists(outfile)
 
-def test_make_beagle_chunks_with_ucsc_correction(clean_tmp):
+def test_make_beagle_chunks_with_ucsc_correction():
     vcf_object=VcfIntegration(vcf="data/BEAGLE/GLs.HG00136.ucsc.vcf.gz",
                               makeBGLCHUNKS_folder=pytest.config.getoption("--makeBGLCHUNKS_folder"))
     outfile=vcf_object.make_beagle_chunks(window=100,overlap=20,outfile='data/BEAGLE/outdir/chunks.coords',
                                           correct=True,chrname='chr22')
     assert os.path.exists(outfile)
 
+def test_prepareGenFromBeagle4():
+    vcf_object=VcfIntegration(vcf="data/BEAGLE/GLs.HG00136.vcf.gz",
+                              makeBGLCHUNKS_folder=pytest.config.getoption("--makeBGLCHUNKS_folder"))
+    outfile=vcf_object.make_beagle_chunks(window=100,overlap=20,outfile='data/BEAGLE/outdir/chunks.coords')
+    assert os.path.exists(outfile)
