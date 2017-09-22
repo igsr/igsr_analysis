@@ -28,8 +28,9 @@ sub default_options {
 	'beagle_folder' => '~/bin/beagle/',
 	'gatk_folder' => '~/bin/GATK/',
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
-	'window_bglchnks' => 1000, # makeBGLCHUNKS
-	'overlap_bglchnks' => 20, #makeBGLCHUNKS
+	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
+	'window_bglchnks' => 700, # makeBGLCHUNKS
+	'overlap_bglchnks' => 200, #makeBGLCHUNKS
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
 	'store_attributes' => 'False',
         'filelayout' => [ 'prefix','coords','type1','type2','extension'],
@@ -242,13 +243,14 @@ sub pipeline_analyses {
             },
             -rc_name => '500Mb',
 	    -flow_into => {
-		1 => {'run_beagle' => {
+		'1->A' => {'run_beagle' => {
 		    'vcf_file'=> '#filepath#',
 		    'region_chunk' => '#chunk#'
-		      }
-		}
+			   }
+		},
+		'A->1' => [ 'prepareGen_from_Beagle' ],
 	    },
-        },
+	},
 
 	{   -logic_name => 'run_beagle',
             -module     => 'PyHive.VcfIntegration.run_Beagle',
@@ -257,16 +259,36 @@ sub pipeline_analyses {
                 'beagle_folder' => $self->o('beagle_folder'),
                 'work_dir' => $self->o('work_dir'),
 		'outprefix' => '#vcf_file#',
+		'correct' => 1,
 		'nthreads' => 1,
 		'verbose' => 1 
             },
 	    -flow_into => {
-		1 => {'vcf_reheader' => {
-                    'filepath'=> '#vcf_f#'
+		1 => {'prepareGen_from_Beagle' => {
+                    'vcf_file'=> '#vcf_file#'
                       }
                 }
 	    },
-	    -rc_name => '20Gb'
+	    -rc_name => '2Gb'
+        },
+
+	{   -logic_name => 'prepareGen_from_Beagle',
+            -module     => 'PyHive.VcfIntegration.run_prepareGenFromBeagle4',
+            -language   => 'python3',
+            -parameters => {
+                'prepareGenFromBeagle4_folder' => $self->o('prepareGenFromBeagle4_folder'),
+                'work_dir' => $self->o('work_dir'),
+                'outprefix' => '#vcf_file#shapeit_input',
+		'prefix_in' => '#vcf_file#',
+                'verbose' => 1
+            },
+	    -flow_into => {
+		1 => {'vcf_reheader' => {
+                    'filepath'=> '#vcf_f#'
+		      }
+		}
+ 	    },
+            -rc_name => '500Mb'
         },
 
 	{   -logic_name => 'vcf_reheader',

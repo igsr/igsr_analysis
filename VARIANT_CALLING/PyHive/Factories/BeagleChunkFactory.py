@@ -1,12 +1,12 @@
 import eHive
-from VcfIntegration import VcfIntegration
+from VCFIntegration.Beagle import Beagle
 
 class BeagleChunkFactory(eHive.BaseRunnable):
     """Run makeBGLCHUNKS in order to create genomic chunks used to be run with Beagle"""
     
     def run(self):
     
-        vcf_i=VcfIntegration(vcf=self.param_required('filepath'), makeBGLCHUNKS_folder=self.param_required('makeBGLCHUNKS_folder'))
+        vcf_i=Beagle(vcf=self.param_required('filepath'), makeBGLCHUNKS_folder=self.param_required('makeBGLCHUNKS_folder'))
 
         outfile=""
 

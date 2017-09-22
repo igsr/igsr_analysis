@@ -1,0 +1,133 @@
+beagle.08Jun17.d8b.jar (version 4.1)
+Copyright (C) 2014-2015 Brian L. Browning
+Enter "java -jar beagle.08Jun17.d8b.jar" for a summary of command line arguments.
+Start time: 02:31 PM BST on 22 Sep 2017
+
+Command line: java -Xmx27305m -jar beagle.jar
+  gl=data/BEAGLE/GLs.HG00136.vcf.gz
+  out=data/BEAGLE/outdir//GLs.HG00136.correct.chr22:20000085-20010512.beagle
+
+No genetic map is specified: using 1 cM = 1 Mb
+
+reference samples:       0
+target samples:          1
+
+Window 1 [ 22:20000086-20099941 ]
+target markers:       1356
+
+Starting burn-in iterations
+
+Window=1 Iteration=1
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.283  mean count/edge: 2
+
+Window=1 Iteration=2
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.214  mean count/edge: 2
+
+Window=1 Iteration=3
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.128  mean count/edge: 2
+
+Window=1 Iteration=4
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.111  mean count/edge: 2
+
+Window=1 Iteration=5
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.101  mean count/edge: 2
+
+Window=1 Iteration=6
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.096  mean count/edge: 2
+
+Window=1 Iteration=7
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.091  mean count/edge: 2
+
+Window=1 Iteration=8
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.085  mean count/edge: 2
+
+Window=1 Iteration=9
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.085  mean count/edge: 2
+
+Window=1 Iteration=10
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.085  mean count/edge: 2
+
+Starting phasing iterations
+
+Window=1 Iteration=11
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.038  mean count/edge: 2
+
+Window=1 Iteration=12
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.038  mean count/edge: 2
+
+Window=1 Iteration=13
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.038  mean count/edge: 2
+
+Window=1 Iteration=14
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.038  mean count/edge: 2
+
+Window=1 Iteration=15
+Time for building model:         0 seconds
+Time for sampling (singles):     0 seconds
+DAG statistics
+mean edges/level: 1      max edges/level: 2
+mean edges/node:  1.038  mean count/edge: 2
+
+Number of markers:                1356
+Total time for building model: 0 seconds
+Total time for sampling:       1 second
+Total run time:                2 seconds
+
+End time: 02:31 PM BST on 22 Sep 2017
+beagle.08Jun17.d8b.jar (version 4.1) finished

@@ -1,7 +1,7 @@
 import eHive
 import os
 import datetime
-from VcfFilter import VcfFilter
+from VCFfilter.BCFTools import BCFTools
 
 class SubsetVcfWithRegion(eHive.BaseRunnable):
     """subset a VCF by excluding/including (depending on the action value) the variants within the regions passed in as a parameter"""
@@ -17,7 +17,7 @@ class SubsetVcfWithRegion(eHive.BaseRunnable):
         self.warning('Analysing file: %s'% filepath)
 
         work_dir=self.param_required('work_dir')
-        vcfFilter = VcfFilter(vcf=filepath,bcftools_folder=self.param('bcftools_folder'))
+        vcfFilter = BCFTools(vcf=filepath,bcftools_folder=self.param('bcftools_folder'))
         
         region=self.param_required('region')
         self.warning('Subsetting file using region: %s'% region)

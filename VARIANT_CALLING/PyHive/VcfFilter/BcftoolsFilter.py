@@ -1,6 +1,6 @@
 import eHive
 import os
-from VcfFilter import VcfFilter
+from VCFfilter.BCFTools import BCFTools
 
 class BcftoolsFilter(eHive.BaseRunnable):
     """run Bcftools filter on a VCF"""
@@ -9,9 +9,9 @@ class BcftoolsFilter(eHive.BaseRunnable):
 
         self.warning('Analysing file: %s'% self.param_required('filepath'))
         
-        vcf = VcfFilter(vcf=self.param_required('filepath'),bcftools_folder=self.param_required('bcftools_folder'))
+        vcf = BCFTools(vcf=self.param_required('filepath'),bcftools_folder=self.param_required('bcftools_folder'))
 
-        outvcf=vcf.bcftools_filter(name=self.param_required('filter_name'),expression=self.param_required('filter_expression'))
+        outvcf=vcf.filter(name=self.param_required('filter_name'),expression=self.param_required('filter_expression'))
         
         self.param('out_vcf', outvcf)
 
