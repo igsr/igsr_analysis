@@ -1,6 +1,6 @@
 import eHive
 import os
-from VcfFilter import VcfFilter
+from VCFfilter.BCFTools import BCFTools
 
 class SplitVariants(eHive.BaseRunnable):
     """Split VCF into SNPs and INDELs"""
@@ -11,7 +11,7 @@ class SplitVariants(eHive.BaseRunnable):
         
         filepath=self.param_required('filepath')
 
-        vcf = VcfFilter(vcf=filepath, bcftools_folder=self.param_required('bcftools_folder'))
+        vcf = BCFTools(vcf=filepath, bcftools_folder=self.param_required('bcftools_folder'))
 
         outprefix=""
 

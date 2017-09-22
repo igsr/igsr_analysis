@@ -1,7 +1,7 @@
 import eHive
 import os
 import datetime
-from VcfFilter import VcfFilter
+from VCFfilter.GATK import GATK
 
 class ApplyRecalibration(eHive.BaseRunnable):
     """run GATK ApplyRecalibration, which is part of the VQSR filtering procedure"""
@@ -10,7 +10,7 @@ class ApplyRecalibration(eHive.BaseRunnable):
 
         self.warning('Analysing file: %s'% self.param_required('filepath'))
 
-        VcfFilterO = VcfFilter(vcf=self.param_required('filepath'),caller=self.param_required('caller'),gatk_folder=self.param_required('gatk_folder'), reference=self.param_required('reference'), bgzip_folder=self.param('bgzip_folder'), tabix_folder=self.param('tabix_folder'))
+        VcfFilterO = GATK(vcf=self.param_required('filepath'),caller=self.param_required('caller'),gatk_folder=self.param_required('gatk_folder'), reference=self.param_required('reference'), bgzip_folder=self.param('bgzip_folder'), tabix_folder=self.param('tabix_folder'))
 
         outfile=VcfFilterO.run_applyrecalibration(mode=self.param_required('mode'), recal_file=self.param_required('recal_file'), tranches_file=self.param_required('tranches_file'), outprefix=self.param_required('filepath'))
 

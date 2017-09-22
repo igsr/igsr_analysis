@@ -1,7 +1,7 @@
 import eHive
 import os
 import datetime
-from VcfFilter import VcfFilter
+from VCFfilter.BCFTools import BCFTools
 
 class SubsetVcfWithBed(eHive.BaseRunnable):
     """subset a VCF by excluding/including (depending on the action value) the variants within the regions defined by a BED file"""
@@ -23,7 +23,7 @@ class SubsetVcfWithBed(eHive.BaseRunnable):
         if self.param('verbose')=="True":
             print("Workdir is %s" % work_dir)
 
-        vcfFilter = VcfFilter(vcf=filepath,bcftools_folder=self.param('bcftools_folder'))
+        vcfFilter = BCFTools(vcf=filepath,bcftools_folder=self.param('bcftools_folder'))
         vcffile=vcfFilter.subset_vcf(bed=self.param_required('bed'),outprefix=file+".exc.vcf.gz",outdir=work_dir,create_index=True, threads=self.param('threads'), action=self.param('action'))
        
         self.param('subset_file', vcffile)

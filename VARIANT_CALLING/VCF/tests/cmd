@@ -1,0 +1,1 @@
+~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin///prepareGenFromBeagle4 --likelihoods data/BEAGLE/GLs.HG00136.vcf.gz --posteriors data/BEAGLE/outdir/GLs.HG00136.chr22*.beagle.vcf.gz --threshold 0.995 --output data/BEAGLE/outdir/input.shapeit.chr22
