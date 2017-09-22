@@ -1,9 +1,6 @@
 import eHive
 import os
-import datetime
-from VcfFilter import VcfFilter
-from ReseqTrackDB import File
-from ReseqTrackDB import ReseqTrackDB
+from VCFfilter.GATK import GATK
 
 class VariantRecalibrator(eHive.BaseRunnable):
     """run GATK VariantRecalibrator, which is part of the VQSR filtering procedure"""
@@ -12,7 +9,7 @@ class VariantRecalibrator(eHive.BaseRunnable):
 
         self.warning('Analysing file: %s'% self.param_required('filepath'))
         
-        vcf = VcfFilter(vcf=self.param_required('filepath'),caller=self.param_required('caller'),gatk_folder=self.param_required('gatk_folder'), reference=self.param_required('reference'))
+        vcf = GATK(vcf=self.param_required('filepath'),caller=self.param_required('caller'),gatk_folder=self.param_required('gatk_folder'), reference=self.param_required('reference'))
 
         optional_params={}
         if self.param_is_defined('annotations'):

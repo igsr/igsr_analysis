@@ -1,13 +1,13 @@
 import eHive
 import os
-from VcfIntegration import VcfIntegration
+from VCFIntegration.Beagle import Beagle
 
 class run_Beagle(eHive.BaseRunnable):
     """Run Beagle on a VCF containing Genotype likelihoods"""
     
     def run(self):
     
-        vcf_g=VcfIntegration(vcf=self.param_required('vcf_file'),beagle_folder=self.param_required('beagle_folder'))
+        vcf_g=Beagle(vcf=self.param_required('vcf_file'),beagle_folder=self.param_required('beagle_folder'))
 
         verbose=None
         if self.param_is_defined('verbose'):
@@ -26,6 +26,8 @@ class run_Beagle(eHive.BaseRunnable):
             options['niterations']=self.param('niterations')
         if self.param_is_defined('nthreads'):
             options['nthreads']=self.param('nthreads')
+        if self.param_is_defined('correct'):                
+            options['correct']=True
         
         vcf_f=vcf_g.run_beagle(outprefix=outprefix, outdir=self.param_required('work_dir'), **options, 
                                region=self.param_required('region_chunk'), verbose=verbose)
