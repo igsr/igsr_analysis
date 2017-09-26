@@ -222,12 +222,29 @@ sub pipeline_analyses {
             },
             -rc_name => '500Mb',
 	    -flow_into => {
-		1 => {'chunk_factory' => {
+		1 => {'rename_chros' => {
                     'filepath'=> '#vcf_f#'
 		      }
 		}
             },
 	},
+
+	{   -logic_name => 'rename_chros',
+            -module     => 'PyHive.Vcf.VcfReplaceChrNames',
+            -language   => 'python3',
+            -parameters => {
+                'chr_types' => 'ensembl',
+                'work_dir' => $self->o('work_dir'),
+            },
+            -rc_name => '500Mb',
+	    -flow_into => {
+		1 => {'chunk_factory' => {
+                    'filepath'=> '#vcf_f#'
+		      }
+		}
+	    },
+        },
+
 
 	{   -logic_name => 'chunk_factory',
             -module     => 'PyHive.Factories.BeagleChunkFactory',
@@ -243,12 +260,12 @@ sub pipeline_analyses {
             },
             -rc_name => '500Mb',
 	    -flow_into => {
-		'1->A' => {'run_beagle' => {
+		'2->A' => {'run_beagle' => {
 		    'vcf_file'=> '#filepath#',
 		    'region_chunk' => '#chunk#'
 			   }
 		},
-		'A->1' => [ 'prepareGen_from_Beagle' ],
+		'A->1' => { 'prepareGen_from_Beagle' => {'vcf_file' => '#filepath#'}}
 	    },
 	},
 
@@ -264,10 +281,7 @@ sub pipeline_analyses {
 		'verbose' => 1 
             },
 	    -flow_into => {
-		1 => {'prepareGen_from_Beagle' => {
-                    'vcf_file'=> '#vcf_file#'
-                      }
-                }
+		1 => [ '?accu_name=allbeagle_files&accu_address=[]&accu_input_variable=vcf_f'],
 	    },
 	    -rc_name => '2Gb'
         },
