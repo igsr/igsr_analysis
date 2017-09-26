@@ -20,7 +20,7 @@ class run_prepareGenFromBeagle4(eHive.BaseRunnable):
                           prepareGenFromBeagle4_folder=self.param_required('prepareGenFromBeagle4_folder'))
 
         outfiles=vcf_object.prepare_Gen_From_Beagle4(prefix_in=self.param_required('prefix_in'),
-                                                     outprefix=outprefix)
+                                                     outprefix=outprefix,verbose=verbose)
         
         self.param('outfiles', outfiles)
        

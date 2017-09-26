@@ -7,6 +7,7 @@ import os
 import pdb
 import subprocess
 import tempfile
+import re
 
 class Beagle(object):
     '''
@@ -86,13 +87,17 @@ class Beagle(object):
             outfile="{0}.".format(outprefix)
 
         if region is not None:
-            outfile+="{0}.".format(region)
+            region_str=re.sub(":|-",".",region)
+            outfile+="{0}.".format(region_str)
 
         outfile+="beagle"
 
         command = "java -jar {0}/beagle.08Jun17.d8b.jar gl={1} out={2}".format(program_folder,
                                                                                self.vcf,
                                                                                outfile)
+
+        if region is not None:
+            command += " chrom={0}".format(region)
 
         for k,v in kwargs.items():
             command += " {0}={1}".format(k,v)
@@ -126,7 +131,7 @@ class Beagle(object):
 
         return outfile
 
-    def make_beagle_chunks(self,window,overlap,outfile,correct=False,chrname=None,verbose=False):
+    def make_beagle_chunks(self,window,overlap,outfile,verbose=False):
         '''
         Method to define chromosome chunks for Beagle
         see https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#gettingstarted
@@ -139,10 +144,6 @@ class Beagle(object):
                  The overlap size (--overlap) in number of variant sites
         outfile: str, required
                  Name of output file. i.e. 'chunk.coordinates'
-        correct: bool, optional
-                 If True, then correct the output file in order to have UCSC-style chro names
-        chrname: str, optional.
-                 If 'correct'=True then pass the UCSC-style chro names that will be used
         verbose : bool, optional
                   if true, then print the command line used for running this tool.Default=False
 
@@ -175,26 +176,6 @@ class Beagle(object):
                   "Command used was: %s" % command)
             raise Exception(exc.output)
         
-        '''
-        when the VCF file used as input contains UCSC-style chro names, then makeBGLCHUNKS will generate
-        a first column with '0s'. This needs to be corrected
-        '''
-        if correct is True:
-            if chrname is None:
-                 raise Exception("Please set the 'chrname' arg")
-            newoutfile=outfile+'.ucsc.corr'
-            fw=open(newoutfile,'w');
-
-            with open(outfile) as fr:
-                for line in fr:
-                    line=line.rstrip('\n')
-                    bits=line.split("\t")
-                    bits[0]=chrname
-                    nline='\t'.join(bits)
-                    fw.write(nline+"\n")
-            fw.close()
-            outfile=newoutfile
-
         return outfile
 
     def prepare_Gen_From_Beagle4(self,prefix_in,outprefix,threshold=0.995,verbose=False):

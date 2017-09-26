@@ -308,7 +308,7 @@ sub pipeline_analyses {
                       }
                 }
             },
-            -analysis_capacity => 1,
+            -analysis_capacity => 400,
             -rc_name => '500Mb'
         },
 
@@ -347,7 +347,7 @@ sub pipeline_analyses {
                       }
                 }
             },
-            -analysis_capacity => 1,
+            -analysis_capacity => 400,
             -rc_name => '500Mb'
         },
 

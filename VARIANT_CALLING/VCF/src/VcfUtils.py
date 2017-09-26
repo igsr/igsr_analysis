@@ -7,6 +7,8 @@ Created on 03 Aug 2017
 import os
 import subprocess
 import pdb
+import gzip
+import re
 
 class VcfUtils(object):
     '''
@@ -173,3 +175,88 @@ class VcfUtils(object):
             return outfile+".gz"
         else:
             return outfile
+
+
+    def rename_chros(self, chr_types, outfile):
+        '''
+        Function to modify the chr names in the VCF file
+        For example:
+        If file has UCSC-type chr names (i.e. chr1,chr2,...) then this 
+        function will convert the UCSC-type chr names to Ensembl-type 
+        chr names (i.e. 1,2,...) or vice-versa
+
+        Parameters
+        ----------
+        chr_types : string, required
+                    Type of chr names that will be written to the file. 
+                    Possible values are: 
+                         'ucsc'/'ensembl'
+        outfile : string, required
+                  File used for the output VCF
+        
+        Returns
+        -------
+        Path to the VCF with the chrosomes renamed
+        
+        '''
+        f=gzip.open(outfile,'wb');
+
+        with gzip.open(self.vcf,'r') as fin:
+            for line in fin:
+                if not line.startswith(b"#"):
+                    bits=line.split(b"\t")
+                    chrname=bits[0].decode("utf-8")
+                    nchrname=""
+                    if chr_types=="ensembl":
+                        nchrname = re.sub('chr', '', chrname)
+                    elif chr_types=="ucsc":
+                        nchrname="chr"+chrname
+                    bits[0]=nchrname.encode('utf-8')
+                    nline=b'\t'.join(bits)
+                    f.write(nline)
+                else:
+                    f.write(line)
+        f.close()
+    
+        return outfile
+
+    def correct_ambiguity_codes(self,outfile):
+        '''
+        Function to correct the ambiguity bases in the VCF. This ambiguity
+        may appear in the REF or ALT columns
+
+        Parameters
+        ----------
+        outfile : string, required
+                  File where the output VCF will be written
+        '''
+        
+        ref_count=0
+        alt_count=0
+
+        f=gzip.open(outfile,'wb');
+
+        with gzip.open(self.vcf,'r') as fin:
+            for line in fin:
+                if not line.startswith(b"#"):
+                    bits=line.split(b"\t")
+                    ref=bits[3].decode("utf-8")
+                    alt=bits[4].decode("utf-8")
+                    if re.search(r"[^ATGC.,]", ref):
+                        ref_count+=1
+                        ref=re.sub('[^ACGT.]','N',ref)
+                    if re.search(r"[^ATGC.,]", alt):
+                        alt_count+=1
+                        alt=re.sub('[^ACGT.]','N',alt)
+                    bits[3]=ref.encode('utf-8')
+                    bits[4]=alt.encode('utf-8')
+                    nline=b'\t'.join(bits)
+                    f.write(nline)
+                else:
+                    f.write(line)
+        f.close()
+        
+        print("Sites with ambiguous bases in the REF column is:{0}".format(ref_count))
+        print("Sites with ambiguous bases in the ALT column is:{0}".format(alt_count))
+
+        return outfile
