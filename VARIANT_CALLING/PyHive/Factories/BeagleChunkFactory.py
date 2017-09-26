@@ -19,12 +19,7 @@ class BeagleChunkFactory(eHive.BaseRunnable):
         else:
             verbose=False
 
-        if self.param_is_defined('correct'):
-            outfile=vcf_i.make_beagle_chunks(window=self.param_required('window'),overlap=self.param_required('overlap'),outfile=outfile,correct=True,
-                                     chrname=self.param('chro'),verbose=verbose)
-        else:
-            vcf_i.make_beagle_chunks(window=self.param_required('window'),overlap=self.param_required('overlap'),outfile=outfile,correct=False,
-                                     verbose=verbose)
+        vcf_i.make_beagle_chunks(window=self.param_required('window'),overlap=self.param_required('overlap'),outfile=outfile,verbose=verbose)
 
         chunks=[]
         with open(outfile) as f:
@@ -41,7 +36,7 @@ class BeagleChunkFactory(eHive.BaseRunnable):
         self.warning('{0} files have been created'.format(len(self.param('chunks'))))
 
         for chunk in self.param('chunks'):
-            self.dataflow( { 'chunk' : chunk }, 1)
+            self.dataflow( { 'chunk' : chunk }, 2)
 
 
 
