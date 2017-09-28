@@ -229,6 +229,10 @@ class VcfUtils(object):
         ----------
         outfile : string, required
                   File where the output VCF will be written
+
+        Returns
+        -------
+        Path to vcf.gz file compressed with GZIP
         '''
         
         ref_count=0

@@ -10,5 +10,6 @@ def pytest_addoption(parser):
     parser.addoption('--beagle_folder', default='~/bin/beagle/', action='store_true', help='Folder with Beagle jar file')
     parser.addoption('--makeBGLCHUNKS_folder', default='~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/', action='store_true', help='Folder with makeBGLCHUNKS binary')
     parser.addoption('--prepareGenFromBeagle4_folder', default='~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/', action='store_true', help='Folder with prepareGenFromBeagle4 binary')
+    parser.addoption('--shapeit_folder', default='~/bin/shapeit2_v2_12/bin/', action='store_true', help='Folder with Shapeit binary')
     parser.addoption('--chr_file', default='data/chr_file.txt', action='store_true', help='File with chros for get_chros function')
 
