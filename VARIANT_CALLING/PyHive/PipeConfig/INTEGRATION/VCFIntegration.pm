@@ -24,13 +24,20 @@ sub default_options {
 	'faix' => undef,
 	'samplefile' => undef,
 	'newheader' => undef,
+	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
 	'bcftools_folder' => '~/bin/bcftools/',
 	'beagle_folder' => '~/bin/beagle/',
 	'gatk_folder' => '~/bin/GATK/',
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
 	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
+	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
+	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
 	'window_bglchnks' => 700, # makeBGLCHUNKS
 	'overlap_bglchnks' => 200, #makeBGLCHUNKS
+	'genome_file' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/DEVEL/INTEGRATION_PIPELINE/chr20.genome', #
+	'window_coordfactory' => '1400000', #PyHive.Factories.CoordFactory
+	'offset_coordfactory' => '200000', #PyHive.Factories.CoordFactory
+	'scaffolded_samples' => '', #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
 	'store_attributes' => 'False',
         'filelayout' => [ 'prefix','coords','type1','type2','extension'],
@@ -238,7 +245,7 @@ sub pipeline_analyses {
             },
             -rc_name => '500Mb',
 	    -flow_into => {
-		1 => {'chunk_factory' => {
+		1 => {'chunk_factory1' => {
                     'filepath'=> '#vcf_f#'
 		      }
 		}
@@ -246,7 +253,7 @@ sub pipeline_analyses {
         },
 
 
-	{   -logic_name => 'chunk_factory',
+	{   -logic_name => 'chunk_factory1',
             -module     => 'PyHive.Factories.BeagleChunkFactory',
             -language   => 'python3',
             -parameters => {
@@ -297,64 +304,61 @@ sub pipeline_analyses {
                 'verbose' => 1
             },
 	    -flow_into => {
-		1 => {'vcf_reheader' => {
-                    'filepath'=> '#vcf_f#'
-		      }
-		}
+		1 => ['chunk_factory2']
  	    },
             -rc_name => '500Mb'
         },
 
-	{   -logic_name => 'vcf_reheader',
-            -module     => 'PyHive.Vcf.VcfReheader',
+	{   -logic_name => 'chunk_factory2',
+            -module     => 'PyHive.Factories.CoordFactory',
+            -language   => 'python3',
+            -parameters => {
+                'bedtools_folder' => $self->o('bedtools_folder'),
+		'genome_file' => $self->o('genome_file'),
+                'window' => $self->o('window_coordfactory'),
+                'offset' => $self->o('offset_coordfactory'),
+                'verbose' => 1
+            },
+            -rc_name => '500Mb',
+	    -flow_into => {
+		'2->A' => {'run_shapeit' => {
+                    'outfiles'=> '#outfiles#',
+                    'region_chunk' => '#chunk#'
+			   }
+		},
+		'A->1' => { 'ligateHAPLOTYPES' => {'vcf_file' => '#filepath#'}}
+	    },
+        },
+
+	{   -logic_name => 'run_shapeit',
+            -module     => 'PyHive.VcfIntegration.run_Shapeit',
             -language   => 'python3',
             -parameters => {
                 'filepath'     => '#filepath#',
-                'bcftools_folder' => $self->o('bcftools_folder'),
+                'shapeit_folder' => $self->o('shapeit_folder'),
                 'newheader' => $self->o('newheader'),
                 'work_dir' => $self->o('work_dir'),
                 'samplefile' => '#samplefile#'
             },
 	    -flow_into => {
-                1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=vcf_f',
-                       '?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
+                1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=hap_gz']
 	    },
         },
 
-	{   -logic_name => 'merge_vcf',
-            -module        => 'PyHive.Vcf.VcfConcat',
+	{   -logic_name => 'run_ligate_haplotypes',
+            -module        => 'PyHive.VcfIntegration.run_ligateHAPLOTYPES',
             -language   => 'python3',
             -parameters    => {
-                'outprefix' => $self->o('work_dir')."/#initial_filename#.merged.vcf.gz",
-                'bcftools_folder' => $self->o('bcftools_folder'),
-                'verbose' => 'True',
-                'work_dir' => $self->o('work_dir')
+		'hapgz_list' => '#allchunks_files#',
+		'vcf_f' => '',
+		'scaffolded_samples' => $self->o('scaffolded_samples'),
+                'work_dir' => $self->o('work_dir'),
+                'ligateHAPLOTYPES_folder' => $self->o('ligateHAPLOTYPES_folder'),
+                'verbose' => 'True'
             },
-	    -flow_into => {
-		1 => {'store_vcf' => {'filename' => '#merged_file#'}}
-	    },
             -analysis_capacity => 1,
             -rc_name => '500Mb'
-        },
-
-	{   -logic_name => 'store_vcf',
-            -module        => 'PyHive.File.StoreFile',
-            -language   => 'python3',
-            -parameters    => {
-                'filename' => '#filename#',
-                'hostname' => $self->o('hostname'),
-                'username' => $self->o('username'),
-                'port' => $self->o('port'),
-                'db' => $self->o('db'),
-                'pwd' => $self->o('pwd'),
-                'type' => 'GT_VCF',
-                'final_dir' => $self->o('final_dir'),
-                'newlayout' => $self->o('newlayout'),
-                'add_date' => 'True',
-                'extension' => 'beagle.vcf.gz'
-            },
         }
-
 	];
 }
 
