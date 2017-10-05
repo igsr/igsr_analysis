@@ -24,7 +24,6 @@ def test_runShapeit():
     -verbose True".format(hive_scripts, shapeit_folder, work_dir, 'data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample', 
                           'data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample', 
                           'data/SHAPEIT/scaffold.haps.gz data/SHAPEIT/scaffold.haps.sample' ,'test')
-
     try:
         subprocess.check_output(command, shell=True)
         assert True
@@ -32,7 +31,7 @@ def test_runShapeit():
         assert False
         raise Exception(exc.output)
 
-def test_runShapeit_woptions(clean_tmp):
+def test_runShapeit_woptions():
     shapeit_folder=pytest.config.getoption("shapeit_folder")
     hive_scripts= pytest.config.getoption("hive_lib")+"/scripts/"
     work_dir= "data/outdir"

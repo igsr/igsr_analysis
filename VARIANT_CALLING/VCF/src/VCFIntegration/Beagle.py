@@ -204,7 +204,7 @@ class Beagle(object):
 
         Returns
         -------
-        A list with 4 files (*.gen.* and *.hap.*) that can be used with SHAPEIT
+        A dict with the path to the 4 output files (*.gen.* and *.hap.*) that can be used with SHAPEIT
         
         '''
 
@@ -230,13 +230,10 @@ class Beagle(object):
                   "Command used was: %s" % command)
             raise Exception(exc.output)
 
-        outfiles=[ '{0}.gen.gz'.format(outprefix),
-                   '{0}.gen.sample'.format(outprefix),
-                   '{0}.hap.gz'.format(outprefix),
-                   '{0}.hap.sample'.format(outprefix)]
+        outdict={ 'gen_gz' :'{0}.gen.gz'.format(outprefix),
+                  'gen_sample' : '{0}.gen.sample'.format(outprefix),
+                  'hap_gz' : '{0}.hap.gz'.format(outprefix),
+                  'hap_sample' : '{0}.hap.sample'.format(outprefix)
+        }
         
-        for f in outfiles:
-            if os.path.isfile(f) == False:
-                raise Exception("File {0} does not exist".format(f))
-
-        return outfiles
+        return outdict
