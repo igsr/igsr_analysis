@@ -21,7 +21,7 @@ def clean_tmp():
     files = glob.glob('data/BEAGLE/outdir/*')
     for f in files:
         os.remove(f)
-'''
+
 def test_run_beagle(vcf_object):
     vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000",
                           outdir="data/BEAGLE/outdir/",
@@ -39,7 +39,7 @@ def test_run_beagle_multithreaded(vcf_object):
                           niterations=15,
                           nthreads=2)
     assert os.path.exists("data/BEAGLE/outdir/NA12878_chr1_1000000_1001000_mts.beagle.vcf.gz")
-'''
+
 def test_make_beagle_chunks():
     vcf_object=Beagle(vcf="data/BEAGLE/GLs.HG00136.vcf.gz",
                       makeBGLCHUNKS_folder=pytest.config.getoption("--makeBGLCHUNKS_folder"))
@@ -70,8 +70,12 @@ def test_run_beagle_with_region_correct():
 def test_prepareGenFromBeagle4(clean_tmp):
     vcf_object=Beagle(vcf="data/BEAGLE/GLs.HG00136.vcf.gz",
                       prepareGenFromBeagle4_folder=pytest.config.getoption("--prepareGenFromBeagle4_folder"))
-    outfile=vcf_object.prepare_Gen_From_Beagle4(prefix_in="data/BEAGLE/outdir/GLs.HG00136.correct.22",
+    outdict=vcf_object.prepare_Gen_From_Beagle4(prefix_in="data/BEAGLE/outdir/GLs.HG00136.correct.22",
                                                 outprefix='data/BEAGLE/outdir/input.shapeit.22',
                                                 verbose=True)
-    assert os.path.exists("data/BEAGLE/outdir/input.shapeit.22.gen.gz")
-    assert os.path.exists("data/BEAGLE/outdir/input.shapeit.22.gen.sample")
+    assert os.path.exists(outdict['gen_gz'])
+    assert os.path.exists(outdict['gen_sample'])
+    assert os.path.exists(outdict['hap_gz'])
+    assert os.path.exists(outdict['hap_sample'])
+
+

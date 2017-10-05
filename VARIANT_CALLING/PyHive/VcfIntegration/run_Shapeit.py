@@ -5,7 +5,7 @@ from VCFIntegration.Shapeit import Shapeit
 
 class run_Shapeit(eHive.BaseRunnable):
     """Run SHAPEIT"""
-    
+
     def run(self):
     
         vcf_g=Shapeit(shapeit_folder=self.param_required('shapeit_folder'))
@@ -49,18 +49,22 @@ class run_Shapeit(eHive.BaseRunnable):
 
         shapeit_o=Shapeit(shapeit_folder = self.param_required('shapeit_folder'))
 
-        shapeit_o.run_shapeit(input_gen= self.param_required('input_gen'),
+        outdict=shapeit_o.run_shapeit(input_gen= self.param_required('input_gen'),
                               input_init= self.param_required('input_init'),
                               input_scaffold= self.param_required('input_scaffold'),
                               output_prefix= outprefix,
                               verbose=verbose,
                               **options_dict)
 
-#        self.param('vcf_f', vcf_f)
+        self.param('outdict', outdict)
        
     def write_output(self):
         self.warning('Work is done!')
-#        self.dataflow( {'vcf_f' : self.param('vcf_f') }, 1)
+
+        outdict= self.param('outdict')
+        self.dataflow( {'hap_gz' : outdict['hap_gz'] }, 1)
+        self.dataflow( {'hap_sample' : outdict['hap_sample'] }, 1)
+
 
 
 
