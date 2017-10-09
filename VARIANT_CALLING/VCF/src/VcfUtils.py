@@ -264,3 +264,37 @@ class VcfUtils(object):
         print("Sites with ambiguous bases in the ALT column is:{0}".format(alt_count))
 
         return outfile
+
+    def drop_genotypes(self, outfile, verbose=False):
+        '''
+        Function to drop the Genotype information from a VCF.
+        This function uses bcftools -G to perform this operation
+
+        Parameters
+        ----------
+        outfile : string, required
+                  File where the output VCF will be written
+        verbose : bool, optional
+                  increase the verbosity, default=False
+
+        Returns
+        -------
+        Path to the vcf.gz file without the GT information
+        '''
+
+        command = ""
+        if self.bcftools_folder:
+            command += self.bcftools_folder + "/"
+
+        command += "bcftools view -G {0} -o {1} -O z".format(self.vcf, outfile)
+
+        if verbose is True:
+            print("Command is: %s" % command)
+
+        try:
+            subprocess.check_output(command, shell=True)
+        except subprocess.CalledProcessError as exc:
+            print("Cmd used was {0}".format(exc.cmd))
+            raise Exception(exc.output)
+
+        return outfile

@@ -26,19 +26,23 @@ class Shapeit(object):
         self.shapeit_folder = shapeit_folder
         self.ligateHAPLOTYPES_folder = ligateHAPLOTYPES_folder
 
-    def run_shapeit(self, input_gen, input_init, input_scaffold, output_prefix, input_map=None,
+    def run_shapeit(self, output_prefix, input_gen=None, input_init=None, input_scaffold=None, input_bed=None, duohmm=False, input_map=None,
                     verbose=False, **kwargs):
         '''
         Run Shapeit
         
         Parameters
         ----------
-        input_gen : str, Required
+        input_gen : str, Optional
                     specifies the genotype/GL input data that you obtain from Beagle4, i.e. 'input.shapeit.20.gen.gz input.shapeit.20.gen.sample'
-        input_init : str, Required
+        input_init : str, Optional
                      specifies the haplotypes that you obtain from Beagle4, i.e. 'input.shapeit.20.hap.gz input.shapeit.20.hap.sample'
-        input_scaffold : str, Required
+        input_scaffold : str, Optional
                          SNP-array derived haplotype scaffold used by SHAPEIT. It has to be in Impute2 format. i.e. 'scaffold.haps.gz scaffold.haps.sample'
+        input_bed : str, Optional
+                    Unphased genotypes in Plink Binary BED/BIM/FAM format. i.e. 'file.bed file.bim file.fam'
+        duohmm : bool, Optional
+                 If true, then activate the --duohmm option. Default: False
         output_prefix : str, Required
                         Prefix used for the 2 output files estimated by SHAPEIT, i.e. 'output.shapeit.20.haps.gz output.shapeit.20.haps.sample'
         input_map : str, Optional
@@ -55,12 +59,26 @@ class Shapeit(object):
         A dict with the path to the 2 output files (*.haps.gz and *.haps.sample) that can be used with SHAPEIT
         '''        
 
+        if input_gen is None and input_bed is None:
+            raise Exception("Error! Either --input-gen or --input-bed need to be specified as input for SHAPEIT")
+
         command = ""
 
         if self.shapeit_folder:
             command += self.shapeit_folder+"/"
 
-        command += "shapeit -call --input-gen {0} --input-init {1} --input-scaffold {2} --output-max {3}.haps.gz {3}.haps.sample --output-log {3}.log".format(input_gen, input_init, input_scaffold,output_prefix)
+        command += "shapeit "
+
+        if input_gen is not None:
+            command += "-call --input-gen {0} --input-init {1} --input-scaffold {2} ".format(input_gen, input_init, input_scaffold)
+        elif input_bed is not None:
+            command += "--input-bed {0} ".format(input_bed)
+
+        command +="--output-max {0}.haps.gz {0}.haps.sample --output-log {0}.log".format(output_prefix)
+
+        if duohmm is True:
+            command += " --duohmm"
+
         for k,v in kwargs.items():
             command += " --{0} {1}".format(k,v)
 

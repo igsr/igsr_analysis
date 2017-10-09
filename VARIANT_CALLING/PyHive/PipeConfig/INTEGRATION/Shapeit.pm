@@ -22,17 +22,10 @@ sub default_options {
         'work_dir'    => undef,
         'final_dir' => undef,
 	'faix' => undef,
-	'samplefile' => undef,
-	'newheader' => undef,
-	'bcftools_folder' => '~/bin/bcftools/',
-	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
+	'bcftools_folder' => '/nfs/software/ensembl/RHEL7-JUL2017-core2/linuxbrew/bin/',
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
-	'genome_file' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/DEVEL/INTEGRATION_PIPELINE/chr20.genome', #
-	'window_coordfactory' => '1400000', #PyHive.Factories.CoordFactory
-	'offset_coordfactory' => '200000', #PyHive.Factories.CoordFactory
-	'scaffolded_samples' => '', #PyHive.VcfIntegration.run_ligateHAPLOTYPES
+	'scaffolded_samples' => undef, #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
-	'store_attributes' => 'False',
         'filelayout' => [ 'prefix','coords','type1','type2','extension'],
 	'newlayout' =>  [ 'prefix','coords','type1','type2'],
 	'lsf_queue'   => 'production-rh7'
@@ -68,6 +61,8 @@ sub resource_classes {
         '12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
 	'15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
 	'20Gb' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
+	'10cpus' => { 'LSF' => '-n 10 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' },
+	'20cpus' => { 'LSF' => '-n 20 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' }
     };
 }
 
@@ -85,66 +80,47 @@ sub pipeline_analyses {
     my ($self) = @_;
     return [
 
-	{   -logic_name => 'find_vcfs',
-            -module     => 'PyHive.Seed.SeedVCFIntegration',
+	{   -logic_name => 'find_files',
+            -module     => 'PyHive.Seed.SeedFile',
 	    -language   => 'python3',
             -parameters => {
                 'filepath'     => '#filepath#'
             },
             -flow_into => {
-                1 => ['combine_vcfs']
+                1 => ['split_chr']
             },
         },
 
-	{   -logic_name => 'chunk_factory2',
-            -module     => 'PyHive.Factories.CoordFactory',
+	{   -logic_name => 'split_chr',
+            -module        => 'PyHive.Factories.ChrFactory',
             -language   => 'python3',
-            -parameters => {
-                'bedtools_folder' => $self->o('bedtools_folder'),
-		'genome_file' => $self->o('genome_file'),
-                'window' => $self->o('window_coordfactory'),
-                'offset' => $self->o('offset_coordfactory'),
-                'verbose' => 1
+            -parameters    => {
+		'faix' => $self->o('faix'),
             },
-            -rc_name => '500Mb',
 	    -flow_into => {
-		'2->A' => {'run_shapeit' => {
-                    'outfiles'=> '#outfiles#',
-                    'region_chunk' => '#chunk#'
-			   }
-		},
-		'A->1' => { 'ligateHAPLOTYPES' => {'vcf_file' => '#filepath#'}}
-	    },
+		2 => ['run_shapeit']
+	    }, 
+            -analysis_capacity => 1,
         },
 
 	{   -logic_name => 'run_shapeit',
             -module     => 'PyHive.VcfIntegration.run_Shapeit',
             -language   => 'python3',
             -parameters => {
-                'filepath'     => '#filepath#',
+		'duohmm' => 1,
+		'window' => 0.5,
+		'states' => 200,
+		'burn' => 10,
+		'prune' =>10,
+		'main' => 50,
+		'thread' => 20,
+                'input_bed'     => '#filepath#.#chr#',
+		'outprefix' => '#filepath#.#chr#',
                 'shapeit_folder' => $self->o('shapeit_folder'),
-                'newheader' => $self->o('newheader'),
                 'work_dir' => $self->o('work_dir'),
-                'samplefile' => '#samplefile#'
+                'verbose' => 1
             },
-	    -flow_into => {
-                1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=hap_gz']
-	    },
-        },
-
-	{   -logic_name => 'run_ligate_haplotypes',
-            -module        => 'PyHive.VcfIntegration.run_ligateHAPLOTYPES',
-            -language   => 'python3',
-            -parameters    => {
-		'hapgz_list' => '#allchunks_files#',
-		'vcf_f' => '',
-		'scaffolded_samples' => $self->o('scaffolded_samples'),
-                'work_dir' => $self->o('work_dir'),
-                'ligateHAPLOTYPES_folder' => $self->o('ligateHAPLOTYPES_folder'),
-                'verbose' => 'True'
-            },
-            -analysis_capacity => 1,
-            -rc_name => '500Mb'
+	    -rc_name => '20cpus'
         }
 	];
 }

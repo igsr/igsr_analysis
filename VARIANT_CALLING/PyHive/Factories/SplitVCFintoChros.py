@@ -1,7 +1,7 @@
 import eHive
 import os
 import sys
-from VcfFilter import VcfFilter
+from VCFfilter.BCFTools import BCFTools
 
 class SplitVCFintoChros(eHive.BaseRunnable):
     """Split a VCF into the chromosomes present in a Fasta index"""
@@ -31,7 +31,7 @@ class SplitVCFintoChros(eHive.BaseRunnable):
         if self.param_is_defined('verbose'):
             verbose=self.__str_to_bool(self.param('verbose'))
 
-        vcfFilter = VcfFilter(vcf=ifile,bcftools_folder=self.param('bcftools_folder'))
+        bcftools_o = BCFTools(vcf=ifile,bcftools_folder=self.param('bcftools_folder'))
 
         files=[]
         ix=1
@@ -43,7 +43,8 @@ class SplitVCFintoChros(eHive.BaseRunnable):
             chr_folder=outdir+"/"+chr
             if not os.path.isdir(chr_folder):
                 os.mkdir(chr_folder)
-            vcffile=vcfFilter.subset_vcf(region=chr,outprefix=file,outdir=chr_folder,create_index=True, threads=self.param('threads'), action='include', verbose=verbose)
+            vcffile=bcftools_o.subset_vcf(region=chr,outprefix=file,outdir=chr_folder,
+                                          create_index=True, threads=self.param('threads'), action='include', verbose=verbose)
             files.append(
                 {
                     'chr': vcffile,
