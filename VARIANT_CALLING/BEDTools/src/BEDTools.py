@@ -23,7 +23,7 @@ class BEDTools(object):
 
         self.bedtools_folder = bedtools_folder
 
-    def make_windows(self, w, g, s=None, verbose=False):
+    def make_windows(self, w, g, s=None, chrom=None, verbose=False):
         '''
         This method will make windows from a genome file by using 'bedtools makewindows'
 
@@ -49,12 +49,16 @@ class BEDTools(object):
            chr1    400     1400
            chr1    600     1600
 
+        chrom : str, Optional
+                If specified, then make windows only for the specified chrom
         verbose : boolean, optional.
                   Default=False
 
         Returns
         ------
         A list of lists. Each sublist is composed of ['chr','start','end']
+        
+        It will return an empty list if not elements for a certain chr are defined
         '''
 
         command = ""
@@ -77,7 +81,11 @@ class BEDTools(object):
         except subprocess.CalledProcessError as exc:
             raise Exception(exc.output)
 
-        return coordlist
+        if chrom is not None:
+            newcoordlist=[c for c in coordlist if c[0]==chrom]
+            return newcoordlist
+        else:
+            return coordlist
 
     def __str__(self):
         sb = []

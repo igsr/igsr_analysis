@@ -82,7 +82,7 @@ def test_change_chrnames_2ensembl(vcf_object):
 
     assert os.path.exists("data/out/test.ensembl.vcf.gz")
 
-def test_change_chrnames_2ucsc(clean_tmp):
+def test_change_chrnames_2ucsc():
     '''
     Test the method to change the style of the chrnames (from Ensembl to UCSC)
     '''
@@ -92,3 +92,10 @@ def test_change_chrnames_2ucsc(clean_tmp):
 
     assert os.path.exists("data/out/test.ucsc.vcf.gz")
 
+def test_drop_genotypes(vcf_object, clean_tmp):
+    '''
+    Test the method to drop the genotype information from a VCF file
+    '''
+    vcf_object.drop_genotypes(outfile='data/out/test.sites.vcf.gz',verbose=True)
+
+    assert os.path.exists("data/out/test.sites.vcf.gz")
