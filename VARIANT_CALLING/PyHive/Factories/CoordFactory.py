@@ -17,10 +17,15 @@ class CoordFactory(eHive.BaseRunnable):
         offset=None
         if self.param_is_defined('offset'):
             offset=self.param('offset')
+            
+        chrom=None
+        if self.param_is_defined('chrom'):
+            chrom=self.param('chrom')
 
         coord_list=bedtools_obj.make_windows(g=self.param_required('genome_file'), 
                                              w=self.param_required('window'), 
                                              s=offset,
+                                             chrom=chrom,
                                              verbose=verbose)
 
         self.param('coord_list', coord_list)

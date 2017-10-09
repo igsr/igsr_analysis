@@ -5,6 +5,11 @@ from VCFIntegration.Shapeit import Shapeit
 
 class run_Shapeit(eHive.BaseRunnable):
     """Run SHAPEIT"""
+    
+    def fetch_input(self):
+        if self.param_is_defined('chunk'):
+            self.param('inputfrom', self.param('chunk')[1])
+            self.param('inputto', self.param('chunk')[2])
 
     def run(self):
     
@@ -16,14 +21,11 @@ class run_Shapeit(eHive.BaseRunnable):
         else:
             verbose=False
 
-        outprefix=""
-        if self.param_is_defined('work_dir'):
-            outprefix="{0}/{1}".format(self.param('work_dir'),self.param_required('outprefix'))
-        else:
-            outprefix=self.param_required('outprefix')
+        outprefix=os.path.split(self.param_required('outprefix'))[1]
+        outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
             
         options_dict={}
-                                
+        
         if self.param_is_defined('inputthr'):
             options_dict['input-thr']=self.param('inputthr')
         if self.param_is_defined('thread'):
@@ -47,15 +49,27 @@ class run_Shapeit(eHive.BaseRunnable):
             outprefix += ".{0}".format(self.param('inputto'))
             options_dict['input-to']=self.param('inputto')
 
+        duohmm=False
+        if self.param_is_defined('duohmm'):
+            duohmm=True
+
         shapeit_o=Shapeit(shapeit_folder = self.param_required('shapeit_folder'))
 
-        outdict=shapeit_o.run_shapeit(input_gen= self.param_required('input_gen'),
-                              input_init= self.param_required('input_init'),
-                              input_scaffold= self.param_required('input_scaffold'),
-                              output_prefix= outprefix,
-                              verbose=verbose,
-                              **options_dict)
-
+        outdict=None
+        if self.param_is_defined('input_gen'):       
+            outdict=shapeit_o.run_shapeit(input_gen= self.param_required('input_gen'),
+                                          input_init= self.param_required('input_init'),
+                                          input_scaffold= self.param_required('input_scaffold'),
+                                          output_prefix= outprefix,
+                                          duohmm= duohmm,
+                                          verbose=verbose,
+                                          **options_dict)
+        elif self.param_is_defined('input_bed'):
+            outdict=shapeit_o.run_shapeit(input_bed= self.param_required('input_bed'),
+                                          duohmm= duohmm,
+                                          output_prefix= outprefix,
+                                          verbose=verbose,
+                                          **options_dict)
         self.param('outdict', outdict)
        
     def write_output(self):
