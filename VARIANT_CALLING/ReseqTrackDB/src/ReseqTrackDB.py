@@ -6,6 +6,8 @@ Created on 25 Oct 2016
 
 import os
 import subprocess
+import warnings
+import pdb
 from datetime import datetime
 import pymysql
 
@@ -442,7 +444,57 @@ class File(object):
 
         return md5sum
 
-    def store(self, reseqdb, do_md5=False):
+    def rename(self, filelayout, newlayout, extension, add_date=False, compression=None):
+        '''
+        Change the name of this file
+
+        Parameters
+        ----------
+        filelayout: list, Required
+                    Layout for provided file. i.e. ['set','caller','extension','compression'] for a file named
+                    lc.bcftools.vcf.gz
+        newlayout: list, Required
+                   Layout for the new file name. i.e. ['set','caller']
+        extension: str, Required
+                   Extension to be added to the new filenamed derived from the 'newlayout'. For example, in the previous
+                   example, if we use extension='sites.vcf'. Then the new filename will be 'lc.bcftools.sites.vcf'
+        add_date: bool, Optional
+                  If True, then the date will be added to the filename:
+                  For example, in the previous example, the new filename will be:
+                  lc.bcftools.20171010.sites.vcf
+        compression: str, Optional
+                     Add an extension to specify the compression type. For example, if compression='gz', then the new file name
+                     will be lc.bcftools.20171010.sites.vcf.gz
+        '''
+        bits=self.name.split('.')
+    
+        if len(bits)!=len(filelayout):
+            print("Passed file contains the following bits: {0}".format(",".join(bits)))
+            print("Specified layout contains the following bits: {0}".format(",".join(filelayout)))
+            raise Exception("Length is not the same for filename bits and its associated annotations that are passed using the file_layout param")
+        
+        d = dict(zip(filelayout, bits))
+
+        newbits=[ d[i] for i in newlayout]
+
+        if add_date is True:
+            now = datetime.now()
+            newbits.append(now.strftime('%Y%m%d') )
+        
+        newbits.append(extension)
+
+        if compression is not None:
+            newbits.append(compression)
+
+        newname=".".join(newbits)
+
+        (path,oldfilename)=os.path.split(self.path)
+
+        #modify 'path' to reflect the new name
+        self.path="{0}/{1}".format(path,newname)
+        self.name=newname
+
+    def store(self, reseqdb, do_md5=False, dry=True):
         '''
         Store this File in the DB.
 
@@ -451,7 +503,12 @@ class File(object):
         reseqdb : MySQL db connection object  pointing to a reseqtrack db
         do_md5 : Optional, Default=False
                  Calculate the md5 on the file
+        dry : Bool, Optional
+              If dry=True then it will not store the file in the DB. Default False
 
+        Returns
+        -------
+        This function returns the path to the stored file
         '''
 
         if do_md5 is True:
@@ -472,16 +529,23 @@ class File(object):
                                                self.size, self.host_id,
                                                self.withdrawn, self.created)
 
-        try:
-            cursor = reseqdb.db.cursor()
-            # Execute the SQL command
-            cursor.execute(sql_insert_attr)
-            # Commit your changes in the database
-            reseqdb.db.commit()
-        except pymysql.Error as e:
-            print(e[0], e[1])
-            # Rollback in case there is any error
-            reseqdb.rollback()
+        if dry is False:
+            try:
+                cursor = reseqdb.db.cursor()
+                # Execute the SQL command
+                cursor.execute(sql_insert_attr)
+                # Commit your changes in the database
+                reseqdb.db.commit()
+            except pymysql.Error as e:
+                print(e[0], e[1])
+                # Rollback in case there is any error
+                reseqdb.rollback()
+            warnings.warn("File was stored in the DB")
+        elif dry is True:
+            warnings.warn("Insert statement was: {0}".format(sql_insert_attr))
+            warnings.warn("The file was not stored in the DB. Use dry=False to effectively store it")
+
+        return self.path
 
     def move(self, reseqdb, newpath, do_md5=False):
         '''
