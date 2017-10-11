@@ -53,13 +53,21 @@ class run_Shapeit(eHive.BaseRunnable):
         if self.param_is_defined('duohmm'):
             duohmm=True
 
+        input_init= None
+        if self.param_is_defined('input_init'):
+            input_init= self.param('input_init')
+
+        input_scaffold= None
+        if self.param_is_defined('input_scaffold'):
+            input_scaffold= self.param('input_scaffold')
+
         shapeit_o=Shapeit(shapeit_folder = self.param_required('shapeit_folder'))
 
         outdict=None
-        if self.param_is_defined('input_gen'):       
+        if self.param_is_defined('input_gen'):
             outdict=shapeit_o.run_shapeit(input_gen= self.param_required('input_gen'),
-                                          input_init= self.param_required('input_init'),
-                                          input_scaffold= self.param_required('input_scaffold'),
+                                          input_init= input_init,
+                                          input_scaffold= input_scaffold,
                                           output_prefix= outprefix,
                                           duohmm= duohmm,
                                           verbose=verbose,
@@ -76,8 +84,12 @@ class run_Shapeit(eHive.BaseRunnable):
         self.warning('Work is done!')
 
         outdict= self.param('outdict')
-        self.dataflow( {'hap_gz' : outdict['hap_gz'] }, 1)
-        self.dataflow( {'hap_sample' : outdict['hap_sample'] }, 1)
+        self.dataflow( {
+            'hap_gz' : outdict['hap_gz'],
+            'hap_sample' : outdict['hap_sample'],
+        }, 1)
+
+
 
 
 

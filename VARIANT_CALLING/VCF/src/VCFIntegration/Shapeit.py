@@ -12,17 +12,20 @@ class Shapeit(object):
     Class to run SHAPEIT
     '''
 
-    def __init__(self, shapeit_folder=None, ligateHAPLOTYPES_folder=None):
+    def __init__(self, bgzip_folder=None, shapeit_folder=None, ligateHAPLOTYPES_folder=None):
         '''
         Constructor
 
         Class variables
         ---------------
+        bgzip_folder : str, Optional
+                       Path to folder containing the bgzip binary
         shapeit_folder : str, Optional
                          Path to folder containing the Shapeit binary
         ligateHAPLOTYPES_folder : str, Optional
                                   Path to folder containing the ligateHAPLOTYPES binary
         '''
+        self.bgzip_folder = bgzip_folder
         self.shapeit_folder = shapeit_folder
         self.ligateHAPLOTYPES_folder = ligateHAPLOTYPES_folder
 
@@ -70,9 +73,15 @@ class Shapeit(object):
         command += "shapeit "
 
         if input_gen is not None:
-            command += "-call --input-gen {0} --input-init {1} --input-scaffold {2} ".format(input_gen, input_init, input_scaffold)
+            command += "-call --input-gen {0} ".format(input_gen)
         elif input_bed is not None:
             command += "--input-bed {0} ".format(input_bed)
+
+        if input_init is not None:
+            command += "--input-init {0} ".format(input_init)
+
+        if input_scaffold is not None:
+            command += "--input-scaffold {0} ".format(input_scaffold)
 
         command +="--output-max {0}.haps.gz {0}.haps.sample --output-log {0}.log".format(output_prefix)
 
@@ -144,3 +153,63 @@ class Shapeit(object):
         }
 
         return outdict
+
+    def convert2vcf(self, input_prefix, output_prefix, compress=False, verbose=False, logfile=None):
+        '''
+        Function to use SHAPEIT's -convert in order to convert the *.haps.gz & *.haps.sample files into VCF
+
+        Parameters
+        ----------
+        input_prefix : str, Required
+                       Prefix for the files in HAPS/SAMPLE format
+        output_prefix : str, Required
+                        String with the output prefix for the VCF file
+        verbose : bool, optional
+                  if true, then print the command line used for running this program
+        logfile : str, optional
+                  Path for log file
+        
+        Returns
+        -------
+        A VCF file
+        '''
+
+        command = ""
+
+        if self.shapeit_folder:
+            command += self.shapeit_folder+"/"
+
+        outfile="{0}.vcf".format(output_prefix)
+
+        command += "shapeit -convert --input-haps {0}.gz {0}.sample --output-vcf {1}".format(input_prefix, outfile)
+
+        if logfile is not None:
+            command += " --output-log {0}".format(logfile)
+
+        if verbose==True:
+            print("Command used was: %s" % command)
+
+        try:
+            subprocess.check_output(command, shell=True)
+        except subprocess.CalledProcessError as exc:
+            print("Command used was: {0}".format(command))
+            raise Exception(exc.output)
+
+        if compress is True:
+            bgzip_path = ""
+            if self.bgzip_folder:
+                bgzip_path = "{0}/bgzip".format(self.bgzip_folder)
+            else:
+                bgzip_path = "bgzip"
+            compress_cmd="{0} -c {1} > {1}.gz".format(bgzip_path, outfile)
+            
+            try:
+                subprocess.check_output(compress_cmd, shell=True)
+            except subprocess.CalledProcessError as exc:
+                print("Command used was: {0}".format(compress_cmd))
+                raise Exception(exc.output)
+            
+            os.remove(outfile)
+            outfile = outfile+".gz"
+
+        return outfile

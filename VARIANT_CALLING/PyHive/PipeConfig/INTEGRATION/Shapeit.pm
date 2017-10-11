@@ -11,7 +11,7 @@ sub default_options {
     return {
         %{ $self->SUPER::default_options() },               # inherit other stuff from the base class
 
-        'pipeline_name' => 'run_snptools',       # name used by the beekeeper to prefix job names on the farm
+        'pipeline_name' => 'run_shapeit',       # name used by the beekeeper to prefix job names on the farm
 
         # runnable-specific parameters' defaults:
         'hostname'   => 'mysql-g1kdcc-public',
@@ -21,13 +21,12 @@ sub default_options {
         'pwd' => undef,
         'work_dir'    => undef,
         'final_dir' => undef,
-	'faix' => undef,
 	'bcftools_folder' => '/nfs/software/ensembl/RHEL7-JUL2017-core2/linuxbrew/bin/',
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
 	'scaffolded_samples' => undef, #PyHive.VcfIntegration.run_ligateHAPLOTYPES
-	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
-        'filelayout' => [ 'prefix','coords','type1','type2','extension'],
-	'newlayout' =>  [ 'prefix','coords','type1','type2'],
+	'tabix_folder' => '/nfs/software/ensembl/RHEL7-JUL2017-core2/linuxbrew/bin/',
+        'filelayout' => [ 'set','status','extension','compression'],
+	'newlayout' =>  [ 'set','status'],
 	'lsf_queue'   => 'production-rh7'
     };
 }
@@ -72,7 +71,7 @@ sub hive_meta_table {
     return {
         %{$self->SUPER::hive_meta_table},       # here we inherit anything from the base class
 
-        'hive_use_param_stack'  => 1,           # switch on the new param_stack mechanism
+        'hive_use_param_stack'  => 0,           # switch on the new param_stack mechanism
     };
 }
 
@@ -80,48 +79,99 @@ sub pipeline_analyses {
     my ($self) = @_;
     return [
 
-	{   -logic_name => 'find_files',
-            -module     => 'PyHive.Seed.SeedFile',
-	    -language   => 'python3',
-            -parameters => {
-                'filepath'     => '#filepath#'
-            },
-            -flow_into => {
-                1 => ['split_chr']
-            },
-        },
-
-	{   -logic_name => 'split_chr',
-            -module        => 'PyHive.Factories.ChrFactory',
-            -language   => 'python3',
-            -parameters    => {
-		'faix' => $self->o('faix'),
-            },
-	    -flow_into => {
-		2 => ['run_shapeit']
-	    }, 
-            -analysis_capacity => 1,
-        },
-
 	{   -logic_name => 'run_shapeit',
             -module     => 'PyHive.VcfIntegration.run_Shapeit',
             -language   => 'python3',
             -parameters => {
-		'duohmm' => 1,
+#		'duohmm' => 1,
 		'window' => 0.5,
 		'states' => 200,
-		'burn' => 10,
-		'prune' =>10,
-		'main' => 50,
-		'thread' => 20,
-                'input_bed'     => '#filepath#.#chr#',
-		'outprefix' => '#filepath#.#chr#',
+#		'burn' => 10,
+#		'prune' =>10,
+#		'main' => 50,
+		'burn' => 1,
+		'prune' =>1,
+		'main' => 1,
+		'thread' => 1,
+                'input_bed'     => '#input_bed#',
+		'input_gen'     => '#input_gen#',
+		'outprefix' => '#outprefix#',
                 'shapeit_folder' => $self->o('shapeit_folder'),
                 'work_dir' => $self->o('work_dir'),
                 'verbose' => 1
             },
-	    -rc_name => '20cpus'
-        }
+	    -rc_name => '20cpus',
+	    -flow_into => {
+		1 => {'convert2vcf' => {
+		        'hap_gz'=> '#hap_gz#', 
+			'hap_sample'=> '#hap_sample#',
+			'outprefix'=> '#outprefix#.phased'
+		      }
+		}
+	    },
+        },
+
+	{   -logic_name => 'convert2vcf',
+            -module        => 'PyHive.VcfIntegration.run_Shapeit_convert2vcf',
+            -language   => 'python3',
+            -parameters    => {
+		'hap_gz' => '#hap_gz#',
+		'hap_sample' => '#hap_sample#',
+		'shapeit_folder' => $self->o('shapeit_folder'),
+		'compress' => 1,
+		'verbose' => 1,
+		'work_dir' => $self->o('work_dir'),
+		'outprefix' => '#outprefix#'
+		
+            },
+	    -rc_name => '500Mb',
+	    -flow_into => {
+                1 => {'index_vcf' => {
+                        'filepath' => '#out_vcf#'
+                      }
+                }
+	    },
+        },
+
+	{   -logic_name => 'index_vcf',
+            -module        => 'PyHive.Vcf.VcfIxByTabix',
+            -language   => 'python3',
+            -parameters    => {
+                'filepath' => '#filepath#',
+                'tabix_folder' => $self->o('tabix_folder'),
+            },
+            -flow_into => {
+                1 => {'store_vcf_file' => {
+		        'filename' => '#filepath#',
+			'vcf_ix' => '#vcf_ix#'
+		      }
+		}
+            },
+            -analysis_capacity => 1,
+            -rc_name => '500Mb'
+        },
+
+	{   -logic_name => 'store_vcf_file',
+            -module        => 'PyHive.File.StoreFile',
+            -language   => 'python3',
+            -parameters    => {
+                'filename' => '#filename#',
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'type' => 'OMNI_SCAFFOLDED_VCF',
+                'final_dir' => $self->o('final_dir'),
+                'newlayout' => $self->o('newlayout'),
+                'add_date' => 'True',
+                'extension' => 'vcf',
+		'compression' => 'gz'
+		    
+            },
+	}
+
+	
 	];
 }
 

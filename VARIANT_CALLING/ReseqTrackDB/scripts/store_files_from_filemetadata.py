@@ -23,6 +23,7 @@ parser.add_argument('--pwd', type=str, help='PWD for the ReseqTrack DB' )
 parser.add_argument('--db', type=str, required=True, help='DB name in the ReseqTrack DB' )
 
 parser.add_argument('--f', type=str, required=True, help='File with data on the files that want to be stored' )
+parser.add_argument('--dry', type=str, required=False, default = 'True', help='Dry run' )
 '''
 file passsed using the --f arg should have the following format:
 
@@ -34,10 +35,18 @@ args = parser.parse_args()
 
 reseqdb = ReseqTrackDB(host=args.hostname,user=args.username,port=args.port,pwd=args.pwd,db=args.db)
 
+dry=None
+if args.dry=="True":
+    dry=True
+elif args.dry=="False":
+    dry=False
+else:
+    raise Exception("I do not recognize this args.dry option:{0}".format(args.dry))
+
 with open(args.f) as f:
     for line in f:
         line=line.rstrip('\n')
         bits=line.split('\t')
         f=File(path=bits[0],type=bits[2],size=bits[3],md5=bits[1],host_id=bits[4],withdrawn=bits[5],created=bits[6])
-        f.store(reseqdb)
+        f.store(reseqdb,dry=dry)
 
