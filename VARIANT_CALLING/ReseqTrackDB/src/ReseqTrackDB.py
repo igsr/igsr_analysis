@@ -504,7 +504,7 @@ class File(object):
         do_md5 : Optional, Default=False
                  Calculate the md5 on the file
         dry : Bool, Optional
-              If dry=True then it will not store the file in the DB. Default False
+              If dry=True then it will not store the file in the DB. Default True
 
         Returns
         -------

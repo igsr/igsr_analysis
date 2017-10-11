@@ -16,7 +16,7 @@ class VcfUtils(object):
     '''
 
 
-    def __init__(self, vcf=None, vcflist=None, bcftools_folder=None, gatk_folder=None, java_folder=None):
+    def __init__(self, vcf=None, vcflist=None, bcftools_folder=None, bgzip_folder=None, gatk_folder=None, java_folder=None):
         '''
         Constructor
 
@@ -28,6 +28,8 @@ class VcfUtils(object):
              List of dicts containing setname:vcf_paths (keys:values) pairs
         bcftools_folder : str, Optional
                          Path to folder containing the bcftools binary
+        bgzip_folder : str, Optional
+                       Path to folder containing the bgzip binary
         gatk_folder : str, Optional
                       Path to folder containing the jar file
         java_folder : str, Optional
@@ -47,6 +49,7 @@ class VcfUtils(object):
         self.vcf = vcf
         self.vcflist = vcflist
         self.bcftools_folder = bcftools_folder
+        self.bgzip_folder = bgzip_folder
         self.gatk_folder = gatk_folder
         self.java_folder = java_folder
 
@@ -160,7 +163,13 @@ class VcfUtils(object):
                 command += "{0} ".format(opt)
         
         if compress is True:
-            command += " | bgzip -c > {0}.gz".format(outfile)
+            bgzip_path = ""
+            if self.bgzip_folder:
+                bgzip_path = "{0}/bgzip".format(self.bgzip_folder)
+            else:
+                bgzip_path = "bgzip"
+
+            command += " | {0} -c > {1}.gz".format(bgzip_path, outfile)
         else :
             command += " -o {0}".format(outfile)
 

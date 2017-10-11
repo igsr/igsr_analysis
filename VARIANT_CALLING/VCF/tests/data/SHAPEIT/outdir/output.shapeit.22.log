@@ -1,17 +1,17 @@
 Mode    : Caller
-Options : --input-gen data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample --input-init data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample --input-scaffold data/SHAPEIT/scaffold.haps.gz data/SHAPEIT/scaffold.haps.sample --output-max data/outdir/test.haps.gz data/outdir/test.haps.sample --output-log data/outdir/test.log
+Options : --input-gen data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample --output-max data/SHAPEIT/outdir/output.shapeit.22.haps.gz data/SHAPEIT/outdir/output.shapeit.22.haps.sample --output-log data/SHAPEIT/outdir/output.shapeit.22.log
 Version : v2.r837
-Date    : 11/10/2017 14:13:25
+Date    : 11/10/2017 15:22:14
 
 MODE -call : GENOTYPE CALLING
   * Autosome (chr1 ... chr22)
   * Window-based model (SHAPEIT v2)
   * No reference panel used
   * Gibbs sampling
-  * Scaffold of haplotypes used
+  * No scaffold of haplotypes used
 
 Parameters :
-  * Seed : 1507727605
+  * Seed : 1507731734
   * Parallelisation: 1 threads
   * Ref allele is NOT aligned on the reference genome
   * MCMC: 35 iterations [7 B + 1 runs of 8 P + 20 M]
@@ -30,34 +30,14 @@ Checking missingness and MAF...
   * 0 SNPs with high rates of missing data (>5%)
   * 1356 monomorphic SNPs
 
-Reading sample list in [data/SHAPEIT/scaffold.haps.sample]
-  * 1092 samples with a scaffold out of 1092
-
-Reading haplotypes [data/SHAPEIT/scaffold.haps.gz]
-  * 106 mapped sites
-  * 4 unmapped sites
-  * 1 misaligned sites
-  * 0 multi match sites
-
 Building graphs ... 
 
   * 1092 graphs / 1092 segments / ~1356 SNPs per segment / 2184 transitions
   * 0 haploids / 1092 unrelateds / 0 duos / 0 trios
-  * 1092 individuals are scaffolded
   * 2184 founder haplotypes
 
 Sampling haplotypes
 
-
-Reading sample list in [data/SHAPEIT/input.shapeit.22.hap.sample]
-  * 1092 individuals included
-
-Reading site list and haplotypes in [data/SHAPEIT/input.shapeit.22.hap.gz]
-  * 1356 sites included
-
-Mapping sites and samples of the haplotype set
-  * 1356 sites found
-  * 0 sites not found
 
 Computing transition likelihoods in graphs
 
@@ -96,7 +76,6 @@ Pruning graphs
 
   * 1092 graphs / 1092 segments / ~1356 SNPs per segment / 2184 transitions
   * 0 haploids / 1092 unrelateds / 0 duos / 0 trios
-  * 1092 individuals are scaffolded
   * 2184 founder haplotypes
 
 Computing transition likelihoods in graphs
@@ -148,8 +127,8 @@ Normalising graphs
 Solving haplotypes
 
 
-Writing sample list in [data/outdir/test.haps.sample]
+Writing sample list in [data/SHAPEIT/outdir/output.shapeit.22.haps.sample]
 
-Writing site list and haplotypes in [data/outdir/test.haps.gz]
+Writing site list and haplotypes in [data/SHAPEIT/outdir/output.shapeit.22.haps.gz]
 
-Running time: 4 seconds
+Running time: 2 seconds
