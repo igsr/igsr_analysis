@@ -30,7 +30,7 @@ def test_runShapeit():
     except subprocess.CalledProcessError as exc:
         assert False
         raise Exception(exc.output)
-
+'''
 def test_runShapeit_woptions():
     shapeit_folder=pytest.config.getoption("shapeit_folder")
     hive_scripts= pytest.config.getoption("hive_lib")+"/scripts/"
@@ -49,3 +49,25 @@ def test_runShapeit_woptions():
     except subprocess.CalledProcessError as exc:
         assert False
         raise Exception(exc.output)
+
+def test_run_Shapeit_convert2vcf(clean_tmp):
+    shapeit_folder=pytest.config.getoption("shapeit_folder")
+    hive_scripts= pytest.config.getoption("hive_lib")+"/scripts/"
+    work_dir= "data/outdir"
+
+    command="perl {0}/standaloneJob.pl PyHive.VcfIntegration.run_Shapeit_convert2vcf -language python3 \
+    -shapeit_folder {1} -work_dir {2} -hap_gz {3} -hap_sample {4} -outprefix {5} \
+    -compress True -verbose True".format(hive_scripts, 
+                                         shapeit_folder, 
+                                         work_dir, 
+                                         'data/SHAPEIT/input.shapeit.22.hap.gz',
+                                         'data/SHAPEIT/input.shapeit.22.hap.sample',
+                                         'test.phased')
+
+    try:
+        subprocess.check_output(command, shell=True)
+        assert True
+    except subprocess.CalledProcessError as exc:
+        assert False
+        raise Exception(exc.output)
+'''

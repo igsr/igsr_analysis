@@ -23,7 +23,7 @@ def test_run_shapeit():
                           output_prefix='data/SHAPEIT/outdir/output.shapeit.22', verbose=True)
     assert os.path.exists('data/SHAPEIT/outdir/output.shapeit.22.haps.gz')
 
-def test_run_shapeit_w_options(clean_tmp):
+def test_run_shapeit_w_options():
 
     shapeit_o=Shapeit(shapeit_folder = pytest.config.getoption("--shapeit_folder"))
 
@@ -43,4 +43,14 @@ def test_run_shapeit_w_options(clean_tmp):
                           verbose=True,
                           **options)
     assert os.path.exists('data/SHAPEIT/outdir/output.shapeit.22.20000000.20100000.haps.gz')
-                          
+
+def test_run_shapeit_convert2vcf(clean_tmp):
+
+    shapeit_o=Shapeit(shapeit_folder = pytest.config.getoption("--shapeit_folder"))
+
+    out_vcf=shapeit_o.convert2vcf(input_prefix='data/SHAPEIT/outdir/output.shapeit.22.haps', 
+                                  output_prefix='data/SHAPEIT/outdir/output.shapeit.22.phased', 
+                                  compress=True, verbose=True, logfile='data/SHAPEIT.output.shapeit.22.phased.log')
+    
+    assert os.path.exists(out_vcf)
+
