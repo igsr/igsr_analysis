@@ -360,11 +360,10 @@ class VcfQC(object):
         if self.bcftools_folder:
             command += self.bcftools_folder+"/"
 
-        outpath = outpath+".stats"
-
         command += "bcftools stats {0} ".format(self.vcf)
 
         if region != None:
+            outpath = "{0}.{1}".format(outpath, region)
             command += "-r {0} ".format(region)
 
         if region_file != None:
@@ -373,6 +372,7 @@ class VcfQC(object):
         if filter_str != None:
             command += "-f {0} ".format(filter_str)
 
+        outpath = outpath+".stats"
         command += "> {0}".format(outpath)
 
         try:
