@@ -29,25 +29,22 @@ class StoreFile(eHive.BaseRunnable):
         
         self.warning('Storing file: %s'% self.param_required('filename'))
 
-        #store file
+        # First, rename the file
         newf=File(path=self.param_required('filename'),type=self.param_required('type'))
-        layout_dict=self.param_required('layout_dict')
+        oldlayot=self.param_required('oldlayout')
         newlayout=self.param_required('newlayout')
 
-        newpath=self.param_required('final_dir')+"/"
-        bits=[ layout_dict[i] for i in newlayout]
-
-        if self.param_required('add_date')=='True':
-            now = datetime.now()
-            bits.append(now.strftime('%Y%m%d') )
-        
-        bits.append(self.param_required('extension'))
-
+        compression=None
         if self.param('compression'):
-            bits.append(self.param('compression'))
+            compression= self.param('compression')
 
-        newpath+=".".join(bits)        
-        newf.move(self.param('reseqdb'),do_md5=True,newpath=newpath)
+        add_date=False
+        if self.param('add_date'):
+            add_date=True
+
+        newf.rename(filelayout= self.param_required('oldlayout'), newlayout= self.param_required('newlayout'),
+                    extension= self.param_required('extension'), add_date=add_date, compression= compression)
+
             
         self.param('stored_file', newf.path)
 
