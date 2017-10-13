@@ -14,23 +14,12 @@ class StoreFile(eHive.BaseRunnable):
             'compression' : None
         }
 
-    def fetch_input(self):
-        hostname=self.param_required('hostname')
-        username=self.param_required('username')
-        db=self.param_required('db')
-        port=self.param_required('port')
-        pwd=self.param_required('pwd')
-
-        reseqdb = ReseqTrackDB(host=hostname,user=username,port=port,pwd=pwd,db=db)
-
-        self.param('reseqdb', reseqdb)
-
     def run(self):
         
         self.warning('Storing file: %s'% self.param_required('filename'))
 
         # First, rename the file
-        newf=File(path=self.param_required('filename'),type=self.param_required('type'))
+        fileO=File(path=self.param_required('filename'),type=self.param_required('type'))
         oldlayot=self.param_required('oldlayout')
         newlayout=self.param_required('newlayout')
 
@@ -42,11 +31,25 @@ class StoreFile(eHive.BaseRunnable):
         if self.param('add_date'):
             add_date=True
 
-        newf.rename(filelayout= self.param_required('oldlayout'), newlayout= self.param_required('newlayout'),
-                    extension= self.param_required('extension'), add_date=add_date, compression= compression)
+        fileO.rename(filelayout= self.param_required('oldlayout'), newlayout= self.param_required('newlayout'),
+                     extension= self.param_required('extension'), add_date=add_date, compression= compression)
 
-            
-        self.param('stored_file', newf.path)
+        new_f=File(path=self.param_required('filename'),type=self.param_required('type'))
+
+        new_f.move(self.param('final_dir')+"/"+fileO.name)
+
+        if self.param_is_defined('store'):
+            hostname=self.param_required('hostname')
+            username=self.param_required('username')
+            db=self.param_required('db')
+            port=self.param_required('port')
+            pwd=self.param_required('pwd')
+
+            reseqdb = ReseqTrackDB(host=hostname,user=username,port=port,pwd=pwd,db=db)
+
+            new_f.store(reseqdb, do_md5= True, dry= False)
+
+        self.param('stored_file', new_f.path)
 
     def write_output(self):
         self.warning('Work is done!')
