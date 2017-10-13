@@ -25,13 +25,13 @@ def test_store(reseqtrackdb_object):
 
 def test_rename():
     '''
-    This test will rename the following file 'lc.bcftools.vcf.gz'
-    to lc.bcftools.20171010.sites.vcf.gz
+    This test will rename the File object with name= 'lc.bcftools.vcf.gz'
+    to name='lc.bcftools.20171010.sites.vcf.gz'
     '''
 
     f_obj = File(path='data/lc.bcftools.vcf.gz', type='TEST_TYPE')
 
     f_obj.rename(filelayout=['set','caller','extension','compression'], newlayout=['set','caller'],
-                 extension='sites.vcf', add_date=True, compression="gz")
+                 extension='sites.vcf', add_date=False, compression="gz")
 
-    assert f_obj.name=='lc.bcftools.20171010.sites.vcf.gz'
+    assert f_obj.name=='lc.bcftools.sites.vcf.gz'

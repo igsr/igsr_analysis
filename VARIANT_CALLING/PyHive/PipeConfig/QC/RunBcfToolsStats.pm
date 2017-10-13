@@ -23,7 +23,7 @@ sub default_options {
         'final_dir' => undef,
 	'filelayout' => [ 'dataset','caller','date','sample','status','extension','compression'],
         'newlayout' =>  [ 'dataset','caller','sample','status'],
-	'store_attributes' => 'False',
+	'store_attributes' => 'True',
 	'bcftools_folder' => '/nfs/software/ensembl/RHEL7-JUL2017-core2/linuxbrew/bin/',
         'lsf_queue'   => 'production-rh7',
     };
@@ -110,10 +110,14 @@ sub pipeline_analyses {
                 'pwd' => $self->o('pwd'),
 		'region' => '#chr#',
 		'verbose' => 'True',
+		'filter_str' => 'PASS,.',
 		'work_dir' => $self->o('work_dir'),
                 'store_attributes' => $self->o('store_attributes'),
                 'bcftools_folder' => $self->o('bcftools_folder')
             },
+	    -analysis_capacity => 1, #important to prevent concurrent access to the same VCF file
+            -rc_name => '500Mb'
+	    
 	}
 	];
 }

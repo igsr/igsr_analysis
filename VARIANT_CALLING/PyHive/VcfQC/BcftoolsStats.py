@@ -49,24 +49,26 @@ class BcftoolsStats(eHive.BaseRunnable):
             verbose=self.__str_to_bool(self.param('verbose'))
 
         params=dict()
+        attr_suffix=""
         stats=None
         if self.param_is_defined('region'):
+            attr_suffix="_{0}".format(self.param('region'))
             params['region']=self.param('region')
             
         if self.param_is_defined('filter_str'):
+            attr_suffix += "_filt"
             params['filter_str']=self.param('filter_str')
         
         stats=vcfQC.stats(outpath=outfile,**params,verbose=verbose)
 
         if self.param_required('store_attributes')=='True':
-            
-            #store attributes
+
+            fileO=reseqdb.fetch_file_by_url(filepath)
             for attr,value in stats.summary_numbers.items():
-                Attribute(table_name="file",other_id=fileO.dbID,name="STATS_"+attr,value=value).store(reseqdb)
-        
-                Attribute(table_name="file",other_id=fileO.dbID,name="STATS_ts_tv",value=stats.ts_tv).store(reseqdb)
-                Attribute(table_name="file",other_id=fileO.dbID,name="STATS_ts_tv_1stalt",value=stats.ts_tv_1stalt).store(reseqdb)
-                Attribute(table_name="file",other_id=fileO.dbID,name="STATS_no_singleton_snps",value=stats.no_singleton_snps).store(reseqdb)
+                Attribute(table_name="file",other_id=fileO.dbID,name="STATS{0}_{1}".format(attr_suffix,attr),value=value).store(reseqdb)
+            Attribute(table_name="file",other_id=fileO.dbID,name="STATS_ts_tv{0}".format(attr_suffix),value=stats.ts_tv).store(reseqdb)
+            Attribute(table_name="file",other_id=fileO.dbID,name="STATS_ts_tv_1stalt{0}".format(attr_suffix),value=stats.ts_tv_1stalt).store(reseqdb)
+            Attribute(table_name="file",other_id=fileO.dbID,name="STATS_no_singleton_snps{0}".format(attr_suffix),value=stats.no_singleton_snps).store(reseqdb)
 
         self.param('stats_file', stats.filename)
 

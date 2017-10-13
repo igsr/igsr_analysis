@@ -5,6 +5,7 @@ Created on 25 Oct 2016
 '''
 
 import os
+import re
 import subprocess
 import warnings
 import pdb
@@ -446,7 +447,7 @@ class File(object):
 
     def rename(self, filelayout, newlayout, extension, add_date=False, compression=None):
         '''
-        Change the name of this file
+        Change the name of this File object
 
         Parameters
         ----------
@@ -465,6 +466,10 @@ class File(object):
         compression: str, Optional
                      Add an extension to specify the compression type. For example, if compression='gz', then the new file name
                      will be lc.bcftools.20171010.sites.vcf.gz
+
+        Returns
+        -------
+        Nothing
         '''
         bits=self.name.split('.')
     
@@ -490,7 +495,7 @@ class File(object):
 
         (path,oldfilename)=os.path.split(self.path)
 
-        #modify 'path' to reflect the new name
+        #modify 'path' for self to reflect the new name
         self.path="{0}/{1}".format(path,newname)
         self.name=newname
 
@@ -547,7 +552,7 @@ class File(object):
 
         return self.path
 
-    def move(self, reseqdb, newpath, do_md5=False):
+    def move(self, newpath, do_md5= False):
         '''
         Move this File. It will move this file to a new location
 
@@ -572,24 +577,8 @@ class File(object):
 
         if self.created is None:
             self.created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+        
         self.path = newpath
-
-        # insert new File in the 'file' table
-        sql_insert_attr = "INSERT INTO file (file_id,name,md5,type,size,"\
-        "host_id,withdrawn,created) VALUES (NULL,'%s','%s','%s','%s','%s','%s','%s')"\
-         % (self.path, self.md5, self.type, self.size, self.host_id, self.withdrawn, self.created)
-
-        try:
-            cursor = reseqdb.db.cursor()
-            # Execute the SQL command
-            cursor.execute(sql_insert_attr)
-            # Commit your changes in the database
-            reseqdb.db.commit()
-        except pymysql.Error as exc:
-            print(exc[0], exc[1])
-            # Rollback in case there is any error
-            reseqdb.rollback()
 
         os.rename(oldpath, newpath)
 
@@ -739,7 +728,7 @@ class Attribute(object):
         self.other_id = other_id
         self.name = name
         if self.__numeric_type(value) == "int":
-            self.value = int(value)
+            self.value = int(float(value))
         elif self.__numeric_type(value) == "float":
             self.value = float(value)
         else:
