@@ -370,6 +370,7 @@ class VcfQC(object):
             command += "-R {0} ".format(region_file)
 
         if filter_str != None:
+            outpath = outpath+".filter_str"
             command += "-f {0} ".format(filter_str)
 
         outpath = outpath+".stats"

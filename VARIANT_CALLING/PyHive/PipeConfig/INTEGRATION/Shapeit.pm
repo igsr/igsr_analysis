@@ -25,8 +25,7 @@ sub default_options {
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
 	'scaffolded_samples' => undef, #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'tabix_folder' => '/nfs/software/ensembl/RHEL7-JUL2017-core2/linuxbrew/bin/',
-        'filelayout' => [ 'set','status','extension','compression'],
-	'newlayout' =>  [ 'set','status'],
+	'newlayout' =>  [ 'set'],
 	'lsf_queue'   => 'production-rh7'
     };
 }
@@ -79,20 +78,32 @@ sub pipeline_analyses {
     my ($self) = @_;
     return [
 
+	{   -logic_name => 'find_files',
+            -module     => 'Bio::EnsEMBL::Hive::RunnableDB::JobFactory',
+            -parameters => {
+                'inputcmd'     => 'cat #file#',
+                'column_names' => [ 'input_gen' ],
+            },
+            -flow_into => {
+                2 => {'run_shapeit' => {
+                    'input_gen' => '#input_gen#',
+		    'outprefix' => '#outprefix#'
+                      }
+                }
+            },
+        },
+
 	{   -logic_name => 'run_shapeit',
             -module     => 'PyHive.VcfIntegration.run_Shapeit',
             -language   => 'python3',
             -parameters => {
-#		'duohmm' => 1,
+		'duohmm' => 1,
 		'window' => 0.5,
 		'states' => 200,
-#		'burn' => 10,
-#		'prune' =>10,
-#		'main' => 50,
-		'burn' => 1,
-		'prune' =>1,
-		'main' => 1,
-		'thread' => 1,
+		'burn' => 10,
+		'prune' =>10,
+		'main' => 50,
+		'thread' => 20,
                 'input_bed'     => '#input_bed#',
 		'input_gen'     => '#input_gen#',
 		'outprefix' => '#outprefix#',
@@ -105,7 +116,7 @@ sub pipeline_analyses {
 		1 => {'convert2vcf' => {
 		        'hap_gz'=> '#hap_gz#', 
 			'hap_sample'=> '#hap_sample#',
-			'outprefix'=> '#outprefix#.phased'
+			'outprefix'=> '#outprefix#'
 		      }
 		}
 	    },
@@ -126,10 +137,63 @@ sub pipeline_analyses {
             },
 	    -rc_name => '500Mb',
 	    -flow_into => {
-                1 => {'index_vcf' => {
-                        'filepath' => '#out_vcf#'
+                1 => {'store_hapgz_file' => {
+                        'out_vcf' => '#out_vcf#',
+			'filename' => '#hap_gz#',
+			'hap_sample' => '#hap_sample#'
                       }
                 }
+	    },
+        },
+
+	{   -logic_name => 'store_hapgz_file',
+            -module        => 'PyHive.File.StoreFile',
+            -language   => 'python3',
+            -parameters    => {
+                'filename' => '#filename#',
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'type' => 'OMNI_SCAFFOLD_HAPGZ',
+                'final_dir' => $self->o('final_dir'),
+                'oldlayout' => ['set', 'extension', 'compression'],
+                'newlayout' => $self->o('newlayout'),
+		'extension' => 'phased.haps',
+                'add_date' => 'True',
+		'store' => 1,
+                'compression' => 'gz'
+            },
+	    -flow_into => {
+		1 => {'store_hapsample_file' => {
+		    'filename' => '#hap_sample#',
+		    'out_vcf' => '#out_vcf#'
+		      }
+		}
+	    },
+        },
+
+	{   -logic_name => 'store_hapsample_file',
+            -module        => 'PyHive.File.StoreFile',
+            -language   => 'python3',
+            -parameters    => {
+                'filename' => '#filename#',
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'type' => 'OMNI_SCAFFOLD_HAPSAMPLE',
+                'final_dir' => $self->o('final_dir'),
+                'oldlayout' => ['set', 'extension1', 'extension2'],
+                'newlayout' => $self->o('newlayout'),
+                'add_date' => 'True',
+		'store' => 1,
+                'extension' => 'phased.haps.sample',
+            },
+	    -flow_into => {
+		1 => {'index_vcf' => {'filepath' => '#out_vcf#'}}
 	    },
         },
 
@@ -161,16 +225,39 @@ sub pipeline_analyses {
                 'port' => $self->o('port'),
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
-                'type' => 'OMNI_SCAFFOLDED_VCF',
+                'type' => 'OMNI_SCAFFOLD_VCF',
                 'final_dir' => $self->o('final_dir'),
+		'oldlayout' => ['set', 'extension', 'compression'],
                 'newlayout' => $self->o('newlayout'),
                 'add_date' => 'True',
-                'extension' => 'vcf',
-		'compression' => 'gz'
-		    
+		'store' => 1,
+                'extension' => 'phased.vcf',
+		'compression' => 'gz'		    
             },
-	}
+	    -flow_into => {
+		1 => {'store_vcf_file_ix' => {'filename' => '#vcf_ix#'}}
+	    },	    
+	},
 
+	{   -logic_name => 'store_vcf_file_ix',
+            -module        => 'PyHive.File.StoreFile',
+            -language   => 'python3',
+            -parameters    => {
+                'filename' => '#filename#',
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'type' => 'OMNI_SCAFFOLD_VCF_IX',
+                'final_dir' => $self->o('final_dir'),
+                'oldlayout' => ['set', 'extension', 'compression', 'extension'],
+                'newlayout' => $self->o('newlayout'),
+                'add_date' => 'True',
+		'store' => 1,
+                'extension' => 'phased.vcf.gz.tbi',
+            },
+        },
 	
 	];
 }
