@@ -25,7 +25,7 @@ sub default_options {
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
 	'scaffolded_samples' => undef, #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'tabix_folder' => '/nfs/software/ensembl/RHEL7-JUL2017-core2/linuxbrew/bin/',
-	'newlayout' =>  [ 'set'],
+	'newlayout' =>  [ 'chip', 'chr'],
 	'lsf_queue'   => 'production-rh7'
     };
 }
@@ -60,7 +60,7 @@ sub resource_classes {
 	'15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
 	'20Gb' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
 	'10cpus' => { 'LSF' => '-n 10 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' },
-	'20cpus' => { 'LSF' => '-n 20 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' }
+	'20cpus' => { 'LSF' => '-n 20 -C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"' }
     };
 }
 
@@ -70,7 +70,7 @@ sub hive_meta_table {
     return {
         %{$self->SUPER::hive_meta_table},       # here we inherit anything from the base class
 
-        'hive_use_param_stack'  => 0,           # switch on the new param_stack mechanism
+        'hive_use_param_stack'  => 1,           # switch on the new param_stack mechanism
     };
 }
 
@@ -78,15 +78,17 @@ sub pipeline_analyses {
     my ($self) = @_;
     return [
 
-	{   -logic_name => 'find_files',
-            -module     => 'Bio::EnsEMBL::Hive::RunnableDB::JobFactory',
+	{   -logic_name => 'seed_pipeline',
+            -module     => 'PyHive.Seed.SeedShapeit',
+	    -language   => 'python3',
             -parameters => {
-                'inputcmd'     => 'cat #file#',
-                'column_names' => [ 'input_gen' ],
+                'filepath'     => '#file#',
+		'prefix' => 'OMNI'
+		    
             },
             -flow_into => {
-                2 => {'run_shapeit' => {
-                    'input_gen' => '#input_gen#',
+                1 => {'run_shapeit' => {
+                    'input_bed' => '#input_bed#',
 		    'outprefix' => '#outprefix#'
                       }
                 }
@@ -105,8 +107,8 @@ sub pipeline_analyses {
 		'main' => 50,
 		'thread' => 20,
                 'input_bed'     => '#input_bed#',
-		'input_gen'     => '#input_gen#',
-		'outprefix' => '#outprefix#',
+		'input_gen'     => undef,
+		'outprefix' => '#chro#',
                 'shapeit_folder' => $self->o('shapeit_folder'),
                 'work_dir' => $self->o('work_dir'),
                 'verbose' => 1
@@ -158,7 +160,7 @@ sub pipeline_analyses {
                 'pwd' => $self->o('pwd'),
                 'type' => 'OMNI_SCAFFOLD_HAPGZ',
                 'final_dir' => $self->o('final_dir'),
-                'oldlayout' => ['set', 'extension', 'compression'],
+                'oldlayout' => ['chip','chr','extension', 'compression'],
                 'newlayout' => $self->o('newlayout'),
 		'extension' => 'phased.haps',
                 'add_date' => 'True',
@@ -186,7 +188,7 @@ sub pipeline_analyses {
                 'pwd' => $self->o('pwd'),
                 'type' => 'OMNI_SCAFFOLD_HAPSAMPLE',
                 'final_dir' => $self->o('final_dir'),
-                'oldlayout' => ['set', 'extension1', 'extension2'],
+                'oldlayout' => ['chip','chr', 'extension1', 'extension2'],
                 'newlayout' => $self->o('newlayout'),
                 'add_date' => 'True',
 		'store' => 1,
@@ -227,7 +229,7 @@ sub pipeline_analyses {
                 'pwd' => $self->o('pwd'),
                 'type' => 'OMNI_SCAFFOLD_VCF',
                 'final_dir' => $self->o('final_dir'),
-		'oldlayout' => ['set', 'extension', 'compression'],
+		'oldlayout' => ['chip', 'chr', 'extension', 'compression'],
                 'newlayout' => $self->o('newlayout'),
                 'add_date' => 'True',
 		'store' => 1,
@@ -251,7 +253,7 @@ sub pipeline_analyses {
                 'pwd' => $self->o('pwd'),
                 'type' => 'OMNI_SCAFFOLD_VCF_IX',
                 'final_dir' => $self->o('final_dir'),
-                'oldlayout' => ['set', 'extension', 'compression', 'extension'],
+                'oldlayout' => ['chip', 'chr', 'extension', 'compression', 'extension'],
                 'newlayout' => $self->o('newlayout'),
                 'add_date' => 'True',
 		'store' => 1,

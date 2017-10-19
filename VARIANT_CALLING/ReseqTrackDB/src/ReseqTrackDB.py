@@ -110,7 +110,13 @@ class ReseqTrackDB(object):
                 raise Exception("No file retrieved"
                                 " from DB using url: %s" % url)
             for row in result_set:
-                return File(dbID=row['file_id'], path=row['name'], type=row['type'])
+                return File(dbID=row['file_id'], 
+                            path=row['name'], 
+                            type=row['type'],
+                            md5=row['md5'],
+                            host_id=row['host_id'],
+                            withdrawn=row['withdrawn'],
+                            created=row['created'])
             cursor.close()
             self.db.commit()
         except self.db.Error as err:
@@ -496,6 +502,8 @@ class File(object):
         (path,oldfilename)=os.path.split(self.path)
 
         #modify 'path' for self to reflect the new name
+        if path=='':
+            path= "."
         self.path="{0}/{1}".format(path,newname)
         self.name=newname
 
