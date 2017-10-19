@@ -12,6 +12,7 @@ class run_Shapeit(eHive.BaseRunnable):
             self.param('inputto', self.param('chunk')[2])
 
     def run(self):
+        self.warning('Outprefix: {0}'.format(self.param_required('outprefix')))
     
         vcf_g=Shapeit(shapeit_folder=self.param_required('shapeit_folder'))
 
@@ -20,7 +21,7 @@ class run_Shapeit(eHive.BaseRunnable):
             verbose=True
         else:
             verbose=False
-
+            
         outprefix=os.path.split(self.param_required('outprefix'))[1]
         outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
             
@@ -65,15 +66,16 @@ class run_Shapeit(eHive.BaseRunnable):
 
         outdict=None
         if self.param_is_defined('input_gen'):
-            outdict=shapeit_o.run_shapeit(input_gen= self.param_required('input_gen'),
+            outdict=shapeit_o.run_shapeit(input_gen= self.param('input_gen'),
                                           input_init= input_init,
                                           input_scaffold= input_scaffold,
                                           output_prefix= outprefix,
                                           duohmm= duohmm,
                                           verbose=verbose,
                                           **options_dict)
-        elif self.param_is_defined('input_bed'):
-            outdict=shapeit_o.run_shapeit(input_bed= self.param_required('input_bed'),
+
+        if self.param_is_defined('input_bed'):
+            outdict=shapeit_o.run_shapeit(input_bed= self.param('input_bed'),
                                           duohmm= duohmm,
                                           output_prefix= outprefix,
                                           verbose=verbose,
