@@ -5,7 +5,8 @@ import numpy as np
 import argparse
 from collections import defaultdict
 
-parser = argparse.ArgumentParser(description='This script will analyze the different attributes in the Attribute table that have been calculated using the PyHive::PipeConfig::QC::RunBcfToolsStats pipeline over a certain VCF file')
+parser = argparse.ArgumentParser(description='This script will analyze the different attributes in the Attribute table that have been calculated using the PyHive::PipeConfig::QC::RunBcfToolsStats pipeline over a certain VCF file. \
+This pipeline needs be run with the "filter_str" parameter of the PyHive.VcfQC.BcftoolsStats runnable')
 
 #RESEQTRACK DB conn params
 parser.add_argument('--hostname', type=str, required=True, help='Hostname for ReseqTrack DB' )
@@ -15,7 +16,8 @@ parser.add_argument('--pwd', type=str, help='PWD for the ReseqTrack DB' )
 parser.add_argument('--db', type=str, required=True, help='DB name in the ReseqTrack DB' )
 
 #files that will be analyzed
-parser.add_argument('-vcfl','--vcflist', nargs='+', help='<Required> Set flag', required=True)
+parser.add_argument('-vcfl','--vcflist', nargs='+', help='<Required> List of VCFs to analyze', required=True)
+parser.add_argument('-cnames','--columnames', nargs='+', help='<Required> List of columns used in the .csv and .png files', required=True)
 parser.add_argument('--chros_f', type=str, required=True, help='File with chros' )
 parser.add_argument('--outprefix', type=str, required=True, help='Prefix for output files' )
 
@@ -55,7 +57,7 @@ def get_DF(chr_list,outprefix,thedict):
             values=[chrom]+values
             data.append(values)
             
-    DF=pd.DataFrame(data,columns=['chrom','bcftools','GATK']).set_index('chrom')
+    DF=pd.DataFrame(data,columns=args.columnames).set_index('chrom')
     DF=DF.fillna(value=0)
     DF=DF.astype(float)
     ax=DF.plot(title=outprefix,rot=90,grid=True,figsize=(15,10))
