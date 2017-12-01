@@ -38,9 +38,10 @@ class GTConcordance(eHive.BaseRunnable):
         vcfQC = VcfQC(vcf=fileO.path,picard_folder=self.param_required('picard_folder'))
         gtp_con=vcfQC.calc_concordance(truth_vcf=self.param_required('truth_vcf'),truth_sample=sample,call_sample=sample,outprefix=sample+"_"+self.param_required('outprefix'),outdir=self.param_required('final_dir'),intervals=self.param('intervals'))
          
-        #store attributes
-        for attr,value in gtp_con.summary_metrics_snps.items():
-            Attribute(table_name="file",other_id=fileO.dbID,name="GT_CONC_"+sample+"_"+attr,value=value).store(reseqdb)
+        if self.param_is_defined('store_attributes'):
+            #store attributes
+            for attr,value in gtp_con.summary_metrics_snps.items():
+                Attribute(table_name="file",other_id=fileO.dbID,name="GT_CONC_"+sample+"_"+self.param_required('outprefix')+"_"+attr,value=value).store(reseqdb)
 
     def write_output(self):
         self.warning('Work is done!')
