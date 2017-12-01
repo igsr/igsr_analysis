@@ -1,4 +1,4 @@
-package PyHive::PipeConfig::CalcGtConcordance;
+package PyHive::PipeConfig::QC::CalcGtConcordance;
 
 use strict;
 use warnings;
@@ -23,9 +23,9 @@ sub default_options {
         'work_dir'    => undef,
         'final_dir' => undef,
 	'picard_folder' => '/homes/ernesto/bin/',
-	'truth_vcf' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENOTYPES/OMNI/REF_CORRECTED/ALL.chip.omni_broad_sanger_combined.20140818.snps.genotypes.hg38.vcf.ucsc.reheaded.refcorrected.final.bgz',
-	'intervals' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/varcall_chr20_20122016/Low_Cov/CONCORDANCE/TEST/ifile.ival',
-	'outprefix' => 'LCvsOMNI',
+	'truth_vcf' => undef,
+	'intervals' => undef,
+	'outprefix' => undef,
         'lsf_queue'   => 'production-rh7',
     };
 }
@@ -106,14 +106,14 @@ sub pipeline_analyses {
                 'port' => $self->o('port'),
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
+		'store_attributes' => 1,
                 'final_dir' => $self->o('final_dir'),
 		'picard_folder' => $self->o('picard_folder'),
 		'truth_vcf' => $self->o('truth_vcf'),
 		'intervals' => $self->o('intervals'),
 		'outprefix' => $self->o('outprefix'),		
             },
-            -analysis_capacity => 20,
-            -rc_name => '500Mb',
+            -rc_name => '2Gb',
         },
 	];
 }

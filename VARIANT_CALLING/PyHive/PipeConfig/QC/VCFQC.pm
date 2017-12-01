@@ -37,7 +37,7 @@ sub default_options {
 	'genome_alt_scaffolds_part3' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/VCF_QC/DEVEL_PIPELINE/SMALL_INPUT/WGS_LC_bcftools/FILES/alt_scaffolds.part3.genome', # for running PyHive.VcfQC.PlotVariantDensity
 	'chr_file' => undef, # for running PyHive.VcfQC.ChrosInVcf
 	'store_attributes' => 'False',
-	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.3/',
+	'bcftools_folder' => '/nfs/software/ensembl/RHEL7-JUL2017-core2/linuxbrew/bin/',
 	'bedtools_folder' => '/nfs/gns/homes/ernesto/bin/bedtools-2.25.0/bin/',
 	'region_bed' => undef, #for running PyHive.VcfQC.VariantsInRegions
         'lsf_queue'   => 'production-rh7',

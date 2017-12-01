@@ -11,7 +11,7 @@ sub default_options {
     return {
         %{ $self->SUPER::default_options() },               # inherit other stuff from the base class
 
-        'pipeline_name' => 'run_filter_freebayes',       # name used by the beekeeper to prefix job names on the farm
+        'pipeline_name' => 'run_bcftools_stats_perchr',       # name used by the beekeeper to prefix job names on the farm
 
         # runnable-specific parameters' defaults:
         'hostname'   => 'mysql-g1kdcc-public',
