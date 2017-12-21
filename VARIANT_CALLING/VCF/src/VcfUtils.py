@@ -97,7 +97,7 @@ class VcfUtils(object):
         return outfile
 
     def combine(self, labels, reference, outprefix, compress=False, outdir=None, ginterval=None, 
-                genotypemergeoption=None, options=None):
+                genotypemergeoption=None, filteredrecordsmergetype=None, options=None):
         '''
         Combine VCFs using GATK's CombineVariants into a single VCF
 
@@ -119,6 +119,9 @@ class VcfUtils(object):
         genotypemergeoption : str, optional
                     Determines how we should merge genotype records for samples shared across the ROD files. 
                     Possible values are: UNIQUIFY, PRIORITIZE, UNSORTED, REQUIRE_UNIQUE
+        filteredrecordsmergetype : str, optional
+                    Determines how we should handle records seen at the same site in the VCF, but with different FILTER fields
+                    Possible values are : KEEP_IF_ANY_UNFILTERED, KEEP_IF_ANY_UNFILTERED, KEEP_UNCONDITIONAL
         options : list, optional
                    List of options. i.e. ['-env','--filteredAreUncalled']
     
@@ -153,10 +156,13 @@ class VcfUtils(object):
         command += "GenomeAnalysisTK.jar -T CombineVariants {0} -R {1} ".format(variants_str, reference)
 
         if ginterval is not None:
-            command += "-L {0}".format(ginterval)
+            command += "-L {0} ".format(ginterval)
         
         if genotypemergeoption is not None:
             command += "--genotypemergeoption {0} ".format(genotypemergeoption)
+
+        if filteredrecordsmergetype is not None:
+            command += "--filteredrecordsmergetype {0} ".format(filteredrecordsmergetype)
 
         if options:
             for opt in options:
@@ -174,6 +180,7 @@ class VcfUtils(object):
             command += " -o {0}".format(outfile)
 
         try:
+            print(command)
             subprocess.check_output(command, shell=True)
         except subprocess.CalledProcessError as exc:
             print("Something went wrong while running CombineVariants.\n"
