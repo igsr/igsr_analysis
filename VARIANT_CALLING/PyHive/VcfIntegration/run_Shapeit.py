@@ -1,6 +1,7 @@
 import eHive
 import os
 import pdb
+import re
 from VCFIntegration.Shapeit import Shapeit
 
 class run_Shapeit(eHive.BaseRunnable):
@@ -8,8 +9,11 @@ class run_Shapeit(eHive.BaseRunnable):
     
     def fetch_input(self):
         if self.param_is_defined('chunk'):
+            self.param('chr', self.param('chunk')[0])
             self.param('inputfrom', self.param('chunk')[1])
             self.param('inputto', self.param('chunk')[2])
+        
+        
 
     def run(self):
         self.warning('Outprefix: {0}'.format(self.param_required('outprefix')))
@@ -23,6 +27,11 @@ class run_Shapeit(eHive.BaseRunnable):
             verbose=False
             
         outprefix=os.path.split(self.param_required('outprefix'))[1]
+        '''
+        outprefix="{0}/{1}.{2}.{3}.{4}".format(self.param_required('work_dir'),outprefix,
+                                               self.param('chr'),self.param('inputfrom'),
+                                               self.param('inputto'))
+        '''
         outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
             
         options_dict={}
@@ -33,6 +42,8 @@ class run_Shapeit(eHive.BaseRunnable):
             options_dict['thread']=self.param('thread')
         if self.param_is_defined('window'):
             options_dict['window']=self.param('window')
+        if self.param_is_defined('states'):
+            options_dict['states']=self.param('states')
         if self.param_is_defined('statesrandom'):
             options_dict['states-random']=self.param('statesrandom')
         if self.param_is_defined('burn'):
@@ -54,13 +65,23 @@ class run_Shapeit(eHive.BaseRunnable):
         if self.param_is_defined('duohmm'):
             duohmm=True
 
+        input_gen= None
+        if self.param_is_defined('input_gen'):
+            input_gen= self.param('input_gen')
+
         input_init= None
         if self.param_is_defined('input_init'):
             input_init= self.param('input_init')
 
         input_scaffold= None
-        if self.param_is_defined('input_scaffold'):
-            input_scaffold= self.param('input_scaffold')
+        if self.param_is_defined('input_scaffold_prefix'):
+            chrom=re.sub('chr','',self.param('chr'))
+            input_scaffold= "{0}.{1}.phased.haps {0}.{1}.phased.sample".format(self.param('input_scaffold_prefix'), chrom)
+
+        input_map= None
+        if self.param_is_defined('gmap_folder'):
+            gmap_file= "{0}/{1}.gmap.gz".format(self.param('gmap_folder'), self.param('chr'))
+            input_map= gmap_file
 
         shapeit_o=Shapeit(shapeit_folder = self.param_required('shapeit_folder'))
 
@@ -72,19 +93,20 @@ class run_Shapeit(eHive.BaseRunnable):
                                           output_prefix= outprefix,
                                           duohmm= duohmm,
                                           verbose=verbose,
+                                          input_map=input_map,
                                           **options_dict)
 
         if self.param_is_defined('input_bed'):
             outdict=shapeit_o.run_shapeit(input_bed= self.param('input_bed'),
                                           duohmm= duohmm,
                                           output_prefix= outprefix,
+                                          input_map=input_map,
                                           verbose=verbose,
                                           **options_dict)
         self.param('outdict', outdict)
        
     def write_output(self):
         self.warning('Work is done!')
-
         outdict= self.param('outdict')
         self.dataflow( {
             'hap_gz' : outdict['hap_gz'],

@@ -14,6 +14,11 @@ class SeedVCFIntegration(eHive.BaseRunnable):
         with open(filepath) as f:
             for line in f:
                 line=line.rstrip('\n')
+                if len(line.split('\t'))!=2:
+                    print(line.split('\t'))
+                    print("Error getting the right label/file pair for line:\n{0}".format(line))
+                    print("Check if there is any extra tab space between label/file\n")
+                    raise Exception()
                 flist.append((line.split('\t')[0],line.split('\t')[1]))
         
         self.param('flist', flist)

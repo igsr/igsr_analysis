@@ -30,10 +30,10 @@ class run_prepareGenFromBeagle4(eHive.BaseRunnable):
     def write_output(self):
         self.warning('Work is done!')
         outdict= self.param('outdict')
-        self.dataflow( {'gen_gz' : outdict['gen_gz'] }, 1)
-        self.dataflow( {'gen_sample' : outdict['gen_sample'] }, 1)
-        self.dataflow( {'hap_gz' : outdict['hap_gz'] }, 1)
-        self.dataflow( {'hap_sample' : outdict['hap_sample'] }, 1)
+        self.dataflow( {
+            'input_gen' : "{0} {1}".format(outdict['gen_gz'], outdict['gen_sample']),
+            'input_init' : "{0} {1}".format(outdict['hap_gz'],outdict['hap_sample'])}, 
+            1)
 
 
 
