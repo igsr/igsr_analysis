@@ -4,6 +4,7 @@ Created on 24 Apr 2017
 @author: ernesto
 '''
 import pdb
+import re
 import subprocess
 
 class BEDTools(object):
@@ -23,7 +24,7 @@ class BEDTools(object):
 
         self.bedtools_folder = bedtools_folder
 
-    def make_windows(self, w, g, s=None, chrom=None, verbose=False):
+    def make_windows(self, w, g, s=None, region=None, verbose=False):
         '''
         This method will make windows from a genome file by using 'bedtools makewindows'
 
@@ -49,8 +50,8 @@ class BEDTools(object):
            chr1    400     1400
            chr1    600     1600
 
-        chrom : str, Optional
-                If specified, then make windows only for the specified chrom
+        region : str, chr1:1000-2000 or chr1 are valid region definitions.Optional
+                If specified, then make windows only for the specified region
         verbose : boolean, optional.
                   Default=False
 
@@ -81,9 +82,18 @@ class BEDTools(object):
         except subprocess.CalledProcessError as exc:
             raise Exception(exc.output)
 
-        if chrom is not None:
-            newcoordlist=[c for c in coordlist if c[0]==chrom]
-            return newcoordlist
+        if region is not None:
+            p=re.compile("(chr[1-22XYMT]|[1-22XYMT]):?(\d+)*-*(\d+)*")
+            m=p.match(region)
+            chrom=m.group(1)
+            start=m.group(2)
+            end=m.group(3)
+            chro_coordlist=[c for c in coordlist if c[0]==chrom]
+            if start is not None and end is not None:
+                region_coordlist=[c for c in chro_coordlist if c[1]>=start and c[2]<=end]
+                return region_coordlist
+            else:
+                return chro_coordlist
         else:
             return coordlist
 

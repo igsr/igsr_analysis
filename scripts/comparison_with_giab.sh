@@ -1,10 +1,10 @@
-initial_file="/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/FILTERING/05_2017/EX_DIR/WHOLE_GENOME/final_dir/FILTERING_ANALYSIS/GIAB/POST_FILTER/ex_bams.bcftools.20170616.NA12878.onlyvariants.filt.vcf.gz"
+initial_file="/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/FILTERING/05_2017/LC_DIR/GATK/WHOLE_GENOME/final_dir/FILTERING_ANALYSIS/GIAB/POSTFILTER/INCLUDING_OTHER_TRANCHES/lc_bams.gatk.20170720.filt.NA12878.onlyvariants.exp.vcf.gz"
 
-prefix="ex_bams.bcftools.20170223.NA12878"
+prefix="lc_bams.gatk.20170720.filt.NA12878.exp"
 non_valid_regions="/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed"
-giab_snps="/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/ANALYSIS_READY/NA12878.giab.SNP.non_valid.exome.vcf.gz"
-giab_indels="/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/ANALYSIS_READY/NA12878.giab.INDEL.non_valid.exome.vcf.gz"
-working_dir="/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/FILTERING/05_2017/EX_DIR/WHOLE_GENOME/final_dir/FILTERING_ANALYSIS/GIAB/POST_FILTER/NOT_IN_HIGHCONF"
+giab_snps="/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/ANALYSIS_READY/NA12878.giab.SNP.non_valid.vcf.gz"
+giab_indels="/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/ANALYSIS_READY/NA12878.giab.INDEL.non_valid.vcf.gz"
+working_dir="/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/FILTERING/05_2017/LC_DIR/GATK/WHOLE_GENOME/final_dir/FILTERING_ANALYSIS/GIAB/POSTFILTER/INCLUDING_OTHER_TRANCHES/"
 
 #select only the desired chros and drop genotypes if present and select PASS if filtered, also select only variants
 ~/bin/bcftools-1.6/bcftools view -c1 -G ${initial_file} -f.,PASS -r chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX -o ${prefix}.sites.vcf.gz -Oz

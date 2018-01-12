@@ -25,17 +25,28 @@ sub default_options {
 	'samplefile' => undef,
 	'newheader' => undef,
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
-	'bcftools_folder' => '~/bin/bcftools/',
+	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'beagle_folder' => '~/bin/beagle/',
 	'gatk_folder' => '~/bin/GATK/',
+	'ginterval' => 'chr20', # if defined, then do the integration for a certain genomic region
+	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
 	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
 	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
+	'input_scaffold_prefix' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/OMNI/PHASING/ALL.chip.omni_broad_sanger_combined.20140818.refcorr.biallelic.snps', # SHAPEIT. Specify here the prefix for the scaffolded microarray genotypes
+	'inputthr' => 1.0, # SHAPEIT
+	'window' => 0.1, # SHAPEIT
+	'states' => 400, # SHAPEIT
+	'statesrandom' => 200, # SHAPEIT
+	'burn' => 0, # SHAPEIT
+	'run' => 12, # SHAPEIT
+	'prune' => 4, # SHAPEIT
+	'main' => 20, # SHAPEIT
 	'window_bglchnks' => 700, # makeBGLCHUNKS
-	'overlap_bglchnks' => 200, #makeBGLCHUNKS
+	'overlap_bglchnks' => 200, # makeBGLCHUNKS
 	'genome_file' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/DEVEL/INTEGRATION_PIPELINE/chr20.genome', #
-	'window_coordfactory' => '1400000', #PyHive.Factories.CoordFactory
+	'window_coordfactory' =>  '1400000', #PyHive.Factories.CoordFactory
 	'offset_coordfactory' => '200000', #PyHive.Factories.CoordFactory
 	'scaffolded_samples' => '', #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
@@ -110,14 +121,17 @@ sub pipeline_analyses {
             -parameters => {
                 'flist'     => '#flist#',
 		'reference' => $self->o('reference'),
+		'ginterval' => $self->o('ginterval'),
 		'bcftools_folder' => $self->o('bcftools_folder'),
 		'gatk_folder' => $self->o('gatk_folder'),
-		'outprefix' => 'combined.lc1ex.filt.NA21090.chr20_1000000_2000000',
+		'outprefix' => 'combined.all.chr20.10e620e6',
 		'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '12Gb',
 	    -flow_into => {
 		1 => {'select_biallelic_snps' => {'filepath' => '#out_vcf#'}}
 	    }
+	    
         },
 
 	{   -logic_name => 'select_biallelic_snps',
@@ -210,8 +224,7 @@ sub pipeline_analyses {
                 'column_names' => [ 'chro' ],
             },
 	    -flow_into => {
-		'2->A' => [ 'run_SNPTools_prob2vcf' ],
-                'A->1' => [ 'merge_vcf' ]
+		2 => [ 'run_SNPTools_prob2vcf' ]
             },
         },
 
@@ -290,7 +303,7 @@ sub pipeline_analyses {
 	    -flow_into => {
 		1 => [ '?accu_name=allbeagle_files&accu_address=[]&accu_input_variable=vcf_f'],
 	    },
-	    -rc_name => '2Gb'
+	    -rc_name => '5Gb'
         },
 
 	{   -logic_name => 'prepareGen_from_Beagle',
@@ -304,7 +317,11 @@ sub pipeline_analyses {
                 'verbose' => 1
             },
 	    -flow_into => {
-		1 => ['chunk_factory2']
+		1 => {'chunk_factory2' => {
+		    'input_gen'=> '#input_gen#',
+                    'input_init' => '#input_init#'		      
+		      },
+		}
  	    },
             -rc_name => '500Mb'
         },
@@ -322,11 +339,14 @@ sub pipeline_analyses {
             -rc_name => '500Mb',
 	    -flow_into => {
 		'2->A' => {'run_shapeit' => {
-                    'outfiles'=> '#outfiles#',
-                    'region_chunk' => '#chunk#'
+                    'gen_gz'=> '#gen_gz#',
+		    'gen_sample' => '#gen_sample#',
+		    'hap_gz' => '#hap_gz#',
+		    'hap_sample' => '#hap_sample#',
+                    'chunk' => '#chunk#'
 			   }
 		},
-		'A->1' => { 'ligateHAPLOTYPES' => {'vcf_file' => '#filepath#'}}
+		'A->1' => { 'run_ligate_haplotypes' => {'vcf_file' => '#filepath#'}}
 	    },
         },
 
@@ -335,11 +355,23 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'filepath'     => '#filepath#',
+		'gmap_folder' => $self->o('gmap_folder'),
                 'shapeit_folder' => $self->o('shapeit_folder'),
+		'inputthr' => $self->o('inputthr'),
+		'window' => $self->o('window'),
+		'states' => $self->o('states'),
+		'statesrandom' => $self->o('statesrandom'),
+		'burn' => $self->o('burn'),
+		'run' => $self->o('run'),
+		'prune' => $self->o('prune'),
+		'main' => $self->o('main'),
+		'outprefix' =>  '#vcf_file#',
+		'input_scaffold_prefix' => $self->o('input_scaffold_prefix'),
                 'newheader' => $self->o('newheader'),
                 'work_dir' => $self->o('work_dir'),
                 'samplefile' => '#samplefile#'
             },
+	    -rc_name => '5Gb',
 	    -flow_into => {
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=hap_gz']
 	    },

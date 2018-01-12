@@ -23,9 +23,14 @@ def test_make_windows(bedtools_object):
     assert coordlist[2]==['chr1', '200000000', '248956422']
 
 def test_make_windows_with_chr(bedtools_object):
-    coordlist=bedtools_object.make_windows(g='data/chr1.genome', chrom='chr1', w=100000000)
+    coordlist=bedtools_object.make_windows(g='data/chr1.genome', region='chr1', w=100000000)
 
     assert coordlist[0]==['chr1', '0', '100000000']
     assert coordlist[1]==['chr1', '100000000', '200000000']
     assert coordlist[2]==['chr1', '200000000', '248956422']
+
+def test_make_windows_with_region(bedtools_object):
+    coordlist=bedtools_object.make_windows(g='data/chr1.genome', region='chr1:100000000-200000000', w=100000000)
+
+    assert coordlist[0]==['chr1', '100000000', '200000000']
 
