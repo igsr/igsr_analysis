@@ -83,6 +83,9 @@ class Shapeit(object):
         if input_scaffold is not None:
             command += "--input-scaffold {0} ".format(input_scaffold)
 
+        if input_map is not None:
+            command += "--input-map {0} ".format(input_map)
+
         command +="--output-max {0}.haps.gz {0}.haps.sample --output-log {0}.log".format(output_prefix)
 
         if duohmm is True:
@@ -95,6 +98,7 @@ class Shapeit(object):
             print("Command used was: %s" % command)
              
         try:
+            print(command)
             subprocess.check_output(command, shell=True)
         except subprocess.CalledProcessError as exc:
             print("Command used was: {0}".format(command))
