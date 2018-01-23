@@ -33,7 +33,7 @@ if __name__ == '__main__':
     bam = BamQC(args.filename,args.samtools)
     
     stats=bam.get_simple_stats()
-    for k,v in stats.items(): print(k+":"+v)
+    for k,v in stats.items(): print(k+":"+str(v))
     cov_list=bam.run_samtools_depth(chros=list_chros)
     aggr_cov=bam.aggregate_stats(cov_list)
     print("contig: %s" % aggr_cov.contig)
