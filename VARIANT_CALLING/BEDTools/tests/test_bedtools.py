@@ -34,3 +34,7 @@ def test_make_windows_with_region(bedtools_object):
 
     assert coordlist[0]==['chr1', '100000000', '200000000']
 
+def test_make_windows_with_region(bedtools_object):
+    coordlist=bedtools_object.make_windows(g='data/chr1.genome', region='chr1:10000000-11000000', w=1400000, s=1200000)
+    assert coordlist[0]==['chr1', '9600000', '11000000']
+
