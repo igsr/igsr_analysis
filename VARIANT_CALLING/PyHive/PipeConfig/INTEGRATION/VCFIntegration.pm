@@ -47,8 +47,9 @@ sub default_options {
 	'overlap_bglchnks' => 200, # makeBGLCHUNKS
 	'genome_file' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/DEVEL/INTEGRATION_PIPELINE/chr20.genome', #
 	'window_coordfactory' =>  '1400000', #PyHive.Factories.CoordFactory
-	'offset_coordfactory' => '200000', #PyHive.Factories.CoordFactory
-	'scaffolded_samples' => '', #PyHive.VcfIntegration.run_ligateHAPLOTYPES
+	'offset_coordfactory' => '1200000', #PyHive.Factories.CoordFactory
+	'outprefix' => 'combined.all.chr20', # Prefix used for all output files
+	'scaffolded_samples' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/SEQUENCING_GENOTYPES/ONLY_ONESAMPLE/scaffolded_samples.txt', #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
 	'store_attributes' => 'False',
         'filelayout' => [ 'prefix','coords','type1','type2','extension'],
@@ -124,7 +125,7 @@ sub pipeline_analyses {
 		'ginterval' => $self->o('ginterval'),
 		'bcftools_folder' => $self->o('bcftools_folder'),
 		'gatk_folder' => $self->o('gatk_folder'),
-		'outprefix' => 'combined.all.chr20.10e620e6',
+		'outprefix' => $self->o('outprefix'),
 		'work_dir' => $self->o('work_dir')
             },
 	    -rc_name => '12Gb',
@@ -318,6 +319,7 @@ sub pipeline_analyses {
             },
 	    -flow_into => {
 		1 => {'chunk_factory2' => {
+		    'vcf_file'=> '#vcf_file#',
 		    'input_gen'=> '#input_gen#',
                     'input_init' => '#input_init#'		      
 		      },
@@ -332,6 +334,7 @@ sub pipeline_analyses {
             -parameters => {
                 'bedtools_folder' => $self->o('bedtools_folder'),
 		'genome_file' => $self->o('genome_file'),
+		'region' => 'chr20:10000000-11000000',
                 'window' => $self->o('window_coordfactory'),
                 'offset' => $self->o('offset_coordfactory'),
                 'verbose' => 1
@@ -346,7 +349,7 @@ sub pipeline_analyses {
                     'chunk' => '#chunk#'
 			   }
 		},
-		'A->1' => { 'run_ligate_haplotypes' => {'vcf_file' => '#filepath#'}}
+		'A->1' => { 'run_ligate_haplotypes' => {'vcf_file' => '#vcf_file#'}}
 	    },
         },
 
@@ -382,7 +385,8 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters    => {
 		'hapgz_list' => '#allchunks_files#',
-		'vcf_f' => '',
+		'vcf_f' => '#vcf_file#',
+		'outprefix' => '#vcf_file#.phased',
 		'scaffolded_samples' => $self->o('scaffolded_samples'),
                 'work_dir' => $self->o('work_dir'),
                 'ligateHAPLOTYPES_folder' => $self->o('ligateHAPLOTYPES_folder'),

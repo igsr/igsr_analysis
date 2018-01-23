@@ -83,14 +83,14 @@ class BEDTools(object):
             raise Exception(exc.output)
 
         if region is not None:
-            p=re.compile("(chr[1-22XYMT]|[1-22XYMT]):?(\d+)*-*(\d+)*")
+            p=re.compile("(chr[0-9XYMT]*|[0-9XYMT]*):?(\d+)*-*(\d+)*")
             m=p.match(region)
             chrom=m.group(1)
-            start=m.group(2)
-            end=m.group(3)
             chro_coordlist=[c for c in coordlist if c[0]==chrom]
-            if start is not None and end is not None:
-                region_coordlist=[c for c in chro_coordlist if c[1]>=start and c[2]<=end]
+            if m.group(2) is not None and m.group(3) is not None:
+                start=int(m.group(2))
+                end=int(m.group(3))
+                region_coordlist=[c for c in chro_coordlist if ((int(c[1])>=start and int(c[2])<=end) or (int(c[1])<start and int(c[2])>start) or (int(c[1])<=end and int(c[2])>=end))]
                 return region_coordlist
             else:
                 return chro_coordlist
