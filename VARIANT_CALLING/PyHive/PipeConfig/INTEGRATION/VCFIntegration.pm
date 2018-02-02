@@ -46,8 +46,8 @@ sub default_options {
 	'window_bglchnks' => 700, # makeBGLCHUNKS
 	'overlap_bglchnks' => 200, # makeBGLCHUNKS
 	'genome_file' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/DEVEL/INTEGRATION_PIPELINE/chr20.genome', #
-	'window_coordfactory' =>  '1400000', #PyHive.Factories.CoordFactory
-	'offset_coordfactory' => '1200000', #PyHive.Factories.CoordFactory
+	'window_coordfactory' =>  undef, #PyHive.Factories.CoordFactory
+	'offset_coordfactory' => undef, #PyHive.Factories.CoordFactory
 	'outprefix' => 'combined.all.chr20', # Prefix used for all output files
 	'scaffolded_samples' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/SEQUENCING_GENOTYPES/ONLY_ONESAMPLE/scaffolded_samples.txt', #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
@@ -325,7 +325,7 @@ sub pipeline_analyses {
 		      },
 		}
  	    },
-            -rc_name => '500Mb'
+            -rc_name => '5Gb'
         },
 
 	{   -logic_name => 'chunk_factory2',
@@ -334,7 +334,7 @@ sub pipeline_analyses {
             -parameters => {
                 'bedtools_folder' => $self->o('bedtools_folder'),
 		'genome_file' => $self->o('genome_file'),
-		'region' => 'chr20:10000000-11000000',
+		#'region' => 'chr20:10000000-11000000',
                 'window' => $self->o('window_coordfactory'),
                 'offset' => $self->o('offset_coordfactory'),
                 'verbose' => 1
@@ -374,7 +374,7 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir'),
                 'samplefile' => '#samplefile#'
             },
-	    -rc_name => '5Gb',
+	    -rc_name => '15Gb',
 	    -flow_into => {
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=hap_gz']
 	    },
@@ -393,7 +393,7 @@ sub pipeline_analyses {
                 'verbose' => 'True'
             },
             -analysis_capacity => 1,
-            -rc_name => '500Mb'
+            -rc_name => '2Gb'
         }
 	];
 }

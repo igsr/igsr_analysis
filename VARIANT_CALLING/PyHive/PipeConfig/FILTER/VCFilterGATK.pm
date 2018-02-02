@@ -1,4 +1,4 @@
-package PyHive::PipeConfig::VCFilterGATK;
+package PyHive::PipeConfig::FILTER::VCFilterGATK;
 
 use strict;
 use warnings;
@@ -23,13 +23,13 @@ sub default_options {
         'work_dir'    => undef,
         'final_dir' => undef,
 	'store_attributes' => 'False',
-	'newlayout' => [ 'dataset','caller'],
-	'filelayout' => [ 'dataset','caller','date','extension','compression'],
-	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.3/',
-	'bgzip_folder' => '/nfs/software/ensembl/RHEL7/linuxbrew/bin/',
-	'tabix_folder' => '/nfs/software/ensembl/RHEL7/linuxbrew/bin/',
+	'newlayout' => undef, # new layout used for the generated files. i.e. [ 'dataset','caller']
+	'filelayout' => undef, # layout of file that is analyzed by the pipeline. i.e. [ 'dataset','caller','date','extension','compression']
+	'bcftools_folder' => undef,
+	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
+	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'exclude_bed' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed',
-	'faix' => undef,
+	'faix' => undef, # faix file with chros that will be analyzed by the pipeline
 	'bcftools_stats_region' => undef, # Define what chro will be analyzed by bcftools stats
 	'picard_folder' => '/homes/ernesto/bin', # CollectVariantCallingMetrics
 	'truth_vcf' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/dbsnp_146.hg38.vcf.gz', # CollectVariantCallingMetrics
@@ -366,7 +366,7 @@ sub pipeline_analyses {
                 'reference' => $self->o('reference'),
 		'resources' => $self->o('resources_snps'),
 		'tranches' => $self->o('tranches'),
-#		'intervals' => 'chr1:1-10000000',
+		'intervals' => 'chr20:10000000-20000000',
 		'mode' => 'SNP'
             },
 	    -flow_into => {
@@ -424,10 +424,10 @@ sub pipeline_analyses {
                 'reference' => $self->o('reference'),
                 'resources' => $self->o('resources_indels'),
 		'tranches' => $self->o('tranches'),
+		'intervals' => 'chr20:10000000-20000000',
                 'mode' => 'INDEL',
                 'annotations' => $self->o('indels_annotations'),
                 'max_gaussians' => 4,
-#		'intervals' => 'chr1:1-10000000'
 	    },
 	    -flow_into => {
 		1 => {
