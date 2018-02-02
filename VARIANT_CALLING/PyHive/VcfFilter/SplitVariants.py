@@ -1,5 +1,6 @@
 import eHive
 import os
+import pdb
 from VCFfilter.BCFTools import BCFTools
 
 class SplitVariants(eHive.BaseRunnable):

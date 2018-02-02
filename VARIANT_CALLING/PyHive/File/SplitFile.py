@@ -1,5 +1,7 @@
 import eHive
 import os
+import pdb
+import ast
 
 from ReseqTrackDB import File
 from ReseqTrackDB import ReseqTrackDB
@@ -33,7 +35,7 @@ class SplitFile(eHive.BaseRunnable):
         self.warning('Splitting file: %s'% filename)
 
         bits=filename.split('.')
-        file_layout=self.param_required('filelayout')
+        file_layout=ast.literal_eval(self.param_required('filelayout'))
     
         if len(bits)!=len(file_layout):
             print("Passed file contains the following bits: {0}".format(",".join(bits)))
