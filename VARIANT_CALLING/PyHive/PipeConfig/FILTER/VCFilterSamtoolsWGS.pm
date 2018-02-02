@@ -22,12 +22,12 @@ sub default_options {
         'work_dir'    => undef,
         'final_dir' => undef,
 	'store_attributes' => 'False',
-        'filelayout' => [ 'dataset','caller','date','extension','compression'],
-	'newlayout' =>  [ 'dataset','caller'],
+        'filelayout' => undef, # file layout that is analyzed by the pipeline. i.e. [ 'dataset','caller','date','extension','compression'],
+	'newlayout' =>  undef, # new layout used for the generated files. i.e. [ 'dataset','caller']
 	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.3/',
 	'exclude_bed' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed',
-        'bgzip_folder' => '/nfs/software/ensembl/RHEL7/linuxbrew/bin/',
-	'tabix_folder' => '/nfs/software/ensembl/RHEL7/linuxbrew/bin/',
+        'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
+	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'bcftools_stats_region' => undef, # Define what chro will be analyzed by bcftools stats
 	'picard_folder' => '/homes/ernesto/bin', # CollectVariantCallingMetrics
 	'truth_vcf' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/dbsnp_146.hg38.vcf.gz', # CollectVariantCallingMetrics

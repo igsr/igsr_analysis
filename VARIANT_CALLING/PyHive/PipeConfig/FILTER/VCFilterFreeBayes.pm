@@ -22,8 +22,8 @@ sub default_options {
         'work_dir'    => undef,
         'final_dir' => undef,
 	'store_attributes' => 'False',
-        'filelayout' => [ 'dataset','caller','date','extension','compression'],
-	'newlayout' =>  [ 'dataset','caller'],
+	'newlayout' => undef, # new layout used for the generated files. i.e. [ 'dataset','caller']
+        'filelayout' => undef, # layout of file that is analyzed by the pipeline. i.e. [ 'dataset','caller','date','extension','compression']
 	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.3/',
 	'exclude_bed' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed',
         'bgzip_folder' => '/nfs/software/ensembl/RHEL7/linuxbrew/bin/',
