@@ -334,7 +334,6 @@ sub pipeline_analyses {
             -parameters => {
                 'bedtools_folder' => $self->o('bedtools_folder'),
 		'genome_file' => $self->o('genome_file'),
-		#'region' => 'chr20:10000000-11000000',
                 'window' => $self->o('window_coordfactory'),
                 'offset' => $self->o('offset_coordfactory'),
                 'verbose' => 1
@@ -393,8 +392,33 @@ sub pipeline_analyses {
                 'verbose' => 'True'
             },
             -analysis_capacity => 1,
-            -rc_name => '2Gb'
+            -rc_name => '2Gb',
+	    -flow_into => {
+		1 => {'run_convert_vcf' => {
+                    'hap_gz' => '#hap_gz#',
+                    'hap_sample' => '#hap_sample#',
+		    'vcf_file' => '#vcf_file#'
+		      },
+		}
+	}
+        },
+
+	{   -logic_name => 'run_convert_vcf',
+            -module        => 'PyHive.VcfIntegration.run_Shapeit_convert2vcf',
+            -language   => 'python3',
+            -parameters    => {
+		'hap_gz' => '#hap_gz#',
+		'hap_sample' => '#hap_sample#',
+		'compress' => 1,
+                'outprefix' => '#vcf_file#.phased',
+                'work_dir' => $self->o('work_dir'),
+		'shapeit_folder' => $self->o('shapeit_folder'),
+                'verbose' => 'True'
+            },
+            -analysis_capacity => 1,
+            -rc_name => '500Mb'
         }
+	
 	];
 }
 

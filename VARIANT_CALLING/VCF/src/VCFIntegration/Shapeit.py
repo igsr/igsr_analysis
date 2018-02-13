@@ -152,8 +152,8 @@ class Shapeit(object):
             raise Exception(exc.output)
 
         outdict={
-            'hap_gz' : '{0}.haps.gz'.format(output_prefix),
-            'hap_sample' : '{0}.haps.sample'.format(output_prefix)
+            'hap_gz' : '{0}.ligated.haps.gz'.format(output_prefix),
+            'hap_sample' : '{0}.ligated.haps.sample'.format(output_prefix)
         }
 
         return outdict
