@@ -28,7 +28,7 @@ sub default_options {
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'beagle_folder' => '~/bin/beagle/',
 	'gatk_folder' => '~/bin/GATK/',
-	'ginterval' => 'chr20', # if defined, then do the integration for a certain genomic region
+	'ginterval' => 'chr20:10000000-11000000', # if defined, then do the integration for a certain genomic region
 	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
 	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
