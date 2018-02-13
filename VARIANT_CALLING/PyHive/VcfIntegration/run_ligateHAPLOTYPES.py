@@ -34,9 +34,10 @@ class run_ligateHAPLOTYPES(eHive.BaseRunnable):
         self.warning('Work is done!')
 
         outdict= self.param('outdict')
-        self.dataflow( {'hap_gz' : outdict['hap_gz'] }, 1)
-        self.dataflow( {'hap_sample' : outdict['hap_sample'] }, 1)
-
+        self.dataflow( {
+            'hap_gz' : outdict['hap_gz'],
+            'hap_sample' : outdict['hap_sample']
+        }, 1)
 
 
 
