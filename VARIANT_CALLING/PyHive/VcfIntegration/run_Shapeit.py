@@ -26,6 +26,9 @@ class run_Shapeit(eHive.BaseRunnable):
         else:
             verbose=False
             
+        if not os.path.isdir(self.param_required('work_dir')):
+            os.makedirs(self.param_required('work_dir'))
+            
         outprefix=os.path.split(self.param_required('outprefix'))[1]
         '''
         outprefix="{0}/{1}.{2}.{3}.{4}".format(self.param_required('work_dir'),outprefix,

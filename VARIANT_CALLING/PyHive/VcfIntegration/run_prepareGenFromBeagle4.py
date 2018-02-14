@@ -1,5 +1,6 @@
 import eHive
 import os
+import pdb
 from VCFIntegration.Beagle import Beagle
 
 class run_prepareGenFromBeagle4(eHive.BaseRunnable):
@@ -16,14 +17,18 @@ class run_prepareGenFromBeagle4(eHive.BaseRunnable):
         else:
             verbose=False
 
+        if not os.path.isdir(self.param_required('work_dir')):
+            os.makedirs(self.param_required('work_dir'))
+
         outprefix=os.path.split(self.param_required('outprefix'))[1]
         outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
         
         vcf_object=Beagle(vcf=self.param_required('vcf_file'),
                           prepareGenFromBeagle4_folder=self.param_required('prepareGenFromBeagle4_folder'))
 
-        outdict=vcf_object.prepare_Gen_From_Beagle4(prefix_in=self.param_required('prefix_in'),
-                                                     outprefix=outprefix,verbose=verbose)
+        basename=os.path.split(self.param_required('prefix_in'))[1]
+        outdict=vcf_object.prepare_Gen_From_Beagle4(prefix_in=self.param_required('work_dir')+"/beagle/"+basename,
+                                                    outprefix=outprefix,verbose=verbose)
         
         self.param('outdict', outdict)
        
