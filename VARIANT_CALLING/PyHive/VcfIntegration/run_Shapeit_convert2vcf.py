@@ -27,6 +27,9 @@ class run_Shapeit_convert2vcf(eHive.BaseRunnable):
         else:
             verbose=False
 
+        if not os.path.isdir(self.param_required('work_dir')):
+            os.makedirs(self.param_required('work_dir'))
+
         compress=None
         if self.param_is_defined('compress'):
             compress=True

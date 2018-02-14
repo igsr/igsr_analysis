@@ -1,5 +1,6 @@
 import eHive
 import os
+import pdb
 from VCFIntegration.Beagle import Beagle
 
 class run_Beagle(eHive.BaseRunnable):
@@ -28,6 +29,9 @@ class run_Beagle(eHive.BaseRunnable):
             options['nthreads']=self.param('nthreads')
         if self.param_is_defined('correct'):                
             options['correct']=True
+
+        if not os.path.isdir(self.param_required('work_dir')):
+            os.makedirs(self.param_required('work_dir'))
         
         vcf_f=vcf_g.run_beagle(outprefix=outprefix, outdir=self.param_required('work_dir'), **options, 
                                region=self.param_required('region_chunk'), verbose=verbose)

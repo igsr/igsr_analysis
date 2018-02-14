@@ -295,7 +295,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'beagle_folder' => $self->o('beagle_folder'),
-                'work_dir' => $self->o('work_dir'),
+                'work_dir' => $self->o('work_dir')."/#chr#/beagle",
 		'outprefix' => '#vcf_file#',
 		'correct' => 1,
 		'nthreads' => 1,
@@ -312,7 +312,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'prepareGenFromBeagle4_folder' => $self->o('prepareGenFromBeagle4_folder'),
-                'work_dir' => $self->o('work_dir'),
+                'work_dir' => $self->o('work_dir')."/#chr#",
                 'outprefix' => '#vcf_file#.shapeit_input',
 		'prefix_in' => '#vcf_file#',
                 'verbose' => 1
@@ -370,7 +370,7 @@ sub pipeline_analyses {
 		'outprefix' =>  '#vcf_file#',
 		'input_scaffold_prefix' => $self->o('input_scaffold_prefix'),
                 'newheader' => $self->o('newheader'),
-                'work_dir' => $self->o('work_dir'),
+                'work_dir' => $self->o('work_dir')."/#chr#/shapeit",
                 'samplefile' => '#samplefile#'
             },
 	    -rc_name => '15Gb',
@@ -387,7 +387,7 @@ sub pipeline_analyses {
 		'vcf_f' => '#vcf_file#',
 		'outprefix' => '#vcf_file#.phased',
 		'scaffolded_samples' => $self->o('scaffolded_samples'),
-                'work_dir' => $self->o('work_dir'),
+                'work_dir' => $self->o('work_dir')."/#chr#",
                 'ligateHAPLOTYPES_folder' => $self->o('ligateHAPLOTYPES_folder'),
                 'verbose' => 'True'
             },
@@ -411,7 +411,7 @@ sub pipeline_analyses {
 		'hap_sample' => '#hap_sample#',
 		'compress' => 1,
                 'outprefix' => '#vcf_file#.phased',
-                'work_dir' => $self->o('work_dir'),
+                'work_dir' => $self->o('work_dir')."/#chr#",
 		'shapeit_folder' => $self->o('shapeit_folder'),
                 'verbose' => 'True'
             },
