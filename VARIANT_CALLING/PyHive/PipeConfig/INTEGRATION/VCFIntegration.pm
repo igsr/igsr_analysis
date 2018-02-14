@@ -313,7 +313,7 @@ sub pipeline_analyses {
             -parameters => {
                 'prepareGenFromBeagle4_folder' => $self->o('prepareGenFromBeagle4_folder'),
                 'work_dir' => $self->o('work_dir'),
-                'outprefix' => '#vcf_file#shapeit_input',
+                'outprefix' => '#vcf_file#.shapeit_input',
 		'prefix_in' => '#vcf_file#',
                 'verbose' => 1
             },
