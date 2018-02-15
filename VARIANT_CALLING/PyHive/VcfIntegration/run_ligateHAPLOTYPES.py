@@ -1,5 +1,7 @@
 import eHive
 import os
+import pdb
+
 from VCFIntegration.Shapeit import Shapeit
 
 class run_ligateHAPLOTYPES(eHive.BaseRunnable):
@@ -28,7 +30,7 @@ class run_ligateHAPLOTYPES(eHive.BaseRunnable):
         outdict=shapeit_object.ligate_shapeitchunks(vcf_f= self.param_required('vcf_f'),
                                                     scaffolded_samples= self.param_required('scaffolded_samples'),
                                                     chunk_str= chunk_str,
-                                                    output_prefix= self.param_required('outprefix') ,
+                                                    output_prefix= outprefix ,
                                                     verbose=verbose)
         
         self.param('outdict', outdict)
