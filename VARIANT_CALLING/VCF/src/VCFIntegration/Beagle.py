@@ -214,16 +214,10 @@ class Beagle(object):
 
         posteriors="{0}*.vcf.gz".format(prefix_in)
 
-        command = "{0}/prepareGenFromBeagle4 --likelihoods {1} --posteriors {2} --threshold {3} --output {4}".format(program_folder,
-                                                                                                                     self.vcf,
-                                                                                                                     posteriors,
-                                                                                                                     threshold,
-                                                                                                                     outprefix)
-
-#        command = "{0}/prepareGenFromBeagle4 --likelihoods {1} --posteriors {2} --output {3}".format(program_folder,
-#                                                                                                      self.vcf,
-#                                                                                                      posteriors,
-#                                                                                                      outprefix)
+        command = "{0}/prepareGenFromBeagle4 --likelihoods {1} --posteriors {2} --output {3}".format(program_folder,
+                                                                                                     self.vcf,
+                                                                                                     posteriors,
+                                                                                                     outprefix)
     
         if verbose==True:
             print("Command used was: %s" % command)

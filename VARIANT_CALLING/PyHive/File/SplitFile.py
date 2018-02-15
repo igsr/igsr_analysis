@@ -10,23 +10,31 @@ from ReseqTrackDB import ReseqTrackDB
 class SplitFile(eHive.BaseRunnable):
     """Split File into the different bits and map an annotation to each bit"""
     
-    def param_defaults(self):
-        return {
-        }
-
     def fetch_input(self):
         filename = self.param_required('filename')
 
-        hostname=self.param_required('hostname')
-        username=self.param_required('username')
-        db=self.param_required('db')
-        port=self.param_required('port')
-        pwd=self.param_required('pwd')
+        fileO=None
 
-        reseqdb = ReseqTrackDB(host=hostname,user=username,port=port,pwd=pwd,db=db)
+        if self.param_is_defined('hostname') and self.param_is_defined('username'):
+            hostname=self.param('hostname')
+            username=self.param('username')
+            db=self.param('db')
+            port=self.param('port')
+            pwd=self.param('pwd')
 
-        fileO=reseqdb.fetch_file_by_filename(filename)
-        self.param('file_object', fileO)
+            reseqdb = ReseqTrackDB(host=hostname,
+                                   user=username,
+                                   port=port,
+                                   pwd=pwd,
+                                   db=db)
+
+            fileO=reseqdb.fetch_file_by_filename(filename)
+        else:
+            fileO=File(
+                path=filename, 
+                type='PHASED_VCF',
+            )
+            self.param('file_object', fileO)
 
     def run(self):
         
@@ -48,5 +56,8 @@ class SplitFile(eHive.BaseRunnable):
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'layout_dict' : self.param('layout_dict') }, 1)
-        self.dataflow( { 'filepath' : self.param('filepath') }, 1)
+        self.dataflow( { 
+            'layout_dict' : self.param('layout_dict'),
+            'filepath' : self.param('filepath')
+        }, 1)
+
