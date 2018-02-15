@@ -15,10 +15,10 @@ class SNPTools_prob2vcf(eHive.BaseRunnable):
         
         vcf_f=""
         if self.param_is_defined('verbose'):
-            vcf_f=vcf_i.run_prob2vcf(probf=self.param_required('probf'),outprefix=outprefix+"_{0}".format(chro),
+            vcf_f=vcf_i.run_prob2vcf(probf=self.param_required('probf'),outprefix=outprefix+".{0}".format(chro),
                                               chro=self.param_required('chr'),outdir=self.param_required('work_dir'), verbose=True)
         else:
-            vcf_f=vcf_i.run_prob2vcf(probf=self.param_required('probf'),outprefix=outprefix+"_{0}".format(chro),
+            vcf_f=vcf_i.run_prob2vcf(probf=self.param_required('probf'),outprefix=outprefix+".{0}".format(chro),
                                               chro=self.param_required('chr'),outdir=self.param_required('work_dir'), verbose=False)
        
         self.param('vcf_f', vcf_f)

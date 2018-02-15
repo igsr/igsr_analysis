@@ -54,8 +54,8 @@ sub default_options {
 	'scaffolded_samples' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/SEQUENCING_GENOTYPES/ONLY_ONESAMPLE/scaffolded_samples.txt', #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
 	'store_attributes' => 'False',
-        'filelayout' => [ 'prefix','coords','type1','type2','extension'],
-	'newlayout' =>  [ 'prefix','coords','type1','type2'],
+        'filelayout' => undef, #file layout for final phased file
+	'newlayout' =>  undef, # new file layout for final phased file
 	'snptools_folder' => '~/bin/snptools/',
 	'lsf_queue'   => 'production-rh7'
     };
@@ -418,8 +418,32 @@ sub pipeline_analyses {
                 'verbose' => 'True'
             },
             -analysis_capacity => 1,
-            -rc_name => '500Mb'
+            -rc_name => '500Mb',
+	    -flow_into => {
+		1 => {'store_phased_vcf' => {'filename' => '#out_vcf#'}}
+            }
+	},
+
+	{   -logic_name => 'store_phased_vcf',
+            -module        => 'PyHive.File.StoreFile',
+            -language   => 'python3',
+            -parameters    => {
+                'filename' => '#filename#',
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'type' => 'PHASED_VCF',
+                'final_dir' => $self->o('final_dir'),
+		'filelayout' => $self->o('filelayout'),
+                'newlayout' => $self->o('newlayout'),
+                'add_date' => 'True',
+                'extension' => 'phased.vcf.gz',
+
+            },
         }
+
 	
 	];
 }

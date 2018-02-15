@@ -22,7 +22,7 @@ class StoreFile(eHive.BaseRunnable):
 
         # First, rename the file
         fileO=File(path=self.param_required('filename'),type=self.param_required('type'))
-        layout_dict=self.param_required('layout_dict')
+        filelayout=ast.literal_eval(self.param_required('filelayout'))
         newlayout=ast.literal_eval(self.param_required('newlayout'))
 
         compression=None
@@ -33,8 +33,9 @@ class StoreFile(eHive.BaseRunnable):
         if self.param('add_date'):
             add_date=True
     
-        fileO.rename(filelayout= layout_dict, newlayout= newlayout,
-                     extension= self.param_required('extension'), add_date=add_date, compression= compression)
+        fileO.rename(filelayout= filelayout, newlayout= newlayout,
+                     extension= self.param_required('extension'), add_date=add_date, 
+                     compression= compression)
 
         new_f=File(path=self.param_required('filename'),type=self.param_required('type'))
 
