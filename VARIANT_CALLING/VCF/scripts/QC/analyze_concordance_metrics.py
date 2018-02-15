@@ -60,6 +60,8 @@ for a in attrbs:
     astring=re.sub('LCvsAFFY_NOPED','LCvsAFFYNOPED',astring)
     astring=re.sub('EXvsAFFY_HASPED','EXvsAFFYHASPED',astring)
     astring=re.sub('LC_tsSNPS99_9_tsINDEL80_vsOMNI','LCtsSNPS999tsINDEL80vsOMNI',astring)
+    astring=re.sub('LC_tsSNPS99_9_tsINDEL80_vsAFFY_HASPED','LCtsSNPS999tsINDEL80vsAFFYHASPED',astring)
+
     bits=astring.split("_")
     sample=bits.pop(0)
     prefix=bits.pop(0)
