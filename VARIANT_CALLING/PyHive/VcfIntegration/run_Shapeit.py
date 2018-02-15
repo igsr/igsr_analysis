@@ -76,10 +76,11 @@ class run_Shapeit(eHive.BaseRunnable):
         if self.param_is_defined('input_init'):
             input_init= self.param('input_init')
 
-        input_scaffold= None
+        input_scaffold= ""
         if self.param_is_defined('input_scaffold_prefix'):
             chrom=re.sub('chr','',self.param('chr'))
-            input_scaffold= "{0}.{1}.phased.haps {0}.{1}.phased.sample".format(self.param('input_scaffold_prefix'), chrom)
+            for s in self.param('input_scaffold_prefix'):
+                input_scaffold += "{0}.{1}.phased.haps {0}.{1}.phased.sample ".format(s, chrom)
 
         input_map= None
         if self.param_is_defined('gmap_folder'):
