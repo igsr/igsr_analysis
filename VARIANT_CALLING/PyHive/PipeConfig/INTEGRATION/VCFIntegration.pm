@@ -257,7 +257,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'chr_types' => 'ensembl',
-                'work_dir' => $self->o('work_dir'),
+                'work_dir' => $self->o('work_dir')."/#chr#",
             },
             -rc_name => '500Mb',
 	    -flow_into => {
