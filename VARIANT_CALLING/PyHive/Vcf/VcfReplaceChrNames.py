@@ -1,6 +1,8 @@
 import eHive
 import os
 import tempfile
+import pdb
+
 from VcfUtils import VcfUtils
 
 class VcfReplaceChrNames(eHive.BaseRunnable):
@@ -14,7 +16,9 @@ class VcfReplaceChrNames(eHive.BaseRunnable):
         basename=os.path.split(filepath)[1]
         work_dir=None
         if self.param_is_defined('work_dir'):
-            work_dir=self.param_required('work_dir')
+            if not os.path.isdir(self.param('work_dir')):
+                os.makedirs(self.param('work_dir'))
+            work_dir=self.param('work_dir')
         else:
             work_dir=os.path.split(filepath)[0]
 
