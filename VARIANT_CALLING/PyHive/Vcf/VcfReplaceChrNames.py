@@ -22,12 +22,11 @@ class VcfReplaceChrNames(eHive.BaseRunnable):
         else:
             work_dir=os.path.split(filepath)[0]
 
-        vcf_object=VcfUtils(vcf=filepath)
+        vcf_object=VcfUtils(vcf=filepath, bgzip_folder=self.param('bgzip_folder'))
 
         outprefix="{0}/{1}".format(work_dir, basename+".{0}".format(self.param_required('chr_types')))
 
-        outfile=vcf_object.rename_chros(chr_types=self.param_required('chr_types'),
-                                        outfile=outprefix+".vcf.gz")
+        outfile=vcf_object.rename_chros(chr_types=self.param_required('chr_types'),outfile=outprefix+".vcf.gz")
 
         self.param('vcf_f', outfile)
 
