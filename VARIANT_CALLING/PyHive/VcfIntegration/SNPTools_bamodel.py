@@ -1,4 +1,7 @@
 import eHive
+import os
+import pdb
+
 from VCFIntegration.SNPTools import SNPTools
 
 class SNPTools_bamodel(eHive.BaseRunnable):
@@ -12,6 +15,10 @@ class SNPTools_bamodel(eHive.BaseRunnable):
            verbose=True
        else:
            verbose=False
+
+       if self.param_is_defined('work_dir'):
+           if not os.path.isdir(self.param('work_dir')):
+               os.makedirs(self.param('work_dir'))
 
        raw_f=vcf_g.run_bamodel(sample=self.param_required('sample'), bamfiles=self.param_required('bamlist'), 
                                         outdir=self.param_required('work_dir'), verbose=verbose)
