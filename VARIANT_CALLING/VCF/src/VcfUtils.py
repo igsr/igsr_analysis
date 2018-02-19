@@ -193,7 +193,7 @@ class VcfUtils(object):
             return outfile
 
 
-    def rename_chros(self, chr_types, outfile):
+    def rename_chros(self, chr_types, outfile, compress=True):
         '''
         Function to modify the chr names in the VCF file
         For example:
@@ -209,31 +209,36 @@ class VcfUtils(object):
                          'ucsc'/'ensembl'
         outfile : string, required
                   File used for the output VCF
+        compress : boolean, optional
+                   Default: True
         
         Returns
         -------
         Path to the VCF with the chrosomes renamed
         
         '''
-        f=gzip.open(outfile,'wb');
 
-        with gzip.open(self.vcf,'r') as fin:
-            for line in fin:
-                if not line.startswith(b"#"):
-                    bits=line.split(b"\t")
-                    chrname=bits[0].decode("utf-8")
-                    nchrname=""
-                    if chr_types=="ensembl":
-                        nchrname = re.sub('chr', '', chrname)
-                    elif chr_types=="ucsc":
-                        nchrname="chr"+chrname
-                    bits[0]=nchrname.encode('utf-8')
-                    nline=b'\t'.join(bits)
-                    f.write(nline)
-                else:
-                    f.write(line)
-        f.close()
-    
+        command=""
+        if chr_types=='ensembl':
+            if compress is True:
+                command += "zcat {0} | awk '{{gsub(/^chr/,\"\"); print}}' - | {1}/bgzip -c > {2}".format(self.vcf,self.bgzip_folder, outfile)
+            else:
+                command += "zcat {0} | awk '{{gsub(/^chr/,\"\"); print}}' - > {1}".format(self.vcf, outfile)
+        elif chr_types=='ucsc':
+            if compress is True:
+                command += "zcat {0} | awk '{{if($0 !~ /^#/) print \"chr\"$0; else print $0}}' - | {1}/bgzip -c > {2}".format(self.vcf,self.bgzip_folder, outfile)
+            else:
+                command += "zcat {0} | awk '{{if($0 !~ /^#/) print \"chr\"$0; else print $0}}' - > {1}".format(self.vcf, outfile)
+
+        try:
+            subprocess.check_output(command, shell=True)
+        except subprocess.CalledProcessError as exc:
+            print("Something went wrong.\n"
+                  "Command used was: %s" % command)
+            raise Exception(exc.output)
+
+
+
         return outfile
 
     def correct_ambiguity_codes(self,outfile):
