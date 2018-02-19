@@ -172,7 +172,7 @@ sub pipeline_analyses {
                 'snptools_folder' => $self->o('snptools_folder'),
 		'sample' => '#samplename#',
 		'bamlist' => '#bamlist#',
-		'work_dir' => $self->o('work_dir'),
+		'work_dir' => $self->o('work_dir')."/snptools/",
 		'verbose' => 1
             },
 	    -rc_name => '500Mb',
@@ -206,7 +206,7 @@ sub pipeline_analyses {
                 'snptools_folder' => $self->o('snptools_folder'),
                 'rawlist' => '#rawlist#',
 		'outprefix' => '#out_vcf#.pop_likelihood',
-                'work_dir' => $self->o('work_dir'),
+                'work_dir' => $self->o('work_dir')."/snptools/",
 		'verbose' => 1
             },
 	    -rc_name => '2Gb',
