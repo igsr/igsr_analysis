@@ -1,6 +1,8 @@
 import os
 import pytest
 import glob
+import pdb
+
 from VcfUtils import VcfUtils
 
 # test_VcfUtils.py
@@ -8,11 +10,13 @@ from VcfUtils import VcfUtils
 @pytest.fixture
 def vcf_object():
     '''Returns an  object'''
+
     vcf_file = pytest.config.getoption("--vcf")
     vcflist = pytest.config.getoption("--vcflist")
     bcftools_folder = pytest.config.getoption("--bcftools_folder")
+    bgzip_folder = pytest.config.getoption("--bgzip_folder")
     gatk_folder = pytest.config.getoption("--gatk_folder")
-    vcf_object=VcfUtils(vcf=vcf_file,vcflist=vcflist,bcftools_folder=bcftools_folder,
+    vcf_object=VcfUtils(vcf=vcf_file,bgzip_folder=bgzip_folder,vcflist=vcflist,bcftools_folder=bcftools_folder,
                         gatk_folder=gatk_folder)
     return vcf_object
 
@@ -44,6 +48,7 @@ def test_vcf_reheader(vcf_object):
 
     assert os.path.exists("data/out/test1.reheaded.vcf.gz")
 
+
 def test_vcf_reheader_with_samplef(vcf_object):
     '''
     Test the reheader method and add new sample names
@@ -74,23 +79,31 @@ def test_combine_compressed(vcf_object):
     
     assert os.path.exists("data/out/out_combine.vcf.gz")
 
+
 def test_change_chrnames_2ensembl(vcf_object):
     '''
     Test the method to change the style of the chrnames (from UCSC to Ensembl)
     '''
+
     vcf_object.rename_chros(chr_types='ensembl', outfile='data/out/test.ensembl.vcf.gz')
+    vcf_object.rename_chros(chr_types='ensembl', compress=False, outfile='data/out/test.ensembl.vcf')
 
     assert os.path.exists("data/out/test.ensembl.vcf.gz")
+    assert os.path.exists("data/out/test.ensembl.vcf")
+
 
 def test_change_chrnames_2ucsc():
     '''
     Test the method to change the style of the chrnames (from Ensembl to UCSC)
     '''
-    vcf_object=VcfUtils(vcf='data/out/test.ensembl.vcf.gz')
+    vcf_object=VcfUtils(vcf='data/out/test.ensembl.vcf.gz',
+                        bgzip_folder=pytest.config.getoption("--bgzip_folder"))
 
     vcf_object.rename_chros(chr_types='ucsc', outfile='data/out/test.ucsc.vcf.gz')
-
+    vcf_object.rename_chros(chr_types='ucsc', outfile='data/out/test.ucsc.vcf', compress=False)
+    
     assert os.path.exists("data/out/test.ucsc.vcf.gz")
+    assert os.path.exists("data/out/test.ucsc.vcf")
 
 def test_drop_genotypes(vcf_object, clean_tmp):
     '''
