@@ -3,7 +3,7 @@ import pytest
 import subprocess
 from BamQC import BamQC
 
-# test_factories.py
+# test_pyhive_BamQC.py
 
 def test_RunChkIndelRg():
     fa_ix= pytest.config.getoption("bam_f")

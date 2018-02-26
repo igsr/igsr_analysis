@@ -3,7 +3,7 @@ import pytest
 import subprocess
 import glob
 
-# test_factories.py
+# test_pyhive_Factories.py
 
 @pytest.fixture
 def clean_tmp():
