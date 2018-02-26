@@ -4,7 +4,7 @@ import glob
 import warnings
 from BEDTools import BEDTools
 
-# test_bedtools.py
+# test_BEDTools.py
 
 @pytest.fixture
 def bedtools_object(scope='module'):

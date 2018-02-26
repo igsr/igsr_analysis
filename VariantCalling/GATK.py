@@ -56,7 +56,8 @@ class GATK(object):
         nt : int, Optional
              Number of data threads to allocate to UG
         intervals : str, Optional
-                    Path to file with genomic intervals to operate with
+                    Path to file with genomic intervals to operate with. Also coordinates
+                    can be set directly on the command line. For example: chr1:100-200
         verbose : bool, optional
                   if true, then print the command line used for running this program
 

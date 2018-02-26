@@ -1,6 +1,7 @@
 import eHive
 import subprocess
 import os
+import pdb
 import sys
 import random
 import string
@@ -43,7 +44,6 @@ class VcfCombine(eHive.BaseRunnable):
         outfile=vcf_utils.combine(labels=labels,reference=self.param_required('reference') ,outprefix=self.param_required('outprefix'),
                                   outdir=self.param_required('work_dir'), compress=True,genotypemergeoption='UNIQUIFY',ginterval=ginterval, options=['-env','-sites_only',
                                                                                                                                                      '--filteredAreUncalled'])
-
         self.param('out_vcf', outfile)
 
     def write_output(self):

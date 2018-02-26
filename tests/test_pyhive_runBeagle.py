@@ -4,7 +4,7 @@ import subprocess
 import glob
 from PyHive.VcfIntegration import *
 
-# test_runBeagle.py
+# test_pyhive_runBeagle.py
 
 @pytest.fixture
 def clean_tmp():
