@@ -22,8 +22,8 @@ sub default_options {
         'work_dir'    => undef,
         'final_dir' => undef,
 	'faix' => undef,
-	'samplefile' => undef,
 	'newheader' => undef,
+	'bamlist' => undef, # bamfile.list used by GATK UG
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
@@ -148,10 +148,9 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'coord_factory' => {'filepath' => '#out_vcf#'}}
+		1 => {'coord_factory' => {'out_vcf' => '#out_vcf#'}}
 	    }
         },
-
 
 	{   -logic_name => 'coord_factory',
 	    -module     => 'PyHive.Factories.CoordFactory',
@@ -160,6 +159,32 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
                 'window' => 1000000,
+                'verbose' => 1
+            },
+	    -flow_into => {
+		2 => {'run_gatkug_snps' => {
+		    'out_vcf' => '#out_vcf#',
+		    'chunk' => '#chunk#'
+		      }
+		}
+	    }
+        },
+
+	{   -logic_name => 'run_gatkug_snps',
+            -module     => 'PyHive.VariantCalling.GATK_UG',
+            -language   => 'python3',
+            -parameters => {
+		'genotyping_mode' => 'GENOTYPE_GIVEN_ALLELES',
+		'glm' => 'SNP',
+		'alleles' => '#out_vcf#',
+		'output_mode' => 'EMIT_ALL_SITES',
+		'chunk' => '#chunk#',
+                'gatk_folder' => $self->o('gatk_folder'),
+		'bamlist' => $self->o('bamlist'),
+		'bgzip_folder' => $self->o('bgzip_folder'),
+		'work_dir' => $self->o('work_dir'),
+		'reference' => $self->o('reference'),
+		'outprefix' => '#out_vcf#',
                 'verbose' => 1
             },
         },
