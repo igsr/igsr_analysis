@@ -18,17 +18,29 @@ class GATK_UG(eHive.BaseRunnable):
             os.makedirs(self.param_required('work_dir'))
 
         outprefix=os.path.split(self.param_required('outprefix'))[1]
-        outprefix="{0}/{1}.ug.{2}".format(self.param_required('work_dir'), 
-                                          outprefix, 
-                                          self.param_required('chunk') )
+        
+        outfile="{0}/{1}.ug.{2}_{3}_{4}".format(self.param_required('work_dir'), 
+                                                outprefix, 
+                                                self.param_required('chunk')[0],
+                                                self.param_required('chunk')[1],
+                                                self.param_required('chunk')[2])
 
         gatk_object=GATK(bam=self.param_required('bamlist'), 
                          reference=self.param_required('reference'), 
                          gatk_folder=self.param_required('gatk_folder'),
                          bgzip_folder=self.param_required('bgzip_folder'))
 
-        outfile=gatk_object.run_ug(outprefix=outprefix, glm=self.param_required('glm'),
-                                   output_mode=self.param_required('output_mode'))
+        intervals=None
+        
+        if self.param_is_defined('chunk'):
+            intervals="{0}:{1}-{2}".format(self.param('chunk')[0], 
+                                           self.param('chunk')[1],
+                                           self.param('chunk')[2])
+
+        outfile=gatk_object.run_ug(outprefix=outfile, glm=self.param_required('glm'),
+                                   output_mode=self.param_required('output_mode'),
+                                   alleles=self.param('alleles'), genotyping_mode=self.param('genotyping_mode'),
+                                   intervals=intervals)
 
         self.param('out_vcf', outfile)
 
