@@ -2,7 +2,7 @@ import pytest
 
 def pytest_addoption(parser):
     parser.addoption('--bam', default='data/exampleBAM.bam' ,action='store_true', help='Path to test BAM file')
-     parser.addoption('--faix', default='data/canonical_chros.fa.fai' ,action='store_true', help='Path to faix file')
+    parser.addoption('--faix', default='data/canonical_chros.fa.fai' ,action='store_true', help='Path to faix file')
     parser.addoption('--hive_lib', default='~/lib/ensembl-hive_2.4/' ,action='store_true', help='Path folder containing eHive scripts')
     parser.addoption('--vcf', default='data/test.vcf.gz' ,action='store_true', help='Path to vcf file')
     parser.addoption('--vcf_chr20', default='data/test_chr20.vcf.gz' ,action='store_true', help='Path to vcf file used for testing Beagle')
@@ -31,3 +31,5 @@ def pytest_addoption(parser):
     parser.addoption('--vcflist', default=['data/test.vcf.gz','data/test1.vcf.gz'], action='store_true', help='List with VCF paths')
     parser.addoption('--snptools_folder', default='~/bin/snptools/', action='store_true', help='Folder with SNPTools binaries')
     parser.addoption('--chr_file', default='data/chr_file.txt', action='store_true', help='File with chros for get_chros function')
+    parser.addoption('--glm', default='SNP', action='store_true', help='--glm option for GATK UG') 
+    parser.addoption('--output_mode', default='EMIT_ALL_SITES', action='store_true', help='--output_mode option for GATK UG')

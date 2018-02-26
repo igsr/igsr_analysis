@@ -5,7 +5,7 @@ import glob
 
 from VcfUtils import VcfUtils
 
-# test_Vcf.py
+# test_pyhive_Vcf.py
 
 @pytest.fixture
 def clean_tmp():

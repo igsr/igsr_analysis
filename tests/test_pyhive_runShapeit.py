@@ -4,7 +4,7 @@ import subprocess
 import glob
 from PyHive.VcfIntegration import *
 
-# test_runShapeit.py
+# test_pyhive_runShapeit.py
 
 @pytest.fixture
 def clean_tmp():
