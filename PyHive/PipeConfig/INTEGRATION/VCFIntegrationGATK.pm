@@ -28,13 +28,19 @@ sub default_options {
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'beagle_folder' => '~/bin/beagle/',
+	'caller' => 'UG', # VariantRecalibrator
 	'gatk_folder' => '~/bin/GATK/',
-	'ginterval' => 'chr20:10000000-11000000', # if defined, then do the integration for a certain genomic region
+	'ginterval' => undef, # if defined, then do the integration for a certain genomic region
 	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
 	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
 	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
+	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/', 
+	'tranches' => '[100.0,99.9,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
+	'resources_snps' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
+        'resources_indels' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_indels.json', # VariantRecalibrator
+        'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum','InbreedingCoeff'], #annotations for recalibrating indels
 	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/OMNI/PHASING/ALL.chip.omni_broad_sanger_combined.20140818.refcorr.biallelic.snps', 
 				    '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/AFFY/PHASING/ALL.wgs.nhgri_coriell_affy_6.20140825.genotypes_has_ped.ucsc.hg38.refcorr.biallelic.snps'],
 # SHAPEIT. Specify here the prefix for the scaffolded microarray genotypes
@@ -48,7 +54,7 @@ sub default_options {
 	'main' => 20, # SHAPEIT
 	'window_bglchnks' => 700, # makeBGLCHUNKS
 	'overlap_bglchnks' => 200, # makeBGLCHUNKS
-	'genome_file' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/DEVEL/INTEGRATION_PIPELINE/chr20.genome', #
+	'genome_file' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/SEQUENCING_GENOTYPES/ONLY_ONESAMPLE_GATK/chr20.genome', #
 	'window_coordfactory' =>  undef, #PyHive.Factories.CoordFactory
 	'offset_coordfactory' => undef, #PyHive.Factories.CoordFactory
 	'outprefix' => 'combined.all.chr20', # Prefix used for all output files
@@ -158,17 +164,19 @@ sub pipeline_analyses {
             -parameters => {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
-                'window' => 1000000,
+		'ix' =>11,
+                'window' => $self->o('window_coordfactory'),
                 'verbose' => 1
             },
 	    -flow_into => {
-		2 => {'run_gatkug_snps' => {
-		    'out_vcf' => '#out_vcf#',
-		    'chunk' => '#chunk#'
-		      }
-		}
-	    }
-        },
+		'2->A' => { 'run_gatkug_snps' => {
+                    'out_vcf' => '#out_vcf#',
+                    'chunk' => '#chunk#',
+		    'ix' => '#ix#'}
+		},
+                'A->1' => [ 'merge_vcf'],
+	    },
+	},
 
 	{   -logic_name => 'run_gatkug_snps',
             -module     => 'PyHive.VariantCalling.GATK_UG',
@@ -187,7 +195,76 @@ sub pipeline_analyses {
 		'outprefix' => '#out_vcf#',
                 'verbose' => 1
             },
+	    -rc_name => '8Gb',
+	    -flow_into => {
+                1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=out_vcf','?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
+	    },
         },
+
+	{   -logic_name => 'merge_vcf',
+            -module        => 'PyHive.Vcf.VcfConcat',
+            -language   => 'python3',
+            -parameters    => {
+                'outprefix' => "#out_vcf#.merged.vcf.gz",
+                'bcftools_folder' => $self->o('bcftools_folder'),
+                'verbose' => 'True',
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {
+		    'run_variantrecalibrator_snps' => {
+                        'filepath' => '#filepath#',
+                        'recal_file' => '#recal_f#',
+                        'tranches_file' => '#tranches_f#'
+		    }},
+	    },
+            -analysis_capacity => 1,
+            -rc_name => '500Mb'
+        },
+
+	{   -logic_name => 'run_variantrecalibrator_snps',
+            -module        => 'PyHive.VcfFilter.VariantRecalibrator',
+            -language   => 'python3',
+            -parameters    => {
+                'filepath' => '#filepath#',
+                'work_dir' => $self->o('work_dir'),
+                'caller' => $self->o('caller'),
+                'gatk_folder' => $self->o('gatk_folder'),
+                'reference' => $self->o('reference'),
+                'resources' => $self->o('resources_snps'),
+                'tranches' => $self->o('tranches'),
+                'intervals' => $self->o('ginterval'),
+                'mode' => 'SNP'
+            },
+	    -flow_into => {
+		1 => {
+		    'run_applyrecalibration_snps' => {
+                        'filepath' => '#filepath#',
+                        'recal_file' => '#recal_f#',
+                        'tranches_file' => '#tranches_f#'
+		    }},
+	    },
+            -analysis_capacity => 20,
+            -rc_name => '12Gb',
+        },
+
+	{   -logic_name => 'run_applyrecalibration_snps',
+            -module        => 'PyHive.VcfFilter.ApplyRecalibration',
+            -language   => 'python3',
+            -parameters    => {
+                'filepath' => '#filepath#',
+                'work_dir' => $self->o('work_dir'),
+                'caller' => $self->o('caller'),
+                'gatk_folder' => $self->o('gatk_folder'),
+                'bgzip_folder' => $self->o('bgzip_folder'),
+                'tabix_folder' => $self->o('tabix_folder'),
+                'reference' => $self->o('reference'),
+                'recal_file' => '#recal_f#',
+                'tranches_file' => '#tranches_f#',
+                'mode' => 'SNP'
+            },
+	},
+
 
 	{   -logic_name => 'rename_chros',
             -module     => 'PyHive.Vcf.VcfReplaceChrNames',

@@ -9,7 +9,7 @@ import glob
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/outdir/*')
+    files = glob.glob("out/*")
     for f in files:
         os.remove(f)
 
@@ -30,7 +30,7 @@ def test_BeagleChunkFactory():
     vcf_f= pytest.config.getoption("vcf_gts")
     beaglechunks_folder=pytest.config.getoption("makeBGLCHUNKS_folder")
     hive_scripts= pytest.config.getoption("hive_lib")+"/scripts/"
-    work_dir= "data/outdir"
+    work_dir= "out/"
 
     command="perl {0}/standaloneJob.pl PyHive.Factories.BeagleChunkFactory -language python3 -filepath {1} -makeBGLCHUNKS_folder {2} -work_dir {3} -window {4} \
     -overlap {5}".format(hive_scripts, vcf_f, beaglechunks_folder, work_dir, 100, 2)

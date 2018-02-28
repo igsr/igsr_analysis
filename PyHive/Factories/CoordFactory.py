@@ -19,23 +19,37 @@ class CoordFactory(eHive.BaseRunnable):
         if self.param_is_defined('offset'):
             offset=self.param('offset')
           
-        region=None
-        if self.param_is_defined('region'):
-            region=self.param('region')
-
         coord_list=bedtools_obj.make_windows(g=self.param_required('genome_file'), 
                                              w=self.param_required('window'), 
                                              s=offset,
-                                             region=region,
                                              verbose=verbose)
+        
+        chunks=[]
 
-        self.param('coord_list', coord_list)
+        ix=1
+        for c in coord_list:
+            if self.param_is_defined('ix'):
+                if ix==self.param('ix'):
+                    chunks.append(
+                        {
+                            'chunk': c,
+                            'ix': ix
+                        })
+            else:
+                chunks.append(
+                    {
+                        'chunk': c,
+                        'ix': ix
+                    })
+            ix+=1
+
+        self.param('chunks', chunks)
        
     def write_output(self):
-        self.warning('{0} chunks have been created'.format(len(self.param('coord_list'))))
+        self.warning('{0} chunks have been created'.format(len(self.param('chunks'))))
 
-        for chunk in self.param('coord_list'):
-            self.dataflow( { 'chunk' : chunk }, 2)
+        self.dataflow(self.param('chunks'), 2)
+
 
 
 
