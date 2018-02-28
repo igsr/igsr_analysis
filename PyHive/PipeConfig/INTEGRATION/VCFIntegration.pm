@@ -377,7 +377,7 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')."/#chr#/shapeit",
                 'samplefile' => '#samplefile#'
             },
-	    -rc_name => '15Gb',
+	    -rc_name => '20Gb',
 	    -flow_into => {
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=hap_gz']
 	    },

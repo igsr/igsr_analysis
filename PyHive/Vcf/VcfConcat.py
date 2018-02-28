@@ -1,6 +1,7 @@
 import eHive
 import subprocess
 import os
+import pdb
 import sys
 import random
 import string
@@ -15,6 +16,14 @@ class VcfConcat(eHive.BaseRunnable):
         all_ixs = self.param_required('allixs')
         all_files = self.param_required('allchunks_files')
 
+        pdb.set_trace()
+
+        if not os.path.isdir(self.param_required('work_dir')):
+            os.makedirs(self.param_required('work_dir'))
+
+        outprefix=os.path.split(self.param_required('outprefix'))[1]
+        outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
+
         d = dict(zip(all_ixs, all_files))
 
         """Create tmp file for files to concat"""
@@ -26,7 +35,7 @@ class VcfConcat(eHive.BaseRunnable):
         f.close()    
 
         command="{0}/bcftools concat -f {1} ".format(self.param_required('bcftools_folder'),concat_file)
-        command= command+"-o {0} -O z".format(self.param_required('outprefix'))
+        command= command+"-o {0} -O z".format(outprefix)
 
         if self.param('verbose')=="True":
             self.warning("Merging chunks")

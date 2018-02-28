@@ -24,7 +24,7 @@ class BEDTools(object):
 
         self.bedtools_folder = bedtools_folder
 
-    def make_windows(self, w, g, s=None, region=None, verbose=False):
+    def make_windows(self, w, g, s=None, verbose=False):
         '''
         This method will make windows from a genome file by using 'bedtools makewindows'
 
@@ -50,8 +50,6 @@ class BEDTools(object):
            chr1    400     1400
            chr1    600     1600
 
-        region : str, chr1:1000-2000 or chr1 are valid region definitions.Optional
-                If specified, then make windows only for the specified region
         verbose : boolean, optional.
                   Default=False
 
