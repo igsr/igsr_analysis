@@ -40,7 +40,9 @@ sub default_options {
 	'tranches' => '[100.0,99.9,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
 	'resources_snps' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
         'resources_indels' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_indels.json', # VariantRecalibrator
-        'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum','InbreedingCoeff'], #annotations for recalibrating indels
+	'snps_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum'], #testing purposes
+	'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum'], #testing purposes
+#        'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum','InbreedingCoeff'], #annotations for recalibrating indels
 	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/OMNI/PHASING/ALL.chip.omni_broad_sanger_combined.20140818.refcorr.biallelic.snps', 
 				    '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/AFFY/PHASING/ALL.wgs.nhgri_coriell_affy_6.20140825.genotypes_has_ped.ucsc.hg38.refcorr.biallelic.snps'],
 # SHAPEIT. Specify here the prefix for the scaffolded microarray genotypes
@@ -96,6 +98,7 @@ sub resource_classes {
         '8Gb' => { 'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"' },
         '12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
 	'15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
+	'20GbUni' => { 'LSF' => '-C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
 	'20Gb' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
     };
 }
@@ -154,7 +157,19 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'coord_factory' => {'out_vcf' => '#out_vcf#'}}
+		1 => {'index_vcf1' => {'filepath' => '#out_vcf#'}}
+	    }
+        },
+
+	{   -logic_name => 'index_vcf1',
+            -module     => 'PyHive.Vcf.VcfIxByTabix',
+            -language   => 'python3',
+            -parameters => {
+		'tabix_folder' => $self->o('tabix_folder'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {'coord_factory' => {'out_vcf' => '#filepath#'}}
 	    }
         },
 
@@ -190,12 +205,12 @@ sub pipeline_analyses {
                 'gatk_folder' => $self->o('gatk_folder'),
 		'bamlist' => $self->o('bamlist'),
 		'bgzip_folder' => $self->o('bgzip_folder'),
-		'work_dir' => $self->o('work_dir'),
+		'work_dir' => $self->o('work_dir')."/gatk_ug",
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
                 'verbose' => 1
             },
-	    -rc_name => '8Gb',
+	    -rc_name => '20GbUni',
 	    -flow_into => {
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=out_vcf','?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
 	    },
@@ -212,14 +227,29 @@ sub pipeline_analyses {
             },
 	    -flow_into => {
 		1 => {
-		    'run_variantrecalibrator_snps' => {
-                        'filepath' => '#filepath#',
-                        'recal_file' => '#recal_f#',
-                        'tranches_file' => '#tranches_f#'
-		    }},
+		    'index_vcf2' => {
+                        'filepath' => '#merged_file#'
+		    }
+		},
 	    },
             -analysis_capacity => 1,
             -rc_name => '500Mb'
+        },
+
+	{   -logic_name => 'index_vcf2',
+            -module     => 'PyHive.Vcf.VcfIxByTabix',
+            -language   => 'python3',
+            -parameters => {
+                'tabix_folder' => $self->o('tabix_folder'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {
+                    'run_variantrecalibrator_snps' => {
+                        'filepath' => '#filepath#'
+                    }
+                },
+	    }
         },
 
 	{   -logic_name => 'run_variantrecalibrator_snps',
@@ -229,6 +259,7 @@ sub pipeline_analyses {
                 'filepath' => '#filepath#',
                 'work_dir' => $self->o('work_dir'),
                 'caller' => $self->o('caller'),
+		'annotations' => $self->o('snps_annotations'),
                 'gatk_folder' => $self->o('gatk_folder'),
                 'reference' => $self->o('reference'),
                 'resources' => $self->o('resources_snps'),

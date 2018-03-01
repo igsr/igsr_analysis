@@ -90,6 +90,7 @@ class GATK(object):
 
         try:
             subprocess.check_output(command, shell=True)
+            if not os.path.isfile(outprefix): raise Exception("Something went wrong while running GATK UG!")
         except subprocess.CalledProcessError as exp:
             print("Something went wrong while running GATK UG")
             raise Exception(exp.output)
