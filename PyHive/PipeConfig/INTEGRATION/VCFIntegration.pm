@@ -91,6 +91,7 @@ sub resource_classes {
         '12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
 	'15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
 	'20Gb' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
+	'30Gb' => { 'LSF' => '-n 20 -C0 -M30000 -q '.$self->o('lsf_queue').' -R"select[mem>30000] rusage[mem=30000]"' }
     };
 }
 
