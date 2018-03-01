@@ -16,8 +16,6 @@ class VcfConcat(eHive.BaseRunnable):
         all_ixs = self.param_required('allixs')
         all_files = self.param_required('allchunks_files')
 
-        pdb.set_trace()
-
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
 
