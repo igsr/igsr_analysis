@@ -23,7 +23,7 @@ sub default_options {
         'final_dir' => undef,
 	'faix' => undef,
 	'newheader' => undef,
-	'bamlist' => undef, # bamfile.list used by GATK UG
+	'filelist' => undef, # bamfile.list used by shorten_bamfiles
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
@@ -36,13 +36,13 @@ sub default_options {
 	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
 	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
-	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/', 
+	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
+	'transposebam_folder' => '/homes/ernesto/lib/reseqtrack//c_code/transpose_bam/',
 	'tranches' => '[100.0,99.9,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
 	'resources_snps' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
         'resources_indels' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_indels.json', # VariantRecalibrator
-	'snps_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum'], #testing purposes
-	'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum'], #testing purposes
-#        'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum','InbreedingCoeff'], #annotations for recalibrating indels
+	'snps_annotations' => undef, # VQSR. annotations for recalibrating snps
+        'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum','InbreedingCoeff'], #VQSR. annotations for recalibrating indels
 	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/OMNI/PHASING/ALL.chip.omni_broad_sanger_combined.20140818.refcorr.biallelic.snps', 
 				    '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/AFFY/PHASING/ALL.wgs.nhgri_coriell_affy_6.20140825.genotypes_has_ped.ucsc.hg38.refcorr.biallelic.snps'],
 # SHAPEIT. Specify here the prefix for the scaffolded microarray genotypes
@@ -169,7 +169,23 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'coord_factory' => {'out_vcf' => '#filepath#'}}
+		1 => {'shorten_bamfiles' => {'out_vcf' => '#filepath#'}}
+	    }
+        },
+
+
+	{   -logic_name => 'shorten_bamfiles',
+            -module     => 'PyHive.File.ShortenFiles',
+            -language   => 'python3',
+            -parameters => {
+                'filelist' => $self->o('filelist'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {'coord_factory' => {
+		    'short_f' => '#short_f#',
+		    'out_vcf' => '#out_vcf#'
+		      }}
 	    }
         },
 
@@ -184,14 +200,37 @@ sub pipeline_analyses {
                 'verbose' => 1
             },
 	    -flow_into => {
-		'2->A' => { 'run_gatkug_snps' => {
+		'2->A' => { 'transpose_bam' => {
                     'out_vcf' => '#out_vcf#',
-                    'chunk' => '#chunk#',
-		    'ix' => '#ix#'}
+                    'region' => '#chunk#',
+		    'ix' => '#ix#',
+		    'filelist' => '#short_f#'
+			    }
 		},
                 'A->1' => [ 'merge_vcf'],
 	    },
 	},
+
+        {   -logic_name => 'transpose_bam',
+            -module     => 'PyHive.Factories.TransposeBam',
+            -language   => 'python3',
+            -parameters => {
+                'filelist' => '#filelist#',
+		'region' => '#region#',
+                'outprefix' => 'test',
+		'transposebam_folder' => $self->o('transposebam_folder'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {'run_gatkug_snps' => {
+		    'out_vcf' => '#out_vcf#',
+		    'chunk' => '#region#',
+		    'bamlist' => '#out_bam#'
+		      }
+		}
+	    },
+	    -rc_name => '5Gb'
+        },
 
 	{   -logic_name => 'run_gatkug_snps',
             -module     => 'PyHive.VariantCalling.GATK_UG',
@@ -203,14 +242,14 @@ sub pipeline_analyses {
 		'output_mode' => 'EMIT_ALL_SITES',
 		'chunk' => '#chunk#',
                 'gatk_folder' => $self->o('gatk_folder'),
-		'bamlist' => $self->o('bamlist'),
+		'bamlist' => '#bamlist#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
                 'verbose' => 1
             },
-	    -rc_name => '20GbUni',
+	    -rc_name => '5Gb',
 	    -flow_into => {
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=out_vcf','?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
 	    },
