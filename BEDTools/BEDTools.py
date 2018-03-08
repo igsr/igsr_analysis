@@ -6,6 +6,7 @@ Created on 24 Apr 2017
 import pdb
 import re
 import subprocess
+import tempfile
 
 class BEDTools(object):
     '''
@@ -24,7 +25,7 @@ class BEDTools(object):
 
         self.bedtools_folder = bedtools_folder
 
-    def make_windows(self, w, g, s=None, verbose=False):
+    def make_windows(self, w, g, s=None, subtract=None, verbose=False):
         '''
         This method will make windows from a genome file by using 'bedtools makewindows'
 
@@ -49,7 +50,19 @@ class BEDTools(object):
            chr1    200     1200
            chr1    400     1400
            chr1    600     1600
+        
+        subtract : str, Optional
+                   BED file containing the features that will be removed from the generated windows.
+                   For example, if we have the following window:
+                   
+                   chr20 1000 2000
 
+                   And we have the following feature in the BED file: chr20 1100 1200
+                   Then the resulting windows will be like:
+                     
+                   chr20 1000 1100
+                   chr20 1200 2000
+        
         verbose : boolean, optional.
                   Default=False
 
@@ -79,6 +92,25 @@ class BEDTools(object):
             coordlist=[l.split("\t") for l in stdout.decode("utf-8").strip().split("\n")]
         except subprocess.CalledProcessError as exc:
             raise Exception(exc.output)
+
+        if subtract is not None:
+            temp = tempfile.NamedTemporaryFile()
+            try:
+                f=open(temp.name,'w');
+                for i in coordlist:
+                    f.write("{0}\t{1}\t{2}\n".format(i[0],i[1],i[2]))
+                f.close()
+                
+                command1= "{0}/bedtools subtract -a {1} -b {2}".format(self.bedtools_folder, 
+                                                                       temp.name, subtract)
+                coordlist=None
+                try:
+                    stdout=subprocess.check_output(command1, shell=True)
+                    coordlist=[l.split("\t") for l in stdout.decode("utf-8").strip().split("\n")]
+                except subprocess.CalledProcessError as exc:
+                    raise Exception(exc.output)
+            finally:
+                temp.close()
 
         return coordlist
 
