@@ -195,7 +195,7 @@ sub pipeline_analyses {
             -parameters => {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
-		'ix' =>11,
+#		'ix' =>11,
                 'window' => $self->o('window_coordfactory'),
                 'verbose' => 1
             },
@@ -229,7 +229,7 @@ sub pipeline_analyses {
 		      }
 		}
 	    },
-	    -rc_name => '5Gb'
+	    -rc_name => '12Gb'
         },
 
 	{   -logic_name => 'run_gatkug_snps',
