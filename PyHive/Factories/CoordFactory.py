@@ -18,10 +18,15 @@ class CoordFactory(eHive.BaseRunnable):
         offset=None
         if self.param_is_defined('offset'):
             offset=self.param('offset')
+
+        subtract=None
+        if self.param_is_defined('subtract'):
+            subtract=self.param('subtract')
           
         coord_list=bedtools_obj.make_windows(g=self.param_required('genome_file'), 
                                              w=self.param_required('window'), 
                                              s=offset,
+                                             subtract=subtract,
                                              verbose=verbose)
         
         chunks=[]
