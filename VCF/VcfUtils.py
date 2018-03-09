@@ -319,3 +319,30 @@ class VcfUtils(object):
             raise Exception(exc.output)
 
         return outfile
+
+    def convert_PL2GL(self, outfile, verbose=False):
+        '''
+        Function to convert PL fields into GT.
+        This function makes use of Bcftools +tag2tag plugin
+        
+        Parameters
+        ----------
+        
+        '''
+        command = ""
+        if self.bcftools_folder:
+            command += self.bcftools_folder + "/"
+
+        command += "bcftools +tag2tag {0} -o {1} -Oz -- -r --pl-to-gl".format(self.vcf, outfile)
+        print(command)
+
+        if verbose is True:
+            print("Command is: %s" % command)
+
+        try:
+            subprocess.check_output(command, shell=True)
+        except subprocess.CalledProcessError as exc:
+            print("Cmd used was {0}".format(exc.cmd))
+            raise Exception(exc.output)
+
+        return outfile

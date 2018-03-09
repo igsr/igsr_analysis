@@ -11,7 +11,7 @@ sub default_options {
     return {
         %{ $self->SUPER::default_options() },               # inherit other stuff from the base class
 
-        'pipeline_name' => 'run_snptools',       # name used by the beekeeper to prefix job names on the farm
+        'pipeline_name' => 'run_vcfintegration',       # name used by the beekeeper to prefix job names on the farm
 
         # runnable-specific parameters' defaults:
         'hostname'   => 'mysql-g1kdcc-public',
@@ -57,7 +57,7 @@ sub default_options {
 	'main' => 20, # SHAPEIT
 	'window_bglchnks' => 700, # makeBGLCHUNKS
 	'overlap_bglchnks' => 200, # makeBGLCHUNKS
-	'genome_file' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/SEQUENCING_GENOTYPES/ONLY_ONESAMPLE_GATK/chr20.genome', #
+	'genome_file' => undef, #PyHive.Factories.CoordFactory. Used to generate the chunks
 	'window_coordfactory' =>  undef, #PyHive.Factories.CoordFactory
 	'offset_coordfactory' => undef, #PyHive.Factories.CoordFactory
 	'outprefix' => 'combined.all.chr20', # Prefix used for all output files
@@ -196,7 +196,7 @@ sub pipeline_analyses {
             -parameters => {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
-#		'ix' =>11,
+		'ix' => 4,
                 'window' => $self->o('window_coordfactory'),
                 'verbose' => 1
             },
@@ -220,7 +220,7 @@ sub pipeline_analyses {
 		'region' => '#region#',
                 'outprefix' => 'test',
 		'transposebam_folder' => $self->o('transposebam_folder'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/bams"
             },
 	    -flow_into => {
 		1 => {'run_gatkug_snps' => {
@@ -334,8 +334,31 @@ sub pipeline_analyses {
                 'tranches_file' => '#tranches_f#',
                 'mode' => 'SNP'
             },
+	    -flow_into => {
+		1 => {
+		    'convert_pl2gl' => {
+                        'filepath' => '#out_vcf#'
+		    }},
+	    },
 	},
 
+	{   -logic_name => 'convert_pl2gl',
+            -module     => 'PyHive.Vcf.convertPL2GL',
+            -language   => 'python3',
+            -parameters => {
+		'filepath' => '#filepath#',
+		'outprefix' => '#filepath#',
+                'work_dir' => $self->o('work_dir'),
+                'bcftools_folder' => $self->o('bcftools_folder')
+            },
+            -rc_name => '500Mb',
+	    -flow_into => {
+		1 => {
+		    'rename_chros' => {
+                        'filepath' => '#out_vcf#'
+		    }},
+	    },
+        },
 
 	{   -logic_name => 'rename_chros',
             -module     => 'PyHive.Vcf.VcfReplaceChrNames',

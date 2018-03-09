@@ -18,11 +18,6 @@ class GATK_UG(eHive.BaseRunnable):
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
 
-        #delete files from previous runs
-        files = glob.glob(self.param_required('work_dir')+'/*ug*')
-        for f in files:
-            os.remove(f)
-
         outprefix=os.path.split(self.param_required('outprefix'))[1]
 
         chrom=self.param_required('chunk')[0]
