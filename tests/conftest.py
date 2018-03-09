@@ -15,7 +15,7 @@ def pytest_addoption(parser):
     parser.addoption('--picard_folder', default='~/bin/',action='store_true', help='Folder with Picard jar file')
     parser.addoption('--bedtools_folder', default='/homes/ernesto/bin/bedtools-2.25.0/bin/', action='store_true', help='Folder with bedtools binary')
     parser.addoption('--makeBGLCHUNKS_folder', default='~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/' ,action='store_true', help='Folder with makeBGLCHUNKS binary')
-    parser.addoption('--bcftools_folder', default='~/bin/bcftools/' ,action='store_true', help='Folder containing bcftools binaries')
+    parser.addoption('--bcftools_folder', default='~/bin/bcftools-1.6/' ,action='store_true', help='Folder containing bcftools binaries')
     parser.addoption('--beagle_folder', default='~/bin/beagle/' ,action='store_true', help='Folder with Beagle jar file')
     parser.addoption('--prepareGenFromBeagle4_folder', default='~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/', action='store_true', help='Folder with prepareGenFromBeagle4 binary')
     parser.addoption('--shapeit_folder', default='~/bin/shapeit2_v2_12/bin/' ,action='store_true', help='Folder with SHAPEIT binary')
