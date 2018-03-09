@@ -21,9 +21,9 @@ class convertPL2GL(eHive.BaseRunnable):
 
         vcf_file=vcf_object.convert_PL2GL(outfile=outprefix+".GL.vcf.gz", verbose=True)
 
-        self.param('vcf_file', vcf_file)
+        self.param('out_vcf', vcf_file)
 
     def write_output(self):
         self.warning('Work is done!')
 
-        self.dataflow( {'vcf_file' : self.param('vcf_file') }, 1)
+        self.dataflow( {'out_vcf' : self.param('out_vcf') }, 1)
