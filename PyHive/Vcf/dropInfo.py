@@ -4,8 +4,8 @@ import pdb
 
 from VcfUtils import VcfUtils
 
-class convertPL2GL(eHive.BaseRunnable):
-    """Convert PL fields in the VCF to GL"""
+class dropInfo(eHive.BaseRunnable):
+    """drop INFO annotation from a VCF file"""
 
     def run(self):
         filepath=self.param_required('filepath')
@@ -17,12 +17,12 @@ class convertPL2GL(eHive.BaseRunnable):
 
         outprefix=os.path.split(self.param_required('outprefix'))[1]
 
-        outfile = "{0}/{1}.GL.vcf.gz".format(self.param_required('work_dir'), outprefix)
+        outfile = "{0}/{1}.noINFO.vcf.gz".format(self.param_required('work_dir'), outprefix)
 
         vcf_object=VcfUtils(vcf=filepath,
                             bcftools_folder=self.param_required('bcftools_folder'))
 
-        vcf_file=vcf_object.convert_PL2GL(outfile, verbose=True)
+        vcf_file=vcf_object.drop_info(outfile, verbose=True)
 
         self.param('out_vcf', vcf_file)
 
