@@ -19,15 +19,18 @@ class VcfAllelicPrim(eHive.BaseRunnable):
             work_dir=os.path.split(filepath)[0]
 
         vcfNorm = VcfNormalize(vcf=filepath, vcflib_folder=self.param_required('vcflib_folder'), bgzip_folder=self.param_required('bgzip_folder'))
+
+        downstream_pipe=None
+
         vcf_file=""
         if self.param_is_defined('compress'):
-            vcf_file=vcfNorm.run_vcfallelicprimitives(outprefix=file,compress=True,outdir=work_dir)
+            vcf_file=vcfNorm.run_vcfallelicprimitives(outprefix=file,compress=True,downstream_pipe=downstream_pipe,outdir=work_dir)
         else:
-            vcf_file=vcfNorm.run_vcfallelicprimitives(outprefix=file,compress=False,outdir=work_dir)
+            vcf_file=vcfNorm.run_vcfallelicprimitives(outprefix=file,compress=False,downstream_pipe=downstream_pipe,outdir=work_dir)
 
-        self.param('vcf_file', vcf_file)
+        self.param('out_vcf', vcf_file)
 
     def write_output(self):
         self.warning('Work is done!')
 
-        self.dataflow( {'vcf_file' : self.param('vcf_file') }, 1)
+        self.dataflow( {'out_vcf' : self.param('out_vcf') }, 1)
