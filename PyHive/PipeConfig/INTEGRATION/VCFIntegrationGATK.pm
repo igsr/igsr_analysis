@@ -409,13 +409,29 @@ sub pipeline_analyses {
             },
 	    -flow_into => {
 		1 => {
-		    'convert_pl2gl' => {
+		    'select_variants' => {
                         'filepath' => '#vcf_filt#'
 		    }},
 	    },
 	},
 
-	
+        {   -logic_name => 'select_variants',
+            -module     => 'PyHive.VcfFilter.SelectVariants',
+            -language   => 'python3',
+            -parameters => {
+                'filepath' => '#filepath#',
+                'outprefix' => '#filepath#',
+                'work_dir' => $self->o('work_dir'),
+                'bcftools_folder' => $self->o('bcftools_folder')
+            },
+            -rc_name => '500Mb',
+	    -flow_into => {
+		1 => {
+		    'convert_pl2gl' => {
+                        'filepath' => '#out_vcf#'
+		    }},
+	    },
+        },
 
 	{   -logic_name => 'convert_pl2gl',
             -module     => 'PyHive.Vcf.convertPL2GL',

@@ -209,3 +209,29 @@ class BCFTools(object):
             raise Exception(exc.output)
 
         return outprefix
+
+    def select_variants(self, outprefix):
+        '''
+        Run bcftools view to select only the variants (exclude the 0|0 genotypes)
+
+        Parameters
+        ---------
+        outprefix : str, Required. Prefix used for the output file
+
+        Returns
+        -------
+        Returns the path for the VCF with only the variants
+        '''
+        outfile = outprefix + ".onlyvariants.vcf.gz"
+
+        command = "{0}/bcftools view -c1 {1} -o {2} -O z".format(
+            self.bcftools_folder, self.vcf, outfile)
+
+        try:
+            subprocess.check_output(command, shell=True)
+        except subprocess.CalledProcessError as exc:
+            print("Something went wrong while running Bcftools view\n"
+                  "Command used was: %s" % command)
+            raise Exception(exc.output)
+
+        return outfile
