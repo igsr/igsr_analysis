@@ -1,1 +1,3 @@
-{}
+{
+  "test_VcfNormalize.py::test_run_bcftoolsnorm": true
+}
