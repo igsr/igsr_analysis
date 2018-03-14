@@ -43,12 +43,21 @@ def test_filter_by_variant_type_biallelic(vcf_object):
 
     assert os.path.isfile(outfile) is True
 
-def test_filter_by_variant_type_biallelic_compressed(vcf_object, clean_tmp):
+def test_filter_by_variant_type_biallelic_compressed(vcf_object):
     '''
     Test method filter_by_variant_type
     using the biallelic option
     '''
 
     outfile=vcf_object.filter_by_variant_type(outprefix='data/out/test', biallelic=True, compress=False)
+
+    assert os.path.isfile(outfile) is True
+
+def test_subset_vcf(vcf_object, clean_tmp):
+    '''
+    Test method subset_vcf to subset a VCF by using a BED file/region
+    '''
+
+    outfile=vcf_object.subset_vcf(outprefix='out/test.vcf.gz', region="chr1", apply_filters="PASS")
 
     assert os.path.isfile(outfile) is True

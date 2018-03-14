@@ -320,6 +320,40 @@ class VcfUtils(object):
 
         return outfile
 
+    def drop_info(self, outfile, verbose=False):
+        '''
+        Function to remove the INFO annotation from a VCF.
+        This function uses bcftools annotate  to perform this operation
+
+        Parameters
+        ----------
+        outfile : string, required
+                  File where the output VCF will be written
+        verbose : bool, optional
+                  increase the verbosity, default=False
+
+        Returns
+        -------
+        Path to the vcf.gz file without the INFO annotation
+        '''
+         
+        command = ""
+        if self.bcftools_folder:
+            command += self.bcftools_folder + "/"
+
+        command += "bcftools annotate --remove INFO {0} -o {1} -O z".format(self.vcf, outfile)
+
+        if verbose is True:
+            print("Command is: %s" % command)
+
+        try:
+            subprocess.check_output(command, shell=True)
+        except subprocess.CalledProcessError as exc:
+            print("Cmd used was {0}".format(exc.cmd))
+            raise Exception(exc.output)
+
+        return outfile
+
     def convert_PL2GL(self, outfile, verbose=False):
         '''
         Function to convert PL fields into GT.
@@ -346,3 +380,5 @@ class VcfUtils(object):
             raise Exception(exc.output)
 
         return outfile
+
+        

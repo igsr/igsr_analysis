@@ -28,7 +28,6 @@ class CoordFactory(eHive.BaseRunnable):
                                              s=offset,
                                              subtract=subtract,
                                              verbose=verbose)
-        
         chunks=[]
 
         ix=1

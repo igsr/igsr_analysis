@@ -9,6 +9,7 @@ import subprocess
 import json
 import glob
 import ast
+import pdb
 
 class BCFTools(object):
     '''
@@ -37,7 +38,7 @@ class BCFTools(object):
         self.tabix_folder = tabix_folder
 
     def subset_vcf(self, outprefix, bed=None, region=None, outdir=None,
-                   create_index=False, verbose=None, action='exclude', threads=0):
+                   create_index=False, verbose=None, action='exclude', apply_filters=None, threads=0):
         '''
         Subset the vcf file using a BED file/region having the coordinates of the
         variants to exclude/include
@@ -55,10 +56,12 @@ class BCFTools(object):
         create_index : Boolean, optional
             Generate a tabix index. Default=False
         verbose : Boolean, optional
-            verbose?
+            verbose
         action: str, optional
             Exclude or include variants from the bed file passed through the
             bed option. Default= exclude
+        apply_filters: str, optional
+            Apply a filter string: i.e. "PASS,."
         threads: int, optional
             Number of output compression threads to use in addition to main thread. Default=0
 
@@ -77,7 +80,12 @@ class BCFTools(object):
         if region:
             bits = outprefix.split(".")
             vcf_ix = bits.index("vcf")
-            new = bits[vcf_ix - 1] + "_" + region
+
+            new=""
+            if apply_filters is not None:
+                new = bits[vcf_ix - 1] + "_" + region+".filt"
+            else:
+                new = bits[vcf_ix - 1] + "_" + region
             bits[vcf_ix - 1] = new
             outprefix = ".".join(bits)
 
@@ -96,6 +104,9 @@ class BCFTools(object):
                 command += "bcftools view -r {0} ".format(region)
 
         command += "-o {0} -O z {1} --threads {2}".format(outprefix, self.vcf, threads)
+        
+        if apply_filters is not None:
+            command += " -f \"{0}\"".format(apply_filters)
 
         if verbose is True:
             print("Command is: %s" % command)
