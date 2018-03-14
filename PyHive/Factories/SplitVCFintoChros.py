@@ -30,6 +30,10 @@ class SplitVCFintoChros(eHive.BaseRunnable):
         verbose=None
         if self.param_is_defined('verbose'):
             verbose=self.__str_to_bool(self.param('verbose'))
+        
+        filt_string=None
+        if self.param_is_defined('filt_string'):
+            filt_string=self.param('filt_string')
 
         bcftools_o = BCFTools(vcf=ifile,bcftools_folder=self.param('bcftools_folder'))
 
@@ -44,11 +48,14 @@ class SplitVCFintoChros(eHive.BaseRunnable):
             if not os.path.isdir(chr_folder):
                 os.mkdir(chr_folder)
             vcffile=bcftools_o.subset_vcf(region=chr,outprefix=file,outdir=chr_folder,
-                                          create_index=True, threads=self.param('threads'), action='include', verbose=verbose)
+                                          create_index=True, apply_filters=filt_string, 
+                                          threads=self.param('threads'), action='include', 
+                                          verbose=verbose)
             files.append(
                 {
                     'chr': vcffile,
-                    'ix': ix
+                    'ix': ix,
+                    'chromname': chr
                 }
             )
             ix+=1

@@ -113,6 +113,14 @@ def test_drop_genotypes(vcf_object):
 
     assert os.path.exists("out/test.sites.vcf.gz")
 
+def test_drop_info(vcf_object):
+    '''
+    Test the method to drop the INFO annotation from a VCF file
+    '''
+    vcf_object.drop_info(outfile='out/test.noinfo.vcf.gz',verbose=True)
+
+    assert os.path.exists("out/test.noinfo.vcf.gz")
+
 def test_convert_PL2GL(clean_tmp):
     '''
     Test the method change PL fields to GL in a VCF file
