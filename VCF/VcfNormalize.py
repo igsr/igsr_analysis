@@ -4,6 +4,7 @@ Created on 31 Mar 2017
 @author: ernesto
 '''
 
+import pdb
 import os
 import subprocess
 
@@ -14,7 +15,7 @@ class VcfNormalize(object):
 
 
     def __init__(self, vcf, vt_folder=None, vcflib_folder=None, bgzip_folder=None,
-                 gatk_folder=None):
+                 gatk_folder=None, bcftools_folder=None):
         '''
         Constructor
 
@@ -30,6 +31,8 @@ class VcfNormalize(object):
                        Path to folder containing the bgzip binary
         gatk_folder : str, Optional
                       Path to folder containing the GATK jar file
+        bcftools_folder : str, Optional
+                        Path to folder containing the bcftools binary
         '''
 
         if os.path.isfile(vcf) is False:
@@ -40,6 +43,7 @@ class VcfNormalize(object):
         self.vcflib_folder = vcflib_folder
         self.bgzip_folder = bgzip_folder
         self.gatk_folder = gatk_folder
+        self.bcftools_folder = bcftools_folder
 
     def run_vtnormalize(self, outprefix, reference, compress=False, outdir=None):
         '''
@@ -91,6 +95,59 @@ class VcfNormalize(object):
             print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
 
         return outprefix
+
+    def run_bcftoolsnorm(self, outprefix, reference, multiallelics=None, type=None, outdir=None):
+        '''
+        Run bcftools norm on a vcf file
+
+        Parameters
+        ----------
+        outprefix : str, required
+              prefix for outputfile
+        reference : str, required
+              path to Fasta file with reference
+        multiallelic : str, optional
+              Operate on multiallelic variants and either split or merge them.
+              Possible values are: 'split'/'merge'
+        type: str, optional
+              If 'multiallelic' is defined then operate on this type of variant.
+              Possible values are: snps|indels|both|any
+        outdir : str, optional
+            If provided, then put output files in this folder
+
+        Returns
+        -------
+        A string with path to normalized file
+        '''
+
+        command = ""
+        if self.bcftools_folder:
+            command += self.bcftools_folder+"/"
+
+        pdb.set_trace()
+        if outdir:
+            outprefix = "{0}/{1}".format(outdir, outprefix)
+
+        outprefix = outprefix+".norm.vcf.gz"
+
+        command += "bcftools norm -f {0}".format(reference)
+
+        if multiallelics is 'split':
+            command += " -m '-{0}' ".format(type)
+        elif multiallelics is 'merge':
+            command += " -m '+{0}' ".format(type)
+            
+        command += "{0} -o {1} -Oz".format(self.vcf, outprefix)
+
+        try:
+            subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+        except subprocess.CalledProcessError as exc:
+            print(exc.output)
+            print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
+
+        
+            
+
 
     def run_vcfallelicprimitives(self, outprefix, compress=False, outdir=None,
                                  keepinfo=True, keepgeno=True):
