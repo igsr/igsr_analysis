@@ -149,6 +149,48 @@ sub pipeline_analyses {
 	    
         },
 
+	{   -logic_name => 'drop_INFO',
+            -module     => 'PyHive.Vcf.dropInfo',
+            -language   => 'python3',
+            -parameters => {
+                'bcftools_folder' => $self->o('bcftools_folder'),
+		'outprefix' => $self->o('outprefix'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {'splitmultiallelic' => {'filepath' => '#out_vcf#'}}
+	    }
+        },
+
+	{   -logic_name => 'splitmultiallelic',
+            -module     => 'PyHive.Vcf.BcftoolsVcfNorm',
+            -language   => 'python3',
+            -parameters => {
+                'bcftools_folder' => $self->o('bcftools_folder'),
+		'multiallelics' => 'split',
+		'type' => 'both',
+                'outprefix' => $self->o('outprefix'),
+		'reference' => $self->o('reference'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {'index_vcf1' => {'filepath' => '#out_vcf#'}}
+	    }
+        },
+
+	{   -logic_name => 'index_vcf1',
+            -module     => 'PyHive.Vcf.VcfIxByTabix',
+            -language   => 'python3',
+            -parameters => {
+                'filepath' => '#filepath#',
+                'tabix_folder' => $self->o('tabix_folder'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {'select_snps' => {'filepath' => '#out_vcf#'}}
+	    }
+        },
+
 	{   -logic_name => 'select_snps',
             -module     => 'PyHive.VcfFilter.SplitVariants',
             -language   => 'python3',
@@ -159,11 +201,11 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'index_vcf1' => {'filepath' => '#out_vcf#'}}
+		1 => {'index_vcf2' => {'filepath' => '#out_vcf#'}}
 	    }
         },
 
-	{   -logic_name => 'index_vcf1',
+	{   -logic_name => 'index_vcf2',
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
@@ -268,7 +310,7 @@ sub pipeline_analyses {
             },
 	    -flow_into => {
 		1 => {
-		    'index_vcf2' => {
+		    'index_vcf3' => {
                         'filepath' => '#merged_file#'
 		    }
 		},
@@ -277,7 +319,7 @@ sub pipeline_analyses {
             -rc_name => '500Mb'
         },
 
-	{   -logic_name => 'index_vcf2',
+	{   -logic_name => 'index_vcf3',
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
@@ -355,13 +397,13 @@ sub pipeline_analyses {
             -rc_name => '500Mb',
 	    -flow_into => {
 		1 => {
-		    'index_vcf3' => {
+		    'index_vcf4' => {
                         'filepath' => '#out_vcf#'
 		    }},
 	    },
         },
 
-	{   -logic_name => 'index_vcf3',
+	{   -logic_name => 'index_vcf4',
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
