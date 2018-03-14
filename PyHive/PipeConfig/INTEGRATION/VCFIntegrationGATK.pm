@@ -187,6 +187,36 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
+		1 => {'run_VcfAllelicPrim' => {'filepath' => '#out_vcf#'}}
+	    }
+        },
+
+	{   -logic_name => 'run_VcfAllelicPrim',
+            -module     => 'PyHive.Vcf.VcfAllelicPrim',
+            -language   => 'python3',
+            -parameters => {
+		'compress' =>1,
+		'downstream_pipe' => '~/bin/vt/vt sort - | ~/bin/vt/vt uniq -',
+                'filepath' => '#filepath#',
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {'mergemultiallelic' => {'filepath' => '#out_vcf#'}}
+	    }
+        },
+
+	{   -logic_name => 'mergemultiallelic',
+            -module     => 'PyHive.Vcf.BcftoolsVcfNorm',
+            -language   => 'python3',
+            -parameters => {
+                'bcftools_folder' => $self->o('bcftools_folder'),
+                'multiallelics' => 'merge',
+                'type' => 'both',
+                'outprefix' => $self->o('outprefix'),
+                'reference' => $self->o('reference'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
 		1 => {'select_snps' => {'filepath' => '#out_vcf#'}}
 	    }
         },
@@ -384,6 +414,8 @@ sub pipeline_analyses {
 		    }},
 	    },
 	},
+
+	
 
 	{   -logic_name => 'convert_pl2gl',
             -module     => 'PyHive.Vcf.convertPL2GL',

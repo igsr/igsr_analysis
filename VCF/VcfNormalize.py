@@ -145,12 +145,8 @@ class VcfNormalize(object):
             print(exc.output)
             print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
 
-        
-            
-
-
     def run_vcfallelicprimitives(self, outprefix, compress=False, outdir=None,
-                                 keepinfo=True, keepgeno=True):
+                                 keepinfo=True, keepgeno=True, downstream_pipe=None):
         '''
         Run vcfallelicprimitives on a vcf file
 
@@ -174,6 +170,9 @@ class VcfNormalize(object):
         keepgeno : bool, optional. Default=True
             Maintain genotype-level annotations when decomposing.  Similar
             caution should be used for this as for keep-info.
+        downstream_pipe : str, optional
+            If defined, then pipe the output VCF to other tools. 
+            i.e. "~/bin/vt/vt sort - | ~/bin/vt/vt uniq -"
 
         Returns
         -------
@@ -196,6 +195,9 @@ class VcfNormalize(object):
 
         if keepgeno is True:
             command += "--keep-geno "
+        
+        if downstream_pipe is not None:
+            command += "| {0}".format(downstream_pipe) 
 
         if compress is True:
             outprefix = outprefix+".gz"
@@ -211,6 +213,7 @@ class VcfNormalize(object):
             command += " > {0}".format(outprefix)
 
         try:
+            print(command)
             subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
         except subprocess.CalledProcessError as exc:
             print(exc.output)

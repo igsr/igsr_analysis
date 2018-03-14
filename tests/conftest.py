@@ -21,6 +21,7 @@ def pytest_addoption(parser):
     parser.addoption('--shapeit_folder', default='~/bin/shapeit2_v2_12/bin/' ,action='store_true', help='Folder with SHAPEIT binary')
     parser.addoption('--gatk_folder', default='~/bin/GATK/', action='store_true', help='Path to folder containing the GATK jar file')
     parser.addoption('--bgzip_folder', default='/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/', action='store_true', help='Path to folder containing the Bgzip binary')
+    parser.addoption('--vcflib_folder', default='~/bin/vcflib/bin/', action='store_true', help='Path to folder containing the vcflib binaries')
     parser.addoption('--hostname', default='mysql-g1kdcc-public', action='store_true', help='host name')
     parser.addoption('--username', default='g1krw', action='store_true', help='user name')
     parser.addoption('--port', default=4197, action='store_true', help='port')
