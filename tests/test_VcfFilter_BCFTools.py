@@ -53,11 +53,20 @@ def test_filter_by_variant_type_biallelic_compressed(vcf_object):
 
     assert os.path.isfile(outfile) is True
 
-def test_subset_vcf(vcf_object, clean_tmp):
+def test_subset_vcf(vcf_object):
     '''
     Test method subset_vcf to subset a VCF by using a BED file/region
     '''
 
     outfile=vcf_object.subset_vcf(outprefix='out/test.vcf.gz', region="chr1", apply_filters="PASS")
+
+    assert os.path.isfile(outfile) is True
+
+def test_select_variants(vcf_object):
+    '''
+    Test method to select only the variants (exclude the 0|0 genotypes) from a VCF file
+    '''
+    
+    outfile=vcf_object.select_variants(outprefix='out/test')
 
     assert os.path.isfile(outfile) is True
