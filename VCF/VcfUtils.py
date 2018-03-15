@@ -97,7 +97,7 @@ class VcfUtils(object):
         return outfile
 
     def combine(self, labels, reference, outprefix, compress=False, outdir=None, ginterval=None, 
-                genotypemergeoption=None, filteredrecordsmergetype=None, options=None):
+                genotypemergeoption=None, filteredrecordsmergetype=None, threads=1, options=None):
         '''
         Combine VCFs using GATK's CombineVariants into a single VCF
 
@@ -122,6 +122,8 @@ class VcfUtils(object):
         filteredrecordsmergetype : str, optional
                     Determines how we should handle records seen at the same site in the VCF, but with different FILTER fields
                     Possible values are : KEEP_IF_ANY_UNFILTERED, KEEP_IF_ANY_UNFILTERED, KEEP_UNCONDITIONAL
+        threads : int, optional
+                  Number of trades to use. Default=1
         options : list, optional
                    List of options. i.e. ['-env','--filteredAreUncalled']
     
@@ -153,7 +155,9 @@ class VcfUtils(object):
 
         outfile+= "{0}.vcf".format(outprefix)
 
-        command += "GenomeAnalysisTK.jar -T CombineVariants {0} -R {1} ".format(variants_str, reference)
+        command += "GenomeAnalysisTK.jar -T CombineVariants {0} -R {1} -nt {2} ".format(variants_str, 
+                                                                                        reference,
+                                                                                        threads)
 
         if ginterval is not None:
             command += "-L {0} ".format(ginterval)

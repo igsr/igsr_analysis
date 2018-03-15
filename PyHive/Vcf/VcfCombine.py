@@ -41,7 +41,7 @@ class VcfCombine(eHive.BaseRunnable):
         if self.param_is_defined('ginterval'):
             ginterval=self.param('ginterval')
 
-        outfile=vcf_utils.combine(labels=labels,reference=self.param_required('reference') ,outprefix=self.param_required('outprefix'),
+        outfile=vcf_utils.combine(labels=labels,reference=self.param_required('reference'),threads=self.param_required('threads'),outprefix=self.param_required('outprefix'),
                                   outdir=self.param_required('work_dir'), compress=True,genotypemergeoption='UNIQUIFY',ginterval=ginterval, options=['-env','-sites_only',
                                                                                                                                                      '--filteredAreUncalled'])
         self.param('out_vcf', outfile)
