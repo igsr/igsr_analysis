@@ -124,7 +124,6 @@ class VcfNormalize(object):
         if self.bcftools_folder:
             command += self.bcftools_folder+"/"
 
-        pdb.set_trace()
         if outdir:
             outprefix = "{0}/{1}".format(outdir, outprefix)
 
@@ -132,10 +131,12 @@ class VcfNormalize(object):
 
         command += "bcftools norm -f {0}".format(reference)
 
-        if multiallelics is 'split':
+        if multiallelics == "split":
             command += " -m '-{0}' ".format(type)
-        elif multiallelics is 'merge':
+        elif multiallelics == "merge":
             command += " -m '+{0}' ".format(type)
+        else:
+            raise Exception("'multiallelics' value is not recognized: {0}".format(multiallelics))
             
         command += "{0} -o {1} -Oz".format(self.vcf, outprefix)
 
@@ -144,6 +145,8 @@ class VcfNormalize(object):
         except subprocess.CalledProcessError as exc:
             print(exc.output)
             print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
+
+        return outprefix
 
     def run_vcfallelicprimitives(self, outprefix, compress=False, outdir=None,
                                  keepinfo=True, keepgeno=True, downstream_pipe=None):

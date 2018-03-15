@@ -33,6 +33,7 @@ sub default_options {
 	'gatk_folder' => '~/bin/GATK/',
 	'ginterval' => undef, # if defined, then do the integration for a certain genomic region
 	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',
+	'vcflib_folder' => '~/bin/vcflib/bin/', # folder containing the vcfallelicprimitives binary
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
 	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
 	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
@@ -97,7 +98,8 @@ sub resource_classes {
         '2Gb' => { 'LSF' => '-C0 -M2048 -q '.$self->o('lsf_queue').' -R"select[mem>2048] rusage[mem=2048]"' },
         '5Gb' => { 'LSF' => '-C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"' },
         '8Gb' => { 'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"' },
-        '12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
+        '12Gb4cpus' => { 'LSF' => '-n 4 -C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
+	'12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
 	'15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
 	'20GbUni' => { 'LSF' => '-C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
 	'20Gb' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
@@ -137,14 +139,15 @@ sub pipeline_analyses {
                 'flist'     => '#flist#',
 		'reference' => $self->o('reference'),
 		'ginterval' => $self->o('ginterval'),
+		'threads' => 4,
 		'bcftools_folder' => $self->o('bcftools_folder'),
 		'gatk_folder' => $self->o('gatk_folder'),
 		'outprefix' => $self->o('outprefix'),
 		'work_dir' => $self->o('work_dir')
             },
-	    -rc_name => '12Gb',
+	    -rc_name => '12Gb4cpus',
 	    -flow_into => {
-		1 => {'select_snps' => {'filepath' => '#out_vcf#'}}
+		1 => {'drop_INFO' => {'filepath' => '#out_vcf#'}}
 	    }
 	    
         },
@@ -187,7 +190,7 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'run_VcfAllelicPrim' => {'filepath' => '#out_vcf#'}}
+		1 => {'run_VcfAllelicPrim' => {'filepath' => '#filepath#'}}
 	    }
         },
 
@@ -198,6 +201,8 @@ sub pipeline_analyses {
 		'compress' =>1,
 		'downstream_pipe' => '~/bin/vt/vt sort - | ~/bin/vt/vt uniq -',
                 'filepath' => '#filepath#',
+		'bgzip_folder' => $self->o('bgzip_folder'),
+		'vcflib_folder' => $self->o('vcflib_folder'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
