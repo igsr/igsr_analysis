@@ -158,7 +158,6 @@ class VcfUtils(object):
         command += "GenomeAnalysisTK.jar -T CombineVariants {0} -R {1} -nt {2} ".format(variants_str, 
                                                                                         reference,
                                                                                         threads)
-
         if ginterval is not None:
             command += "-L {0} ".format(ginterval)
         
@@ -182,10 +181,17 @@ class VcfUtils(object):
             command += " | {0} -c > {1}.gz".format(bgzip_path, outfile)
         else :
             command += " -o {0}".format(outfile)
-
+        
         try:
-            print(command)
-            subprocess.check_output(command, shell=True)
+            p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
+            stdout, stderr = p.communicate()
+            lines=stderr.split("\n")
+            p = re.compile('#* ERROR')
+            for i in lines:
+                m = p.match(i)
+                if m:
+                    print("Something went wrong while running CombineVariants. This was the error message: {0}".format(stderr))
+                    raise Exception()
         except subprocess.CalledProcessError as exc:
             print("Something went wrong while running CombineVariants.\n"
                   "Command used was: %s" % command)

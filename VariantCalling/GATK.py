@@ -7,6 +7,7 @@ Created on 22 Feb 2018
 import os
 import subprocess
 import pdb
+import re
 
 class GATK(object):
     '''
@@ -89,7 +90,16 @@ class GATK(object):
             command += " -o {0}".format(outprefix)
 
         try:
-            subprocess.check_output(command, shell=True)
+
+            p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
+            stdout, stderr = p.communicate()
+            lines=stderr.split("\n")
+            p = re.compile('#* ERROR')
+            for i in lines:
+                m = p.match(i)
+                if m:
+                    print("Something went wrong while running CombineVariants. This was the error message: {0}".format(stderr))
+                    raise Exception()
             if not os.path.isfile(outprefix): raise Exception("Something went wrong while running GATK UG!")
         except subprocess.CalledProcessError as exp:
             print("Something went wrong while running GATK UG")

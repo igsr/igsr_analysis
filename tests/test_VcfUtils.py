@@ -79,7 +79,6 @@ def test_combine_compressed(vcf_object):
     
     assert os.path.exists("out/out_combine.vcf.gz")
 
-
 def test_change_chrnames_2ensembl(vcf_object):
     '''
     Test the method to change the style of the chrnames (from UCSC to Ensembl)
@@ -90,7 +89,6 @@ def test_change_chrnames_2ensembl(vcf_object):
 
     assert os.path.exists("out/test.ensembl.vcf.gz")
     assert os.path.exists("out/test.ensembl.vcf")
-
 
 def test_change_chrnames_2ucsc():
     '''
@@ -131,3 +129,4 @@ def test_convert_PL2GL(clean_tmp):
     vcf_object.convert_PL2GL(outfile='out/test.gatk.GL.vcf.gz',verbose=True)
 
     assert os.path.exists("out/test.gatk.GL.vcf.gz")
+
