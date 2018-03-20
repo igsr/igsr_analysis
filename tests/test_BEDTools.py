@@ -31,3 +31,13 @@ def test_make_windows_and_subtract(bedtools_object):
     assert coordlist[3]==['chr1', '100000600', '200000000']
     assert coordlist[4]==['chr1', '200000000', '248956422']
 
+def test_make_windows_with_offset(bedtools_object):
+    coordlist=bedtools_object.make_windows(g='data/chr1.genome', s=1200000, w=1400000)
+
+    assert coordlist[0]==['chr1', '0', '1400000']
+    assert coordlist[1]==['chr1', '1200000', '2600000']
+    assert coordlist[2]==['chr1', '2400000', '3800000']
+    assert coordlist[3]==['chr1', '3600000', '5000000']
+
+
+

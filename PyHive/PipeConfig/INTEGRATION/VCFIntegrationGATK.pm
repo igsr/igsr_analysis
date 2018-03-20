@@ -59,15 +59,15 @@ sub default_options {
 	'window_bglchnks' => 700, # makeBGLCHUNKS
 	'overlap_bglchnks' => 200, # makeBGLCHUNKS
 	'genome_file' => undef, #PyHive.Factories.CoordFactory. Used to generate the chunks
-	'window_coordfactory' =>  undef, #PyHive.Factories.CoordFactory
+	'window_coordfactory_4transposebam' =>  undef, #PyHive.Factories.CoordFactory used for the transposebam analysis
+	'window_coordfactory_4shapeit' =>  undef, #PyHive.Factories.CoordFactory used for the shapeit analysis
 	'offset_coordfactory' => undef, #PyHive.Factories.CoordFactory
-	'outprefix' => 'combined.all.chr20', # Prefix used for all output files
-	'scaffolded_samples' => '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/SEQUENCING_GENOTYPES/ONLY_ONESAMPLE/scaffolded_samples.txt', #PyHive.VcfIntegration.run_ligateHAPLOTYPES
+	'outprefix' => undef, # Prefix used for all output files
+	'scaffolded_samples' => undef, #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
 	'store_attributes' => 'False',
         'filelayout' => undef, #file layout for final phased file
 	'newlayout' =>  undef, # new file layout for final phased file
-	'snptools_folder' => '~/bin/snptools/',
 	'lsf_queue'   => 'production-rh7'
     };
 }
@@ -274,8 +274,8 @@ sub pipeline_analyses {
             -parameters => {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
-		'ix' => 120,
-                'window' => $self->o('window_coordfactory'),
+		#'ix' => 120,
+                'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
 	    -flow_into => {
@@ -580,7 +580,7 @@ sub pipeline_analyses {
             -parameters => {
                 'bedtools_folder' => $self->o('bedtools_folder'),
 		'genome_file' => $self->o('genome_file'),
-                'window' => $self->o('window_coordfactory'),
+                'window' => $self->o('window_coordfactory_4shapeit'),
                 'offset' => $self->o('offset_coordfactory'),
 		'subtract' => $self->o('centromeres'),
                 'verbose' => 1
