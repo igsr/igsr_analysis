@@ -39,6 +39,7 @@ def clean_tmp():
         os.remove(f)
 
 def test_correct_ambiguity(vcf_ambiguity):
+
     outfile=vcf_ambiguity.correct_ambiguity_codes(outfile='out/test.corrected.vcf.gz')
 
     assert os.path.exists("out/test.corrected.vcf.gz")
