@@ -119,8 +119,10 @@ class Beagle(object):
             temp = tempfile.NamedTemporaryFile(delete=False)
             try:
                 correct_cmd1= "zcat {0} |gzip -c > {1} ".format(outfile,temp.name)
+                print("correct_cmd1: {0}".format(correct_cmd1))
                 subprocess.check_output(correct_cmd1, shell=True)
                 correct_cmd2= "mv {0} {1}".format(temp.name,outfile)
+                print("correct_cmd2: {0}".format(correct_cmd2))
                 subprocess.check_output(correct_cmd2, shell=True)
             except subprocess.CalledProcessError as exc:
                 print("Something went wrong while performing the segfault correction\n")

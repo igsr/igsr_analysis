@@ -86,3 +86,4 @@ def test_bedtools_make_windows_w_subtract():
     except subprocess.CalledProcessError as exc:
         assert False
         raise Exception(exc.output)
+
