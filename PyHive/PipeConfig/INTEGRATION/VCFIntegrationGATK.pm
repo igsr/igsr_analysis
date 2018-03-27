@@ -97,6 +97,7 @@ sub resource_classes {
         '1Gb' => { 'LSF' => '-C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' },
         '2Gb' => { 'LSF' => '-C0 -M2048 -q '.$self->o('lsf_queue').' -R"select[mem>2048] rusage[mem=2048]"' },
         '5Gb' => { 'LSF' => '-C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"' },
+	'5Gb5cpus' => { 'LSF' => '-n 5 -C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"' },
         '8Gb' => { 'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"' },
         '12Gb4cpus' => { 'LSF' => '-n 4 -C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
 	'12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
@@ -418,6 +419,7 @@ sub pipeline_analyses {
                         'filepath' => '#vcf_filt#'
 		    }},
 	    },
+	    -rc_name => '5Gb',
 	},
 
         {   -logic_name => 'select_variants',
@@ -544,13 +546,13 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
 		'outprefix' => '#vcf_file#',
 		'correct' => 1,
-		'nthreads' => 1,
+		'nthreads' => 5,
 		'verbose' => 1 
             },
 	    -flow_into => {
 		1 => [ '?accu_name=allbeagle_files&accu_address=[]&accu_input_variable=vcf_f'],
 	    },
-	    -rc_name => '5Gb'
+	    -rc_name => '5Gb5cpus'
         },
 
 	{   -logic_name => 'prepareGen_from_Beagle',
