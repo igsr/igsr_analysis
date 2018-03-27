@@ -90,7 +90,7 @@ class GATK(object):
             command += " -o {0}".format(outprefix)
 
         try:
-
+            print(command)
             p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
             stdout, stderr = p.communicate()
             lines=stderr.split("\n")
