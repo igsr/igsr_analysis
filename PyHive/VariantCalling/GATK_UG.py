@@ -47,10 +47,22 @@ class GATK_UG(eHive.BaseRunnable):
                                            start,
                                            end)
 
+        alleles=None
+        if self.param_is_defined('alleles'):
+            alleles=self.param('alleles')
+
+        genotyping_mode=None
+        if self.param_is_defined('genotyping_mode'):
+            genotyping_mode=self.param('genotyping_mode')
+
+        nt=None
+        if self.param_is_defined('threads'):
+            nt=self.param('threads')
+
         outfile=gatk_object.run_ug(outprefix=outfile, glm=self.param_required('glm'),
                                    output_mode=self.param_required('output_mode'),
-                                   alleles=self.param('alleles'), genotyping_mode=self.param('genotyping_mode'),
-                                   intervals=intervals)
+                                   alleles=alleles, genotyping_mode=genotyping_mode,
+                                   intervals=intervals, nt=nt)
 
         self.param('out_vcf', outfile)
 
