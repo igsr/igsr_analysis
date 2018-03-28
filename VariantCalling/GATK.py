@@ -73,7 +73,7 @@ class GATK(object):
             command += self.gatk_folder + "/"
 
         command += "GenomeAnalysisTK.jar -T UnifiedGenotyper -R {0} -I {1} " \
-                   "-glm {2} ".format(self.reference, self.bam, glm)
+                   "-glm {2} -nt {3} ".format(self.reference, self.bam, glm, nt)
 
         if intervals:
             command += " -L {0}".format(intervals)
