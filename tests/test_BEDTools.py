@@ -2,6 +2,7 @@ import os
 import pytest
 import glob
 import warnings
+import pdb
 from BEDTools import BEDTools
 
 # test_BEDTools.py
@@ -14,6 +15,7 @@ def bedtools_object(scope='module'):
     bedtools_folder = pytest.config.getoption("--bedtools_folder")
     bedtools_object=BEDTools(bedtools_folder=bedtools_folder)
     return bedtools_object
+
 
 def test_make_windows(bedtools_object):
     coordlist=bedtools_object.make_windows(g='data/chr1.genome', w=100000000)
@@ -39,5 +41,19 @@ def test_make_windows_with_offset(bedtools_object):
     assert coordlist[2]==['chr1', '2400000', '3800000']
     assert coordlist[3]==['chr1', '3600000', '5000000']
 
+def test_make_windows_with_lextend(bedtools_object):
+    coordlist=bedtools_object.make_windows(g='data/chr1.genome', lextend=-1, w=1000000)
 
+    assert coordlist[0]==['chr1', '0', '1000000']
+    assert coordlist[1]==['chr1', '999999', '2000000']
+    assert coordlist[2]==['chr1', '1999999', '3000000']
+    assert coordlist[3]==['chr1', '2999999', '4000000']
+
+def test_make_windows_with_rextend(bedtools_object):
+    coordlist=bedtools_object.make_windows(g='data/chr1.genome', rextend=-1, w=1000000)
+
+    assert coordlist[0]==['chr1', '0', '999999']
+    assert coordlist[1]==['chr1', '1000000', '1999999']
+    assert coordlist[2]==['chr1', '2000000', '2999999']
+    assert coordlist[3]==['chr1', '3000000', '3999999']
 
