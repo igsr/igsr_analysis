@@ -12,7 +12,13 @@ class ApplyRecalibration(eHive.BaseRunnable):
 
         VcfFilterO = GATK(vcf=self.param_required('filepath'),caller=self.param_required('caller'),gatk_folder=self.param_required('gatk_folder'), reference=self.param_required('reference'), bgzip_folder=self.param('bgzip_folder'), tabix_folder=self.param('tabix_folder'))
 
-        outfile=VcfFilterO.run_applyrecalibration(mode=self.param_required('mode'), recal_file=self.param_required('recal_file'), tranches_file=self.param_required('tranches_file'), outprefix=self.param_required('filepath'))
+        ts_filter_level=None
+        if self.param_is_defined('ts_filter_level'):
+            ts_filter_level=self.param('ts_filter_level')
+
+        outfile=VcfFilterO.run_applyrecalibration(mode=self.param_required('mode'), recal_file=self.param_required('recal_file'), 
+                                                  ts_filter_level=ts_filter_level,tranches_file=self.param_required('tranches_file'), 
+                                                  outprefix=self.param_required('filepath'))
 
         self.param('vcf_filt', outfile)
         self.param('vcf_filt_ix', outfile+".tbi")
