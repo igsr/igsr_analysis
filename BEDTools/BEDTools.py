@@ -25,7 +25,7 @@ class BEDTools(object):
 
         self.bedtools_folder = bedtools_folder
 
-    def make_windows(self, w, g, s=None, subtract=None, verbose=False):
+    def make_windows(self, w, g, s=None, subtract=None, lextend=None, rextend=None, verbose=False):
         '''
         This method will make windows from a genome file by using 'bedtools makewindows'
 
@@ -50,6 +50,11 @@ class BEDTools(object):
            chr1    200     1200
            chr1    400     1400
            chr1    600     1600
+        lextend : int, Optional
+                  Extend each interval to the left by int bases 
+
+        rextend : int, Optional
+                  Extend each interval to the right by int bases
         
         subtract : str, Optional
                    BED file containing the features that will be removed from the generated windows.
@@ -111,6 +116,18 @@ class BEDTools(object):
                     raise Exception(exc.output)
             finally:
                 temp.close()
+
+        if lextend is not None:
+            first_seen=False
+            for k,l in enumerate(coordlist):
+                if first_seen==True: l[1]=str(int(l[1])+lextend)
+                first_seen=True
+                coordlist[k]=l
+
+        if rextend is not None:
+            for k,l in enumerate(coordlist):
+                if k!=len(coordlist)-1: l[2]=str(int(l[2])+rextend)
+                coordlist[k]=l
 
         return coordlist
 

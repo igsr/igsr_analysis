@@ -22,11 +22,16 @@ class CoordFactory(eHive.BaseRunnable):
         subtract=None
         if self.param_is_defined('subtract'):
             subtract=self.param('subtract')
+
+        rextend=None
+        if self.param_is_defined('rextend'):
+            rextend=self.param('rextend')
           
         coord_list=bedtools_obj.make_windows(g=self.param_required('genome_file'), 
                                              w=self.param_required('window'), 
                                              s=offset,
                                              subtract=subtract,
+                                             rextend=rextend,
                                              verbose=verbose)
         chunks=[]
 
