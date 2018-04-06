@@ -54,6 +54,9 @@ class ShortenFiles(eHive.BaseRunnable):
         for file in glob.glob(tmp_folder+"/*"):
             os.unlink(file)
 
+        # changing to tmp_folder dir
+        os.chdir(tmp_folder);
+        
         fw=open(tmp_folder+"/files_to_shorten.txt",'w')
 
         with open(self.param_required('filelist')) as f:
@@ -61,15 +64,15 @@ class ShortenFiles(eHive.BaseRunnable):
                 old_id=line.rstrip("\n")
                 old_ix=old_id+".bai"
                 random_str=random_generator(size=6)
-                new_fileid="{0}/{1}.bam".format(tmp_folder,
-                                               random_str)
+                new_fileid="{0}.bam".format(random_str)
                 fw.write(new_fileid+"\n")
-                new_fileix="{0}/{1}.bam.bai".format(tmp_folder,
-                                               random_str)
+                new_fileix="{0}.bam.bai".format(random_str)
                 os.symlink(old_id, new_fileid)
                 os.symlink(old_ix, new_fileix)
                 
         fw.close()
+
+        os.chdir(self.param_required('work_dir'))
 
         self.param('short_f', tmp_folder+"/files_to_shorten.txt")
 

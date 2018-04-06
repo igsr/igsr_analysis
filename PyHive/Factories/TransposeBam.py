@@ -24,14 +24,20 @@ class TransposeBam(eHive.BaseRunnable):
 
     def run(self):
         
+        pdb.set_trace()
         input_bams_str=""
 
-        if not os.path.isdir(self.param_required('work_dir')):
-            os.makedirs(self.param_required('work_dir'))
+        bam_work_dir="{0}/bams".format(self.param_required('work_dir'))
+
+        if not os.path.isdir(bam_work_dir):
+            os.makedirs(bam_work_dir)
+
+        #change to folder containing shortened BAMs
+        os.chdir(self.param_required('work_dir')+"/tmp_sh")
 
         region="{0}:{1}-{2}".format(self.param_required('region')[0], self.param_required('region')[1], self.param_required('region')[2])
         region_str='_'.join(map(str,self.param_required('region')))
-        output_file="{0}/{1}.{2}.tranposed.bam".format(self.param_required('work_dir'), self.param_required('outprefix'), region_str)
+        output_file="{0}/{1}.{2}.tranposed.bam".format(bam_work_dir, self.param_required('outprefix'), region_str)
 
         cmd="cat {0} | xargs -s 2000000 {1}/transpose_bam -r {2} -i -o {3}".format(
             self.param_required('filelist'),
@@ -44,6 +50,9 @@ class TransposeBam(eHive.BaseRunnable):
         except subprocess.CalledProcessError as e:
             print(e.output)
             sys.exit(0)
+
+        #change back to working dir
+        os.chdir(self.param_required('work_dir'))
 
         self.param('out_bam', output_file)
 
