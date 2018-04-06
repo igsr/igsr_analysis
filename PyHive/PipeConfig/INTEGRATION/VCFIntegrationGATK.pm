@@ -278,7 +278,7 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
-		#'ix' => 120,
+		'ix' => 4,
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
@@ -302,7 +302,7 @@ sub pipeline_analyses {
 		'region' => '#region#',
                 'outprefix' => 'test',
 		'transposebam_folder' => $self->o('transposebam_folder'),
-                'work_dir' => $self->o('work_dir')."/bams"
+                'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
 		1 => {'run_gatkug_snps' => {
@@ -330,10 +330,10 @@ sub pipeline_analyses {
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
-		'threads' => 5,
+		'threads' => 1,
                 'verbose' => 1
             },
-	    -rc_name => '5Gb5cpus',
+	    -rc_name => '8Gb',
 	    -flow_into => {
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=out_vcf','?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
 	    },
