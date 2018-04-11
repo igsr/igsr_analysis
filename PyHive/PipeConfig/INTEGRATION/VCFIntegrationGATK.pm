@@ -23,7 +23,7 @@ sub default_options {
         'final_dir' => undef,
 	'faix' => undef,
 	'newheader' => undef,
-	'filelist' => undef, # bamfile.list used by shorten_bamfiles
+	'filelist' => undef, # List of Bamfiles used for BAM Transposition. If more than one file then the transposition will be done in different runs
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
@@ -37,6 +37,7 @@ sub default_options {
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
 	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
 	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
+	'samtools_folder' => '/homes/ernesto/bin/samtools-1.6/bin/',
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
 	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'transposebam_folder' => '/homes/ernesto/lib/reseqtrack//c_code/transpose_bam/',
@@ -257,7 +258,7 @@ sub pipeline_analyses {
 
 
 	{   -logic_name => 'shorten_bamfiles',
-            -module     => 'PyHive.File.ShortenFiles',
+            -module     => 'PyHive.File.ShortenFilePaths',
             -language   => 'python3',
             -parameters => {
                 'filelist' => $self->o('filelist'),
@@ -265,7 +266,7 @@ sub pipeline_analyses {
             },
 	    -flow_into => {
 		1 => {'coord_factory' => {
-		    'short_f' => '#short_f#',
+		    'short_flist' => '#short_flist#',
 		    'out_vcf' => '#out_vcf#'
 		      }}
 	    }
@@ -278,23 +279,23 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
-		'ix' => 4,
+		#'ix' => 4,
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
 	    -flow_into => {
-		'2->A' => { 'transpose_bam' => {
+		'2->A' => { 'transpose_bams' => {
                     'out_vcf' => '#out_vcf#',
                     'region' => '#chunk#',
 		    'ix' => '#ix#',
-		    'filelist' => '#short_f#'
+		    'filelist' => '#short_flist#'
 			    }
 		},
                 'A->1' => [ 'merge_vcf'],
 	    },
 	},
 
-        {   -logic_name => 'transpose_bam',
+        {   -logic_name => 'transpose_bams',
             -module     => 'PyHive.Factories.TransposeBam',
             -language   => 'python3',
             -parameters => {
@@ -305,14 +306,52 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'run_gatkug_snps' => {
-		    'out_vcf' => '#out_vcf#',
-		    'chunk' => '#region#',
-		    'bamlist' => '#out_bam#'
+		1 => {'merge_transpose_bams' => {
+		    'bamlist' => '#out_bamlist#',
+		    'region' => '#region#',
 		      }
 		}
 	    },
 	    -rc_name => '12Gb'
+        },
+
+	{   -logic_name => 'merge_transpose_bams',
+            -module     => 'PyHive.Bam.RunSamToolsMerge',
+            -language   => 'python3',
+            -parameters => {
+                'bamlist' => '#bamlist#',
+                'region' => '#region#',
+                'outprefix' => 'test',
+                'samtools_folder' => $self->o('samtools_folder'),
+                'work_dir' => $self->o('work_dir')
+            },
+	    -flow_into => {
+		1 => {'index_merge_transpose_bams' => {
+                    'out_vcf' => '#out_vcf#',
+                    'region' => '#region#',
+                    'bamfile' => '#merged_bam#'
+		      }
+		}
+	    },
+            -rc_name => '5Gb'
+        },
+
+	{   -logic_name => 'index_merge_transpose_bams',
+            -module     => 'PyHive.Bam.RunSamToolsIndex',
+            -language   => 'python3',
+            -parameters => {
+                'bamfile' => '#bamfile#',
+                'samtools_folder' => $self->o('samtools_folder'),
+            },
+	    -flow_into => {
+		1 => {'run_gatkug_snps' => {
+                    'out_vcf' => '#out_vcf#',
+                    'chunk' => '#region#',
+                    'bamlist' => '#bamfile#'
+		      }
+		}
+	    },
+            -rc_name => '5Gb'
         },
 
 	{   -logic_name => 'run_gatkug_snps',
@@ -328,6 +367,7 @@ sub pipeline_analyses {
 		'bamlist' => '#bamlist#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
+		'max_deletion_fraction' => 0.1,
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
 		'threads' => 1,
