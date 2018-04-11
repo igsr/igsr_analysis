@@ -62,6 +62,8 @@ class GATK_UG(eHive.BaseRunnable):
         max_deletion_fraction=None
         if self.param_is_defined('max_deletion_fraction'):
             max_deletion_fraction=self.param('max_deletion_fraction')
+        else:
+            max_deletion_fraction=0.05
 
         outfile=gatk_object.run_ug(outprefix=outfile, glm=self.param_required('glm'),
                                    output_mode=self.param_required('output_mode'),
