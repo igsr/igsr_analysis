@@ -454,6 +454,7 @@ sub pipeline_analyses {
                 'tabix_folder' => $self->o('tabix_folder'),
                 'reference' => $self->o('reference'),
                 'recal_file' => '#recal_f#',
+		'ts_filter_level' => 99.9,
                 'tranches_file' => '#tranches_f#',
                 'mode' => 'SNP'
             },
