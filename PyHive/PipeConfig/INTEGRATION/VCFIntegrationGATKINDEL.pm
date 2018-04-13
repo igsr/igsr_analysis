@@ -365,9 +365,11 @@ sub pipeline_analyses {
 		'alleles' => '#out_vcf#',
 		'output_mode' => 'EMIT_ALL_SITES',
 		'chunk' => '#chunk#',
+		'dcov' => 1000,
                 'gatk_folder' => $self->o('gatk_folder'),
 		'bamlist' => '#bamlist#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
+		'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
