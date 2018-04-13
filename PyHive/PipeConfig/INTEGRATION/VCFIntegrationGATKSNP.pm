@@ -370,7 +370,7 @@ sub pipeline_analyses {
 		'bamlist' => '#bamlist#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
-		'max_deletion_fraction' => 0.8,
+		'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
 		'threads' => 1,

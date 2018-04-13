@@ -11,6 +11,51 @@ class GATK_UG(eHive.BaseRunnable):
     '''
     Run GATK UnifiedGenotyper on a BAM file/s
 
+    eHive runnable for GATK UG caller
+
+    Parameters
+    ----------
+    work_dir : str, Required
+         Path to the working directory
+    outprefix : str, Required
+         String used as prefix for the output file
+    chunk: str, Required
+         Interval used by GATK UG for the variant calling
+    bamlist: str, Required
+         Path to BAM file used for the variant calling
+    reference: str, Required
+         Path to the Fasta file used to generate the BAM alignment file
+    gatk_folder: str, Required
+         Path to folder containing the GATK jar file
+    bgzip_folder: str, Required
+         Path to folder containing the Bgzip binary
+    glm: str, Required
+         Genotype likelihoods calculation model to employ.
+         Possible values are: SNP, INDEL, BOTH
+    output_mode: str, Required
+         Which type of calls we should output.
+         Possible values are: EMIT_VARIANTS_ONLY, EMIT_ALL_CONFIDENT_SITES, EMIT_ALL_SITES
+    alleles: str, Optional
+         Path to VCF. 
+         When --genotyping_mode is set to 
+         GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples 
+         using only the alleles provide in this callset
+    genotyping_mode: str, Optional
+         Specifies how to determine the alternate alleles to use for genotyping
+         Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
+    threads: int, Optional
+         Number of CPUs used by the caller
+    max_deletion_fraction: float, Optional
+         Maximum fraction of reads with deletions spanning this locus for it to be callable
+         Default value=0.05. Note: To disable the use of this parameter, set its value to >1.
+    dcov: int, Optional
+         Target coverage threshold for downsampling to coverage.
+         Default value=250
+
+    Returns
+    -------
+
+    Path to VCF file
     '''
     
     def run(self):
@@ -40,12 +85,9 @@ class GATK_UG(eHive.BaseRunnable):
                          gatk_folder=self.param_required('gatk_folder'),
                          bgzip_folder=self.param_required('bgzip_folder'))
 
-        intervals=None
-        
-        if self.param_is_defined('chunk'):
-            intervals="{0}:{1}-{2}".format(chrom, 
-                                           start,
-                                           end)
+        intervals="{0}:{1}-{2}".format(chrom, 
+                                       start,
+                                       end)
 
         alleles=None
         if self.param_is_defined('alleles'):
