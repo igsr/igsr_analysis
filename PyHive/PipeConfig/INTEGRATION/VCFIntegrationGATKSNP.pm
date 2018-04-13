@@ -1,4 +1,4 @@
-package PyHive::PipeConfig::INTEGRATION::VCFIntegrationGATKINDEL;
+package PyHive::PipeConfig::INTEGRATION::VCFIntegrationGATKSNP;
 
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ sub default_options {
     return {
         %{ $self->SUPER::default_options() },               # inherit other stuff from the base class
 
-        'pipeline_name' => 'run_vcfintegration_indels',       # name used by the beekeeper to prefix job names on the farm
+        'pipeline_name' => 'run_vcfintegration',       # name used by the beekeeper to prefix job names on the farm
 
         # runnable-specific parameters' defaults:
         'hostname'   => 'mysql-g1kdcc-public',
@@ -23,7 +23,7 @@ sub default_options {
         'final_dir' => undef,
 	'faix' => undef,
 	'newheader' => undef,
-	'filelist' => undef, #  List of Bamfiles used for BAM Transposition. If more than one file then the transposition will be done in different runs
+	'filelist' => undef, # List of Bamfiles used for BAM Transposition. If more than one file then the transposition will be done in different runs
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
@@ -42,7 +42,9 @@ sub default_options {
 	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'transposebam_folder' => '/homes/ernesto/lib/reseqtrack//c_code/transpose_bam/',
 	'tranches' => '[100.0,99.9,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
+	'resources_snps' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
         'resources_indels' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_indels.json', # VariantRecalibrator
+	'snps_annotations' => undef, # VQSR. annotations for recalibrating snps
         'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum','InbreedingCoeff'], #VQSR. annotations for recalibrating indels
 	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/OMNI/PHASING/ALL.chip.omni_broad_sanger_combined.20140818.refcorr.biallelic.snps', 
 				    '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/AFFY/PHASING/ALL.wgs.nhgri_coriell_affy_6.20140825.genotypes_has_ped.ucsc.hg38.refcorr.biallelic.snps'],
@@ -56,12 +58,14 @@ sub default_options {
 	'prune' => 4, # SHAPEIT
 	'main' => 20, # SHAPEIT
 	'window_bglchnks' => 700, # makeBGLCHUNKS
-	'overlap_bglchnks' => 200, # makeBGLCHUNKS
+        'overlap_bglchnks' => 200, # makeBGLCHUNKS
+#	'window_bglchnks' => 12000, # recommended in supp of phase3 for makeBGLCHUNKS
+#	'overlap_bglchnks' => 2000, # recommended in supp of phase 3 for makeBGLCHUNKS
 	'genome_file' => undef, #PyHive.Factories.CoordFactory. Used to generate the chunks
 	'window_coordfactory_4transposebam' =>  undef, #PyHive.Factories.CoordFactory used for the transposebam analysis
 	'window_coordfactory_4shapeit' =>  undef, #PyHive.Factories.CoordFactory used for the shapeit analysis
 	'offset_coordfactory' => undef, #PyHive.Factories.CoordFactory
-	'outprefix' => 'combined.all.chr20', # Prefix used for all output files
+	'outprefix' => undef, # Prefix used for all output files
 	'scaffolded_samples' => undef, #PyHive.VcfIntegration.run_ligateHAPLOTYPES
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
 	'store_attributes' => 'False',
@@ -92,20 +96,20 @@ sub resource_classes {
     my ($self) = @_;
     return {
         %{$self->SUPER::resource_classes},
-	'500Mb' => { 'LSF' => '-C0 -M512 -q '.$self->o('lsf_queue').' -R"select[mem>512] rusage[mem=512]"' },
+        '500Mb' => { 'LSF' => '-C0 -M512 -q '.$self->o('lsf_queue').' -R"select[mem>512] rusage[mem=512]"' },
         '1Gb' => { 'LSF' => '-C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' },
         '2Gb' => { 'LSF' => '-C0 -M2048 -q '.$self->o('lsf_queue').' -R"select[mem>2048] rusage[mem=2048]"' },
         '5Gb' => { 'LSF' => '-C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"' },
-        '5Gb5cpus' => { 'LSF' => '-n 5 -C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"' },
+	'5Gb5cpus' => { 'LSF' => '-n 5 -C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"' },
         '8Gb' => { 'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"' },
-        '10Gb5cpus' => { 'LSF' => '-n 5 -C0 -M10000 -q '.$self->o('lsf_queue').' -R"select[mem>10000] rusage[mem=10000]"' },
+	'10Gb5cpus' => { 'LSF' => '-n 5 -C0 -M10000 -q '.$self->o('lsf_queue').' -R"select[mem>10000] rusage[mem=10000]"' },
         '12Gb4cpus' => { 'LSF' => '-n 4 -C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
-        '12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
-        '15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
-        '20GbUni' => { 'LSF' => '-C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
-        '20Gb5cpus' => { 'LSF' => '-n 5 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
-        '20Gb20cpus' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
-        '10cpus' => { 'LSF' => '-n 10 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' }
+	'12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
+	'15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
+	'20GbUni' => { 'LSF' => '-C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
+	'20Gb5cpus' => { 'LSF' => '-n 5 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
+	'20Gb20cpus' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
+	'10cpus' => { 'LSF' => '-n 10 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' }
     };
 }
 
@@ -149,10 +153,9 @@ sub pipeline_analyses {
             },
 	    -rc_name => '12Gb4cpus',
 	    -flow_into => {
-		1 => {
-		    'drop_INFO' => {'filepath' => '#out_vcf#'}
-		},
-	    },
+		1 => {'drop_INFO' => {'filepath' => '#out_vcf#'}}
+	    }
+	    
         },
 
 	{   -logic_name => 'drop_INFO',
@@ -163,9 +166,9 @@ sub pipeline_analyses {
 		'outprefix' => $self->o('outprefix'),
                 'work_dir' => $self->o('work_dir')
             },
-		    -flow_into => {
-			1 => {'splitmultiallelic' => {'filepath' => '#out_vcf#'}}
-		}
+	    -flow_into => {
+		1 => {'splitmultiallelic' => {'filepath' => '#out_vcf#'}}
+	    }
         },
 
 	{   -logic_name => 'splitmultiallelic',
@@ -179,9 +182,9 @@ sub pipeline_analyses {
 		'reference' => $self->o('reference'),
                 'work_dir' => $self->o('work_dir')
             },
-		    -flow_into => {
-			1 => {'index_vcf1' => {'filepath' => '#out_vcf#'}}
-		}
+	    -flow_into => {
+		1 => {'index_vcf1' => {'filepath' => '#out_vcf#'}}
+	    }
         },
 
 	{   -logic_name => 'index_vcf1',
@@ -192,9 +195,9 @@ sub pipeline_analyses {
                 'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-		    -flow_into => {
-			1 => {'run_VcfAllelicPrim' => {'filepath' => '#filepath#'}}
-		}
+	    -flow_into => {
+		1 => {'run_VcfAllelicPrim' => {'filepath' => '#filepath#'}}
+	    }
         },
 
 	{   -logic_name => 'run_VcfAllelicPrim',
@@ -208,9 +211,9 @@ sub pipeline_analyses {
 		'vcflib_folder' => $self->o('vcflib_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-		    -flow_into => {
-			1 => {'mergemultiallelic' => {'filepath' => '#out_vcf#'}}
-		}
+	    -flow_into => {
+		1 => {'mergemultiallelic' => {'filepath' => '#out_vcf#'}}
+	    }
         },
 
 	{   -logic_name => 'mergemultiallelic',
@@ -225,24 +228,21 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'select_indels' => {'filepath' => '#out_vcf#'}}
+		1 => {'select_snps' => {'filepath' => '#out_vcf#'}}
 	    }
         },
 
-	{   -logic_name => 'select_indels',
+	{   -logic_name => 'select_snps',
             -module     => 'PyHive.VcfFilter.SplitVariants',
             -language   => 'python3',
             -parameters => {
                 'bcftools_folder' => $self->o('bcftools_folder'),
-                'compress' => 'True',
-                'type' => 'indels',
+		'compress' => 'True',
+		'type' => 'snps',
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'index_vcf2' => {
-		    'filepath' => '#out_vcf#',
-		      }
-		}
+		1 => {'index_vcf2' => {'filepath' => '#out_vcf#'}}
 	    }
         },
 
@@ -281,12 +281,12 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
-		'ix' => 4,
+		#'ix' => 4,
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
 	    -flow_into => {
-		'2->A' => { 'transpose_bam' => {
+		'2->A' => { 'transpose_bams' => {
                     'out_vcf' => '#out_vcf#',
                     'region' => '#chunk#',
 		    'ix' => '#ix#',
@@ -297,7 +297,7 @@ sub pipeline_analyses {
 	    },
 	},
 
-        {   -logic_name => 'transpose_bam',
+        {   -logic_name => 'transpose_bams',
             -module     => 'PyHive.Factories.TransposeBam',
             -language   => 'python3',
             -parameters => {
@@ -327,14 +327,14 @@ sub pipeline_analyses {
                 'samtools_folder' => $self->o('samtools_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-		    -flow_into => {
-			1 => {'index_merge_transpose_bams' => {
+	    -flow_into => {
+		1 => {'index_merge_transpose_bams' => {
                     'out_vcf' => '#out_vcf#',
                     'region' => '#region#',
                     'bamfile' => '#merged_bam#'
-			      }
-			}
-		},
+		      }
+		}
+	    },
             -rc_name => '5Gb'
         },
 
@@ -346,7 +346,7 @@ sub pipeline_analyses {
                 'samtools_folder' => $self->o('samtools_folder'),
             },
 	    -flow_into => {
-		1 => {'run_gatkug_indels' => {
+		1 => {'run_gatkug_snps' => {
                     'out_vcf' => '#out_vcf#',
                     'chunk' => '#region#',
                     'bamlist' => '#bamfile#'
@@ -356,19 +356,21 @@ sub pipeline_analyses {
             -rc_name => '5Gb'
         },
 
-	{   -logic_name => 'run_gatkug_indels',
+	{   -logic_name => 'run_gatkug_snps',
             -module     => 'PyHive.VariantCalling.GATK_UG',
             -language   => 'python3',
             -parameters => {
 		'genotyping_mode' => 'GENOTYPE_GIVEN_ALLELES',
-		'glm' => 'INDEL',
+		'glm' => 'SNP',
 		'alleles' => '#out_vcf#',
 		'output_mode' => 'EMIT_ALL_SITES',
 		'chunk' => '#chunk#',
+		'dcov' => 1000,
                 'gatk_folder' => $self->o('gatk_folder'),
 		'bamlist' => '#bamlist#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
+		'max_deletion_fraction' => 0.8,
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
 		'threads' => 1,
@@ -409,31 +411,31 @@ sub pipeline_analyses {
             },
 	    -flow_into => {
 		1 => {
-                    'run_variantrecalibrator_indels' => {
+                    'run_variantrecalibrator_snps' => {
                         'filepath' => '#filepath#'
                     }
                 },
 	    }
         },
 
-	{   -logic_name => 'run_variantrecalibrator_indels',
+	{   -logic_name => 'run_variantrecalibrator_snps',
             -module        => 'PyHive.VcfFilter.VariantRecalibrator',
             -language   => 'python3',
             -parameters    => {
                 'filepath' => '#filepath#',
                 'work_dir' => $self->o('work_dir'),
                 'caller' => $self->o('caller'),
-		'annotations' => $self->o('indels_annotations'),
+		'annotations' => $self->o('snps_annotations'),
                 'gatk_folder' => $self->o('gatk_folder'),
                 'reference' => $self->o('reference'),
-                'resources' => $self->o('resources_indels'),
+                'resources' => $self->o('resources_snps'),
                 'tranches' => $self->o('tranches'),
-                'intervals' => 'chr20:150000-199999',
-                'mode' => 'INDEL'
+                'intervals' => $self->o('ginterval'),
+                'mode' => 'SNP'
             },
 	    -flow_into => {
 		1 => {
-		    'run_applyrecalibration_indels' => {
+		    'run_applyrecalibration_snps' => {
                         'filepath' => '#filepath#',
                         'recal_file' => '#recal_f#',
                         'tranches_file' => '#tranches_f#'
@@ -443,7 +445,7 @@ sub pipeline_analyses {
             -rc_name => '12Gb',
         },
 
-	{   -logic_name => 'run_applyrecalibration_indels',
+	{   -logic_name => 'run_applyrecalibration_snps',
             -module        => 'PyHive.VcfFilter.ApplyRecalibration',
             -language   => 'python3',
             -parameters    => {
@@ -454,8 +456,8 @@ sub pipeline_analyses {
                 'bgzip_folder' => $self->o('bgzip_folder'),
                 'tabix_folder' => $self->o('tabix_folder'),
                 'reference' => $self->o('reference'),
-		'ts_filter_level' => 50.0,
                 'recal_file' => '#recal_f#',
+		'ts_filter_level' => 99.9,
                 'tranches_file' => '#tranches_f#',
                 'mode' => 'SNP'
             },
@@ -464,11 +466,11 @@ sub pipeline_analyses {
 		    'select_variants' => {
                         'filepath' => '#vcf_filt#'
 		    }},
-	     },
-	     -rc_name => '5Gb',
+	    },
+	    -rc_name => '5Gb',
 	},
 
-	{   -logic_name => 'select_variants',
+        {   -logic_name => 'select_variants',
             -module     => 'PyHive.VcfFilter.SelectVariants',
             -language   => 'python3',
             -parameters => {
@@ -483,7 +485,7 @@ sub pipeline_analyses {
 		    'convert_pl2gl' => {
                         'filepath' => '#out_vcf#'
 		    }},
-	   },
+	    },
         },
 
 	{   -logic_name => 'convert_pl2gl',
@@ -520,7 +522,7 @@ sub pipeline_analyses {
 		},
 	    }
         },
-
+	
 	{   -logic_name => 'split_chr',
             -module        => 'PyHive.Factories.SplitVCFintoChros',
             -language   => 'python3',
@@ -533,16 +535,15 @@ sub pipeline_analyses {
                 'verbose' => 'True',
                 'work_dir' => $self->o('work_dir')
             },
-		    -flow_into => {
-			2 => { 'rename_chros' => {
-			        'filepath' => '#chr#',
-				    'ix' => '#ix#',
-				'chromname' => '#chromname#'}},
-		},
+	    -flow_into => {
+		2 => { 'rename_chros' => {
+		    'filepath' => '#chr#',
+		    'ix' => '#ix#',
+		    'chromname' => '#chromname#'}},
+	    },
             -analysis_capacity => 1,
             -rc_name => '10cpus'
         },
-
 
 	{   -logic_name => 'rename_chros',
             -module     => 'PyHive.Vcf.VcfReplaceChrNames',
@@ -592,6 +593,7 @@ sub pipeline_analyses {
                 'beagle_folder' => $self->o('beagle_folder'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
 		'outprefix' => '#vcf_file#',
+#		'niterations' => 15, #recommended in Supp P3
 		'correct' => 1,
 		'nthreads' => 5,
 		'verbose' => 1 
@@ -666,7 +668,7 @@ sub pipeline_analyses {
 		'outprefix' =>  '#vcf_file#',
 		'input_scaffold_prefix' => $self->o('input_scaffold_prefix'),
                 'newheader' => $self->o('newheader'),
-                'work_dir' => $self->o('work_dir')."/#chr#/shapeit",
+                'work_dir' => $self->o('work_dir')."/#chromname#/shapeit",
                 'samplefile' => '#samplefile#'
             },
 	    -rc_name => '15Gb',

@@ -59,14 +59,18 @@ class GATK_UG(eHive.BaseRunnable):
         if self.param_is_defined('threads'):
             nt=self.param('threads')
 
-        max_deletion_fraction=None
+        max_deletion_fraction=0.05
         if self.param_is_defined('max_deletion_fraction'):
             max_deletion_fraction=self.param('max_deletion_fraction')
-        else:
-            max_deletion_fraction=0.05
 
-        outfile=gatk_object.run_ug(outprefix=outfile, glm=self.param_required('glm'),
+        dcov=250
+        if self.param_is_defined('dcov'):
+            dcov=self.param('dcov')
+
+        outfile=gatk_object.run_ug(outprefix=outfile,
+                                   glm=self.param_required('glm'),
                                    output_mode=self.param_required('output_mode'),
+                                   downsample_to_coverage=dcov,
                                    alleles=alleles, genotyping_mode=genotyping_mode,
                                    intervals=intervals, nt=nt, 
                                    max_deletion_fraction=max_deletion_fraction)
