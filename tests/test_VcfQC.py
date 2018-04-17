@@ -16,10 +16,10 @@ def vcf_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    os.remove('data/out/test_VcfQC.stats')
+    os.remove('data/outdir/test_VcfQC.stats')
 
 def test_bcftools_stats(vcf_object, clean_tmp):
-    stats=vcf_object.stats(outpath='data/out/test_VcfQC') 
+    stats=vcf_object.stats(outpath='data/outdir/test_VcfQC') 
     assert os.path.isfile(stats.filename) is True
     assert stats.summary_numbers['number of SNPs:']==112
     assert stats.summary_numbers['number of indels:']==13
