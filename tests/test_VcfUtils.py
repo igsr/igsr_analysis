@@ -34,20 +34,20 @@ def vcf_ambiguity():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
 def test_correct_ambiguity(vcf_ambiguity):
 
-    outfile=vcf_ambiguity.correct_ambiguity_codes(outfile='out/test.corrected.vcf.gz')
+    outfile=vcf_ambiguity.correct_ambiguity_codes(outfile='data/outdir/test.corrected.vcf.gz')
 
-    assert os.path.exists("out/test.corrected.vcf.gz")
+    assert os.path.exists("data/outdir/test.corrected.vcf.gz")
 
 def test_vcf_reheader(vcf_object):
-    outfile=vcf_object.reheader(newheader="data/newheader.txt", outprefix="out/test1") 
+    outfile=vcf_object.reheader(newheader="data/newheader.txt", outprefix="data/outdir/test1") 
 
-    assert os.path.exists("out/test1.reheaded.vcf.gz")
+    assert os.path.exists("data/outdir/test1.reheaded.vcf.gz")
 
 
 def test_vcf_reheader_with_samplef(vcf_object):
@@ -55,19 +55,19 @@ def test_vcf_reheader_with_samplef(vcf_object):
     Test the reheader method and add new sample names
     '''
     outfile=vcf_object.reheader(newheader="data/newheader.txt", samplefile="data/samples.txt",
-                                outprefix="out/test2")
+                                outprefix="data/outdir/test2")
 
-    assert os.path.exists("out/test2.reheaded.vcf.gz")
+    assert os.path.exists("data/outdir/test2.reheaded.vcf.gz")
 
 def test_combine_uncompressed(vcf_object):
     '''
     Test the combine method producing a VCF
     '''
     vcf_object.combine(labels=['gatk','lc_bcftools'],reference='data/exampleFASTA.fasta',outprefix='out_combine',
-                       outdir='out/',genotypemergeoption='UNIQUIFY')
+                       outdir='data/outdir/',genotypemergeoption='UNIQUIFY')
 
-    assert os.path.exists("out/out_combine.vcf")
-    assert os.path.exists("out/out_combine.vcf.idx")
+    assert os.path.exists("data/outdir/out_combine.vcf")
+    assert os.path.exists("data/outdir/out_combine.vcf.idx")
 
 def test_combine_compressed(vcf_object):
     '''
@@ -75,50 +75,50 @@ def test_combine_compressed(vcf_object):
     some options
     '''
     vcf_object.combine(labels=['gatk','lc_bcftools'],reference='data/exampleFASTA.fasta',outprefix='out_combine',
-                       outdir='out/',compress=True,genotypemergeoption='UNIQUIFY',options=['-env','-sites_only',
+                       outdir='data/outdir/',compress=True,genotypemergeoption='UNIQUIFY',options=['-env','-sites_only',
                                                                                            '--filteredAreUncalled'])
     
-    assert os.path.exists("out/out_combine.vcf.gz")
+    assert os.path.exists("data/outdir/out_combine.vcf.gz")
 
 def test_change_chrnames_2ensembl(vcf_object):
     '''
     Test the method to change the style of the chrnames (from UCSC to Ensembl)
     '''
 
-    vcf_object.rename_chros(chr_types='ensembl', outfile='out/test.ensembl.vcf.gz')
-    vcf_object.rename_chros(chr_types='ensembl', compress=False, outfile='out/test.ensembl.vcf')
+    vcf_object.rename_chros(chr_types='ensembl', outfile='data/outdir/test.ensembl.vcf.gz')
+    vcf_object.rename_chros(chr_types='ensembl', compress=False, outfile='data/outdir/test.ensembl.vcf')
 
-    assert os.path.exists("out/test.ensembl.vcf.gz")
-    assert os.path.exists("out/test.ensembl.vcf")
+    assert os.path.exists("data/outdir/test.ensembl.vcf.gz")
+    assert os.path.exists("data/outdir/test.ensembl.vcf")
 
 def test_change_chrnames_2ucsc():
     '''
     Test the method to change the style of the chrnames (from Ensembl to UCSC)
     '''
-    vcf_object=VcfUtils(vcf='out/test.ensembl.vcf.gz',
+    vcf_object=VcfUtils(vcf='data/outdir/test.ensembl.vcf.gz',
                         bgzip_folder=pytest.config.getoption("--bgzip_folder"))
 
-    vcf_object.rename_chros(chr_types='ucsc', outfile='out/test.ucsc.vcf.gz')
-    vcf_object.rename_chros(chr_types='ucsc', outfile='out/test.ucsc.vcf', compress=False)
+    vcf_object.rename_chros(chr_types='ucsc', outfile='data/outdir/test.ucsc.vcf.gz')
+    vcf_object.rename_chros(chr_types='ucsc', outfile='data/outdir/test.ucsc.vcf', compress=False)
     
-    assert os.path.exists("out/test.ucsc.vcf.gz")
-    assert os.path.exists("out/test.ucsc.vcf")
+    assert os.path.exists("data/outdir/test.ucsc.vcf.gz")
+    assert os.path.exists("data/outdir/test.ucsc.vcf")
 
 def test_drop_genotypes(vcf_object):
     '''
     Test the method to drop the genotype information from a VCF file
     '''
-    vcf_object.drop_genotypes(outfile='out/test.sites.vcf.gz',verbose=True)
+    vcf_object.drop_genotypes(outfile='data/outdir/test.sites.vcf.gz',verbose=True)
 
-    assert os.path.exists("out/test.sites.vcf.gz")
+    assert os.path.exists("data/outdir/test.sites.vcf.gz")
 
 def test_drop_info(vcf_object):
     '''
     Test the method to drop the INFO annotation from a VCF file
     '''
-    vcf_object.drop_info(outfile='out/test.noinfo.vcf.gz',verbose=True)
+    vcf_object.drop_info(outfile='data/outdir/test.noinfo.vcf.gz',verbose=True)
 
-    assert os.path.exists("out/test.noinfo.vcf.gz")
+    assert os.path.exists("data/outdir/test.noinfo.vcf.gz")
 
 def test_convert_PL2GL(clean_tmp):
     '''
@@ -127,7 +127,7 @@ def test_convert_PL2GL(clean_tmp):
     vcf_object=VcfUtils(vcf='data/test.gatk.vcf.gz',
                         bcftools_folder=pytest.config.getoption("--bcftools_folder"))
     
-    vcf_object.convert_PL2GL(outfile='out/test.gatk.GL.vcf.gz',verbose=True)
+    vcf_object.convert_PL2GL(outfile='data/outdir/test.gatk.GL.vcf.gz',verbose=True)
 
-    assert os.path.exists("out/test.gatk.GL.vcf.gz")
+    assert os.path.exists("data/outdir/test.gatk.GL.vcf.gz")
 

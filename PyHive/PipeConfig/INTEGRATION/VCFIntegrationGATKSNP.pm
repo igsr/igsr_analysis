@@ -35,7 +35,7 @@ sub default_options {
 	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',
 	'vcflib_folder' => '~/bin/vcflib/bin/', # folder containing the vcfallelicprimitives binary
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
-	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/',
+	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/prepareGenFromBeagle4/bin/',
 	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
 	'samtools_folder' => '/homes/ernesto/bin/samtools-1.6/bin/',
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
@@ -109,6 +109,7 @@ sub resource_classes {
 	'20GbUni' => { 'LSF' => '-C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
 	'20Gb5cpus' => { 'LSF' => '-n 5 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
 	'20Gb20cpus' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
+	'75Gb10cpus' => { 'LSF' => '-n 20 -C0 -M75000 -q '.$self->o('lsf_queue').' -R"select[mem>75000] rusage[mem=75000]"' },
 	'10cpus' => { 'LSF' => '-n 10 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' }
     };
 }
@@ -281,7 +282,7 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
-		#'ix' => 4,
+		#'chunk_ix' => 4,
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
@@ -669,9 +670,10 @@ sub pipeline_analyses {
 		'input_scaffold_prefix' => $self->o('input_scaffold_prefix'),
                 'newheader' => $self->o('newheader'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/shapeit",
+		'thread' => 10,
                 'samplefile' => '#samplefile#'
             },
-	    -rc_name => '15Gb',
+	    -rc_name => '75Gb10cpus',
 	    -flow_into => {
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=hap_gz']
 	    },

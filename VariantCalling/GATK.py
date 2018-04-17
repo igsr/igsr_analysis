@@ -39,7 +39,7 @@ class GATK(object):
         self.gatk_folder = gatk_folder
         self.bgzip_folder = bgzip_folder
 
-    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, intervals=None, verbose=None, **kwargs):
+    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, intervals=None, verbose=None, alleles=None, genotyping_mode=None, **kwargs):
         
         '''
         Run GATK UnifiedGenotyper
@@ -61,6 +61,14 @@ class GATK(object):
                     can be set directly on the command line. For example: chr1:100-200
         verbose : bool, optional
                   if true, then print the command line used for running this program
+        alleles: str, Optional
+                 Path to VCF.
+                 When --genotyping_mode is set to
+                 GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
+                 using only the alleles provide in this callset
+        genotyping_mode: str, Optional
+                         Specifies how to determine the alternate alleles to use for genotyping
+                         Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
 
         Returns
         -------
@@ -76,7 +84,13 @@ class GATK(object):
                    "-glm {2} -nt {3} ".format(self.reference, self.bam, glm, nt)
 
         if intervals:
-            command += " -L {0}".format(intervals)
+            command += " -L {0} ".format(intervals)
+        
+        if alleles:
+            command += " -alleles {0} ".format(alleles)
+
+        if genotyping_mode:
+            command += " --genotyping_mode {0} ".format(genotyping_mode)        
 
         for k,v in kwargs.items():
             command += " --{0} {1}".format(k,v)

@@ -30,11 +30,7 @@ class run_Shapeit(eHive.BaseRunnable):
             os.makedirs(self.param_required('work_dir'))
             
         outprefix=os.path.split(self.param_required('outprefix'))[1]
-        '''
-        outprefix="{0}/{1}.{2}.{3}.{4}".format(self.param_required('work_dir'),outprefix,
-                                               self.param('chr'),self.param('inputfrom'),
-                                               self.param('inputto'))
-        '''
+
         outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
             
         options_dict={}

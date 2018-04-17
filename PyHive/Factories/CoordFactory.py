@@ -37,8 +37,8 @@ class CoordFactory(eHive.BaseRunnable):
 
         ix=1
         for c in coord_list:
-            if self.param_is_defined('ix'):
-                if ix==self.param('ix'):
+            if self.param_is_defined('chunk_ix'):
+                if ix==self.param('chunk_ix'):
                     chunks.append(
                         {
                             'chunk': c,

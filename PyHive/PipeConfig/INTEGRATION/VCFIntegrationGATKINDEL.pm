@@ -281,7 +281,7 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
-		'ix' => 4,
+#		'ix' => 4,
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
@@ -430,7 +430,7 @@ sub pipeline_analyses {
                 'reference' => $self->o('reference'),
                 'resources' => $self->o('resources_indels'),
                 'tranches' => $self->o('tranches'),
-                'intervals' => 'chr20:150000-199999',
+		'intervals' => $self->o('ginterval'),
                 'mode' => 'INDEL'
             },
 	    -flow_into => {
