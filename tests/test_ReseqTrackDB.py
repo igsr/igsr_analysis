@@ -18,10 +18,10 @@ def reseqtrackdb_object():
 def test_store(reseqtrackdb_object):
     
     #Create a File object with the new file to be stored
-    f_obj = File(path='data/test.txt', type='TEST_TYPE')
+    f_obj = File(path='data/test1.vcf.gz', type='TEST_TYPE')
     res=f_obj.store(reseqtrackdb_object, dry=True, do_md5=True)
 
-    assert res=='data/test.txt'
+    assert res=='data/test1.vcf.gz'
 
 def test_rename():
     '''

@@ -1,0 +1,1730 @@
+versions pytest-3.1.2, py-1.4.34, python-3.5.2.final.0
+cwd=/homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests
+args=['-s', '-v', 'test_BamQC.py', '--debug']
+
+  pytest_cmdline_main [hook]
+      config: <_pytest.config.Config object at 0x7f3c8d2c9a20>
+    pytest_plugin_registered [hook]
+        manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+        plugin: <Session 'tests'>
+    finish pytest_plugin_registered --> [] [hook]
+    pytest_configure [hook]
+        config: <_pytest.config.Config object at 0x7f3c8d2c9a20>
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.cacheprovider.LFPlugin object at 0x7f3c8b1389b0>
+      finish pytest_plugin_registered --> [] [hook]
+    find_module called for: py._io [assertion]
+    find_module called for: py._io.terminalwriter [assertion]
+    find_module called for: termios [assertion]
+    find_module called for: fcntl [assertion]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.config.Config object at 0x7f3c8d2c9a20>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.config.Config object at 0x7f3c8d2c9a20>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.mark' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/mark.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.mark' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/mark.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.main' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/main.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.main' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/main.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.terminal' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/terminal.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.terminal' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/terminal.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.runner' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/runner.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.runner' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/runner.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.python' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/python.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.python' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/python.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.fixtures' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/fixtures.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.fixtures' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/fixtures.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.debugging' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/debugging.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.debugging' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/debugging.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.unittest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/unittest.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.unittest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/unittest.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.capture' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/capture.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.capture' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/capture.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.skipping' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/skipping.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.skipping' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/skipping.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.tmpdir' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/tmpdir.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.tmpdir' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/tmpdir.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.monkeypatch' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/monkeypatch.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.monkeypatch' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/monkeypatch.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.recwarn' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/recwarn.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.recwarn' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/recwarn.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.pastebin' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/pastebin.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.pastebin' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/pastebin.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.helpconfig' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/helpconfig.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.helpconfig' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/helpconfig.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.nose' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/nose.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.nose' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/nose.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.assertion' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/assertion/__init__.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.assertion' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/assertion/__init__.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.junitxml' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/junitxml.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.junitxml' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/junitxml.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.resultlog' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/resultlog.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.resultlog' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/resultlog.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.doctest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/doctest.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.doctest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/doctest.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.cacheprovider' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/cacheprovider.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.cacheprovider' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/cacheprovider.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.freeze_support' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/freeze_support.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.freeze_support' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/freeze_support.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.setuponly' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/setuponly.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.setuponly' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/setuponly.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.setupplan' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/setupplan.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.setupplan' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/setupplan.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.warnings' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/warnings.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.warnings' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/warnings.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.capture.CaptureManager object at 0x7f3c8b134588>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.capture.CaptureManager object at 0x7f3c8b134588>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module 'conftest' (<_pytest.assertion.rewrite.AssertionRewritingHook object at 0x7f3c8b885320>)>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module 'conftest' (<_pytest.assertion.rewrite.AssertionRewritingHook object at 0x7f3c8b885320>)>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <Session 'tests'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <Session 'tests'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.cacheprovider.LFPlugin object at 0x7f3c8b1389b0>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.cacheprovider.LFPlugin object at 0x7f3c8b1389b0>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.terminal.TerminalReporter object at 0x7f3c8aebb630>
+      finish pytest_plugin_registered --> [] [hook]
+    finish pytest_configure --> [] [hook]
+    pytest_sessionstart [hook]
+        session: <Session 'tests'>
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.config.Config object at 0x7f3c8d2c9a20>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.config.Config object at 0x7f3c8d2c9a20>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.mark' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/mark.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.mark' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/mark.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.main' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/main.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.main' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/main.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.terminal' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/terminal.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.terminal' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/terminal.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.runner' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/runner.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.runner' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/runner.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.python' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/python.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.python' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/python.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.fixtures' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/fixtures.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.fixtures' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/fixtures.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.debugging' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/debugging.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.debugging' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/debugging.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.unittest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/unittest.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.unittest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/unittest.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.capture' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/capture.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.capture' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/capture.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.skipping' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/skipping.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.skipping' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/skipping.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.tmpdir' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/tmpdir.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.tmpdir' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/tmpdir.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.monkeypatch' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/monkeypatch.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.monkeypatch' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/monkeypatch.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.recwarn' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/recwarn.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.recwarn' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/recwarn.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.pastebin' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/pastebin.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.pastebin' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/pastebin.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.helpconfig' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/helpconfig.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.helpconfig' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/helpconfig.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.nose' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/nose.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.nose' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/nose.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.assertion' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/assertion/__init__.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.assertion' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/assertion/__init__.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.junitxml' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/junitxml.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.junitxml' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/junitxml.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.resultlog' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/resultlog.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.resultlog' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/resultlog.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.doctest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/doctest.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.doctest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/doctest.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.cacheprovider' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/cacheprovider.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.cacheprovider' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/cacheprovider.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.freeze_support' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/freeze_support.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.freeze_support' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/freeze_support.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.setuponly' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/setuponly.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.setuponly' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/setuponly.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.setupplan' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/setupplan.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.setupplan' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/setupplan.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module '_pytest.warnings' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/warnings.py'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module '_pytest.warnings' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/warnings.py'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.capture.CaptureManager object at 0x7f3c8b134588>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.capture.CaptureManager object at 0x7f3c8b134588>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <module 'conftest' (<_pytest.assertion.rewrite.AssertionRewritingHook object at 0x7f3c8b885320>)>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <module 'conftest' (<_pytest.assertion.rewrite.AssertionRewritingHook object at 0x7f3c8b885320>)>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <Session 'tests'>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <Session 'tests'>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.cacheprovider.LFPlugin object at 0x7f3c8b1389b0>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.cacheprovider.LFPlugin object at 0x7f3c8b1389b0>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.terminal.TerminalReporter object at 0x7f3c8aebb630>
+          __multicall__: <_MultiCall 0 results, 0 meths, kwargs={'manager': <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>, 'plugin': <_pytest.terminal.TerminalReporter object at 0x7f3c8aebb630>, '__multicall__': <_MultiCall 0 results, 0 meths, kwargs={...}>}>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_plugin_registered [hook]
+          manager: <_pytest.config.PytestPluginManager object at 0x7f3c8dddc160>
+          plugin: <_pytest.fixtures.FixtureManager object at 0x7f3c8b13ff60>
+      finish pytest_plugin_registered --> [] [hook]
+      pytest_report_header [hook]
+          startdir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests
+          config: <_pytest.config.Config object at 0x7f3c8d2c9a20>
+      finish pytest_report_header --> [['rootdir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests, inifile:'], 'cachedir: .cache', ['using: pytest-3.1.2 pylib-1.4.34']] [hook]
+    finish pytest_sessionstart --> [] [hook]
+    pytest_collection [hook]
+        session: <Session 'tests'>
+    perform_collect <Session 'tests'> ['test_BamQC.py'] [collection]
+        pytest_collectstart [hook]
+            collector: <Session 'tests'>
+        finish pytest_collectstart --> [] [hook]
+        pytest_make_collect_report [hook]
+            collector: <Session 'tests'>
+        processing argument /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/test_BamQC.py [collection]
+            pytest_collect_file [hook]
+                path: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/test_BamQC.py
+                parent: <Session 'tests'>
+              pytest_pycollect_makemodule [hook]
+                  path: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/test_BamQC.py
+                  parent: <Session 'tests'>
+              finish pytest_pycollect_makemodule --> <Module 'test_BamQC.py'> [hook]
+            finish pytest_collect_file --> [<Module 'test_BamQC.py'>] [hook]
+          matchnodes [<Module 'test_BamQC.py'>] [] [collection]
+            matchnodes finished ->  1 nodes [collection]
+        finish pytest_make_collect_report --> <CollectReport '' lenresult=1 outcome='passed'> [hook]
+        pytest_collectreport [hook]
+            report: <CollectReport '' lenresult=1 outcome='passed'>
+        finish pytest_collectreport --> [] [hook]
+    genitems <Module 'test_BamQC.py'> [collection]
+      pytest_collectstart [hook]
+          collector: <Module 'test_BamQC.py'>
+      finish pytest_collectstart --> [] [hook]
+      pytest_make_collect_report [hook]
+          collector: <Module 'test_BamQC.py'>
+      find_module called for: test_BamQC [assertion]
+      matched test file (was specified on cmdline): '/homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/test_BamQC.py' [assertion]
+      found cached rewritten pyc for '/homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/test_BamQC.py' [assertion]
+      find_module called for: BamQC [assertion]
+      find_module called for: matplotlib [assertion]
+      find_module called for: six [assertion]
+      find_module called for: distutils [assertion]
+      find_module called for: distutils.version [assertion]
+      find_module called for: distutils.sysconfig [assertion]
+      find_module called for: distutils.errors [assertion]
+      find_module called for: matplotlib.cbook [assertion]
+      find_module called for: six.moves [assertion]
+      find_module called for: gzip [assertion]
+      find_module called for: numpy [assertion]
+      find_module called for: numpy._globals [assertion]
+      find_module called for: numpy.__config__ [assertion]
+      find_module called for: numpy.version [assertion]
+      find_module called for: numpy._import_tools [assertion]
+      find_module called for: numpy.add_newdocs [assertion]
+      find_module called for: numpy.lib [assertion]
+      find_module called for: numpy.lib.info [assertion]
+      find_module called for: numpy.lib.type_check [assertion]
+      find_module called for: numpy.core [assertion]
+      find_module called for: numpy.core.info [assertion]
+      find_module called for: numpy.core.multiarray [assertion]
+      find_module called for: numpy.core.umath [assertion]
+      find_module called for: numpy.core._internal [assertion]
+      find_module called for: numpy.compat [assertion]
+      find_module called for: numpy.compat._inspect [assertion]
+      find_module called for: numpy.compat.py3k [assertion]
+      find_module called for: pathlib [assertion]
+      find_module called for: ntpath [assertion]
+      find_module called for: nt [assertion]
+      find_module called for: nt [assertion]
+      find_module called for: nt [assertion]
+      find_module called for: ctypes [assertion]
+      find_module called for: _ctypes [assertion]
+      find_module called for: ctypes._endian [assertion]
+      find_module called for: numpy.core.numerictypes [assertion]
+      find_module called for: numbers [assertion]
+      find_module called for: numpy.core.numeric [assertion]
+      find_module called for: pickle [assertion]
+      find_module called for: _compat_pickle [assertion]
+      find_module called for: org [assertion]
+      find_module called for: _pickle [assertion]
+      find_module called for: numpy.core.arrayprint [assertion]
+      find_module called for: numpy.core.fromnumeric [assertion]
+      find_module called for: numpy.core._methods [assertion]
+      find_module called for: numpy.core.defchararray [assertion]
+      find_module called for: numpy.core.records [assertion]
+      find_module called for: numpy.core.memmap [assertion]
+      find_module called for: numpy.core.function_base [assertion]
+      find_module called for: numpy.core.machar [assertion]
+      find_module called for: numpy.core.getlimits [assertion]
+      find_module called for: numpy.core.shape_base [assertion]
+      find_module called for: numpy.core.einsumfunc [assertion]
+      find_module called for: numpy.testing [assertion]
+      find_module called for: unittest [assertion]
+      find_module called for: unittest.result [assertion]
+      find_module called for: unittest.util [assertion]
+      find_module called for: unittest.case [assertion]
+      find_module called for: difflib [assertion]
+      find_module called for: logging [assertion]
+      find_module called for: unittest.suite [assertion]
+      find_module called for: unittest.loader [assertion]
+      find_module called for: unittest.main [assertion]
+      find_module called for: unittest.runner [assertion]
+      find_module called for: unittest.signals [assertion]
+      find_module called for: numpy.testing.decorators [assertion]
+      find_module called for: numpy.testing.utils [assertion]
+      find_module called for: numpy.lib.utils [assertion]
+      find_module called for: numpy.testing.nosetester [assertion]
+      find_module called for: numpy.lib.ufunclike [assertion]
+      find_module called for: numpy.lib.index_tricks [assertion]
+      find_module called for: numpy.lib.function_base [assertion]
+      find_module called for: numpy.lib.twodim_base [assertion]
+      find_module called for: numpy.matrixlib [assertion]
+      find_module called for: numpy.matrixlib.defmatrix [assertion]
+      find_module called for: numpy.lib.stride_tricks [assertion]
+      find_module called for: numpy.lib.mixins [assertion]
+      find_module called for: numpy.lib.nanfunctions [assertion]
+      find_module called for: numpy.lib.shape_base [assertion]
+      find_module called for: numpy.lib.scimath [assertion]
+      find_module called for: numpy.lib.polynomial [assertion]
+      find_module called for: numpy.linalg [assertion]
+      find_module called for: numpy.linalg.info [assertion]
+      find_module called for: numpy.linalg.linalg [assertion]
+      find_module called for: numpy.linalg.lapack_lite [assertion]
+      find_module called for: numpy.linalg._umath_linalg [assertion]
+      find_module called for: numpy.lib.arraysetops [assertion]
+      find_module called for: numpy.lib.npyio [assertion]
+      find_module called for: numpy.lib.format [assertion]
+      find_module called for: numpy.lib._datasource [assertion]
+      find_module called for: numpy.lib._iotools [assertion]
+      find_module called for: numpy.lib.financial [assertion]
+      find_module called for: numpy.lib.arrayterator [assertion]
+      find_module called for: numpy.lib.arraypad [assertion]
+      find_module called for: numpy.lib._version [assertion]
+      find_module called for: numpy.core.c_einsum [assertion]
+      find_module called for: numpy._distributor_init [assertion]
+      find_module called for: numpy.fft [assertion]
+      find_module called for: numpy.fft.info [assertion]
+      find_module called for: mklfft [assertion]
+      find_module called for: numpy.fft.fftpack [assertion]
+      find_module called for: numpy.fft.fftpack_lite [assertion]
+      find_module called for: numpy.fft.helper [assertion]
+      find_module called for: numpy.polynomial [assertion]
+      find_module called for: numpy.polynomial.polynomial [assertion]
+      find_module called for: numpy.polynomial.polyutils [assertion]
+      find_module called for: numpy.polynomial._polybase [assertion]
+      find_module called for: numpy.polynomial.chebyshev [assertion]
+      find_module called for: numpy.polynomial.legendre [assertion]
+      find_module called for: numpy.polynomial.hermite [assertion]
+      find_module called for: numpy.polynomial.hermite_e [assertion]
+      find_module called for: numpy.polynomial.laguerre [assertion]
+      find_module called for: numpy.random [assertion]
+      find_module called for: numpy.random.info [assertion]
+      find_module called for: numpy.random.mtrand [assertion]
+      find_module called for: numpy.ctypeslib [assertion]
+      find_module called for: numpy.ma [assertion]
+      find_module called for: numpy.ma.core [assertion]
+      find_module called for: numpy.ma.extras [assertion]
+      find_module called for: matplotlib.compat [assertion]
+      find_module called for: matplotlib.compat.subprocess [assertion]
+      find_module called for: matplotlib.rcsetup [assertion]
+      find_module called for: matplotlib.fontconfig_pattern [assertion]
+      find_module called for: pyparsing [assertion]
+      find_module called for: matplotlib.colors [assertion]
+      find_module called for: matplotlib._color_data [assertion]
+      find_module called for: cycler [assertion]
+      find_module called for: six.moves.urllib [assertion]
+      find_module called for: six.moves.urllib.request [assertion]
+      find_module called for: urllib.request [assertion]
+      find_module called for: http [assertion]
+      find_module called for: http.client [assertion]
+      find_module called for: ssl [assertion]
+      find_module called for: ipaddress [assertion]
+      find_module called for: _ssl [assertion]
+      find_module called for: urllib.error [assertion]
+      find_module called for: urllib.response [assertion]
+      find_module called for: matplotlib._version [assertion]
+      find_module called for: dateutil [assertion]
+      find_module called for: matplotlib.pyplot [assertion]
+      find_module called for: matplotlib.colorbar [assertion]
+      find_module called for: matplotlib.artist [assertion]
+      find_module called for: matplotlib.docstring [assertion]
+      find_module called for: matplotlib.transforms [assertion]
+      find_module called for: matplotlib._path [assertion]
+      find_module called for: matplotlib.path [assertion]
+      find_module called for: matplotlib.collections [assertion]
+      find_module called for: matplotlib.cm [assertion]
+      find_module called for: matplotlib._cm [assertion]
+      find_module called for: matplotlib._cm_listed [assertion]
+      find_module called for: matplotlib.mlab [assertion]
+      find_module called for: csv [assertion]
+      find_module called for: _csv [assertion]
+      find_module called for: matplotlib.lines [assertion]
+      find_module called for: matplotlib.markers [assertion]
+      find_module called for: matplotlib.contour [assertion]
+      find_module called for: matplotlib._cntr [assertion]
+      find_module called for: matplotlib._contour [assertion]
+      find_module called for: matplotlib.ticker [assertion]
+      find_module called for: decimal [assertion]
+      find_module called for: _decimal [assertion]
+      find_module called for: matplotlib.font_manager [assertion]
+      find_module called for: matplotlib.afm [assertion]
+      find_module called for: matplotlib._mathtext_data [assertion]
+      find_module called for: matplotlib.ft2font [assertion]
+      find_module called for: matplotlib.text [assertion]
+      find_module called for: matplotlib.patches [assertion]
+      find_module called for: matplotlib.bezier [assertion]
+      find_module called for: matplotlib.backend_bases [assertion]
+      find_module called for: matplotlib.widgets [assertion]
+      find_module called for: matplotlib._pylab_helpers [assertion]
+      find_module called for: gc [assertion]
+      find_module called for: matplotlib.tight_bbox [assertion]
+      find_module called for: matplotlib.textpath [assertion]
+      find_module called for: matplotlib.mathtext [assertion]
+      find_module called for: unicodedata [assertion]
+      find_module called for: matplotlib._png [assertion]
+      find_module called for: matplotlib.dviread [assertion]
+      find_module called for: six.moves.urllib.parse [assertion]
+      find_module called for: matplotlib.backend_tools [assertion]
+      find_module called for: PIL [assertion]
+      find_module called for: PIL.Image [assertion]
+      find_module called for: FixTk [assertion]
+      find_module called for: PIL._imaging [assertion]
+      find_module called for: PIL.ImageMode [assertion]
+      find_module called for: PIL._binary [assertion]
+      find_module called for: PIL._util [assertion]
+      find_module called for: cffi [assertion]
+      find_module called for: cffi.api [assertion]
+      find_module called for: cffi.lock [assertion]
+      find_module called for: cffi.ffiplatform [assertion]
+      find_module called for: matplotlib.texmanager [assertion]
+      find_module called for: matplotlib.blocking_input [assertion]
+      find_module called for: matplotlib.gridspec [assertion]
+      find_module called for: matplotlib.style [assertion]
+      find_module called for: matplotlib.style.core [assertion]
+      find_module called for: matplotlib.figure [assertion]
+      find_module called for: matplotlib.image [assertion]
+      find_module called for: matplotlib._image [assertion]
+      find_module called for: matplotlib.axes [assertion]
+      find_module called for: matplotlib.axes._subplots [assertion]
+      find_module called for: matplotlib.axes._axes [assertion]
+      find_module called for: matplotlib.dates [assertion]
+      find_module called for: dateutil.rrule [assertion]
+      find_module called for: dateutil.relativedelta [assertion]
+      find_module called for: dateutil.parser [assertion]
+      find_module called for: dateutil.tz [assertion]
+      find_module called for: dateutil.tz.tz [assertion]
+      find_module called for: dateutil.tz._common [assertion]
+      find_module called for: dateutil.tz.win [assertion]
+      find_module called for: six.moves.winreg [assertion]
+      find_module called for: matplotlib.units [assertion]
+      find_module called for: matplotlib.legend [assertion]
+      find_module called for: matplotlib.offsetbox [assertion]
+      find_module called for: matplotlib.container [assertion]
+      find_module called for: matplotlib.legend_handler [assertion]
+      find_module called for: matplotlib.quiver [assertion]
+      find_module called for: matplotlib.stackplot [assertion]
+      find_module called for: matplotlib.streamplot [assertion]
+      find_module called for: matplotlib.table [assertion]
+      find_module called for: matplotlib.tri [assertion]
+      find_module called for: matplotlib.tri.triangulation [assertion]
+      find_module called for: matplotlib._tri [assertion]
+      find_module called for: matplotlib._qhull [assertion]
+      find_module called for: matplotlib.tri.tricontour [assertion]
+      find_module called for: matplotlib.tri.tritools [assertion]
+      find_module called for: matplotlib.tri.trifinder [assertion]
+      find_module called for: matplotlib.tri.triinterpolate [assertion]
+      find_module called for: matplotlib.tri.trirefine [assertion]
+      find_module called for: matplotlib.tri.tripcolor [assertion]
+      find_module called for: matplotlib.tri.triplot [assertion]
+      find_module called for: matplotlib.axes._base [assertion]
+      find_module called for: matplotlib.axis [assertion]
+      find_module called for: matplotlib.scale [assertion]
+      find_module called for: matplotlib.spines [assertion]
+      find_module called for: matplotlib.projections [assertion]
+      find_module called for: matplotlib.projections.geo [assertion]
+      find_module called for: matplotlib.projections.polar [assertion]
+      find_module called for: matplotlib.backends [assertion]
+      find_module called for: matplotlib.backends.backend_qt5agg [assertion]
+      find_module called for: matplotlib.backends.backend_agg [assertion]
+      find_module called for: matplotlib.backends._backend_agg [assertion]
+      find_module called for: matplotlib.backends.backend_qt5 [assertion]
+      find_module called for: matplotlib.backends.qt_editor [assertion]
+      find_module called for: matplotlib.backends.qt_editor.figureoptions [assertion]
+      find_module called for: matplotlib.backends.qt_editor.formlayout [assertion]
+      find_module called for: matplotlib.backends.qt_compat [assertion]
+      find_module called for: sip [assertion]
+      find_module called for: PyQt5 [assertion]
+      find_module called for: PyQt5.QtCore [assertion]
+      find_module called for: PyQt5.QtGui [assertion]
+      find_module called for: PyQt5.QtWidgets [assertion]
+      find_module called for: matplotlib.backends.qt_editor.formsubplottool [assertion]
+      find_module called for: pandas [assertion]
+      find_module called for: pytz [assertion]
+      find_module called for: pytz.exceptions [assertion]
+      find_module called for: pytz.lazy [assertion]
+      find_module called for: UserDict [assertion]
+      find_module called for: pytz.tzinfo [assertion]
+      find_module called for: pytz.tzfile [assertion]
+      find_module called for: cStringIO [assertion]
+      find_module called for: pandas.compat [assertion]
+      find_module called for: __builtin__ [assertion]
+      find_module called for: pandas.compat.chainmap [assertion]
+      find_module called for: pandas.compat.numpy [assertion]
+      find_module called for: pandas._libs [assertion]
+      find_module called for: pandas._libs.tslib [assertion]
+      find_module called for: pandas._libs.warnings [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.sys [assertion]
+      find_module called for: pandas._libs.datetime [assertion]
+      find_module called for: pandas._libs.datetime [assertion]
+      find_module called for: pandas._libs.re [assertion]
+      find_module called for: pandas._libs.dateutil [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.dateutil [assertion]
+      find_module called for: pandas._libs.dateutil [assertion]
+      find_module called for: pandas._libs.dateutil [assertion]
+      find_module called for: pandas._libs.pytz [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.operator [assertion]
+      find_module called for: pandas._libs.collections [assertion]
+      find_module called for: pandas._libs.warnings [assertion]
+      find_module called for: pandas._libs.pytz [assertion]
+      find_module called for: pandas._libs.time [assertion]
+      find_module called for: pandas._libs.locale [assertion]
+      find_module called for: pandas._libs.calendar [assertion]
+      find_module called for: pandas._libs.re [assertion]
+      find_module called for: pandas._libs.re [assertion]
+      find_module called for: pandas._libs.re [assertion]
+      find_module called for: pandas._libs.datetime [assertion]
+      find_module called for: pandas._libs.thread [assertion]
+      find_module called for: thread [assertion]
+      find_module called for: pandas._libs._thread [assertion]
+      find_module called for: pandas._libs.hashtable [assertion]
+      find_module called for: pandas._libs.lib [assertion]
+      find_module called for: backports_abc [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.sys [assertion]
+      find_module called for: pandas._libs.datetime [assertion]
+      find_module called for: pandas._libs.interval [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.numbers [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.datetime [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.distutils [assertion]
+      find_module called for: pandas._libs.sys [assertion]
+      find_module called for: pandas._libs.decimal [assertion]
+      find_module called for: pandas._libs.datetime [assertion]
+      find_module called for: backports_abc [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas.core [assertion]
+      find_module called for: pandas.core.config_init [assertion]
+      find_module called for: pandas.core.config [assertion]
+      find_module called for: pandas.io [assertion]
+      find_module called for: pandas.io.formats [assertion]
+      find_module called for: pandas.io.formats.printing [assertion]
+      find_module called for: pandas.core.dtypes [assertion]
+      find_module called for: pandas.core.dtypes.inference [assertion]
+      find_module called for: pandas.io.formats.console [assertion]
+      find_module called for: pandas.io.formats.terminal [assertion]
+      find_module called for: xlsxwriter [assertion]
+      find_module called for: xlsxwriter.workbook [assertion]
+      find_module called for: xlsxwriter.compatibility [assertion]
+      find_module called for: StringIO [assertion]
+      find_module called for: fractions [assertion]
+      find_module called for: xlsxwriter.xmlwriter [assertion]
+      find_module called for: xlsxwriter.worksheet [assertion]
+      find_module called for: xlsxwriter.format [assertion]
+      find_module called for: xlsxwriter.drawing [assertion]
+      find_module called for: xlsxwriter.shape [assertion]
+      find_module called for: xlsxwriter.utility [assertion]
+      find_module called for: xlsxwriter.chartsheet [assertion]
+      find_module called for: xlsxwriter.sharedstrings [assertion]
+      find_module called for: xlsxwriter.packager [assertion]
+      find_module called for: xlsxwriter.app [assertion]
+      find_module called for: xlsxwriter.contenttypes [assertion]
+      find_module called for: xlsxwriter.core [assertion]
+      find_module called for: xlsxwriter.custom [assertion]
+      find_module called for: xlsxwriter.relationships [assertion]
+      find_module called for: xlsxwriter.styles [assertion]
+      find_module called for: xlsxwriter.theme [assertion]
+      find_module called for: xlsxwriter.vml [assertion]
+      find_module called for: xlsxwriter.table [assertion]
+      find_module called for: xlsxwriter.comments [assertion]
+      find_module called for: xlsxwriter.chart_area [assertion]
+      find_module called for: xlsxwriter.chart [assertion]
+      find_module called for: xlsxwriter.chart_bar [assertion]
+      find_module called for: xlsxwriter.chart_column [assertion]
+      find_module called for: xlsxwriter.chart_doughnut [assertion]
+      find_module called for: xlsxwriter.chart_pie [assertion]
+      find_module called for: xlsxwriter.chart_line [assertion]
+      find_module called for: xlsxwriter.chart_radar [assertion]
+      find_module called for: xlsxwriter.chart_scatter [assertion]
+      find_module called for: xlsxwriter.chart_stock [assertion]
+      find_module called for: pandas.core.api [assertion]
+      find_module called for: pandas.core.algorithms [assertion]
+      find_module called for: pandas.core.dtypes.cast [assertion]
+      find_module called for: pandas.core.dtypes.common [assertion]
+      find_module called for: pandas._libs.algos [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas.core.dtypes.dtypes [assertion]
+      find_module called for: pandas.core.dtypes.generic [assertion]
+      find_module called for: pandas.core.dtypes.missing [assertion]
+      find_module called for: pandas.core.common [assertion]
+      find_module called for: pandas.api [assertion]
+      find_module called for: pandas.api.types [assertion]
+      find_module called for: pandas.core.dtypes.api [assertion]
+      find_module called for: pandas.core.dtypes.concat [assertion]
+      find_module called for: pandas.errors [assertion]
+      find_module called for: pandas.core.categorical [assertion]
+      find_module called for: pandas.core.base [assertion]
+      find_module called for: pandas.util [assertion]
+      find_module called for: pandas.core.util [assertion]
+      find_module called for: pandas.core.util.hashing [assertion]
+      find_module called for: pandas._libs.hashing [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas.util._decorators [assertion]
+      find_module called for: pandas.util._validators [assertion]
+      find_module called for: pandas.core.nanops [assertion]
+      find_module called for: bottleneck [assertion]
+      find_module called for: bottleneck.reduce [assertion]
+      find_module called for: bottleneck.nonreduce [assertion]
+      find_module called for: bottleneck.nonreduce_axis [assertion]
+      find_module called for: bottleneck.move [assertion]
+      find_module called for: bottleneck.slow [assertion]
+      find_module called for: bottleneck.slow.reduce [assertion]
+      find_module called for: bottleneck.slow.nonreduce [assertion]
+      find_module called for: bottleneck.slow.nonreduce_axis [assertion]
+      find_module called for: bottleneck.slow.move [assertion]
+      find_module called for: bottleneck.version [assertion]
+      find_module called for: bottleneck.benchmark [assertion]
+      find_module called for: bottleneck.benchmark.bench [assertion]
+      find_module called for: bottleneck.benchmark.autotimeit [assertion]
+      find_module called for: timeit [assertion]
+      find_module called for: bottleneck.benchmark.bench_detailed [assertion]
+      find_module called for: bottleneck.tests [assertion]
+      find_module called for: bottleneck.tests.util [assertion]
+      find_module called for: pandas.compat.numpy.function [assertion]
+      find_module called for: pandas.core.missing [assertion]
+      find_module called for: pandas.core.groupby [assertion]
+      find_module called for: pandas.core.index [assertion]
+      find_module called for: pandas.core.indexes [assertion]
+      find_module called for: pandas.core.indexes.api [assertion]
+      find_module called for: pandas.core.indexes.base [assertion]
+      find_module called for: pandas._libs.index [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.dateutil [assertion]
+      find_module called for: pandas._libs.pytz [assertion]
+      find_module called for: pandas._libs.join [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas.core.indexes.frozen [assertion]
+      find_module called for: pandas.core.ops [assertion]
+      find_module called for: pandas.core.computation [assertion]
+      find_module called for: numexpr [assertion]
+      find_module called for: numexpr.__config__ [assertion]
+      find_module called for: numexpr.cpuinfo [assertion]
+      find_module called for: numexpr.expressions [assertion]
+      find_module called for: numexpr.interpreter [assertion]
+      find_module called for: numexpr.necompiler [assertion]
+      find_module called for: numexpr.utils [assertion]
+      find_module called for: numexpr.tests [assertion]
+      find_module called for: numexpr.tests.test_numexpr [assertion]
+      matched test file '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/numexpr/tests/test_numexpr.py' [assertion]
+      found cached rewritten pyc for '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/numexpr/tests/test_numexpr.py' [assertion]
+      find_module called for: numexpr.version [assertion]
+      find_module called for: pandas.core.computation.expressions [assertion]
+      find_module called for: pandas.core.strings [assertion]
+      find_module called for: pandas.core.indexes.category [assertion]
+      find_module called for: pandas.core.indexes.multi [assertion]
+      find_module called for: pandas.core.indexes.interval [assertion]
+      find_module called for: pandas.core.indexes.numeric [assertion]
+      find_module called for: pandas.core.indexes.range [assertion]
+      find_module called for: pandas.core.indexes.timedeltas [assertion]
+      find_module called for: pandas.tseries [assertion]
+      find_module called for: pandas.tseries.frequencies [assertion]
+      find_module called for: pandas.tseries.offsets [assertion]
+      find_module called for: pandas.core.tools [assertion]
+      find_module called for: pandas.core.tools.datetimes [assertion]
+      find_module called for: dateutil.easter [assertion]
+      find_module called for: pandas.core.indexes.datetimelike [assertion]
+      find_module called for: pandas._libs.period [assertion]
+      find_module called for: pandas._libs.datetime [assertion]
+      find_module called for: pandas._libs.operator [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas.core.tools.timedeltas [assertion]
+      find_module called for: pandas.core.indexes.period [assertion]
+      find_module called for: pandas.core.indexes.datetimes [assertion]
+      find_module called for: pandas.core.frame [assertion]
+      find_module called for: pandas.core.generic [assertion]
+      find_module called for: pandas.core.indexing [assertion]
+      find_module called for: pandas.core.internals [assertion]
+      find_module called for: pandas.core.sparse [assertion]
+      find_module called for: pandas.core.sparse.array [assertion]
+      find_module called for: pandas._libs.sparse [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.operator [assertion]
+      find_module called for: pandas._libs.sys [assertion]
+      find_module called for: pandas._libs.distutils [assertion]
+      find_module called for: pandas.io.formats.format [assertion]
+      find_module called for: pandas.io.common [assertion]
+      find_module called for: mmap [assertion]
+      find_module called for: s3fs [assertion]
+      find_module called for: pandas.io.formats.common [assertion]
+      find_module called for: pandas.core.series [assertion]
+      find_module called for: pandas.core.indexes.accessors [assertion]
+      find_module called for: pandas.core.window [assertion]
+      find_module called for: pandas._libs.window [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.random [assertion]
+      find_module called for: pandas.plotting [assertion]
+      find_module called for: pandas.plotting._converter [assertion]
+      find_module called for: pandas.plotting._compat [assertion]
+      find_module called for: pandas.plotting._misc [assertion]
+      find_module called for: pandas.plotting._style [assertion]
+      find_module called for: pandas.plotting._tools [assertion]
+      find_module called for: pandas.plotting._core [assertion]
+      find_module called for: pandas.core.computation.eval [assertion]
+      find_module called for: pandas.core.computation.expr [assertion]
+      find_module called for: pandas.core.reshape [assertion]
+      find_module called for: pandas.core.reshape.util [assertion]
+      find_module called for: pandas.core.computation.ops [assertion]
+      find_module called for: pandas.core.computation.common [assertion]
+      find_module called for: pandas.core.computation.scope [assertion]
+      find_module called for: pandas.core.computation.engines [assertion]
+      find_module called for: pandas.core.computation.align [assertion]
+      find_module called for: pandas.core.panel [assertion]
+      find_module called for: pandas.core.sorting [assertion]
+      find_module called for: pandas._libs.groupby [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas.core.panel4d [assertion]
+      find_module called for: pandas.core.panelnd [assertion]
+      find_module called for: pandas.core.reshape.reshape [assertion]
+      find_module called for: pandas.core.sparse.api [assertion]
+      find_module called for: pandas.core.sparse.list [assertion]
+      find_module called for: pandas.core.sparse.series [assertion]
+      find_module called for: pandas.core.sparse.scipy_sparse [assertion]
+      find_module called for: pandas.core.sparse.frame [assertion]
+      find_module called for: pandas._libs.reshape [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas.core.tools.numeric [assertion]
+      find_module called for: pandas.core.resample [assertion]
+      find_module called for: pandas.util._depr_module [assertion]
+      find_module called for: pandas.stats [assertion]
+      find_module called for: pandas.stats.api [assertion]
+      find_module called for: pandas.stats.moments [assertion]
+      find_module called for: pandas.tseries.api [assertion]
+      find_module called for: pandas.core.computation.api [assertion]
+      find_module called for: pandas.core.reshape.api [assertion]
+      find_module called for: pandas.core.reshape.concat [assertion]
+      find_module called for: pandas.core.reshape.merge [assertion]
+      find_module called for: pandas.core.reshape.pivot [assertion]
+      find_module called for: pandas.core.reshape.tile [assertion]
+      find_module called for: pandas.tools [assertion]
+      find_module called for: pandas.tools.plotting [assertion]
+      find_module called for: pandas.util._print_versions [assertion]
+      find_module called for: pandas.io.api [assertion]
+      find_module called for: pandas.io.parsers [assertion]
+      find_module called for: pandas.io.date_converters [assertion]
+      find_module called for: pandas._libs.parsers [assertion]
+      find_module called for: pandas._libs.warnings [assertion]
+      find_module called for: pandas._libs.csv [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.time [assertion]
+      find_module called for: pandas._libs.os [assertion]
+      find_module called for: pandas._libs.sys [assertion]
+      find_module called for: pandas.io.clipboards [assertion]
+      find_module called for: pandas.io.excel [assertion]
+      find_module called for: pandas._libs.json [assertion]
+      find_module called for: pandas.compat.openpyxl_compat [assertion]
+      find_module called for: pandas.io.pytables [assertion]
+      find_module called for: pandas.core.computation.pytables [assertion]
+      find_module called for: pandas.io.json [assertion]
+      find_module called for: pandas.io.json.json [assertion]
+      find_module called for: pandas.io.json.normalize [assertion]
+      find_module called for: pandas.io.json.table_schema [assertion]
+      find_module called for: pandas.io.html [assertion]
+      find_module called for: pandas.io.sql [assertion]
+      find_module called for: pandas.io.sas [assertion]
+      find_module called for: pandas.io.sas.sasreader [assertion]
+      find_module called for: pandas.io.feather_format [assertion]
+      find_module called for: pandas.io.stata [assertion]
+      find_module called for: pandas.io.pickle [assertion]
+      find_module called for: pandas.compat.pickle_compat [assertion]
+      find_module called for: pandas.io.packers [assertion]
+      find_module called for: pandas.io.msgpack [assertion]
+      find_module called for: pandas.io.msgpack.exceptions [assertion]
+      find_module called for: pandas.io.msgpack._version [assertion]
+      find_module called for: pandas.io.msgpack._packer [assertion]
+      find_module called for: pandas.io.msgpack.pandas [assertion]
+      find_module called for: pandas.io.msgpack.pandas [assertion]
+      find_module called for: pandas.io.msgpack._unpacker [assertion]
+      find_module called for: pandas.io.msgpack.pandas [assertion]
+      find_module called for: pandas.io.msgpack.pandas [assertion]
+      find_module called for: pandas.util._move [assertion]
+      find_module called for: blosc [assertion]
+      find_module called for: pandas.io.gbq [assertion]
+      find_module called for: pandas.util._tester [assertion]
+      find_module called for: pandas.testing [assertion]
+      find_module called for: pandas.util.testing [assertion]
+      find_module called for: pandas._libs.testing [assertion]
+      find_module called for: pandas._libs.numpy [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._libs.pandas [assertion]
+      find_module called for: pandas._version [assertion]
+        pytest_pycollect_makeitem [hook]
+            name: __spec__
+            obj: ModuleSpec(name='test_BamQC', loader=<_pytest.assertion.rewrite.AssertionRewritingHook object at 0x7f3c8b885320>)
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_list_of_readgroups
+            obj: <function test_list_of_readgroups at 0x7f3c74090ea0>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a0ba90>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_list_of_readgroups'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: bam_object
+            obj: <function bam_object at 0x7f3c8b143840>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: pytest
+            obj: <module 'pytest' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/pytest.py'>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_run_CollectWgsMetrics
+            obj: <function test_run_CollectWgsMetrics at 0x7f3c73a171e0>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a0bd30>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_run_CollectWgsMetrics'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: warnings
+            obj: <module 'warnings' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/warnings.py'>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_aggregate_stats
+            obj: <function test_aggregate_stats at 0x7f3c73a17048>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a0bf28>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_aggregate_stats'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __builtins__
+            obj: {'iter': <built-in function iter>, 'vars': <built-in function vars>, 'locals': <built-in function locals>, 'input': <built-in function input>, 'RuntimeWarning': <class 'RuntimeWarning'>, 'dict': <class 'dict'>, 'False': False, 'getattr': <built-in function getattr>, 'NameError': <class 'NameError'>, 'globals': <built-in function globals>, 'slice': <class 'slice'>, 'PermissionError': <class 'PermissionError'>, 'dir': <built-in function dir>, 'frozenset': <class 'frozenset'>, 'int': <class 'int'>, 'hex': <built-in function hex>, 'callable': <built-in function callable>, 'exit': Use exit() or Ctrl-D (i.e. EOF) to exit, 'ConnectionError': <class 'ConnectionError'>, 'zip': <class 'zip'>, 'print': <built-in function print>, 'super': <class 'super'>, 'compile': <built-in function compile>, 'id': <built-in function id>, 'next': <built-in function next>, 'sum': <built-in function sum>, 'setattr': <built-in function setattr>, 'exec': <built-in function exec>, 'all': <built-in function all>, 'classmethod': <class 'classmethod'>, 'ReferenceError': <class 'ReferenceError'>, 'FileExistsError': <class 'FileExistsError'>, 'True': True, 'PendingDeprecationWarning': <class 'PendingDeprecationWarning'>, 'float': <class 'float'>, 'NotImplemented': NotImplemented, 'ChildProcessError': <class 'ChildProcessError'>, 'Warning': <class 'Warning'>, 'EOFError': <class 'EOFError'>, 'IOError': <class 'OSError'>, 'StopIteration': <class 'StopIteration'>, 'pow': <built-in function pow>, 'Exception': <class 'Exception'>, 'list': <class 'list'>, 'SyntaxWarning': <class 'SyntaxWarning'>, 'range': <class 'range'>, 'TypeError': <class 'TypeError'>, 'UnicodeError': <class 'UnicodeError'>, 'InterruptedError': <class 'InterruptedError'>, 'open': <built-in function open>, 'UnicodeEncodeError': <class 'UnicodeEncodeError'>, 'bin': <built-in function bin>, 'UnicodeTranslateError': <class 'UnicodeTranslateError'>, 'Ellipsis': Ellipsis, 'str': <class 'str'>, 'ZeroDivisionError': <class 'ZeroDivisionError'>, 'reversed': <class 'reversed'>, 'IndentationError': <class 'IndentationError'>, 'None': None, 'complex': <class 'complex'>, 'staticmethod': <class 'staticmethod'>, 'NotImplementedError': <class 'NotImplementedError'>, 'ConnectionAbortedError': <class 'ConnectionAbortedError'>, 'repr': <built-in function repr>, 'RuntimeError': <class 'RuntimeError'>, 'TabError': <class 'TabError'>, 'AssertionError': <class 'AssertionError'>, 'KeyError': <class 'KeyError'>, 'bytes': <class 'bytes'>, 'OverflowError': <class 'OverflowError'>, '__package__': '', 'hash': <built-in function hash>, 'DeprecationWarning': <class 'DeprecationWarning'>, '__spec__': ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>), 'UnicodeWarning': <class 'UnicodeWarning'>, 'ArithmeticError': <class 'ArithmeticError'>, 'round': <built-in function round>, 'UserWarning': <class 'UserWarning'>, '__build_class__': <built-in function __build_class__>, 'ord': <built-in function ord>, 'BlockingIOError': <class 'BlockingIOError'>, 'LookupError': <class 'LookupError'>, 'ConnectionRefusedError': <class 'ConnectionRefusedError'>, 'FutureWarning': <class 'FutureWarning'>, 'SystemError': <class 'SystemError'>, 'UnicodeDecodeError': <class 'UnicodeDecodeError'>, 'IsADirectoryError': <class 'IsADirectoryError'>, 'ImportWarning': <class 'ImportWarning'>, 'type': <class 'type'>, 'bytearray': <class 'bytearray'>, 'map': <class 'map'>, 'max': <built-in function max>, 'EnvironmentError': <class 'OSError'>, 'TimeoutError': <class 'TimeoutError'>, 'object': <class 'object'>, '__import__': <built-in function __import__>, 'ascii': <built-in function ascii>, 'ResourceWarning': <class 'ResourceWarning'>, 'UnboundLocalError': <class 'UnboundLocalError'>, 'FileNotFoundError': <class 'FileNotFoundError'>, 'delattr': <built-in function delattr>, 'SyntaxError': <class 'SyntaxError'>, 'sorted': <built-in function sorted>, 'isinstance': <built-in function isinstance>, 'oct': <built-in function oct>, '__doc__': "Built-in functions, exceptions, and other objects.\n\nNoteworthy: None is the `nil' object; Ellipsis represents `...' in slices.", 'issubclass': <built-in function issubclass>, 'memoryview': <class 'memoryview'>, 'SystemExit': <class 'SystemExit'>, 'format': <built-in function format>, 'OSError': <class 'OSError'>, 'KeyboardInterrupt': <class 'KeyboardInterrupt'>, 'divmod': <built-in function divmod>, 'abs': <built-in function abs>, '__loader__': <class '_frozen_importlib.BuiltinImporter'>, 'FloatingPointError': <class 'FloatingPointError'>, 'RecursionError': <class 'RecursionError'>, 'chr': <built-in function chr>, 'GeneratorExit': <class 'GeneratorExit'>, 'hasattr': <built-in function hasattr>, 'StopAsyncIteration': <class 'StopAsyncIteration'>, 'set': <class 'set'>, 'copyright': Copyright (c) 2001-2016 Python Software Foundation.
+All Rights Reserved.
+
+Copyright (c) 2000 BeOpen.com.
+All Rights Reserved.
+
+Copyright (c) 1995-2001 Corporation for National Research Initiatives.
+All Rights Reserved.
+
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum, Amsterdam.
+All Rights Reserved., 'BufferError': <class 'BufferError'>, 'ValueError': <class 'ValueError'>, 'credits':     Thanks to CWI, CNRI, BeOpen.com, Zope Corporation and a cast of thousands
+    for supporting Python development.  See www.python.org for more information., 'BytesWarning': <class 'BytesWarning'>, 'ProcessLookupError': <class 'ProcessLookupError'>, 'min': <built-in function min>, 'help': Type help() for interactive help, or help(object) for help about object., 'ImportError': <class 'ImportError'>, 'filter': <class 'filter'>, '__name__': 'builtins', 'IndexError': <class 'IndexError'>, 'len': <built-in function len>, 'ConnectionResetError': <class 'ConnectionResetError'>, 'any': <built-in function any>, 'AttributeError': <class 'AttributeError'>, 'license': Type license() to see the full license text, 'property': <class 'property'>, 'BrokenPipeError': <class 'BrokenPipeError'>, 'bool': <class 'bool'>, 'eval': <built-in function eval>, 'BaseException': <class 'BaseException'>, 'tuple': <class 'tuple'>, '__debug__': True, 'NotADirectoryError': <class 'NotADirectoryError'>, 'quit': Use quit() or Ctrl-D (i.e. EOF) to exit, 'MemoryError': <class 'MemoryError'>, 'enumerate': <class 'enumerate'>}
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: BamQC
+            obj: <class 'BamQC.BamQC'>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __cached__
+            obj: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/__pycache__/test_BamQC.cpython-35-PYTEST.pyc
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __file__
+            obj: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/test_BamQC.py
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: @py_builtins
+            obj: <module 'builtins' (built-in)>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_Wes_create_cov_barplot
+            obj: <function test_Wes_create_cov_barplot at 0x7f3c73a17158>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a1c278>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_Wes_create_cov_barplot'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: glob
+            obj: <module 'glob' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/glob.py'>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: @pytest_ar
+            obj: <module '_pytest.assertion.rewrite' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/site-packages/_pytest/assertion/rewrite.py'>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: os
+            obj: <module 'os' from '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/os.py'>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: clean_tmp
+            obj: <function clean_tmp at 0x7f3c8b143ae8>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_list_of_samples
+            obj: <function test_list_of_samples at 0x7f3c74090e18>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a1c518>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_list_of_samples'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_run_samtools_depth
+            obj: <function test_run_samtools_depth at 0x7f3c74090f28>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a1c6d8>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_run_samtools_depth'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_get_contigs
+            obj: <function test_get_contigs at 0x7f3c74090d90>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a1c8d0>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_get_contigs'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_get_simple_stats
+            obj: <function test_get_simple_stats at 0x7f3c74090d08>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a1cac8>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_get_simple_stats'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_run_CollectHsMetrics
+            obj: <function test_run_CollectHsMetrics at 0x7f3c73a170d0>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a1ccc0>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_run_CollectHsMetrics'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __doc__
+            obj: None
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: test_Wgs_create_cov_barplot
+            obj: <function test_Wgs_create_cov_barplot at 0x7f3c73a17268>
+            collector: <Module 'test_BamQC.py'>
+          pytest_generate_tests [hook]
+              metafunc: <_pytest.python.Metafunc object at 0x7f3c73a1cf28>
+          finish pytest_generate_tests --> [] [hook]
+        finish pytest_pycollect_makeitem --> [<Function 'test_Wgs_create_cov_barplot'>] [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __name__
+            obj: test_BamQC
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __package__
+            obj: 
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __loader__
+            obj: <_pytest.assertion.rewrite.AssertionRewritingHook object at 0x7f3c8b885320>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __init__
+            obj: <slot wrapper '__init__' of 'module' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __repr__
+            obj: <slot wrapper '__repr__' of 'module' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __dict__
+            obj: <member '__dict__' of 'module' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __dir__
+            obj: <method '__dir__' of 'module' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __getattribute__
+            obj: <slot wrapper '__getattribute__' of 'module' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __setattr__
+            obj: <slot wrapper '__setattr__' of 'module' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __new__
+            obj: <built-in method __new__ of type object at 0x7f3c9569cc60>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __delattr__
+            obj: <slot wrapper '__delattr__' of 'module' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __sizeof__
+            obj: <method '__sizeof__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __subclasshook__
+            obj: <method '__subclasshook__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __gt__
+            obj: <slot wrapper '__gt__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __reduce__
+            obj: <method '__reduce__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __eq__
+            obj: <slot wrapper '__eq__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __format__
+            obj: <method '__format__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __ge__
+            obj: <slot wrapper '__ge__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __ne__
+            obj: <slot wrapper '__ne__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __hash__
+            obj: <slot wrapper '__hash__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __class__
+            obj: <attribute '__class__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __reduce_ex__
+            obj: <method '__reduce_ex__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __str__
+            obj: <slot wrapper '__str__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __le__
+            obj: <slot wrapper '__le__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+        pytest_pycollect_makeitem [hook]
+            name: __lt__
+            obj: <slot wrapper '__lt__' of 'object' objects>
+            collector: <Module 'test_BamQC.py'>
+        finish pytest_pycollect_makeitem --> None [hook]
+      finish pytest_make_collect_report --> <CollectReport 'test_BamQC.py' lenresult=10 outcome='passed'> [hook]
+    genitems <Function 'test_get_simple_stats'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_get_simple_stats'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_get_contigs'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_get_contigs'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_list_of_samples'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_list_of_samples'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_list_of_readgroups'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_list_of_readgroups'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_run_samtools_depth'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_run_samtools_depth'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_aggregate_stats'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_aggregate_stats'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_run_CollectHsMetrics'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_run_CollectHsMetrics'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_Wes_create_cov_barplot'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_Wes_create_cov_barplot'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_run_CollectWgsMetrics'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_run_CollectWgsMetrics'>
+      finish pytest_itemcollected --> [] [hook]
+    genitems <Function 'test_Wgs_create_cov_barplot'> [collection]
+      pytest_itemcollected [hook]
+          item: <Function 'test_Wgs_create_cov_barplot'>
+      finish pytest_itemcollected --> [] [hook]
+      pytest_collectreport [hook]
+          report: <CollectReport 'test_BamQC.py' lenresult=10 outcome='passed'>
+      finish pytest_collectreport --> [] [hook]
+      pytest_collection_modifyitems [hook]
+          session: <Session 'tests'>
+          config: <_pytest.config.Config object at 0x7f3c8d2c9a20>
+          items: [<Function 'test_get_simple_stats'>, <Function 'test_get_contigs'>, <Function 'test_list_of_samples'>, <Function 'test_list_of_readgroups'>, <Function 'test_run_samtools_depth'>, <Function 'test_aggregate_stats'>, <Function 'test_run_CollectHsMetrics'>, <Function 'test_Wes_create_cov_barplot'>, <Function 'test_run_CollectWgsMetrics'>, <Function 'test_Wgs_create_cov_barplot'>]
+      finish pytest_collection_modifyitems --> [] [hook]
+      pytest_collection_finish [hook]
+          session: <Session 'tests'>
+      finish pytest_collection_finish --> [] [hook]
+    finish pytest_collection --> [<Function 'test_get_simple_stats'>, <Function 'test_get_contigs'>, <Function 'test_list_of_samples'>, <Function 'test_list_of_readgroups'>, <Function 'test_run_samtools_depth'>, <Function 'test_aggregate_stats'>, <Function 'test_run_CollectHsMetrics'>, <Function 'test_Wes_create_cov_barplot'>, <Function 'test_run_CollectWgsMetrics'>, <Function 'test_Wgs_create_cov_barplot'>] [hook]
+    pytest_runtestloop [hook]
+        session: <Session 'tests'>
+      pytest_runtest_protocol [hook]
+          nextitem: <Function 'test_get_contigs'>
+          item: <Function 'test_get_simple_stats'>
+        pytest_runtest_logstart [hook]
+            location: ('test_BamQC.py', 31, 'test_get_simple_stats')
+            nodeid: test_BamQC.py::test_get_simple_stats
+        finish pytest_runtest_logstart --> [] [hook]
+        pytest_runtest_setup [hook]
+            item: <Function 'test_get_simple_stats'>
+          pytest_fixture_setup [hook]
+              request: <SubRequest 'bam_object' for <Function 'test_get_simple_stats'>>
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_setup --> <BamQC.BamQC object at 0x7f3c73a0bd30> [hook]
+        finish pytest_runtest_setup --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_get_simple_stats'>
+            call: <CallInfo when='setup' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_get_simple_stats' when='setup' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_get_simple_stats' when='setup' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_get_simple_stats' when='setup' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_call [hook]
+            item: <Function 'test_get_simple_stats'>
+          pytest_pyfunc_call [hook]
+              pyfuncitem: <Function 'test_get_simple_stats'>
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_get_simple_stats'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        find_module called for: py._std [assertion]
+        find_module called for: py._io.saferepr [assertion]
+        find_module called for: repr [assertion]
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_get_simple_stats' when='call' outcome='failed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_get_simple_stats' when='call' outcome='failed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_get_simple_stats' when='call' outcome='failed'>
+          finish pytest_report_teststatus --> ('failed', 'F', 'FAILED') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_exception_interact [hook]
+            node: <Function 'test_get_simple_stats'>
+            report: <TestReport 'test_BamQC.py::test_get_simple_stats' when='call' outcome='failed'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_exception_interact --> [] [hook]
+        pytest_runtest_teardown [hook]
+            nextitem: <Function 'test_get_contigs'>
+            item: <Function 'test_get_simple_stats'>
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_post_finalizer --> [] [hook]
+        finish pytest_runtest_teardown --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_get_simple_stats'>
+            call: <CallInfo when='teardown' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_get_simple_stats' when='teardown' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_get_simple_stats' when='teardown' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_get_simple_stats' when='teardown' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+      finish pytest_runtest_protocol --> True [hook]
+      pytest_runtest_protocol [hook]
+          nextitem: <Function 'test_list_of_samples'>
+          item: <Function 'test_get_contigs'>
+        pytest_runtest_logstart [hook]
+            location: ('test_BamQC.py', 38, 'test_get_contigs')
+            nodeid: test_BamQC.py::test_get_contigs
+        finish pytest_runtest_logstart --> [] [hook]
+        pytest_runtest_setup [hook]
+            item: <Function 'test_get_contigs'>
+          pytest_fixture_setup [hook]
+              request: <SubRequest 'bam_object' for <Function 'test_get_contigs'>>
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_setup --> <BamQC.BamQC object at 0x7f3c736c06d8> [hook]
+        finish pytest_runtest_setup --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_get_contigs'>
+            call: <CallInfo when='setup' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_get_contigs' when='setup' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_get_contigs' when='setup' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_get_contigs' when='setup' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_call [hook]
+            item: <Function 'test_get_contigs'>
+          pytest_pyfunc_call [hook]
+              pyfuncitem: <Function 'test_get_contigs'>
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_get_contigs'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_get_contigs' when='call' outcome='failed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_get_contigs' when='call' outcome='failed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_get_contigs' when='call' outcome='failed'>
+          finish pytest_report_teststatus --> ('failed', 'F', 'FAILED') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_exception_interact [hook]
+            node: <Function 'test_get_contigs'>
+            report: <TestReport 'test_BamQC.py::test_get_contigs' when='call' outcome='failed'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_exception_interact --> [] [hook]
+        pytest_runtest_teardown [hook]
+            nextitem: <Function 'test_list_of_samples'>
+            item: <Function 'test_get_contigs'>
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_post_finalizer --> [] [hook]
+        finish pytest_runtest_teardown --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_get_contigs'>
+            call: <CallInfo when='teardown' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_get_contigs' when='teardown' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_get_contigs' when='teardown' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_get_contigs' when='teardown' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+      finish pytest_runtest_protocol --> True [hook]
+      pytest_runtest_protocol [hook]
+          nextitem: <Function 'test_list_of_readgroups'>
+          item: <Function 'test_list_of_samples'>
+        pytest_runtest_logstart [hook]
+            location: ('test_BamQC.py', 42, 'test_list_of_samples')
+            nodeid: test_BamQC.py::test_list_of_samples
+        finish pytest_runtest_logstart --> [] [hook]
+        pytest_runtest_setup [hook]
+            item: <Function 'test_list_of_samples'>
+          pytest_fixture_setup [hook]
+              request: <SubRequest 'bam_object' for <Function 'test_list_of_samples'>>
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_setup --> <BamQC.BamQC object at 0x7f3c73a34438> [hook]
+        finish pytest_runtest_setup --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_list_of_samples'>
+            call: <CallInfo when='setup' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_list_of_samples' when='setup' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_list_of_samples' when='setup' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_list_of_samples' when='setup' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_call [hook]
+            item: <Function 'test_list_of_samples'>
+          pytest_pyfunc_call [hook]
+              pyfuncitem: <Function 'test_list_of_samples'>
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_list_of_samples'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_list_of_samples' when='call' outcome='failed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_list_of_samples' when='call' outcome='failed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_list_of_samples' when='call' outcome='failed'>
+          finish pytest_report_teststatus --> ('failed', 'F', 'FAILED') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_exception_interact [hook]
+            node: <Function 'test_list_of_samples'>
+            report: <TestReport 'test_BamQC.py::test_list_of_samples' when='call' outcome='failed'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_exception_interact --> [] [hook]
+        pytest_runtest_teardown [hook]
+            nextitem: <Function 'test_list_of_readgroups'>
+            item: <Function 'test_list_of_samples'>
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_post_finalizer --> [] [hook]
+        finish pytest_runtest_teardown --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_list_of_samples'>
+            call: <CallInfo when='teardown' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_list_of_samples' when='teardown' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_list_of_samples' when='teardown' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_list_of_samples' when='teardown' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+      finish pytest_runtest_protocol --> True [hook]
+      pytest_runtest_protocol [hook]
+          nextitem: <Function 'test_run_samtools_depth'>
+          item: <Function 'test_list_of_readgroups'>
+        pytest_runtest_logstart [hook]
+            location: ('test_BamQC.py', 46, 'test_list_of_readgroups')
+            nodeid: test_BamQC.py::test_list_of_readgroups
+        finish pytest_runtest_logstart --> [] [hook]
+        pytest_runtest_setup [hook]
+            item: <Function 'test_list_of_readgroups'>
+          pytest_fixture_setup [hook]
+              request: <SubRequest 'bam_object' for <Function 'test_list_of_readgroups'>>
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_setup --> <BamQC.BamQC object at 0x7f3c737e3ba8> [hook]
+        finish pytest_runtest_setup --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_list_of_readgroups'>
+            call: <CallInfo when='setup' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_list_of_readgroups' when='setup' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_list_of_readgroups' when='setup' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_list_of_readgroups' when='setup' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_call [hook]
+            item: <Function 'test_list_of_readgroups'>
+          pytest_pyfunc_call [hook]
+              pyfuncitem: <Function 'test_list_of_readgroups'>
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_list_of_readgroups'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_list_of_readgroups' when='call' outcome='failed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_list_of_readgroups' when='call' outcome='failed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_list_of_readgroups' when='call' outcome='failed'>
+          finish pytest_report_teststatus --> ('failed', 'F', 'FAILED') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_exception_interact [hook]
+            node: <Function 'test_list_of_readgroups'>
+            report: <TestReport 'test_BamQC.py::test_list_of_readgroups' when='call' outcome='failed'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_exception_interact --> [] [hook]
+        pytest_runtest_teardown [hook]
+            nextitem: <Function 'test_run_samtools_depth'>
+            item: <Function 'test_list_of_readgroups'>
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_post_finalizer --> [] [hook]
+        finish pytest_runtest_teardown --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_list_of_readgroups'>
+            call: <CallInfo when='teardown' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_list_of_readgroups' when='teardown' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_list_of_readgroups' when='teardown' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_list_of_readgroups' when='teardown' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+      finish pytest_runtest_protocol --> True [hook]
+      pytest_runtest_protocol [hook]
+          nextitem: <Function 'test_aggregate_stats'>
+          item: <Function 'test_run_samtools_depth'>
+        pytest_runtest_logstart [hook]
+            location: ('test_BamQC.py', 50, 'test_run_samtools_depth')
+            nodeid: test_BamQC.py::test_run_samtools_depth
+        finish pytest_runtest_logstart --> [] [hook]
+        pytest_runtest_setup [hook]
+            item: <Function 'test_run_samtools_depth'>
+          pytest_fixture_setup [hook]
+              request: <SubRequest 'bam_object' for <Function 'test_run_samtools_depth'>>
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_setup --> <BamQC.BamQC object at 0x7f3c737d1240> [hook]
+        finish pytest_runtest_setup --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_run_samtools_depth'>
+            call: <CallInfo when='setup' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_run_samtools_depth' when='setup' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_run_samtools_depth' when='setup' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_run_samtools_depth' when='setup' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_call [hook]
+            item: <Function 'test_run_samtools_depth'>
+          pytest_pyfunc_call [hook]
+              pyfuncitem: <Function 'test_run_samtools_depth'>
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_run_samtools_depth'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_run_samtools_depth' when='call' outcome='failed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_run_samtools_depth' when='call' outcome='failed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_run_samtools_depth' when='call' outcome='failed'>
+          finish pytest_report_teststatus --> ('failed', 'F', 'FAILED') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_exception_interact [hook]
+            node: <Function 'test_run_samtools_depth'>
+            report: <TestReport 'test_BamQC.py::test_run_samtools_depth' when='call' outcome='failed'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_exception_interact --> [] [hook]
+        pytest_runtest_teardown [hook]
+            nextitem: <Function 'test_aggregate_stats'>
+            item: <Function 'test_run_samtools_depth'>
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_post_finalizer --> [] [hook]
+        finish pytest_runtest_teardown --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_run_samtools_depth'>
+            call: <CallInfo when='teardown' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_run_samtools_depth' when='teardown' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_run_samtools_depth' when='teardown' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_run_samtools_depth' when='teardown' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+      finish pytest_runtest_protocol --> True [hook]
+      pytest_runtest_protocol [hook]
+          nextitem: <Function 'test_run_CollectHsMetrics'>
+          item: <Function 'test_aggregate_stats'>
+        pytest_runtest_logstart [hook]
+            location: ('test_BamQC.py', 60, 'test_aggregate_stats')
+            nodeid: test_BamQC.py::test_aggregate_stats
+        finish pytest_runtest_logstart --> [] [hook]
+        pytest_runtest_setup [hook]
+            item: <Function 'test_aggregate_stats'>
+          pytest_fixture_setup [hook]
+              request: <SubRequest 'bam_object' for <Function 'test_aggregate_stats'>>
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_setup --> <BamQC.BamQC object at 0x7f3c737428d0> [hook]
+        finish pytest_runtest_setup --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_aggregate_stats'>
+            call: <CallInfo when='setup' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_aggregate_stats' when='setup' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_aggregate_stats' when='setup' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_aggregate_stats' when='setup' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_call [hook]
+            item: <Function 'test_aggregate_stats'>
+          pytest_pyfunc_call [hook]
+              pyfuncitem: <Function 'test_aggregate_stats'>
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_aggregate_stats'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_aggregate_stats' when='call' outcome='failed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_aggregate_stats' when='call' outcome='failed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_aggregate_stats' when='call' outcome='failed'>
+          finish pytest_report_teststatus --> ('failed', 'F', 'FAILED') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_exception_interact [hook]
+            node: <Function 'test_aggregate_stats'>
+            report: <TestReport 'test_BamQC.py::test_aggregate_stats' when='call' outcome='failed'>
+            call: <CallInfo when='call' exception: [Errno 2] No such file or directory: 'samtools'>
+        finish pytest_exception_interact --> [] [hook]
+        pytest_runtest_teardown [hook]
+            nextitem: <Function 'test_run_CollectHsMetrics'>
+            item: <Function 'test_aggregate_stats'>
+          pytest_fixture_post_finalizer [hook]
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_post_finalizer --> [] [hook]
+        finish pytest_runtest_teardown --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_aggregate_stats'>
+            call: <CallInfo when='teardown' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_aggregate_stats' when='teardown' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_aggregate_stats' when='teardown' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_aggregate_stats' when='teardown' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+      finish pytest_runtest_protocol --> True [hook]
+      pytest_runtest_protocol [hook]
+          nextitem: <Function 'test_Wes_create_cov_barplot'>
+          item: <Function 'test_run_CollectHsMetrics'>
+        pytest_runtest_logstart [hook]
+            location: ('test_BamQC.py', 71, 'test_run_CollectHsMetrics')
+            nodeid: test_BamQC.py::test_run_CollectHsMetrics
+        finish pytest_runtest_logstart --> [] [hook]
+        pytest_runtest_setup [hook]
+            item: <Function 'test_run_CollectHsMetrics'>
+          pytest_fixture_setup [hook]
+              request: <SubRequest 'bam_object' for <Function 'test_run_CollectHsMetrics'>>
+              fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+          finish pytest_fixture_setup --> <BamQC.BamQC object at 0x7f3c73a1c278> [hook]
+        finish pytest_runtest_setup --> [] [hook]
+        pytest_runtest_makereport [hook]
+            item: <Function 'test_run_CollectHsMetrics'>
+            call: <CallInfo when='setup' result: []>
+        finish pytest_runtest_makereport --> <TestReport 'test_BamQC.py::test_run_CollectHsMetrics' when='setup' outcome='passed'> [hook]
+        pytest_runtest_logreport [hook]
+            report: <TestReport 'test_BamQC.py::test_run_CollectHsMetrics' when='setup' outcome='passed'>
+          pytest_report_teststatus [hook]
+              report: <TestReport 'test_BamQC.py::test_run_CollectHsMetrics' when='setup' outcome='passed'>
+          finish pytest_report_teststatus --> ('', '', '') [hook]
+        finish pytest_runtest_logreport --> [] [hook]
+        pytest_runtest_call [hook]
+            item: <Function 'test_run_CollectHsMetrics'>
+          pytest_pyfunc_call [hook]
+              pyfuncitem: <Function 'test_run_CollectHsMetrics'>
+    find_module called for: py._io.capture [assertion]
+    pytest_keyboard_interrupt [hook]
+        excinfo: /nfs/production/reseq-info/work/ernesto/bin/anaconda3/lib/python3.5/selectors.py:376: KeyboardInterrupt
+    pytest_sessionfinish [hook]
+        session: <Session 'tests'>
+        exitstatus: 0
+    cache-write cache/lastfailed: {'test_BamQC.py::test_get_contigs': True, 'test_BamQC.py::test_list_of_readgroups': True, 'test_BamQC.py::test_run_samtools_depth': True, 'test_BamQC.py::test_get_simple_stats': True, 'test_BamQC.py::test_list_of_samples': True, 'test_BamQC.py::test_aggregate_stats': True} [cache]
+      pytest_fixture_post_finalizer [hook]
+          fixturedef: <FixtureDef name='bam_object' scope='function' baseid='test_BamQC.py' >
+      finish pytest_fixture_post_finalizer --> [] [hook]
+      pytest_terminal_summary [hook]
+          terminalreporter: <_pytest.terminal.TerminalReporter object at 0x7f3c8aebb630>
+          exitstatus: 0
+      finish pytest_terminal_summary --> [] [hook]
+    finish pytest_sessionfinish --> [] [hook]
+    pytest_unconfigure [hook]
+        config: <_pytest.config.Config object at 0x7f3c8d2c9a20>
+    finish pytest_unconfigure --> [] [hook]
+  finish [config:tmpdir]

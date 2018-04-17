@@ -23,7 +23,7 @@ def gatk_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
@@ -32,7 +32,7 @@ def test_run_ug(gatk_object):
     Test function to run GATK UG on a BAM file
     '''
     
-    outfile=gatk_object.run_ug(outprefix='./out/test')
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test')
 
     assert os.path.isfile(outfile) is True
 
@@ -42,7 +42,7 @@ def test_run_ug_with_ivals(gatk_object):
     analyze on the command line
     '''
 
-    outfile=gatk_object.run_ug(outprefix='./out/test1', intervals= 'chr1:10000-30000')
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test1', intervals= 'chr1:10000-30000')
 
     assert os.path.isfile(outfile) is True
 
@@ -51,8 +51,8 @@ def test_run_ug_with_params(gatk_object, clean_tmp):
     Test function to run GATK UG on a BAM file using some optional params
     '''
 
-    outfile=gatk_object.run_ug(outprefix='./out/test2', glm='INDEL', 
-                               output_mode='EMIT_ALL_SITES', num_threads=1)
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test2', glm='INDEL', 
+                               output_mode='EMIT_ALL_SITES', nt=1)
 
     assert os.path.isfile(outfile) is True
 

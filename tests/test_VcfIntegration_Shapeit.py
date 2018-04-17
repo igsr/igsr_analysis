@@ -9,7 +9,7 @@ from VCFIntegration.Shapeit import Shapeit
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/SHAPEIT/outdir/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
@@ -19,9 +19,9 @@ def test_run_shapeit():
     
     shapeit_o.run_shapeit(input_gen= 'data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample',
                           input_init= 'data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample',
-                          input_scaffold= 'data/SHAPEIT/scaffold.haps.gz data/SHAPEIT/scaffold.haps.sample',
-                          output_prefix='data/SHAPEIT/outdir/output.shapeit.22', verbose=True)
-    assert os.path.exists('data/SHAPEIT/outdir/output.shapeit.22.haps.gz')
+                          input_scaffold= 'data/SHAPEIT/scaffold.22.phased.haps data/SHAPEIT/scaffold.22.phased.sample',
+                          output_prefix='data/outdir/output.shapeit.22', verbose=True)
+    assert os.path.exists('data/outdir/output.shapeit.22.haps.gz')
 
 def test_run_shapeit_w_options():
 
@@ -38,18 +38,18 @@ def test_run_shapeit_w_options():
 
     shapeit_o.run_shapeit(input_gen= 'data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample',
                           input_init= 'data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample',
-                          input_scaffold= 'data/SHAPEIT/scaffold.haps.gz data/SHAPEIT/scaffold.haps.sample',
-                          output_prefix='data/SHAPEIT/outdir/output.shapeit.22.20000000.20100000',
+                          input_scaffold= 'data/SHAPEIT/scaffold.22.phased.haps data/SHAPEIT/scaffold.22.phased.sample',
+                          output_prefix='data/outdir/output.shapeit.22.20000000.20100000',
                           verbose=True,
                           **options)
-    assert os.path.exists('data/SHAPEIT/outdir/output.shapeit.22.20000000.20100000.haps.gz')
+    assert os.path.exists('data/outdir/output.shapeit.22.20000000.20100000.haps.gz')
 
 def test_run_shapeit_convert2vcf(clean_tmp):
 
     shapeit_o=Shapeit(shapeit_folder = pytest.config.getoption("--shapeit_folder"))
 
-    out_vcf=shapeit_o.convert2vcf(input_prefix='data/SHAPEIT/outdir/output.shapeit.22.haps', 
-                                  output_prefix='data/SHAPEIT/outdir/output.shapeit.22.phased', 
+    out_vcf=shapeit_o.convert2vcf(input_prefix='data/outdir/output.shapeit.22.haps', 
+                                  output_prefix='data/outdir/output.shapeit.22.phased', 
                                   compress=True, verbose=True, logfile='data/SHAPEIT.output.shapeit.22.phased.log')
     
     assert os.path.exists(out_vcf)

@@ -24,21 +24,21 @@ def vcf_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
 def test_run_vcfallelicprimitives(vcf_object):
-    outfile=vcf_object.run_vcfallelicprimitives(outprefix='out/test')
+    outfile=vcf_object.run_vcfallelicprimitives(outprefix='data/outdir/test')
 
-    assert os.path.exists("out/test.aprimitives.vcf")
+    assert os.path.exists("data/outdir/test.aprimitives.vcf")
 
 def test_run_vcfallelicprimitives_downstream_pipe(vcf_object):
     '''
     Test funtion to run vcfallelicprimitives and piping to other programs
     '''
-    outfile=vcf_object.run_vcfallelicprimitives(outprefix='out/test1', 
+    outfile=vcf_object.run_vcfallelicprimitives(outprefix='data/outdir/test1', 
                                                 downstream_pipe='~/bin/vt/vt sort -',
                                                 compress=True)
 
-    assert os.path.exists("out/test1.aprimitives.vcf")
+    assert os.path.exists("data/outdir/test1.aprimitives.vcf.gz")

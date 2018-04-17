@@ -45,6 +45,7 @@ class GATK_UG(eHive.BaseRunnable):
          Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
     threads: int, Optional
          Number of CPUs used by the caller
+         Default=1
     max_deletion_fraction: float, Optional
          Maximum fraction of reads with deletions spanning this locus for it to be callable
          Default value=0.05. Note: To disable the use of this parameter, set its value to >1.
@@ -65,6 +66,7 @@ class GATK_UG(eHive.BaseRunnable):
 
         outprefix=os.path.split(self.param_required('outprefix'))[1]
 
+#        pdb.set_trace()
         chrom=self.param_required('chunk')[0]
         start=None
         # increment by 1 if start=0, as GATK does not accept coords <1
@@ -97,7 +99,7 @@ class GATK_UG(eHive.BaseRunnable):
         if self.param_is_defined('genotyping_mode'):
             genotyping_mode=self.param('genotyping_mode')
 
-        nt=None
+        nt=1
         if self.param_is_defined('threads'):
             nt=self.param('threads')
 
