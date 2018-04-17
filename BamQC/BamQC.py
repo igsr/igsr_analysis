@@ -15,7 +15,6 @@ import pandas as pd
 import subprocess
 from collections import defaultdict, OrderedDict
 import contextlib
-
 import pdb
 
 class BamQC(object):
@@ -160,13 +159,13 @@ class BamQC(object):
              "no_properly_paired":  int
              }
         '''
+
         stats, err = subprocess.Popen(["samtools", "flagstat", self.bam],
                                       stdout=subprocess.PIPE,
                                       stderr=subprocess.PIPE,
                                       env=dict(os.environ,
                                                PATH="%s" % \
-                                               self.samtools_folder)).\
-                                               communicate()
+                                               self.samtools_folder)).communicate()
 
         stats = stats.decode("utf-8")
         err = err.decode("utf-8")

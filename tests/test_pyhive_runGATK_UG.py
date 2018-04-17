@@ -31,7 +31,7 @@ def test_runGATK_UG(clean_tmp):
     command="perl {0}/standaloneJob.pl PyHive.VariantCalling.GATK_UG -language python3 \
     -outprefix {1} -work_dir {2} -chunk {3} -bamlist {4} -reference {5} \
     -gatk_folder {6} -bgzip_folder {7} -glm {8} -output_mode {9} -verbose True".format(hive_scripts, 'out', work_dir, 
-                                                                                       'chr1:10000-30000', bam_file, 
+                                                                                       "\"['chr1','10000','30000']\"", bam_file, 
                                                                                        reference, gatk_folder, bgzip_folder,
                                                                                        glm, output_mode)
     
