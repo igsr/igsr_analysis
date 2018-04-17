@@ -1,12 +1,12 @@
 Mode    : Converter
 Options : --input-haps data/outdir/output.shapeit.22.haps.gz data/outdir/output.shapeit.22.haps.sample --output-vcf data/outdir/output.shapeit.22.phased.vcf --output-log data/SHAPEIT.output.shapeit.22.phased.log
 Version : v2.r837
-Date    : 17/04/2018 11:52:53
+Date    : 17/04/2018 12:50:38
 
 MODE -convert : CONVERTING/SUBSETTING SHAPEIT HAPLOTYPES
 
 Parameters :
-  * Seed : 1523962373
+  * Seed : 1523965838
   * Parallelisation: 1 threads
   * Ref allele is NOT aligned on the reference genome
 
