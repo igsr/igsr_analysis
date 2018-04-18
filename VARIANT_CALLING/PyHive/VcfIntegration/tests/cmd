@@ -1,1 +1,0 @@
-perl ~/lib/ensembl-hive_2.4/scripts/standaloneJob.pl PyHive.VcfGenotype.run_Beagle -language python3 -vcf_file data/NA12878_chr1_1000000_1001000.vcf.gz -beagle_folder ~/bin/beagle/ -work_dir data/outdir/ -outprefix NA12878_chr1_1000000_1001000 -window 12000 -overlap 2000 -niterations 15

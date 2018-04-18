@@ -1,1 +1,0 @@
-/usr/bin//java -jar ~/bin//picard.jar CollectHsMetrics BI=data/chr1.baits.sam INPUT=data/input.test.bam TI=data/chr1.baits.sam OUTPUT=/dev/stdout QUIET=true
