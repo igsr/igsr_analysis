@@ -2,9 +2,9 @@ import os
 import pytest
 import glob
 import warnings
-from VCFIntegration.Beagle import Beagle
+from VCFIntegration import Beagle
 
-# test_vcfqc.py
+# test_VcfIntegration_Beagle.py
 @pytest.fixture
 def vcf_object(scope='module'):
     '''Returns an  object'''
