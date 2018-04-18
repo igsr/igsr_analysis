@@ -1,5 +1,6 @@
 import eHive
 import os
+import pdb
 import datetime
 from VcfNormalize import VcfNormalize
 
@@ -21,6 +22,8 @@ class VcfAllelicPrim(eHive.BaseRunnable):
         vcfNorm = VcfNormalize(vcf=filepath, vcflib_folder=self.param_required('vcflib_folder'), bgzip_folder=self.param_required('bgzip_folder'))
 
         downstream_pipe=None
+        if self.param_is_defined('downstream_pipe'):
+            downstream_pipe=self.param('downstream_pipe')
 
         vcf_file=""
         if self.param_is_defined('compress'):
