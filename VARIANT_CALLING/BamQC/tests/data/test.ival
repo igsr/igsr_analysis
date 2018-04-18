@@ -1,6 +1,0 @@
-@HD	VN:1.0	GO:none	SO:coordinate
-@SQ	SN:chr1	LN:100000	AS:HG18	UR:/seq/references/Homo_sapiens_assembly18/v0/Homo_sapiens_assembly18.fasta	M5:b52f0a0422e9544b50ac1f9d2775dc23	SP:Homo sapiens
-@RG	ID:exampleBAM.bam	PL:illumina	PU:exampleBAM.bam	LB:exampleBAM.bam	SM:exampleBAM.bam
-@PG	ID:0	VN:0.7.1-9	CL:/seq/software/picard/current/3rd_party/maq/maq map -D -s 0 -a 1500 -e 2100 /seq/picard/30PPJAAXX/C1-152_2009-01-25_2009-04-07/1/Solexa-9821/30PPJAAXX.1.0.out.aln.map /seq/references/Homo_sapiens_assembly18/v0/Homo_sapiens_assembly18.bfa /seq/picard/30PPJAAXX/C1-152_2009-01-25_2009-04-07/1/Solexa-9821/30PPJAAXX.1.0.1.bfq /seq/picard/30PPJAAXX/C1-152_2009-01-25_2009-04-07/1/Solexa-9821/30PPJAAXX.1.0.2.bfq 2> /seq/picard/30PPJAAXX/C1-152_2009-01-25_2009-04-07/1/Solexa-9821/30PPJAAXX.1.0.out.map.log
-chr1	10000	10100	+	+
-chr1	10500	10600	+	+
