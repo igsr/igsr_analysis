@@ -29,7 +29,7 @@ sub default_options {
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'beagle_folder' => '~/bin/beagle/',
 	'caller' => 'UG', # VariantRecalibrator
-	'centromeres' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/centromeres_locations.sort.bed', # BED file with centromeres in order to be considered by PyHive.Factories.CoordFactory
+	'centromeres' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/centromeres_and_gaps.bed', # BED file with centromeres and gaps in order to be considered by PyHive.Factories.CoordFactory
 	'gatk_folder' => '~/bin/GATK/',
 	'ginterval' => undef, # if defined, then do the integration for a certain genomic region
 	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',

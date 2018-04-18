@@ -179,9 +179,9 @@ sub pipeline_analyses {
 		'reference' => $self->o('reference'),
                 'work_dir' => $self->o('work_dir')
             },
-		    -flow_into => {
-			1 => {'index_vcf1' => {'filepath' => '#out_vcf#'}}
-		}
+	    -flow_into => {
+		1 => {'index_vcf1' => {'filepath' => '#out_vcf#'}}
+	    }
         },
 
 	{   -logic_name => 'index_vcf1',
@@ -192,9 +192,9 @@ sub pipeline_analyses {
                 'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-		    -flow_into => {
-			1 => {'run_VcfAllelicPrim' => {'filepath' => '#filepath#'}}
-		}
+	    -flow_into => {
+		1 => {'run_VcfAllelicPrim' => {'filepath' => '#filepath#'}}
+	    }
         },
 
 	{   -logic_name => 'run_VcfAllelicPrim',
