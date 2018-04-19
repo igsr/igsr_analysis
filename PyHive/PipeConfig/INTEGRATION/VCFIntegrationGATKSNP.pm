@@ -57,10 +57,10 @@ sub default_options {
 	'run' => 12, # SHAPEIT
 	'prune' => 4, # SHAPEIT
 	'main' => 20, # SHAPEIT
-	'window_bglchnks' => 700, # makeBGLCHUNKS
-        'overlap_bglchnks' => 200, # makeBGLCHUNKS
-#	'window_bglchnks' => 12000, # recommended in supp of phase3 for makeBGLCHUNKS
-#	'overlap_bglchnks' => 2000, # recommended in supp of phase 3 for makeBGLCHUNKS
+#	'window_bglchnks' => 700, # makeBGLCHUNKS
+#        'overlap_bglchnks' => 200, # makeBGLCHUNKS
+	'window_bglchnks' => 12000, # recommended in supp of phase3 for makeBGLCHUNKS
+	'overlap_bglchnks' => 2000, # recommended in supp of phase 3 for makeBGLCHUNKS
 	'genome_file' => undef, #PyHive.Factories.CoordFactory. Used to generate the chunks
 	'window_coordfactory_4transposebam' =>  undef, #PyHive.Factories.CoordFactory used for the transposebam analysis
 	'window_coordfactory_4shapeit' =>  undef, #PyHive.Factories.CoordFactory used for the shapeit analysis
@@ -366,7 +366,7 @@ sub pipeline_analyses {
 		'alleles' => '#out_vcf#',
 		'output_mode' => 'EMIT_ALL_SITES',
 		'chunk' => '#chunk#',
-		'dcov' => 1000,
+		'dcov' => 250, # 250 is the default
                 'gatk_folder' => $self->o('gatk_folder'),
 		'bamlist' => '#bamlist#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
@@ -594,7 +594,7 @@ sub pipeline_analyses {
                 'beagle_folder' => $self->o('beagle_folder'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
 		'outprefix' => '#vcf_file#',
-#		'niterations' => 15, #recommended in Supp P3
+		'niterations' => 15, #recommended in Supp P3
 		'correct' => 1,
 		'nthreads' => 5,
 		'verbose' => 1 
