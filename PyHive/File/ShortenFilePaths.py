@@ -49,6 +49,9 @@ class ShortenFilePaths(eHive.BaseRunnable):
         
         filelist=self.param_required('filelist')
 
+        if isinstance(filelist, str):
+            raise Exception("{0} is not a list".format(filelist))
+
         short_files=[]
 
         for afile in filelist:
