@@ -285,7 +285,7 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
-#		'chunk_ixs' => '[239,240]',
+		'chunk_ixs' => '[223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240]',
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
@@ -413,7 +413,7 @@ sub pipeline_analyses {
 	    -flow_into => {
 		1 => {'run_applyrecalibration_snps' => INPUT_PLUS() }
 	    },
-            -analysis_capacity => 20,
+            -analysis_capacity => 1,
             -rc_name => '12Gb',
         },
 
@@ -439,6 +439,7 @@ sub pipeline_analyses {
                         'filepath' => '#vcf_filt#'
 		    }},
 	    },
+	    -analysis_capacity => 1,
 	    -rc_name => '5Gb',
 	},
 
