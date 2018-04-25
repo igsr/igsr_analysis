@@ -285,7 +285,7 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
-		'chunk_ix' => 240,
+#		'chunk_ixs' => '[239,240]',
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
