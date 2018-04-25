@@ -120,7 +120,7 @@ sub hive_meta_table {
     return {
         %{$self->SUPER::hive_meta_table},       # here we inherit anything from the base class
 
-        'hive_use_param_stack'  => 1,           # switch on the new param_stack mechanism
+        'hive_use_param_stack'  => 0,           # switch on the new param_stack mechanism
     };
 }
 
@@ -154,7 +154,7 @@ sub pipeline_analyses {
             },
 	    -rc_name => '12Gb4cpus',
 	    -flow_into => {
-		1 => {'drop_INFO' => {'filepath' => '#out_vcf#'}}
+		1 => ['drop_INFO']
 	    }
 	    
         },
@@ -163,12 +163,13 @@ sub pipeline_analyses {
             -module     => 'PyHive.Vcf.dropInfo',
             -language   => 'python3',
             -parameters => {
+		'filepath' => '#out_vcf#',
                 'bcftools_folder' => $self->o('bcftools_folder'),
 		'outprefix' => $self->o('outprefix'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'splitmultiallelic' => {'filepath' => '#out_vcf#'}}
+		1 => ['splitmultiallelic']
 	    }
         },
 
@@ -176,6 +177,7 @@ sub pipeline_analyses {
             -module     => 'PyHive.Vcf.BcftoolsVcfNorm',
             -language   => 'python3',
             -parameters => {
+		'filepath' => '#out_vcf#',
                 'bcftools_folder' => $self->o('bcftools_folder'),
 		'multiallelics' => 'split',
 		'type' => 'both',
@@ -184,7 +186,7 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'index_vcf1' => {'filepath' => '#out_vcf#'}}
+		1 => ['index_vcf1']
 	    }
         },
 
@@ -192,12 +194,12 @@ sub pipeline_analyses {
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
-                'filepath' => '#filepath#',
+                'filepath' => '#out_vcf#',
                 'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'run_VcfAllelicPrim' => {'filepath' => '#filepath#'}}
+		1 => {'run_VcfAllelicPrim'=> INPUT_PLUS() }
 	    }
         },
 
@@ -205,15 +207,15 @@ sub pipeline_analyses {
             -module     => 'PyHive.Vcf.VcfAllelicPrim',
             -language   => 'python3',
             -parameters => {
+		'filepath' => '#out_vcf#',
 		'compress' =>1,
 		'downstream_pipe' => '~/bin/vt/vt sort - | ~/bin/vt/vt uniq -',
-                'filepath' => '#filepath#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'vcflib_folder' => $self->o('vcflib_folder'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'mergemultiallelic' => {'filepath' => '#out_vcf#'}}
+		1 => ['mergemultiallelic']
 	    }
         },
 
@@ -221,6 +223,7 @@ sub pipeline_analyses {
             -module     => 'PyHive.Vcf.BcftoolsVcfNorm',
             -language   => 'python3',
             -parameters => {
+		'filepath' => '#out_vcf#',
                 'bcftools_folder' => $self->o('bcftools_folder'),
                 'multiallelics' => 'merge',
                 'type' => 'both',
@@ -229,7 +232,7 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'select_snps' => {'filepath' => '#out_vcf#'}}
+		1 => ['select_snps']
 	    }
         },
 
@@ -237,13 +240,14 @@ sub pipeline_analyses {
             -module     => 'PyHive.VcfFilter.SplitVariants',
             -language   => 'python3',
             -parameters => {
+		'filepath' => '#out_vcf#',
                 'bcftools_folder' => $self->o('bcftools_folder'),
 		'compress' => 'True',
 		'type' => 'snps',
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'index_vcf2' => {'filepath' => '#out_vcf#'}}
+		1 => ['index_vcf2']
 	    }
         },
 
@@ -251,11 +255,12 @@ sub pipeline_analyses {
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
+		'filepath' => '#out_vcf#',
 		'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'shorten_bamfiles' => {'out_vcf' => '#filepath#'}}
+		1 => {'shorten_bamfiles'=> INPUT_PLUS() }
 	    }
         },
 
@@ -264,14 +269,12 @@ sub pipeline_analyses {
             -module     => 'PyHive.File.ShortenFilePaths',
             -language   => 'python3',
             -parameters => {
+		'filepath' => '#out_vcf#',
                 'filelist' => $self->o('filelist'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'coord_factory' => {
-		    'short_flist' => '#short_flist#',
-		    'out_vcf' => '#out_vcf#'
-		      }}
+		1 => {'coord_factory' => INPUT_PLUS() }
 	    }
         },
 
@@ -282,18 +285,12 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
-		#'chunk_ix' => 4,
+		'chunk_ix' => 240,
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
 	    -flow_into => {
-		'2->A' => { 'transpose_bams' => {
-                    'out_vcf' => '#out_vcf#',
-                    'region' => '#chunk#',
-		    'ix' => '#ix#',
-		    'filelist' => '#short_flist#'
-			    }
-		},
+		'2->A' => { 'transpose_bams' => INPUT_PLUS() },
                 'A->1' => [ 'merge_vcf'],
 	    },
 	},
@@ -303,17 +300,13 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'filelist' => '#filelist#',
-		'region' => '#region#',
+		'region' => '#chunk#',
                 'outprefix' => 'test',
 		'transposebam_folder' => $self->o('transposebam_folder'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'merge_transpose_bams' => {
-		    'bamlist' => '#out_bamlist#',
-		    'region' => '#region#',
-		      }
-		}
+		1 => {'merge_transpose_bams' => INPUT_PLUS() }
 	    },
 	    -rc_name => '12Gb'
         },
@@ -322,19 +315,14 @@ sub pipeline_analyses {
             -module     => 'PyHive.Bam.RunSamToolsMerge',
             -language   => 'python3',
             -parameters => {
-                'bamlist' => '#bamlist#',
-                'region' => '#region#',
+                'bamlist' => '#out_bamlist#',
+                'region' => '#chunk#',
                 'outprefix' => 'test',
                 'samtools_folder' => $self->o('samtools_folder'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {'index_merge_transpose_bams' => {
-                    'out_vcf' => '#out_vcf#',
-                    'region' => '#region#',
-                    'bamfile' => '#merged_bam#'
-		      }
-		}
+		1 => {'index_merge_transpose_bams' => INPUT_PLUS() }
 	    },
             -rc_name => '5Gb'
         },
@@ -343,16 +331,11 @@ sub pipeline_analyses {
             -module     => 'PyHive.Bam.RunSamToolsIndex',
             -language   => 'python3',
             -parameters => {
-                'bamfile' => '#bamfile#',
+                'bamfile' => '#merged_bam#',
                 'samtools_folder' => $self->o('samtools_folder'),
             },
 	    -flow_into => {
-		1 => {'run_gatkug_snps' => {
-                    'out_vcf' => '#out_vcf#',
-                    'chunk' => '#region#',
-                    'bamlist' => '#bamfile#'
-		      }
-		}
+		1 => {'run_gatkug_snps' => INPUT_PLUS() }
 	    },
             -rc_name => '5Gb'
         },
@@ -368,7 +351,7 @@ sub pipeline_analyses {
 		'chunk' => '#chunk#',
 		'dcov' => 250, # 250 is the default
                 'gatk_folder' => $self->o('gatk_folder'),
-		'bamlist' => '#bamlist#',
+		'bamlist' => '#merged_bam#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
 		'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
@@ -393,11 +376,7 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {
-		    'index_vcf3' => {
-                        'filepath' => '#merged_file#'
-		    }
-		},
+		1 => ['index_vcf3']
 	    },
             -analysis_capacity => 1,
             -rc_name => '500Mb'
@@ -407,15 +386,12 @@ sub pipeline_analyses {
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
+		'filepath' => '#merged_file#',
                 'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => {
-                    'run_variantrecalibrator_snps' => {
-                        'filepath' => '#filepath#'
-                    }
-                },
+		1 => {'run_variantrecalibrator_snps' => INPUT_PLUS() }
 	    }
         },
 
@@ -423,7 +399,7 @@ sub pipeline_analyses {
             -module        => 'PyHive.VcfFilter.VariantRecalibrator',
             -language   => 'python3',
             -parameters    => {
-                'filepath' => '#filepath#',
+                'filepath' => '#merged_file#',
                 'work_dir' => $self->o('work_dir'),
                 'caller' => $self->o('caller'),
 		'annotations' => $self->o('snps_annotations'),
@@ -435,12 +411,7 @@ sub pipeline_analyses {
                 'mode' => 'SNP'
             },
 	    -flow_into => {
-		1 => {
-		    'run_applyrecalibration_snps' => {
-                        'filepath' => '#filepath#',
-                        'recal_file' => '#recal_f#',
-                        'tranches_file' => '#tranches_f#'
-		    }},
+		1 => {'run_applyrecalibration_snps' => INPUT_PLUS() }
 	    },
             -analysis_capacity => 20,
             -rc_name => '12Gb',
@@ -450,7 +421,7 @@ sub pipeline_analyses {
             -module        => 'PyHive.VcfFilter.ApplyRecalibration',
             -language   => 'python3',
             -parameters    => {
-                'filepath' => '#filepath#',
+                'filepath' => '#merged_file#',
                 'work_dir' => $self->o('work_dir'),
                 'caller' => $self->o('caller'),
                 'gatk_folder' => $self->o('gatk_folder'),
