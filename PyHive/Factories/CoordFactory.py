@@ -1,5 +1,6 @@
 import eHive
 import pdb
+import ast
 from BEDTools import BEDTools
 
 class CoordFactory(eHive.BaseRunnable):
@@ -37,8 +38,9 @@ class CoordFactory(eHive.BaseRunnable):
 
         ix=1
         for c in coord_list:
-            if self.param_is_defined('chunk_ix'):
-                if ix==self.param('chunk_ix'):
+            if self.param_is_defined('chunk_ixs'):
+                chunks2select = ast.literal_eval(self.param('chunk_ixs'))
+                if ix in chunks2select:
                     chunks.append(
                         {
                             'chunk': c,
