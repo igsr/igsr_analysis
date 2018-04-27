@@ -4,6 +4,7 @@ import os
 import glob
 import pdb
 import string
+import ast
 
 def random_generator(size=6, chars=string.ascii_uppercase + string.digits, outprefix=None):
     '''
@@ -47,7 +48,8 @@ class ShortenFilePaths(eHive.BaseRunnable):
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
         
-        filelist=self.param_required('filelist')
+        filelist_str=self.param_required('filelist')
+        filelist = ast.literal_eval(filelist_str)
 
         if isinstance(filelist, str):
             raise Exception("{0} is not a list".format(filelist))

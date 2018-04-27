@@ -29,6 +29,9 @@ class VariantRecalibrator(eHive.BaseRunnable):
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'recal_f' : self.param('recal_f') }, 1)
-        self.dataflow( { 'tranches_f' : self.param('tranches_f') }, 1)
+        self.dataflow( { 
+            'recal_f' : self.param('recal_f'),
+            'tranches_f' : self.param('tranches_f')
+        }, 1)
+
 
