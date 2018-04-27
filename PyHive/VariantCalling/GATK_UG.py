@@ -66,7 +66,6 @@ class GATK_UG(eHive.BaseRunnable):
 
         outprefix=os.path.split(self.param_required('outprefix'))[1]
 
-#        pdb.set_trace()
         chrom=self.param_required('chunk')[0]
         start=None
         # increment by 1 if start=0, as GATK does not accept coords <1
