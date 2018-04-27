@@ -9,9 +9,15 @@ class run_Shapeit(eHive.BaseRunnable):
     
     def fetch_input(self):
         if self.param_is_defined('chunk'):
-            self.param('chr', self.param('chunk')[0])
-            self.param('inputfrom', self.param('chunk')[1])
-            self.param('inputto', self.param('chunk')[2])
+            if not isinstance(self.param('chunk'),list):
+                bits=re.findall(r"[\w']+", self.param('chunk'))
+                self.param('chr', "chr"+bits[0])
+                self.param('inputfrom', bits[1])
+                self.param('inputto', bits[2])
+            else:
+                self.param('chr', self.param('chunk')[0])
+                self.param('inputfrom', self.param('chunk')[1])
+                self.param('inputto', self.param('chunk')[2])
         
         
 
@@ -32,7 +38,7 @@ class run_Shapeit(eHive.BaseRunnable):
         outprefix=os.path.split(self.param_required('outprefix'))[1]
 
         outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
-            
+
         options_dict={}
         
         if self.param_is_defined('inputthr'):
