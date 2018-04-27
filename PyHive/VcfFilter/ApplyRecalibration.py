@@ -25,5 +25,8 @@ class ApplyRecalibration(eHive.BaseRunnable):
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'vcf_filt' : self.param('vcf_filt') }, 1)
-        self.dataflow( { 'vcf_filt_ix' : self.param('vcf_filt_ix') }, 1)
+        self.dataflow( { 
+            'vcf_filt' : self.param('vcf_filt'),
+            'vcf_filt_ix' : self.param('vcf_filt_ix')
+        }, 1)
+
