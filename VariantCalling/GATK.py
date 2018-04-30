@@ -39,7 +39,7 @@ class GATK(object):
         self.gatk_folder = gatk_folder
         self.bgzip_folder = bgzip_folder
 
-    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, intervals=None, verbose=None, alleles=None, genotyping_mode=None, **kwargs):
+    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, verbose=None, **kwargs):
         
         '''
         Run GATK UnifiedGenotyper
@@ -51,7 +51,7 @@ class GATK(object):
         glm : str, Required
               Genotype likelihoods calculation model to employ -- SNP is the default option, 
               while INDEL is also available for calling indels and BOTH is available for
-              calling both together
+              calling both together. Default= SNP
         compress : boolean, Default= True
                    Compress the output VCF
         nt : int, Optional
@@ -82,15 +82,6 @@ class GATK(object):
 
         command += "GenomeAnalysisTK.jar -T UnifiedGenotyper -R {0} -I {1} " \
                    "-glm {2} -nt {3} ".format(self.reference, self.bam, glm, nt)
-
-        if intervals:
-            command += " -L {0} ".format(intervals)
-        
-        if alleles:
-            command += " -alleles {0} ".format(alleles)
-
-        if genotyping_mode:
-            command += " --genotyping_mode {0} ".format(genotyping_mode)        
 
         for k,v in kwargs.items():
             command += " --{0} {1}".format(k,v)
