@@ -167,6 +167,7 @@ sub pipeline_analyses {
 		'outprefix' => $self->o('outprefix'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => ['splitmultiallelic']
 	    }
@@ -184,6 +185,7 @@ sub pipeline_analyses {
 		'reference' => $self->o('reference'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => ['index_vcf1']
 	    }
@@ -197,6 +199,7 @@ sub pipeline_analyses {
                 'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => {'run_VcfAllelicPrim'=> INPUT_PLUS() }
 	    }
@@ -213,6 +216,7 @@ sub pipeline_analyses {
 		'vcflib_folder' => $self->o('vcflib_folder'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => ['mergemultiallelic']
 	    }
@@ -230,6 +234,7 @@ sub pipeline_analyses {
                 'reference' => $self->o('reference'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => ['select_snps']
 	    }
@@ -245,6 +250,7 @@ sub pipeline_analyses {
 		'type' => 'snps',
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => ['index_vcf2']
 	    }
@@ -258,6 +264,7 @@ sub pipeline_analyses {
 		'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => {'shorten_bamfiles'=> INPUT_PLUS() }
 	    }
@@ -272,6 +279,7 @@ sub pipeline_analyses {
                 'filelist' => $self->o('filelist'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => {'coord_factory' => INPUT_PLUS() }
 	    }
@@ -288,6 +296,7 @@ sub pipeline_analyses {
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		'2->A' => { 'transpose_bams' => INPUT_PLUS() },
                 'A->1' => [ 'merge_vcf'],
@@ -389,6 +398,7 @@ sub pipeline_analyses {
                 'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => {'run_variantrecalibrator_snps' => INPUT_PLUS() }
 	    }
@@ -477,6 +487,7 @@ sub pipeline_analyses {
                 'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
+	    -rc_name => '500Mb',
 	    -flow_into => {
 		1 => {'split_chr' => INPUT_PLUS() }
 	    }
