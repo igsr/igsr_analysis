@@ -23,16 +23,8 @@ class VcfCombine(eHive.BaseRunnable):
     
     def run(self):
 
-        flist=self.param_required('flist')
-        
-        labels=[]
-        vcf_paths=[]
-        for t in flist:
-            # Tuples contain (label,path)
-            label=t[0]
-            path=t[1]
-            labels.append(label)
-            vcf_paths.append(path)
+        vcf_paths = self.param_required('allfiles2combine')
+        labels = self.param_required('alldatasets2combine')
         
         vcf_utils=VcfUtils(vcflist=vcf_paths,bcftools_folder=self.param_required('bcftools_folder'),
                            gatk_folder=self.param_required('gatk_folder'))
