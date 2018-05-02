@@ -1,6 +1,8 @@
 import eHive
 import os
 import pdb
+import glob
+
 from VCFIntegration.Beagle import Beagle
 
 class run_Beagle(eHive.BaseRunnable):

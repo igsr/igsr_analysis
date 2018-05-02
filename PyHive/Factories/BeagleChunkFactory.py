@@ -1,4 +1,8 @@
 import eHive
+import glob
+import os
+import pdb
+
 from VCFIntegration.Beagle import Beagle
 
 class BeagleChunkFactory(eHive.BaseRunnable):
@@ -8,8 +12,11 @@ class BeagleChunkFactory(eHive.BaseRunnable):
     
         vcf_i=Beagle(vcf=self.param_required('filepath'), makeBGLCHUNKS_folder=self.param_required('makeBGLCHUNKS_folder'))
 
-        outfile=""
+        #delete old Beagle files
+        for file in glob.glob("{0}/*beagle*".format(self.param('work_dir'))):
+            os.remove(file)
 
+        outfile=""
         if self.param_is_defined('work_dir'):
             outfile+=self.param('work_dir')+"/output.coords"
 
