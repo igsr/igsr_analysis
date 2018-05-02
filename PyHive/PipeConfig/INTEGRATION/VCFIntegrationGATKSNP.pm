@@ -132,65 +132,30 @@ sub pipeline_analyses {
 	{   -logic_name => 'find_vcfs_to_combine',
             -module     => 'PyHive.Seed.SeedVCFIntegration',
 	    -language   => 'python3',
-	    -meadow_type => 'LOCAL',
             -parameters => {
                 'filepath'     => '#filepath#'
             },
             -flow_into => {
-                1 => ['combine_vcfs']
+		'2->A' => [ 'splitmultiallelic' ],
+                'A->1' => [ 'combine_vcfs' ],
             },
-        },
-
-	{   -logic_name => 'combine_vcfs',
-            -module     => 'PyHive.Vcf.VcfCombine',
-            -language   => 'python3',
-            -parameters => {
-                'flist'     => '#flist#',
-		'reference' => $self->o('reference'),
-		'ginterval' => $self->o('ginterval'),
-		'threads' => 4,
-		'bcftools_folder' => $self->o('bcftools_folder'),
-		'gatk_folder' => $self->o('gatk_folder'),
-		'outprefix' => $self->o('outprefix'),
-		'work_dir' => $self->o('work_dir')
-            },
-	    -rc_name => '12Gb4cpus',
-	    -flow_into => {
-		1 => ['drop_INFO']
-	    }
-	    
-        },
-
-	{   -logic_name => 'drop_INFO',
-            -module     => 'PyHive.Vcf.dropInfo',
-            -language   => 'python3',
-            -parameters => {
-		'filepath' => '#out_vcf#',
-                'bcftools_folder' => $self->o('bcftools_folder'),
-		'outprefix' => $self->o('outprefix'),
-                'work_dir' => $self->o('work_dir')
-            },
-	    -rc_name => '500Mb',
-	    -flow_into => {
-		1 => ['splitmultiallelic']
-	    }
         },
 
 	{   -logic_name => 'splitmultiallelic',
             -module     => 'PyHive.Vcf.BcftoolsVcfNorm',
             -language   => 'python3',
             -parameters => {
-		'filepath' => '#out_vcf#',
+                'filepath' => '#file#',
                 'bcftools_folder' => $self->o('bcftools_folder'),
-		'multiallelics' => 'split',
-		'type' => 'both',
+                'multiallelics' => 'split',
+                'type' => 'both',
                 'outprefix' => $self->o('outprefix'),
-		'reference' => $self->o('reference'),
+                'reference' => $self->o('reference'),
                 'work_dir' => $self->o('work_dir')
             },
-	    -rc_name => '500Mb',
+            -rc_name => '500Mb',
 	    -flow_into => {
-		1 => ['index_vcf1']
+                1 => { 'index_vcf1' => INPUT_PLUS() }
 	    }
         },
 
@@ -202,34 +167,34 @@ sub pipeline_analyses {
                 'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-	    -rc_name => '500Mb',
+            -rc_name => '500Mb',
 	    -flow_into => {
 		1 => {'run_VcfAllelicPrim'=> INPUT_PLUS() }
 	    }
         },
 
-	{   -logic_name => 'run_VcfAllelicPrim',
+        {   -logic_name => 'run_VcfAllelicPrim',
             -module     => 'PyHive.Vcf.VcfAllelicPrim',
             -language   => 'python3',
             -parameters => {
-		'filepath' => '#out_vcf#',
-		'compress' =>1,
-		'downstream_pipe' => '~/bin/vt/vt sort - | ~/bin/vt/vt uniq -',
-		'bgzip_folder' => $self->o('bgzip_folder'),
-		'vcflib_folder' => $self->o('vcflib_folder'),
+                'filepath' => '#out_vcf#',
+                'compress' =>1,
+                'downstream_pipe' => '~/bin/vt/vt sort - | ~/bin/vt/vt uniq -',
+                'bgzip_folder' => $self->o('bgzip_folder'),
+                'vcflib_folder' => $self->o('vcflib_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-	    -rc_name => '500Mb',
+            -rc_name => '500Mb',
 	    -flow_into => {
-		1 => ['mergemultiallelic']
+                1 => ['mergemultiallelic']
 	    }
         },
 
-	{   -logic_name => 'mergemultiallelic',
+        {   -logic_name => 'mergemultiallelic',
             -module     => 'PyHive.Vcf.BcftoolsVcfNorm',
             -language   => 'python3',
             -parameters => {
-		'filepath' => '#out_vcf#',
+                'filepath' => '#out_vcf#',
                 'bcftools_folder' => $self->o('bcftools_folder'),
                 'multiallelics' => 'merge',
                 'type' => 'both',
@@ -237,42 +202,75 @@ sub pipeline_analyses {
                 'reference' => $self->o('reference'),
                 'work_dir' => $self->o('work_dir')
             },
-	    -rc_name => '500Mb',
+            -rc_name => '500Mb',
 	    -flow_into => {
-		1 => ['select_snps']
+                1 => ['select_biallelicsnps']
 	    }
         },
 
-	{   -logic_name => 'select_snps',
+	{   -logic_name => 'select_biallelicsnps',
             -module     => 'PyHive.VcfFilter.SplitVariants',
             -language   => 'python3',
             -parameters => {
-		'filepath' => '#out_vcf#',
+                'filepath' => '#out_vcf#',
                 'bcftools_folder' => $self->o('bcftools_folder'),
-		'compress' => 'True',
-		'type' => 'snps',
+                'compress' => 'True',
+                'type' => 'snps',
+                'biallelic' => 'True',
                 'work_dir' => $self->o('work_dir')
             },
-	    -rc_name => '500Mb',
+            -rc_name => '500Mb',
 	    -flow_into => {
-		1 => ['index_vcf2']
-	    }
+                1 => ['index_vcf2']
+	     }
         },
 
 	{   -logic_name => 'index_vcf2',
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
-		'filepath' => '#out_vcf#',
-		'tabix_folder' => $self->o('tabix_folder'),
+                'filepath' => '#out_vcf#',
+                'tabix_folder' => $self->o('tabix_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-	    -rc_name => '500Mb',
+            -rc_name => '500Mb',
 	    -flow_into => {
-		1 => {'shorten_bamfiles'=> INPUT_PLUS() }
+		1 => [ '?accu_name=allfiles2combine&accu_address=[]&accu_input_variable=out_vcf','?accu_name=alldatasets2combine&accu_address=[]&accu_input_variable=dataset']
 	    }
         },
 
+	{   -logic_name => 'combine_vcfs',
+            -module     => 'PyHive.Vcf.VcfCombine',
+            -language   => 'python3',
+            -parameters => {
+		'reference' => $self->o('reference'),
+		'ginterval' => $self->o('ginterval'),
+		'threads' => 4,
+		'bcftools_folder' => $self->o('bcftools_folder'),
+		'gatk_folder' => $self->o('gatk_folder'),
+		'outprefix' => $self->o('outprefix'),
+		'work_dir' => $self->o('work_dir')
+            },
+	    -rc_name => '12Gb4cpus',
+	    -flow_into => {
+		1 => ['index_vcf3']
+	    }
+	    
+        },
+
+	{   -logic_name => 'index_vcf3',
+            -module     => 'PyHive.Vcf.VcfIxByTabix',
+            -language   => 'python3',
+            -parameters => {
+                'filepath' => '#out_vcf#',
+                'tabix_folder' => $self->o('tabix_folder'),
+                'work_dir' => $self->o('work_dir')
+            },
+            -rc_name => '500Mb',
+	    -flow_into => {
+                1 => { 'shorten_bamfiles' => INPUT_PLUS() },
+	    }
+        },
 
 	{   -logic_name => 'shorten_bamfiles',
             -module     => 'PyHive.File.ShortenFilePaths',
@@ -458,13 +456,13 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		1 => ['index_vcf3']
+		1 => ['index_vcf4']
 	    },
             -analysis_capacity => 1,
             -rc_name => '500Mb'
         },
 
-	{   -logic_name => 'index_vcf3',
+	{   -logic_name => 'index_vcf4',
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
@@ -549,11 +547,11 @@ sub pipeline_analyses {
             },
             -rc_name => '500Mb',
 	    -flow_into => {
-		1 => ['index_vcf4']
+		1 => ['index_vcf5']
 	    },
         },
 
-	{   -logic_name => 'index_vcf4',
+	{   -logic_name => 'index_vcf5',
             -module     => 'PyHive.Vcf.VcfIxByTabix',
             -language   => 'python3',
             -parameters => {
@@ -608,7 +606,7 @@ sub pipeline_analyses {
             -parameters => {
 		'filepath' => '#vcf_f#',
 		'makeBGLCHUNKS_folder' => $self->o('makeBGLCHUNKS_folder'),
-		'work_dir' => $self->o('work_dir'),
+		'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
 		'correct' => 1,
 		'chro' => '#chromname#',
 		'window' => $self->o('window_bglchnks'),
