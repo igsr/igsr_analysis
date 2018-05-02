@@ -19,11 +19,16 @@ class SeedVCFIntegration(eHive.BaseRunnable):
                     print("Error getting the right label/file pair for line:\n{0}".format(line))
                     print("Check if there is any extra tab space between label/file\n")
                     raise Exception()
-                flist.append((line.split('\t')[0],line.split('\t')[1]))
+                flist.append({
+                    'dataset': line.split('\t')[0],
+                    'file': line.split('\t')[1]
+                })
         
         self.param('flist', flist)
 
     def write_output(self):
+
         self.warning('Work is done!')
-        self.dataflow( { 'flist' : self.param('flist') }, 1)
+        self.dataflow(self.param('flist'), 2)
+
 

@@ -2,27 +2,8 @@ import eHive
 import os
 import pdb
 import re
-import random
 import subprocess
-import string
 
-def random_generator(size=6, chars=string.ascii_uppercase + string.digits, outprefix=None):
-    '''
-    Creates a random string having a size determined by the 'size' arg. If outprefix is not None
-       then use a prefix with the random string
-
-    Parameters
-    ----------
-    size : int, Required
-           Size for the random string
-    outprefix : str, Optional
-                Add an outprefix for the returned random string
-    '''
-    astr=''.join(random.choice(chars) for x in range(size))
-    if outprefix is not None:
-        return "{0}_{1}".format(outprefix,astr)
-    else:
-        return astr
 
 class TransposeBam(eHive.BaseRunnable):
     '''
