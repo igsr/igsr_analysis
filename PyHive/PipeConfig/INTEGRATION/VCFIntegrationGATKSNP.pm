@@ -184,7 +184,7 @@ sub pipeline_analyses {
                 'vcflib_folder' => $self->o('vcflib_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-            -rc_name => '500Mb',
+            -rc_name => '2Gb',
 	    -flow_into => {
                 1 => ['mergemultiallelic']
 	    }
