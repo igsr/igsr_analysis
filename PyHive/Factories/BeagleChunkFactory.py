@@ -26,6 +26,18 @@ class BeagleChunkFactory(eHive.BaseRunnable):
         else:
             verbose=False
 
+        window=0
+        if self.param_required('window') is not None:
+            window=self.param('window')
+        else:
+            raise Exception("I need a 'window' arg")
+            
+        overlap=0
+        if self.param_required('overlap') is not None:
+            overlap=self.param('overlap')
+        else:
+            raise Exception("I need an 'overlap' arg")
+
         vcf_i.make_beagle_chunks(window=self.param_required('window'),overlap=self.param_required('overlap'),outfile=outfile,verbose=verbose)
 
         chunks=[]
