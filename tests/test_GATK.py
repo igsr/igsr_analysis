@@ -36,6 +36,7 @@ def test_run_ug(gatk_object):
 
     assert os.path.isfile(outfile) is True
 
+
 def test_run_ug_with_ivals(gatk_object):
     '''
     Test function to run GATK UG on a BAM file and set the interval to 
@@ -46,7 +47,7 @@ def test_run_ug_with_ivals(gatk_object):
 
     assert os.path.isfile(outfile) is True
 
-def test_run_ug_with_params(gatk_object, clean_tmp):
+def test_run_ug_with_params(gatk_object):
     '''
     Test function to run GATK UG on a BAM file using some optional params
     '''
@@ -55,4 +56,25 @@ def test_run_ug_with_params(gatk_object, clean_tmp):
                                output_mode='EMIT_ALL_SITES', nt=1)
 
     assert os.path.isfile(outfile) is True
+
+def test_run_ug_with_verbose(gatk_object):
+    '''
+    Test function to run GATK UG on a BAM file using verbose=True
+    '''
+
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test2', glm='INDEL',
+                               output_mode='EMIT_ALL_SITES', nt=1, verbose=True)
+
+    assert os.path.isfile(outfile) is True
+
+
+def test_run_ug_and_throwerror(gatk_object, clean_tmp):
+    '''
+    Test function to run GATK UG on a BAM file and will raise an Exception 
+    because the output_mode argument is not valid
+    '''
+
+    with pytest.raises(Exception):
+        outfile=gatk_object.run_ug(outprefix='data/outdir/test2', glm='INDEL',
+                                   output_mode='non_valid', nt=1)
 
