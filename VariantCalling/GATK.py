@@ -6,6 +6,7 @@ Created on 22 Feb 2018
 
 import os
 import subprocess
+from Utils.RunProgram import RunProgram
 import pdb
 import re
 
@@ -76,38 +77,32 @@ class GATK(object):
 
         '''
 
-        command = "java -jar "
-        if self.gatk_folder:
-            command += self.gatk_folder + "/"
-
-        command += "GenomeAnalysisTK.jar -T UnifiedGenotyper -R {0} -I {1} " \
-                   "-glm {2} -nt {3} ".format(self.reference, self.bam, glm, nt)
+        arguments=[('-T','UnifiedGenotyper'),('-R',self.reference),('-I',self.bam),('-glm',glm),('-nt',nt)]
 
         for k,v in kwargs.items():
-            command += " --{0} {1}".format(k,v)
-
+            arguments.append((" --{0}".format(k),"{0}".format(v)))
+        
+        compressRunner=None
         if compress is True:
             outprefix += ".vcf.gz"
-            command += "| {0}/bgzip -c > {1}".format(self.bgzip_folder,outprefix)
-
+            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
         else:
             outprefix += ".vcf"
-            command += " -o {0}".format(outprefix)
+            arguments.append(('-o',outprefix))
 
-        try:
-            print(command)
-            p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
-            stdout, stderr = p.communicate()
-            lines=stderr.split("\n")
-            p = re.compile('#* ERROR')
-            for i in lines:
-                m = p.match(i)
-                if m:
-                    print("Something went wrong while running CombineVariants. This was the error message: {0}".format(stderr))
-                    raise Exception()
-            if not os.path.isfile(outprefix): raise Exception("Something went wrong while running GATK UG!")
-        except subprocess.CalledProcessError as exp:
-            print("Something went wrong while running GATK UG")
-            raise Exception(exp.output)
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=arguments, downpipe=[compressRunner])
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+            
+        stdout,stderr=runner.run()
+
+        lines=stderr.split("\n")
+        p = re.compile('#* ERROR')
+        for i in lines:
+            m = p.match(i)
+            if m:
+                print("Something went wrong while running GATK UnifiedGenotyper. This was the error message: {0}".format(stderr))
+                raise Exception()
 
         return outprefix
