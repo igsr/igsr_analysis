@@ -7,6 +7,7 @@ Created on 27 Feb 2017
 import os
 import subprocess
 import json
+from Utils.RunProgram import RunProgram
 import glob
 import ast
 import pdb
@@ -38,7 +39,7 @@ class BCFTools(object):
         self.tabix_folder = tabix_folder
 
     def subset_vcf(self, outprefix, bed=None, region=None, outdir=None,
-                   create_index=False, verbose=None, action='exclude', apply_filters=None, threads=0):
+                   create_index=False, verbose=None, action='exclude', apply_filters=None, threads=1):
         '''
         Subset the vcf file using a BED file/region having the coordinates of the
         variants to exclude/include
@@ -73,10 +74,6 @@ class BCFTools(object):
         if action != 'include' and action != 'exclude':
             raise Exception("action argument should be either include or exclude")
 
-        command = ""
-        if self.bcftools_folder:
-            command += self.bcftools_folder + "/"
-
         if region:
             bits = outprefix.split(".")
             vcf_ix = bits.index("vcf")
@@ -92,45 +89,33 @@ class BCFTools(object):
         if outdir:
             outprefix = "%s/%s" % (outdir, outprefix)
 
+        args=[]
         if bed:
             if action == 'exclude':
-                command += "bcftools view -T ^{0} ".format(bed)
+                args.append(('-T','^{0}'.format(bed)))
             elif action == 'include':
-                command += "bcftools view -T {0} ".format(bed)
+                args.append(('-T','{0}'.format(bed)))
         elif region:
             if action == 'exclude':
-                command += "bcftools view -t ^{0} ".format(region)
+                args.append(('-t','^{0}'.format(region)))
             elif action == 'include':
-                command += "bcftools view -r {0} ".format(region)
+                args.append(('-r','{0}'.format(region)))
 
-        command += "-o {0} -O z {1} --threads {2}".format(outprefix, self.vcf, threads)
-        
+        args.extend([('-o',outprefix), ('-O','z'), ('--threads',threads)])
+
         if apply_filters is not None:
-            command += " -f \"{0}\"".format(apply_filters)
+            args.append(('-f','\"{0}\"'.format(apply_filters)))
+
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=[self.vcf])
 
         if verbose is True:
-            print("Command is: %s" % command)
+            print("Command line is: {0}".format(runner.cmd_line))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            raise Exception(exc.output)
-
-        if create_index is True:
-            command_ix = ""
-            if self.tabix_folder:
-                command_ix += self.tabix_folder + "/"
-            command_ix += "tabix {0}".format(outprefix)
-
-            try:
-                print("executing cmd: {0}".format(command_ix))
-                subprocess.check_output(command_ix, shell=True)
-            except subprocess.CalledProcessError as exc:
-                raise Exception(exc.output)
+        stdout,stderr=runner.run()
 
         return outprefix
 
-    def filter(self, name, expression):
+    def filter(self, name, expression, verbose=None):
         '''
         Run bcftools filter on a Vcf file
 
@@ -140,26 +125,29 @@ class BCFTools(object):
                     annotate FILTER column with <str>
         expression :str, Required
                    exclude sites for which expression is true. i.e. 'INFO/DP>24304 | MQ<34'
+        verbose : Boolean, optional
+                  Increase verbosity
 
         Returns
         -------
         Returns the path for the filtered file
         '''
+
         outfile = self.vcf + ".filtered.vcf.gz"
 
-        command = "{0}/bcftools filter -s{1} -e'{2}' {3} -o {4} -O z".format(
-            self.bcftools_folder, name, expression, self.vcf, outfile)
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Something went wrong while running Bcftools filter\n"
-                  "Command used was: %s" % command)
-            raise Exception(exc.output)
+        args=[('-s',name),('-e',expression),('-o',outfile),('-O','z')]
+
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools filter', args=args, parameters=[self.vcf])
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout,stderr=runner.run()
 
         return outfile
 
-    def filter_by_variant_type(self, outprefix, v_type="snps", compress=True, biallelic=False, action="select"):
+    def filter_by_variant_type(self, outprefix, v_type="snps", compress=True, biallelic=False, action="select", verbose=None):
         '''
         Method to filter a VCF file by variant type. For example, to extract only the SNPs
         
@@ -174,6 +162,8 @@ class BCFTools(object):
                     Select only biallelic variants. Default=False
         action : str, Required. Valid values are 'select'/'exclude'. Default=select
         outprefix : str, Required. Prefix used for the output files
+        verbose : Boolean, optional
+                  Increase verbosity
         '''
 
         if v_type != "snps" and v_type != "indels" and v_type != "mnps" and v_type != "other":
@@ -182,41 +172,46 @@ class BCFTools(object):
         if action != "select" and action != "exclude":
             raise Exception("action value is not valid. Valid values are 'select' or 'exclude'")
 
-        command = "{0}/bcftools view ".format(self.bcftools_folder)
+        args=[]
+        params=[]
 
         if action == "select":
             outprefix = outprefix + ".{0}.".format(v_type)
-            command += "-v {0} ".format(v_type)
+            args.append(('-v',v_type))
         elif action == "exclude":
             outprefix = outprefix + ".no{0}.".format(v_type)
-            command += "-V {0} ".format(v_type)
+            args.append(('-V',v_type))
         if biallelic is True:
             outprefix += "biallelic."
-            command += "-m2 -M2 "
+            params.extend(['-m2','-M2'])
         
         if compress is True:
             outprefix += "vcf.gz"
-            command += "{0} -o {1} -O z".format(self.vcf, outprefix)
+            args.extend([('-o', outprefix),('-O','z')])
+            params.append(self.vcf)
         elif compress is False:
             outprefix += "vcf"
-            command += "{0} -o {1} -O v".format(self.vcf, outprefix)
+            args.extend([('-o', outprefix),('-O','v')])
+            params.append(self.vcf)
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Something went wrong while trying to select variants\n")
-            print("Command used was: {0}".format(command))
-            raise Exception(exc.output)
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=params)
+        
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout,stderr=runner.run()
 
         return outprefix
 
-    def select_variants(self, outprefix):
+    def select_variants(self, outprefix, verbose=None):
         '''
         Run bcftools view to select only the variants (exclude the 0|0 genotypes)
 
         Parameters
         ---------
         outprefix : str, Required. Prefix used for the output file
+        verbose : Boolean, optional
+                  Increase verbosity
 
         Returns
         -------
@@ -224,14 +219,13 @@ class BCFTools(object):
         '''
         outfile = outprefix + ".onlyvariants.vcf.gz"
 
-        command = "{0}/bcftools view -c1 {1} -o {2} -O z".format(
-            self.bcftools_folder, self.vcf, outfile)
+        args=[('-o',outfile),('-O','z')]
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Something went wrong while running Bcftools view\n"
-                  "Command used was: %s" % command)
-            raise Exception(exc.output)
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=[self.vcf])
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout,stderr=runner.run()
 
         return outfile
