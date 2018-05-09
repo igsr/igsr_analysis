@@ -6,9 +6,11 @@ Created on 27 Feb 2017
 
 import os
 import subprocess
+from Utils.RunProgram import RunProgram
 import json
 import glob
 import ast
+import pdb
 
 class GATK(object):
     '''
@@ -16,7 +18,7 @@ class GATK(object):
     '''
 
 
-    def __init__(self, vcf, caller=None, reference=None, bgzip_folder=None, tabix_folder=None, gatk_folder=None):
+    def __init__(self, vcf, reference, caller='UG',  bgzip_folder=None, tabix_folder=None, gatk_folder=None):
         '''
         Constructor
 
@@ -26,7 +28,8 @@ class GATK(object):
              Path to gzipped vcf file
         caller : str, Optional
              Caller used to generate the VCF: UG, bcftools
-        reference : str, Optional
+             Default= 'UG'
+        reference : str, Required
              Path to fasta file containing the reference
         bgzip_folder : str, Optional
                       Path to folder containing the bgzip binary
@@ -49,7 +52,7 @@ class GATK(object):
     def run_variantrecalibrator(self, resources, mode,
                                 max_gaussians=None, intervals=None,
                                 annotations=None, tranches=None,
-                                outprefix="recalibrate"):
+                                outprefix="recalibrate",verbose=None):
         '''
         Run GATK's VariantRecalibrator on a VcfFilter object
 
@@ -72,6 +75,8 @@ class GATK(object):
         outprefix : str, Optional
                     out prefix used for -recalFile, -tranchesFile, -rscriptFile.
                     Default= recalibrate
+        verbose : bool, Optional
+                  Increase verbosity
 
         Returns
         -------
@@ -93,6 +98,12 @@ class GATK(object):
             raise Exception("VariantRecalibrator mode is not valid."
                             "Valid values are 'SNP','INDEL'" % mode)
 
+        # prepare the prefix used for output files
+        outprefix += "_%s" % mode
+
+        args=[('-T', 'VariantRecalibrator'), ('-R', self.reference), ('-input', self.vcf), ('-mode', mode),
+              ('-recalFile', "{0}.recal".format(outprefix)), ('-tranchesFile', "{0}.tranches".format(outprefix)),
+              ('-rscriptFile', "{0}_plots.R".format(outprefix)) ]
 
         # Read-in the different resources from the resource JSON file
         resources_str = ""
@@ -101,48 +112,35 @@ class GATK(object):
             data = json.load(data_file)
             bits = data['resources']
             for dummy, dic in enumerate(bits):
-                resources_str += "-resource:%s,known=%s,training=%s,truth=%s,prior=%.1f %s " \
-                %(dic['resource'], str(dic['known']).lower(), str(dic['training']).lower(), \
-                str(dic['truth']).lower(), dic['prior'], dic['path'])
+                args.extend([("-resource:%s,known=%s,training=%s,truth=%s,prior=%.1f" % (dic['resource'],str(dic['known']).lower(),str(dic['training']).lower(),str(dic['truth']).lower(),dic['prior']), dic['path'])])
 
-        command = "java -jar "
-        if self.gatk_folder:
-            command += self.gatk_folder + "/"
 
         # prepare the -an options
-        prefix1 = '-an '
-        newlist = [prefix1 + elt for elt in annotations]
-        ann_str = " ".join(newlist)
+        for elt in annotations:
+            args.append(('-an',elt))
 
         # prepare the list of -tranche option
         if type(tranches) == str:
             tranches = ast.literal_eval(tranches)
-        prefix2 = '-tranche '
-        newlist = [prefix2 + str(elt) for elt in tranches]
-        tranches_str = " ".join(newlist)
 
-        # prepare the prefix used for output files
-        outprefix += "_%s" % mode
+        for elt in tranches:
+            args.append(('-tranche', elt))
 
-        command += "GenomeAnalysisTK.jar -T VariantRecalibrator -R {0} " \
-        "-input {1} {2} {3} -mode {4} {5} -recalFile {6}.recal -tranchesFile" \
-        " {6}.tranches -rscriptFile {6}_plots.R".format(self.reference, self.vcf, \
-                                                         resources_str, ann_str, \
-                                                         mode, tranches_str, \
-                                                         outprefix)
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args)
 
-        if intervals:
-            command += " -L {0}".format(intervals)
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
 
-        if max_gaussians:
-            command += " --maxGaussians {0}".format(max_gaussians)
+        stdout,stderr=runner.run()
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Something went wrong while running VariantRecalibrator.\n"
-                  "Command used was: %s" % command)
-            raise Exception(exc.output)
+        lines=stderr.split("\n")
+        p = re.compile('#* ERROR')
+        for i in lines:
+            m = p.match(i)
+            if m:
+                print("Something went wrong while running GATK VariantRecalibrator. This was the error message: {0}".format(stderr))
+                raise Exception()
+
 
         recal_f = glob.glob("{0}*.recal".format(outprefix))
         tranches_f = glob.glob("{0}*.tranches".format(outprefix))
@@ -163,7 +161,7 @@ class GATK(object):
             }
 
     def run_applyrecalibration(self, mode, recal_file, tranches_file, outprefix,
-                               ts_filter_level=99.0, compress=True):
+                               ts_filter_level=99.0, compress=True, verbose=None):
         '''
         Run GATK's ApplyRecalibration on a VcfFilter object
 
@@ -181,6 +179,8 @@ class GATK(object):
                           The truth sensitivity level at which to start filtering. Default=99.0
         compress : boolean, Default= True
                    Compress the recalibrated VCF
+        verbose : bool, Optional
+                  Increase verbosity
         '''
 
         if self.caller != 'UG':
@@ -197,36 +197,37 @@ class GATK(object):
         elif mode == 'INDEL':
             outfile += "%s.recalibrated_variants.vcf" % outprefix
 
-        command = "java -jar "
-        if self.gatk_folder:
-            command += self.gatk_folder + "/"
 
+        args=[('-T', 'ApplyRecalibration'), ('-R', self.reference), ('-input', self.vcf), ('-mode', mode),
+              ('--ts_filter_level', ts_filter_level), ('-recalFile', recal_file),
+              ('-tranchesFile', tranches_file) ]
+
+        compressRunner=None
         if compress is True:
             outfile += ".gz"
-            command += "GenomeAnalysisTK.jar -T ApplyRecalibration -R {0} -input {1} -mode {2} \
-            --ts_filter_level {3} -recalFile {4} -tranchesFile {5} | {6}/bgzip -c > {7}"\
-            .format(self.reference, self.vcf, mode, ts_filter_level, recal_file, tranches_file,\
-                     self.bgzip_folder, outfile)
+            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outfile])
         else:
-            command += "GenomeAnalysisTK.jar -T ApplyRecalibration -R {0} -input {1} -mode {2} \
-            --ts_filter_level {3} -recalFile {4} -tranchesFile {5} -o {6}"\
-            .format(self.reference, self.vcf, mode, ts_filter_level, recal_file, tranches_file,
-                    outfile)
+            args.append(('-o',outfile))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exp:
-            print("Something went wrong while running ApplyRecalibration")
-            raise Exception(exp.output)
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, downpipe=[compressRunner])
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout,stderr=runner.run()
+
+        lines=stderr.split("\n")
+        p = re.compile('#* ERROR')
+        for i in lines:
+            m = p.match(i)
+            if m:
+                print("Something went wrong while running GATK ApplyRecalibration. This was the error message: {0}".format(stderr))
+                raise Exception()
 
         # create an index for the recalibrated file
         if compress is True:
-            command = "{0}/tabix {1}".format(self.tabix_folder, outfile)
-            try:
-                subprocess.check_output(command, shell=True)
-            except subprocess.CalledProcessError as exc:
-                print("Something went wrong while trying to create the index for the \
-                recalibrated file")
-                raise Exception(exc.output)
+            tabixRunner=RunProgram(path=self.tabix_folder,program='tabix',parameters=[outfile])
+            stdout,stderr=tabixRunner.run()
 
         return outfile
+

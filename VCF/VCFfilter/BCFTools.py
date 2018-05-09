@@ -152,7 +152,7 @@ class BCFTools(object):
         Method to filter a VCF file by variant type. For example, to extract only the SNPs
         
         Parameters
-        ----------
+       ----------
         v_type : str, Required. Valid values are 'snps'/'indels','mnps','other'. Default=snps
                  Extract/Filter (depending on the value of the 'action'
                  argument) a certain variant type
