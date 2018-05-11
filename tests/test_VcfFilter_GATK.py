@@ -40,7 +40,7 @@ def test_applyrecalibration(vcf_object):
     
     with pytest.raises(Exception):
         vcf_object.run_applyrecalibration(mode='SNP', recal_file='data/test.recal', 
-                                          tranches_file='data/test.tranches', outprefix='data/outdir/test/',
+                                          tranches_file='data/test.tranches', outprefix='data/outdir/test',
                                           verbose=True)
 
     

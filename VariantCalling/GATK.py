@@ -7,6 +7,7 @@ Created on 22 Feb 2018
 import os
 import subprocess
 from Utils.RunProgram import RunProgram
+from collections import namedtuple
 import pdb
 import re
 
@@ -77,10 +78,12 @@ class GATK(object):
 
         '''
 
-        arguments=[('-T','UnifiedGenotyper'),('-R',self.reference),('-I',self.bam),('-glm',glm),('-nt',nt)]
+        Arg = namedtuple('Argument', 'option value')
+
+        arguments=[Arg('-T','UnifiedGenotyper'), Arg('-R',self.reference), Arg('-I',self.bam), Arg('-glm',glm), Arg('-nt',nt)]
 
         for k,v in kwargs.items():
-            arguments.append((" --{0}".format(k),"{0}".format(v)))
+            arguments.append(Arg(" --{0}".format(k),v))
         
         compressRunner=None
         if compress is True:
@@ -88,14 +91,14 @@ class GATK(object):
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
         else:
             outprefix += ".vcf"
-            arguments.append(('-o',outprefix))
+            arguments.append(Arg('-o',outprefix))
 
         runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=arguments, downpipe=[compressRunner])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
             
-        stdout,stderr=runner.run()
+        stdout,stderr=runner.run_popen()
 
         lines=stderr.split("\n")
         p = re.compile('#* ERROR')

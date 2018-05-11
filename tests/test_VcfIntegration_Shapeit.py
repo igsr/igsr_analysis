@@ -43,7 +43,7 @@ def test_run_shapeit_w_options():
                           verbose=True,
                           **options)
     assert os.path.exists('data/outdir/output.shapeit.22.20000000.20100000.haps.gz')
-
+"""
 def test_run_shapeit_convert2vcf(clean_tmp):
 
     shapeit_o=Shapeit(shapeit_folder = pytest.config.getoption("--shapeit_folder"))
@@ -53,4 +53,4 @@ def test_run_shapeit_convert2vcf(clean_tmp):
                                   compress=True, verbose=True, logfile='data/SHAPEIT.output.shapeit.22.phased.log')
     
     assert os.path.exists(out_vcf)
-
+"""
