@@ -6,6 +6,8 @@ Created on 21 Jul 2017
 import os
 import pdb
 import subprocess
+from Utils.RunProgram import RunProgram
+from collections import namedtuple
 
 class Shapeit(object):
     '''
@@ -60,50 +62,44 @@ class Shapeit(object):
         Returns
         -------
         A dict with the path to the 2 output files (*.haps.gz and *.haps.sample) that can be used with SHAPEIT
-        '''        
+        '''
 
         if input_gen is None and input_bed is None:
             raise Exception("Error! Either --input-gen or --input-bed need to be specified as input for SHAPEIT")
+            
+        Arg = namedtuple('Argument', 'option value')
 
-        command = ""
-
-        if self.shapeit_folder:
-            command += self.shapeit_folder+"/"
-
-        command += "shapeit "
+        args=[]
 
         if input_gen is not None:
-            command += "-call --input-gen {0} ".format(input_gen)
+            args.append(Arg('-call --input-gen',input_gen))
         elif input_bed is not None:
-            command += "--input-bed {0} ".format(input_bed)
+            args.append(Arg('--input-bed',input_bed))
 
         if input_init is not None:
-            command += "--input-init {0} ".format(input_init)
+            args.append(Arg('--input-init',input_init))
 
         if input_scaffold is not None:
-            command += "--input-scaffold {0} ".format(input_scaffold)
+            args.append(Arg('--input-scaffold',input_scaffold))
 
         if input_map is not None:
-            command += "--input-map {0} ".format(input_map)
-
-        command +="--output-max {0}.haps.gz {0}.haps.sample --output-log {0}.log".format(output_prefix)
-
-        if duohmm is True:
-            command += " --duohmm"
-
+            args.append(Arg('--input-map',input_map))
+        
         for k,v in kwargs.items():
-            command += " --{0} {1}".format(k,v)
+            args.append(Arg('--{0}'.format(k),v))
 
-        if verbose==True:
-            print("Command used was: %s" % command)
+        args.extend([Arg('--output-max','{0}.haps.gz {0}.haps.sample'.format(output_prefix)),Arg('--output-log','{0}.log'.format(output_prefix))])
+
+        params=[]
+        if duohmm is True: params=['--duohmm']
+
+        runner=RunProgram(path=self.shapeit_folder, program='shapeit', args=args, parameters=params)
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout=runner.run_checkoutput()
              
-        try:
-            print(command)
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Command used was: {0}".format(command))
-            raise Exception(exc.output)
-
         outdict={ 
             'hap_gz' : '{0}.haps.gz'.format(output_prefix),
             'hap_sample' : '{0}.haps.sample'.format(output_prefix)
