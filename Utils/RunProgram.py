@@ -15,7 +15,7 @@ class RunProgram(object):
     '''
 
 
-    def __init__(self, program, path=None, args=None, parameters=None,
+    def __init__(self, program, path=None, args=None, arg_sep=' ', parameters=None,
                  cmd_line=None, downpipe=None):
         '''
         Constructor
@@ -27,10 +27,14 @@ class RunProgram(object):
         path : str, Optional
                Folder containing the 'program'
         args : list, Optional
-               List of tuples formed by an argument (or option) and 
-               its respective value: i.e. [(-a, 20),(-b, 'aname')]
+               List of named tuples tuples formed by an argument (or option) and 
+               its respective value: i.e. arg=namedtuple('Argument', 'option value')
         parameters : list, Optional
                       List of parameters ['c','d']
+        arg_sep : char, Optional
+                  char used as a separator between argument and value. 
+                  i.e. if '=' then we will get 'a'=1
+                  Default is a single whitespace (i.e. ' ')
         cmd_line : str, Optional
                    String with command line to run
         downpipe: list of RunProgram objects, Optional
@@ -42,6 +46,7 @@ class RunProgram(object):
         self.path = path
         self.program = program
         self.args = args
+        self.arg_sep = arg_sep
         self.parameters = parameters
         self.cmd_line = cmd_line
         self.downpipe = downpipe
@@ -52,26 +57,27 @@ class RunProgram(object):
             
             if self.path is not None: cmd_line="{0}/".format(self.path)
             
-            cmd_line="{0}{1}".format(cmd_line,self.program)
+            cmd_line="{0}{1} ".format(cmd_line,self.program)
 
             # construct the command line
             if self.args is not None:
                 for option,parameter in self.args:
-                    cmd_line="{0} {1} {2} ".format(cmd_line,option,parameter)
+                    cmd_line+="{0}{1}{2} ".format(option,self.arg_sep,parameter)
 
             if self.parameters is not None:
                 for param in self.parameters:
-                    cmd_line="{0} {1} ".format(cmd_line,param)
+                    cmd_line+="{0} ".format(param)
                     
             if downpipe is not None:
                 for runO in downpipe:
-                    cmd_line="{0} | {1}".format(cmd_line,runO.cmd_line)
+                    cmd_line+="|{0}".format(runO.cmd_line)
         self.cmd_line=cmd_line
         
 
-    def run(self):
+    def run_popen(self):
         '''
-        Run self.program
+        Run self.program using subprocess Popen method
+        (see https://docs.python.org/2/library/subprocess.html#module-subprocess)
 
         Returns
         -------
@@ -79,13 +85,27 @@ class RunProgram(object):
         '''
 
         #execute cmd_line
-        try:
-            p = subprocess.Popen(self.cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
-            stdout, stderr = p.communicate()
-        except subprocess.CalledProcessError as exp:
-            print("Something went wrong while {0}".format(self.program))
-            raise Exception(exp.output)
 
+        p = subprocess.Popen(self.cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
+        stdout, stderr = p.communicate()
+       
         return (stdout,stderr)
 
-            
+    def run_checkoutput(self):
+        '''
+        Run self.program using subprocess check_output method
+        (see https://docs.python.org/2/library/subprocess.html#module-subprocess)
+
+        Returns
+        -------
+        Stdout produced after running the program
+        '''
+        
+        try:
+            stdout = subprocess.check_output(self.cmd_line, shell=True)
+        except subprocess.CalledProcessError as exp:
+            print("Something went wrong while running {0}".format(self.program))
+            raise Exception(exp.output)
+        
+        return stdout
+
