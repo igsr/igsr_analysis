@@ -8,6 +8,7 @@ import os
 import subprocess
 import json
 from Utils.RunProgram import RunProgram
+from collections import namedtuple
 import glob
 import ast
 import pdb
@@ -89,29 +90,31 @@ class BCFTools(object):
         if outdir:
             outprefix = "%s/%s" % (outdir, outprefix)
 
+        Arg = namedtuple('Argument', 'option value')
+
         args=[]
         if bed:
             if action == 'exclude':
-                args.append(('-T','^{0}'.format(bed)))
+                args.append(Arg('-T','^{0}'.format(bed)))
             elif action == 'include':
-                args.append(('-T','{0}'.format(bed)))
+                args.append(Arg('-T','{0}'.format(bed)))
         elif region:
             if action == 'exclude':
-                args.append(('-t','^{0}'.format(region)))
+                args.append(Arg('-t','^{0}'.format(region)))
             elif action == 'include':
-                args.append(('-r','{0}'.format(region)))
+                args.append(Arg('-r','{0}'.format(region)))
 
-        args.extend([('-o',outprefix), ('-O','z'), ('--threads',threads)])
+        args.extend([Arg('-o',outprefix), Arg('-O','z'), Arg('--threads',threads)])
 
         if apply_filters is not None:
-            args.append(('-f','\"{0}\"'.format(apply_filters)))
+            args.append(Arg('-f','\"{0}\"'.format(apply_filters)))
 
         runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run()
+        stdout=runner.run_checkoutput()
 
         return outprefix
 
@@ -135,15 +138,16 @@ class BCFTools(object):
 
         outfile = self.vcf + ".filtered.vcf.gz"
 
+        Arg = namedtuple('Argument', 'option value')
 
-        args=[('-s',name),('-e',expression),('-o',outfile),('-O','z')]
+        args=[Arg('-s',name),Arg('-e',expression),Arg('-o',outfile),Arg('-O','z')]
 
         runner=RunProgram(path=self.bcftools_folder, program='bcftools filter', args=args, parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run()
+        stdout=runner.run_checkoutput()
 
         return outfile
 
@@ -172,26 +176,28 @@ class BCFTools(object):
         if action != "select" and action != "exclude":
             raise Exception("action value is not valid. Valid values are 'select' or 'exclude'")
 
+        Arg = namedtuple('Argument', 'option value')
+
         args=[]
         params=[]
 
         if action == "select":
             outprefix = outprefix + ".{0}.".format(v_type)
-            args.append(('-v',v_type))
+            args.append(Arg('-v',v_type))
         elif action == "exclude":
             outprefix = outprefix + ".no{0}.".format(v_type)
-            args.append(('-V',v_type))
+            args.append(Arg('-V',v_type))
         if biallelic is True:
             outprefix += "biallelic."
             params.extend(['-m2','-M2'])
         
         if compress is True:
             outprefix += "vcf.gz"
-            args.extend([('-o', outprefix),('-O','z')])
+            args.extend([Arg('-o', outprefix),Arg('-O','z')])
             params.append(self.vcf)
         elif compress is False:
             outprefix += "vcf"
-            args.extend([('-o', outprefix),('-O','v')])
+            args.extend([Arg('-o', outprefix),Arg('-O','v')])
             params.append(self.vcf)
 
         runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=params)
@@ -199,7 +205,7 @@ class BCFTools(object):
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run()
+        stdout=runner.run_checkoutput()
 
         return outprefix
 
@@ -219,13 +225,15 @@ class BCFTools(object):
         '''
         outfile = outprefix + ".onlyvariants.vcf.gz"
 
-        args=[('-o',outfile),('-O','z')]
+        Arg = namedtuple('Argument', 'option value')
+
+        args=[Arg('-o',outfile),Arg('-O','z')]
 
         runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run()
+        stdout=runner.run_checkoutput()
 
         return outfile

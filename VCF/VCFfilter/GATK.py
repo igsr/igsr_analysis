@@ -7,6 +7,7 @@ Created on 27 Feb 2017
 import os
 import subprocess
 from Utils.RunProgram import RunProgram
+from collections import namedtuple
 import json
 import glob
 import ast
@@ -101,9 +102,11 @@ class GATK(object):
         # prepare the prefix used for output files
         outprefix += "_%s" % mode
 
-        args=[('-T', 'VariantRecalibrator'), ('-R', self.reference), ('-input', self.vcf), ('-mode', mode),
-              ('-recalFile', "{0}.recal".format(outprefix)), ('-tranchesFile', "{0}.tranches".format(outprefix)),
-              ('-rscriptFile', "{0}_plots.R".format(outprefix)) ]
+        Arg = namedtuple('Argument', 'option value')
+
+        args=[Arg('-T', 'VariantRecalibrator'), Arg('-R', self.reference), Arg('-input', self.vcf), Arg('-mode', mode),
+              Arg('-recalFile', "{0}.recal".format(outprefix)), Arg('-tranchesFile', "{0}.tranches".format(outprefix)),
+              Arg('-rscriptFile', "{0}_plots.R".format(outprefix)) ]
 
         # Read-in the different resources from the resource JSON file
         resources_str = ""
@@ -112,26 +115,26 @@ class GATK(object):
             data = json.load(data_file)
             bits = data['resources']
             for dummy, dic in enumerate(bits):
-                args.extend([("-resource:%s,known=%s,training=%s,truth=%s,prior=%.1f" % (dic['resource'],str(dic['known']).lower(),str(dic['training']).lower(),str(dic['truth']).lower(),dic['prior']), dic['path'])])
+                args.extend([Arg("-resource:%s,known=%s,training=%s,truth=%s,prior=%.1f" % (dic['resource'],str(dic['known']).lower(),str(dic['training']).lower(),str(dic['truth']).lower(),dic['prior']), dic['path'])])
 
 
         # prepare the -an options
         for elt in annotations:
-            args.append(('-an',elt))
+            args.append(Arg('-an',elt))
 
         # prepare the list of -tranche option
         if type(tranches) == str:
             tranches = ast.literal_eval(tranches)
 
         for elt in tranches:
-            args.append(('-tranche', elt))
+            args.append(Arg('-tranche', elt))
 
         runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run()
+        stdout,stderr=runner.run_popen()
 
         lines=stderr.split("\n")
         p = re.compile('#* ERROR')
@@ -196,25 +199,26 @@ class GATK(object):
             outfile += "%s.recalibrated_snps_raw_indels.vcf" % outprefix
         elif mode == 'INDEL':
             outfile += "%s.recalibrated_variants.vcf" % outprefix
+        
+        Arg = namedtuple('Argument', 'option value')
 
-
-        args=[('-T', 'ApplyRecalibration'), ('-R', self.reference), ('-input', self.vcf), ('-mode', mode),
-              ('--ts_filter_level', ts_filter_level), ('-recalFile', recal_file),
-              ('-tranchesFile', tranches_file) ]
+        args=[Arg('-T', 'ApplyRecalibration'), Arg('-R', self.reference), Arg('-input', self.vcf), Arg('-mode', mode),
+              Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file),
+              Arg('-tranchesFile', tranches_file) ]
 
         compressRunner=None
         if compress is True:
             outfile += ".gz"
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outfile])
         else:
-            args.append(('-o',outfile))
+            args.append(Arg('-o',outfile))
 
         runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, downpipe=[compressRunner])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run()
+        stdout,stderr=runner.run_popen()
 
         lines=stderr.split("\n")
         p = re.compile('#* ERROR')
@@ -227,7 +231,7 @@ class GATK(object):
         # create an index for the recalibrated file
         if compress is True:
             tabixRunner=RunProgram(path=self.tabix_folder,program='tabix',parameters=[outfile])
-            stdout,stderr=tabixRunner.run()
+            stdout,stderr=tabixRunner.run_checkoutput()
 
         return outfile
 
