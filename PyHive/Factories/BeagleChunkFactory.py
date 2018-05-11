@@ -12,13 +12,15 @@ class BeagleChunkFactory(eHive.BaseRunnable):
     
         vcf_i=Beagle(vcf=self.param_required('filepath'), makeBGLCHUNKS_folder=self.param_required('makeBGLCHUNKS_folder'))
 
+        outfile=""
+        if self.param_is_defined('work_dir'):
+            if not os.path.isdir(self.param_required('work_dir')):
+                os.makedirs(self.param_required('work_dir'))
+            outfile+=self.param('work_dir')+"/output.coords"
+
         #delete old Beagle files
         for file in glob.glob("{0}/*beagle*".format(self.param('work_dir'))):
             os.remove(file)
-
-        outfile=""
-        if self.param_is_defined('work_dir'):
-            outfile+=self.param('work_dir')+"/output.coords"
 
         verbose=None
         if self.param_is_defined('verbose'):
