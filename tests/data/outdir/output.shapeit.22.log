@@ -1,7 +1,7 @@
 Mode    : Caller
 Options : --input-gen data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample --input-init data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample --input-scaffold data/SHAPEIT/scaffold.22.phased.haps data/SHAPEIT/scaffold.22.phased.sample --output-max data/outdir/output.shapeit.22.haps.gz data/outdir/output.shapeit.22.haps.sample --output-log data/outdir/output.shapeit.22.log
 Version : v2.r837
-Date    : 11/05/2018 17:53:50
+Date    : 14/05/2018 13:39:04
 
 MODE -call : GENOTYPE CALLING
   * Autosome (chr1 ... chr22)
@@ -11,7 +11,7 @@ MODE -call : GENOTYPE CALLING
   * Scaffold of haplotypes used
 
 Parameters :
-  * Seed : 1526057630
+  * Seed : 1526301544
   * Parallelisation: 1 threads
   * Ref allele is NOT aligned on the reference genome
   * MCMC: 35 iterations [7 B + 1 runs of 8 P + 20 M]
@@ -152,4 +152,4 @@ Writing sample list in [data/outdir/output.shapeit.22.haps.sample]
 
 Writing site list and haplotypes in [data/outdir/output.shapeit.22.haps.gz]
 
-Running time: 7 seconds
+Running time: 8 seconds

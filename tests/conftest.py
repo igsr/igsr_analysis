@@ -18,6 +18,7 @@ def pytest_addoption(parser):
     parser.addoption('--beagle_jar', default='beagle.08Jun17.d8b.jar' ,action='store_true', help='Name of Beagle jar file')
     parser.addoption('--beagle_folder', default='~/bin/beagle/' ,action='store_true', help='Folder with Beagle jar file')
     parser.addoption('--prepareGenFromBeagle4_folder', default='/homes/ernesto/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/prepareGenFromBeagle4/bin/', action='store_true', help='Folder with prepareGenFromBeagle4 binary')
+    parser.addoption('--ligateHAPLOTYPES_folder', default='/homes/ernesto/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/', action='store_true', help='Folder with ligateHAPLOTYPES binary')
     parser.addoption('--shapeit_folder', default='~/bin/shapeit2_v2_12/bin/' ,action='store_true', help='Folder with SHAPEIT binary')
     parser.addoption('--gatk_folder', default='~/bin/GATK/', action='store_true', help='Path to folder containing the GATK jar file')
     parser.addoption('--bgzip_folder', default='/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/', action='store_true', help='Path to folder containing the Bgzip binary')
