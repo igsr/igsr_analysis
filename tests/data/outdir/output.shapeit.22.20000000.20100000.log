@@ -1,7 +1,7 @@
 Mode    : Caller
-Options : --input-gen data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample --input-init data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample --input-scaffold data/SHAPEIT/scaffold.22.phased.haps data/SHAPEIT/scaffold.22.phased.sample --states-random 200 --input-to 20100000 --thread 1 --window 0.1 --input-thr 1.0 --states 400 --input-from 20000000 --output-max data/outdir/output.shapeit.22.20000000.20100000.haps.gz data/outdir/output.shapeit.22.20000000.20100000.haps.sample --output-log data/outdir/output.shapeit.22.20000000.20100000.log
+Options : --input-gen data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample --input-init data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample --input-scaffold data/SHAPEIT/scaffold.22.phased.haps data/SHAPEIT/scaffold.22.phased.sample --input-thr 1.0 --thread 1 --input-to 20100000 --states-random 200 --window 0.1 --input-from 20000000 --states 400 --output-max data/outdir/output.shapeit.22.20000000.20100000.haps.gz data/outdir/output.shapeit.22.20000000.20100000.haps.sample --output-log data/outdir/output.shapeit.22.20000000.20100000.log
 Version : v2.r837
-Date    : 11/05/2018 17:53:57
+Date    : 14/05/2018 13:39:12
 
 MODE -call : GENOTYPE CALLING
   * Autosome (chr1 ... chr22)
@@ -11,7 +11,7 @@ MODE -call : GENOTYPE CALLING
   * Scaffold of haplotypes used
 
 Parameters :
-  * Seed : 1526057637
+  * Seed : 1526301552
   * Input  window: [20000000 -> 20100000[
   * Parallelisation: 1 threads
   * Ref allele is NOT aligned on the reference genome
