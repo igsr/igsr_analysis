@@ -56,7 +56,7 @@ def test_ligate_shapeitchunks():
                                        chunk_str='s2.chunk1.hap.gz s2.chunk1.hap.gz s2.chunk1.hap.gz',
                                        output_prefix='data/outdir/test',verbose=True)
 
-def test_run_shapeit_convert2vcf():
+def test_run_shapeit_convert2vcf(clean_tmp):
 
     shapeit_o=Shapeit(shapeit_folder = pytest.config.getoption("--shapeit_folder"))
 
