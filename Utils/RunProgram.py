@@ -69,6 +69,7 @@ class RunProgram(object):
                     cmd_line+="{0} ".format(param)
                     
             if downpipe is not None:
+                
                 for runO in downpipe:
                     cmd_line+="|{0}".format(runO.cmd_line)
         self.cmd_line=cmd_line

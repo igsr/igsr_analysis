@@ -8,6 +8,7 @@ def pytest_addoption(parser):
     parser.addoption('--vcf_chr20', default='data/test_chr20.vcf.gz' ,action='store_true', help='Path to vcf file used for testing Beagle')
     parser.addoption('--vcf_gts', default='data/GLs.HG00136.vcf.gz' ,action='store_true', help='Path to vcf file with GTs')
     parser.addoption('--vcf_gts_ucsc', default='data/GLs.HG00136.ucsc.vcf.gz' ,action='store_true', help='Path to vcf file with GTs with UCSC-style chro names')
+    parser.addoption('--vt_folder', default='~/bin/vt/' ,action='store_true', help='Path to folder containing vt binary')
     parser.addoption('--chk_indel_folder', default='~/bin/' ,action='store_true', help='Folder with chk_indel_rg binary')
     parser.addoption('--samtools_folder', default='/homes/ernesto/bin/samtools-1.6/bin/', action='store_true', help='Folder with samtools binary')
     parser.addoption('--java_folder', default='/usr/bin/',action='store_true', help='Folder with java binary')
