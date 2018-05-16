@@ -450,7 +450,8 @@ sub pipeline_analyses {
                 'outprefix' => "#out_vcf#.merged.vcf.gz",
                 'bcftools_folder' => $self->o('bcftools_folder'),
                 'verbose' => 'True',
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir'),
+		'threads' => 1
             },
 	    -flow_into => {
 		1 => ['index_vcf4']
