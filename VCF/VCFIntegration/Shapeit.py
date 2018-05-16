@@ -6,6 +6,8 @@ Created on 21 Jul 2017
 import os
 import pdb
 import subprocess
+from Utils.RunProgram import RunProgram
+from collections import namedtuple
 
 class Shapeit(object):
     '''
@@ -60,50 +62,44 @@ class Shapeit(object):
         Returns
         -------
         A dict with the path to the 2 output files (*.haps.gz and *.haps.sample) that can be used with SHAPEIT
-        '''        
+        '''
 
         if input_gen is None and input_bed is None:
             raise Exception("Error! Either --input-gen or --input-bed need to be specified as input for SHAPEIT")
+            
+        Arg = namedtuple('Argument', 'option value')
 
-        command = ""
-
-        if self.shapeit_folder:
-            command += self.shapeit_folder+"/"
-
-        command += "shapeit "
+        args=[]
 
         if input_gen is not None:
-            command += "-call --input-gen {0} ".format(input_gen)
+            args.append(Arg('-call --input-gen',input_gen))
         elif input_bed is not None:
-            command += "--input-bed {0} ".format(input_bed)
+            args.append(Arg('--input-bed',input_bed))
 
         if input_init is not None:
-            command += "--input-init {0} ".format(input_init)
+            args.append(Arg('--input-init',input_init))
 
         if input_scaffold is not None:
-            command += "--input-scaffold {0} ".format(input_scaffold)
+            args.append(Arg('--input-scaffold',input_scaffold))
 
         if input_map is not None:
-            command += "--input-map {0} ".format(input_map)
-
-        command +="--output-max {0}.haps.gz {0}.haps.sample --output-log {0}.log".format(output_prefix)
-
-        if duohmm is True:
-            command += " --duohmm"
-
+            args.append(Arg('--input-map',input_map))
+        
         for k,v in kwargs.items():
-            command += " --{0} {1}".format(k,v)
+            args.append(Arg('--{0}'.format(k),v))
 
-        if verbose==True:
-            print("Command used was: %s" % command)
+        args.extend([Arg('--output-max','{0}.haps.gz {0}.haps.sample'.format(output_prefix)),Arg('--output-log','{0}.log'.format(output_prefix))])
+
+        params=[]
+        if duohmm is True: params=['--duohmm']
+
+        runner=RunProgram(path=self.shapeit_folder, program='shapeit', args=args, parameters=params)
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout=runner.run_checkoutput()
              
-        try:
-            print(command)
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Command used was: {0}".format(command))
-            raise Exception(exc.output)
-
         outdict={ 
             'hap_gz' : '{0}.haps.gz'.format(output_prefix),
             'hap_sample' : '{0}.haps.sample'.format(output_prefix)
@@ -132,25 +128,22 @@ class Shapeit(object):
         -------
         A dict with the path to the 2 output files (*.haps.gz and *.haps.sample)
         '''
+
+        if self.ligateHAPLOTYPES_folder is None:
+            raise Exception("ligateHAPLOTYPES_folder must be defined")
+
+        Arg = namedtuple('Argument', 'option value')
+
+        args=[Arg('--vcf', vcf_f), Arg('--scaffold',scaffolded_samples), 
+               Arg('--chunks',chunk_str), Arg('--output', '{0}.ligated.haps.gz {0}.ligated.haps.sample'.format(output_prefix))]
+
+        runner=RunProgram(path=self.ligateHAPLOTYPES_folder, program='ligateHAPLOTYPES', args=args)
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout=runner.run_checkoutput()
         
-        command = ""
-
-        if self.ligateHAPLOTYPES_folder:
-            command += self.ligateHAPLOTYPES_folder+"/"
-
-        command += "ligateHAPLOTYPES --vcf {0} --scaffold {1} --chunks {2} --output {3}.ligated.haps.gz {3}.ligated.haps.sample".format(vcf_f,
-                                                                                                                                        scaffolded_samples, 
-                                                                                                                                        chunk_str,
-                                                                                                                                        output_prefix)
-        if verbose==True:
-            print("Command used was: %s" % command)
-
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Command used was: {0}".format(command))
-            raise Exception(exc.output)
-
         outdict={
             'hap_gz' : '{0}.ligated.haps.gz'.format(output_prefix),
             'hap_sample' : '{0}.ligated.haps.sample'.format(output_prefix)
@@ -178,42 +171,30 @@ class Shapeit(object):
         A VCF file
         '''
 
-        command = ""
-
-        if self.shapeit_folder:
-            command += self.shapeit_folder+"/"
+        if self.shapeit_folder is None:
+            raise Exception("shapeit_folder must be defined")
 
         outfile="{0}.vcf".format(output_prefix)
 
-        command += "shapeit -convert --input-haps {0}.gz {0}.sample --output-vcf {1}".format(input_prefix, outfile)
+        Arg = namedtuple('Argument', 'option value')
+
+        args=[Arg('--input-haps', '{0}.gz {0}.sample'.format(input_prefix)), Arg('--output-vcf', outfile)]
 
         if logfile is not None:
-            command += " --output-log {0}".format(logfile)
+            args.append(Arg('--output-log', logfile))
 
-        if verbose==True:
-            print("Command used was: %s" % command)
-
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Command used was: {0}".format(command))
-            raise Exception(exc.output)
-
+        compressRunner=None
         if compress is True:
-            bgzip_path = ""
-            if self.bgzip_folder:
-                bgzip_path = "{0}/bgzip".format(self.bgzip_folder)
-            else:
-                bgzip_path = "bgzip"
-            compress_cmd="{0} -c {1} > {1}.gz".format(bgzip_path, outfile)
-            
-            try:
-                subprocess.check_output(compress_cmd, shell=True)
-            except subprocess.CalledProcessError as exc:
-                print("Command used was: {0}".format(compress_cmd))
-                raise Exception(exc.output)
-            
+            runner=RunProgram(path=self.shapeit_folder,program='shapeit -convert', args=args)
+            if verbose is True: print("Command line is: {0}".format(runner.cmd_line))
+            runner.run_checkoutput()
+            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', outfile, '>', outfile+".gz"])
+            compressRunner.run_checkoutput()
             os.remove(outfile)
-            outfile = outfile+".gz"
+            outfile =outfile+".gz"
+        else:
+            runner=RunProgram(path=self.shapeit_folder,program='shapeit -convert', args=arguments)
+            if verbose is True: print("Command line is: {0}".format(runner.cmd_line))
+            runner.run_checkoutput()
 
         return outfile

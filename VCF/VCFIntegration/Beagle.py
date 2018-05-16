@@ -6,6 +6,8 @@ Created on 21 Jul 2017
 import os
 import pdb
 import subprocess
+from Utils.RunProgram import RunProgram
+from collections import namedtuple
 import tempfile
 import re
 
@@ -14,7 +16,7 @@ class Beagle(object):
     Class to operate on a VCF file and run Beagle and other Beagle-related operations on it
     '''
 
-    def __init__(self, vcf, beagle_folder=None, makeBGLCHUNKS_folder=None, prepareGenFromBeagle4_folder=None):
+    def __init__(self, vcf, beagle_folder=None, beagle_jar=None, makeBGLCHUNKS_folder=None, prepareGenFromBeagle4_folder=None):
         '''
         Constructor
 
@@ -24,6 +26,8 @@ class Beagle(object):
              Path to vcf file
         beagle_folder : str, Optional
                         Path to folder containing Beagle's jar file
+        beagle_jar : str, Optional
+                     Name of Beagle jar file. i.e. beagle.08Jun17.d8b.jar 
         makeBGLCHUNKS_folder : str, Optional
                                Path to folder containing makeBGLCHUNKS binary
                                (see https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#gettingstarted)
@@ -36,6 +40,7 @@ class Beagle(object):
 
         self.vcf = vcf
         self.beagle_folder = beagle_folder
+        self.beagle_jar = beagle_jar
         self.makeBGLCHUNKS_folder = makeBGLCHUNKS_folder
         self.prepareGenFromBeagle4_folder = prepareGenFromBeagle4_folder
 
@@ -76,9 +81,11 @@ class Beagle(object):
         Compressed VCF file with the genotype calls
         '''
 
-        program_folder = ""
-        if self.beagle_folder:
-            program_folder += self.beagle_folder + "/"
+        if self.beagle_jar is None:
+            raise Exception("Provide the Beagle jar file name for this object instance")
+
+        Arg = namedtuple('Argument', 'option value')
+        args=[]
 
         outfile=""
         if outdir is not None:
@@ -89,48 +96,44 @@ class Beagle(object):
         if region is not None:
             region_str=re.sub(":|-",".",region)
             outfile+="{0}.".format(region_str)
+            args.append(Arg('chrom',region))
 
         outfile+="beagle"
 
-        command = "java -jar {0}/beagle.08Jun17.d8b.jar gl={1} out={2}".format(program_folder,
-                                                                               self.vcf,
-                                                                               outfile)
-
-        if region is not None:
-            command += " chrom={0}".format(region)
+        args.extend([Arg('gl',self.vcf), Arg('out',outfile)])
 
         for k,v in kwargs.items():
-            command += " {0}={1}".format(k,v)
-            
-        if verbose==True:
-            print("Command used was: %s" % command)
+            args.append(Arg(k,v))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Something went wrong while running Beagle\n"
-                  "Command used was: %s" % command)
-            raise Exception(exc.output)
-            
+        runner=RunProgram(program='java -jar {0}/{1}'.format(self.beagle_folder,self.beagle_jar), args=args, arg_sep="=")
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout=runner.run_checkoutput()
+
         outfile=outfile+".vcf.gz"
 
         if correct is True:
             # creating temp file in order to perform the correction
             temp = tempfile.NamedTemporaryFile(delete=False)
-            try:
-                correct_cmd1= "zcat {0} |gzip -c > {1} ".format(outfile,temp.name)
-                print("correct_cmd1: {0}".format(correct_cmd1))
-                subprocess.check_output(correct_cmd1, shell=True)
-                correct_cmd2= "mv {0} {1}".format(temp.name,outfile)
-                print("correct_cmd2: {0}".format(correct_cmd2))
-                subprocess.check_output(correct_cmd2, shell=True)
-            except subprocess.CalledProcessError as exc:
-                print("Something went wrong while performing the segfault correction\n")
-                raise Exception(exc.output)
-            finally:
-                # Automatically cleans up the file
-                temp.close()
+            gzipRunner=RunProgram(program='gzip', parameters=['-c','>',temp.name])
+            zcatRunner=RunProgram(program='zcat',parameters=[outfile],downpipe=[gzipRunner])
 
+            if verbose is True:
+                print("Command line for vcf.gz correction partA is: {0}".format(zcatRunner.cmd_line))
+            
+            #run zcat file | gzip -c > tmp.file 
+            zcatRunner.run_checkoutput()
+
+            #mv tmp.file back to outfile
+            mvRunner=RunProgram(program='mv', parameters=[temp.name,outfile])
+
+            if verbose is True:
+                print("Command line for vcf.gz correction partB is: {0}".format(mvRunner.cmd_line))
+
+            mvRunner.run_checkoutput()
+            
         return outfile
 
     def make_beagle_chunks(self,window,overlap,outfile,verbose=False):
@@ -155,29 +158,20 @@ class Beagle(object):
 
         '''
 
-        program_folder = ""
-        if self.makeBGLCHUNKS_folder:
-            program_folder += self.makeBGLCHUNKS_folder + "/"
+        if self.makeBGLCHUNKS_folder is None:
+            raise Exception("Provide the folder for the makeBGLCHUNKS binary")
 
-        command = "{0}/makeBGLCHUNKS --vcf {1} --window {2} --overlap {3} --output {4}".format(program_folder,
-                                                                                                self.vcf,
-                                                                                                window,
-                                                                                                overlap,
-                                                                                                outfile)
-        
-        if verbose==True:
-            print("Command used was: %s" % command)
+        Arg = namedtuple('Argument', 'option value')
 
-        try:
-            subprocess.check_output(command, shell=True)
-            if os.path.isfile(outfile) == False:
-                print("Error. Something went wrong while running command: {0}".format(command))
-                raise Exception("File cound not be created")
-        except subprocess.CalledProcessError as exc:
-            print("Something went wrong while running makeBGLCHUNKS\n"
-                  "Command used was: %s" % command)
-            raise Exception(exc.output)
+        args=[Arg('--vcf',self.vcf), Arg('--window',window), Arg('--overlap',overlap), Arg('--output',outfile)]
+
+        runner=RunProgram(path="{0}/".format(self.makeBGLCHUNKS_folder), program='makeBGLCHUNKS', args=args)
         
+        if verbose is True:
+             print("Command line for running makeBGLCHUNKS is: {0}".format(runner.cmd_line))
+
+        runner.run_checkoutput()
+            
         return outfile
 
     def prepare_Gen_From_Beagle4(self,prefix_in,outprefix,threshold=0.995,verbose=False):
@@ -210,32 +204,21 @@ class Beagle(object):
         
         '''
 
-        program_folder = ""
-        if self.prepareGenFromBeagle4_folder:
-            program_folder += self.prepareGenFromBeagle4_folder + "/"
+        if self.prepareGenFromBeagle4_folder is None:
+            raise Exception("Provide the folder for the prepareGenFromBeagle4 binary")
 
         posteriors="{0}*.vcf.gz".format(prefix_in)
 
-        command = "{0}/prepareGenFromBeagle4 --likelihoods {1} --posteriors {2} --output {3}".format(program_folder,
-                                                                                                     self.vcf,
-                                                                                                     posteriors,
-                                                                                                     outprefix)
+        Arg = namedtuple('Argument', 'option value')
 
- #       command = "{0}/prepareGenFromBeagle4 --likelihoods {1} --posteriors {2} --threshold {3} --output {4}".format(program_folder,
- #                                                                                                                    self.vcf,
- #                                                                                                                    posteriors,
- #                                                                                                                    threshold,
- #                                                                                                                    outprefix)
-    
-        if verbose==True:
-            print("Command used was: %s" % command)
+        args=[Arg('--likelihoods',self.vcf), Arg('--posteriors',posteriors), Arg('--output',outprefix)]
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Something went wrong while running prepareGenFromBeagle4\n"
-                  "Command used was: %s" % command)
-            raise Exception(exc.output)
+        runner=RunProgram(path="{0}/".format(self.prepareGenFromBeagle4_folder), program='prepareGenFromBeagle4', args=args)
+
+        if verbose is True:
+             print("Command line for running prepareGenFromBeagle4 is: {0}".format(runner.cmd_line))
+
+        runner.run_checkoutput()
 
         outdict={ 'gen_gz' :'{0}.gen.gz'.format(outprefix),
                   'gen_sample' : '{0}.gen.sample'.format(outprefix),

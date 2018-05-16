@@ -44,6 +44,18 @@ def test_run_shapeit_w_options():
                           **options)
     assert os.path.exists('data/outdir/output.shapeit.22.20000000.20100000.haps.gz')
 
+def test_ligate_shapeitchunks():
+    '''
+    Test method to run ligateHAPLOTYPES. This test throw an error because scaffolded_samples, chunk_str  are ficticious
+    '''
+
+    shapeit_o=Shapeit(ligateHAPLOTYPES_folder = pytest.config.getoption("--ligateHAPLOTYPES_folder"))
+
+    with pytest.raises(Exception):
+        shapeit_o.ligate_shapeitchunks(vcf_f='data/test1.vcf.gz',scaffolded_samples='test.samples',
+                                       chunk_str='s2.chunk1.hap.gz s2.chunk1.hap.gz s2.chunk1.hap.gz',
+                                       output_prefix='data/outdir/test',verbose=True)
+
 def test_run_shapeit_convert2vcf(clean_tmp):
 
     shapeit_o=Shapeit(shapeit_folder = pytest.config.getoption("--shapeit_folder"))

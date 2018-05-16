@@ -11,7 +11,9 @@ def vcf_object(scope='module'):
     print("Creating the object\n")
     vcf_file = pytest.config.getoption("--vcf")
     beagle_folder = pytest.config.getoption("--beagle_folder")
-    vcf_object=Beagle(vcf=vcf_file, beagle_folder=beagle_folder)
+    beagle_jar = pytest.config.getoption("--beagle_jar")
+    vcf_object=Beagle(vcf=vcf_file, beagle_jar=beagle_jar, 
+                      beagle_folder=beagle_folder)
     return vcf_object
 
 @pytest.fixture
@@ -23,13 +25,13 @@ def clean_tmp():
         os.remove(f)
 
 def test_run_beagle(vcf_object):
-    vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000",
-                          outdir="data/outdir/",
-                          window=12000,
-                          overlap=2000,
-                          niterations=15,
-                          verbose=True)
-    assert os.path.exists("data/outdir/NA12878_chr1_1000000_1001000.beagle.vcf.gz")
+    outfile=vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000",
+                                  outdir="data/outdir/",
+                                  window=12000,
+                                  overlap=2000,
+                                  niterations=15,
+                                  verbose=True)
+    assert os.path.exists(outfile)
 
 def test_run_beagle_multithreaded(vcf_object):
     vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000_mts",
@@ -51,7 +53,8 @@ def test_run_beagle_with_region_correct():
     Run Beagle on all chunks created in the previous test
     '''
     vcf_object=Beagle(vcf="data/BEAGLE/GLs.HG00136.vcf.gz",
-                      beagle_folder=pytest.config.getoption("--beagle_folder"))
+                      beagle_folder=pytest.config.getoption("--beagle_folder"),
+                      beagle_jar=pytest.config.getoption("--beagle_jar"))
 
     with open('data/outdir/chunks.coords') as f:
         for line in f:
@@ -64,7 +67,7 @@ def test_run_beagle_with_region_correct():
                                              outdir="data/outdir/",
                                              correct=True,
                                              verbose=True)
-    assert os.path.exists("data/outdir/GLs.HG00136.correct.22.20000085.20064615.beagle.vcf.gz")
+    assert os.path.exists(beagle_out)
 
 def test_prepareGenFromBeagle4(clean_tmp):
     vcf_object=Beagle(vcf="data/GLs.HG00136.vcf.gz",
@@ -76,5 +79,4 @@ def test_prepareGenFromBeagle4(clean_tmp):
     assert os.path.exists(outdict['gen_sample'])
     assert os.path.exists(outdict['hap_gz'])
     assert os.path.exists(outdict['hap_sample'])
-
 
