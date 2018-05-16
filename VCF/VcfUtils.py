@@ -9,6 +9,8 @@ import subprocess
 import pdb
 import gzip
 import re
+from Utils.RunProgram import RunProgram
+from collections import namedtuple
 
 class VcfUtils(object):
     '''
@@ -372,6 +374,14 @@ class VcfUtils(object):
         
         Parameters
         ----------
+        outfile : string, required
+                  File where the output VCF will be written
+        verbose : bool, optional
+                  increase the verbosity, default=False
+
+        Returns
+        -------
+        Path to the vcf.gz file with the PL fields converted
         
         '''
         command = ""
@@ -392,4 +402,5 @@ class VcfUtils(object):
 
         return outfile
 
+        
         
