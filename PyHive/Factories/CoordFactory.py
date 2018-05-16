@@ -1,6 +1,7 @@
 import eHive
 import pdb
 import ast
+import os
 from BEDTools import BEDTools
 
 class CoordFactory(eHive.BaseRunnable):
@@ -54,7 +55,19 @@ class CoordFactory(eHive.BaseRunnable):
                     })
             ix+=1
 
-        if len(c)!=len(chunks): raise Exception("Incorrect number of chunks after processing")
+        if len(coord_list)!=len(chunks): raise Exception("Incorrect number of chunks after processing")
+
+        #write chunks to log file
+        if not os.path.isdir(self.param_required('log_dir')):
+            os.makedirs(self.param_required('log_dir'))
+
+        logfile_url="{0}/coordfactory.log".format(self.param_required('log_dir'))
+
+        logf=open(logfile_url,'w')
+        logf.write("#ix chunk\n")
+        for c in chunks:
+            logf.write("{0} {1}\n".format(c['ix'],c['chunk']))
+        logf.close
 
         self.param('chunks', chunks)
        

@@ -1,1 +1,7 @@
-{}
+{
+  "test_pyhive_Factories.py::test_BeagleChunkFactory": true,
+  "test_pyhive_Factories.py::test_bedtools_make_windows": true,
+  "test_pyhive_Factories.py::test_bedtools_make_windows_w_chrom": true,
+  "test_pyhive_Factories.py::test_bedtools_make_windows_w_subtract": true,
+  "test_pyhive_Factories.py::test_chrfactory": true
+}
