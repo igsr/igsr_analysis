@@ -13,6 +13,7 @@ class VcfConcat(eHive.BaseRunnable):
         return ''.join(random.choice(chars) for x in range(size))
   
     def run(self):
+
         all_ixs = self.param_required('allixs')
         all_files = self.param_required('allchunks_files')
 
@@ -24,6 +25,11 @@ class VcfConcat(eHive.BaseRunnable):
 
         d = dict(zip(all_ixs, all_files))
 
+        for k in d.keys():
+            print("{0} {1}".format(k,d[k]))
+
+        exit()
+
         """Create tmp file for files to concat"""
         concat_file="%s/concat%s.txt"% (self.param_required('work_dir'),self.random_generator())
 
@@ -32,7 +38,11 @@ class VcfConcat(eHive.BaseRunnable):
             f.write(d[ix]+"\n")
         f.close()    
 
-        command="{0}/bcftools concat -f {1} ".format(self.param_required('bcftools_folder'),concat_file)
+        nt=1 #number of threads
+        if self.param_is_defined('threads'):
+            nt=self.param('threads')
+
+        command="{0}/bcftools concat -f {1} --threads {2} ".format(self.param_required('bcftools_folder'),concat_file,nt)
         command= command+"-o {0} -O z".format(outprefix)
 
         if self.param('verbose')=="True":

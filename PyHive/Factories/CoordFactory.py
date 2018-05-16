@@ -54,6 +54,8 @@ class CoordFactory(eHive.BaseRunnable):
                     })
             ix+=1
 
+        if len(c)!=len(chunks): raise Exception("Incorrect number of chunks after processing")
+
         self.param('chunks', chunks)
        
     def write_output(self):
