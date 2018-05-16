@@ -20,15 +20,22 @@ class VcfConcat(eHive.BaseRunnable):
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
 
+        #log file
+        if not os.path.isdir(self.param_required('log_dir')):
+            os.makedirs(self.param_required('log_dir'))
+
         outprefix=os.path.split(self.param_required('outprefix'))[1]
         outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
 
         d = dict(zip(all_ixs, all_files))
 
+        #write to log file
+        logfile_url="{0}/merge_vcf.log".format(self.param_required('log_dir'))
+        logf=open(logfile_url,'w')
+        logf.write("#ix chunk\n")
         for k in d.keys():
-            print("{0} {1}".format(k,d[k]))
-
-        exit()
+            logf.write("{0} {1}\n".format(k,d[k]))
+        logf.close
 
         """Create tmp file for files to concat"""
         concat_file="%s/concat%s.txt"% (self.param_required('work_dir'),self.random_generator())

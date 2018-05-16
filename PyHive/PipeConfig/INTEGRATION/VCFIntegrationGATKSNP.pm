@@ -21,6 +21,7 @@ sub default_options {
         'pwd' => undef,
         'work_dir'    => undef,
         'final_dir' => undef,
+	'log_dir' => undef,
 	'faix' => undef,
 	'newheader' => undef,
 	'filelist' => undef, # List of Bamfiles used for BAM Transposition. If more than one file then the transposition will be done in different runs
@@ -293,6 +294,7 @@ sub pipeline_analyses {
                 'bedtools_folder' => $self->o('bedtools_folder'),
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
+		'log_dir' => $self->o('log_dir'),
 #		'chunk_ixs' => '[223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260]',
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
@@ -453,6 +455,7 @@ sub pipeline_analyses {
                 'outprefix' => "#out_vcf#.merged.vcf.gz",
                 'bcftools_folder' => $self->o('bcftools_folder'),
                 'verbose' => 'True',
+		'log_dir' => $self->o('log_dir'),
 		'threads' => 1,
                 'work_dir' => $self->o('work_dir')
             },
