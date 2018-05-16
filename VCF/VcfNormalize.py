@@ -7,6 +7,9 @@ Created on 31 Mar 2017
 import pdb
 import os
 import subprocess
+import re
+from Utils.RunProgram import RunProgram
+from collections import namedtuple
 
 class VcfNormalize(object):
     '''
@@ -45,7 +48,7 @@ class VcfNormalize(object):
         self.gatk_folder = gatk_folder
         self.bcftools_folder = bcftools_folder
 
-    def run_vtnormalize(self, outprefix, reference, compress=False, outdir=None):
+    def run_vtnormalize(self,outprefix,reference,compress=False, verbose=False, outdir=None, n=False):
         '''
         Run vt normalize on a vcf file
 
@@ -59,44 +62,51 @@ class VcfNormalize(object):
               bgzip compress the normalized VCF
         outdir : str, optional
             If provided, then put output files in this folder
+        n : bool, optional
+            warns but does not exit when REF is inconsistent
+            with reference sequence for non SNPs. Default=False
+        verbose : bool, optional
+                  if true, then increase verbosity
 
         Returns
         -------
         A string with path to normalized file
         '''
+        
+        if self.vt_folder is None:
+            raise Exception("Provide a vt_folder containing the vt binary")
 
-        command = ""
-        if self.vt_folder:
-            command += self.vt_folder+"/"
+        Arg = namedtuple('Argument', 'option value')
 
         if outdir:
             outprefix = "{0}/{1}".format(outdir, outprefix)
 
         outprefix = outprefix+".norm.vcf"
 
+        args=[Arg('-r',reference)]
+
+        parameters=[self.vcf]
+        if n is True:
+            parameters.append('-n')
+
+        runner=None
+        compressRunner=None
         if compress is True:
-            outprefix = outprefix+".gz"
-            bgzip_path = ""
-            if self.bgzip_folder:
-                bgzip_path = "{0}/bgzip".format(self.bgzip_folder)
-            else:
-                bgzip_path = "bgzip"
-
-            command += "vt normalize -m -r {0} {1}  | {2} -c > {3} ".\
-            format(reference, self.vcf, bgzip_path, outprefix)
-
+            outprefix += ".gz"
+            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
+            runner=RunProgram(path=self.vt_folder, program='vt normalize', args=args, parameters=parameters, downpipe=[compressRunner])
         elif compress is None or compress is False:
-            command += "vt normalize -m -r {0} -o {1} {2}".format(reference, outprefix, self.vcf)
+            args.append(Arg('-o',outprefix))
+            runner=RunProgram(path=self.vt_folder, program='vt normalize', args=args, parameters=parameters)
 
-        try:
-            subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print(exc.output)
-            print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
+        if verbose is True:
+             print("Command line for running vt normalize is: {0}".format(runner.cmd_line))
 
+        runner.run_checkoutput()
+        
         return outprefix
 
-    def run_bcftoolsnorm(self, outprefix, reference, multiallelics=None, type=None, outdir=None):
+    def run_bcftoolsnorm(self, outprefix, reference, multiallelics=None, type=None, outdir=None,verbose=False):
         '''
         Run bcftools norm on a vcf file
 
@@ -114,42 +124,45 @@ class VcfNormalize(object):
               Possible values are: snps|indels|both|any
         outdir : str, optional
             If provided, then put output files in this folder
+        verbose : bool, optional
+                  if true, then increase verbosity
 
         Returns
         -------
         A string with path to normalized file
         '''
 
-        command = ""
-        if self.bcftools_folder:
-            command += self.bcftools_folder+"/"
-
         if outdir:
             outprefix = "{0}/{1}".format(outdir, outprefix)
 
         outprefix = outprefix+".norm.vcf.gz"
 
-        command += "bcftools norm -f {0}".format(reference)
+        Arg = namedtuple('Argument', 'option value')
+        
+        args=[Arg('-f',reference), Arg('-o',outprefix)]
 
         if multiallelics == "split":
-            command += " -m '-{0}' ".format(type)
+            if type is None: raise Exception("'multiallelics' option is defined, so please provide a 'type' value")
+            args.append(Arg('-m',"\'-{0}\'".format(type)))
         elif multiallelics == "merge":
-            command += " -m '+{0}' ".format(type)
+            if type is None: raise Exception("'multiallelics' option is defined, so please provide a 'type' value")
+            args.append(Arg('-m',"\'+{0}\'".format(type)))
         else:
-            raise Exception("'multiallelics' value is not recognized: {0}".format(multiallelics))
+            if multiallelics is not None: raise Exception("'multiallelics' value is not recognized: {0}".format(multiallelics))
             
-        command += "{0} -o {1} -Oz".format(self.vcf, outprefix)
+        parameters=[self.vcf,'-Oz']
 
-        try:
-            subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print(exc.output)
-            print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools norm', args=args, parameters=parameters)
+
+        if verbose is True:
+             print("Command line for running bcftools norm is: {0}".format(runner.cmd_line))
+
+        runner.run_checkoutput()
 
         return outprefix
 
     def run_vcfallelicprimitives(self, outprefix, compress=False, outdir=None,
-                                 keepinfo=True, keepgeno=True, downstream_pipe=None):
+                                 keepinfo=True, keepgeno=True, downstream_pipe=None, verbose=None):
         '''
         Run vcfallelicprimitives on a vcf file
 
@@ -176,56 +189,49 @@ class VcfNormalize(object):
         downstream_pipe : str, optional
             If defined, then pipe the output VCF to other tools. 
             i.e. "~/bin/vt/vt sort - | ~/bin/vt/vt uniq -"
+        verbose : bool, optional
+            if true, then increase verbosity
 
         Returns
         -------
         A string with path to decomposed file
         '''
 
-        command = ""
-        if self.vcflib_folder:
-            command += self.vcflib_folder+"/"
-
         if outdir: 
             outprefix = "{0}/{1}".format(outdir, outprefix)
 
         outprefix = outprefix+".aprimitives.vcf"
 
-        command += "vcfallelicprimitives {0} ".format(self.vcf)
+        params=[self.vcf]
 
         if keepinfo is True:
-            command += "--keep-info "
+            params.append('--keep-info')
 
         if keepgeno is True:
-            command += "--keep-geno "
-        
+            params.append('--keep-geno')
+
         if downstream_pipe is not None:
-            command += "| {0}".format(downstream_pipe) 
+            params.append("| {0}".format(downstream_pipe))
 
+        runner=None
+        compressRunner=None
         if compress is True:
-            outprefix = outprefix+".gz"
-            bgzip_path = ""
-            if self.bgzip_folder:
-                bgzip_path = "{0}/bgzip".format(self.bgzip_folder)
-            else:
-                bgzip_path = "bgzip"
-
-            command += "| {0} -c > {1} ".format(bgzip_path, outprefix)
-
+            outprefix += ".gz"
+            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
+            runner=RunProgram(path=self.vcflib_folder, program='vcfallelicprimitives', parameters=params, downpipe=[compressRunner])
         elif compress is None or compress is False:
-            command += " > {0}".format(outprefix)
+            params.extend(['>',outprefix])
+            runner=RunProgram(path=self.vcflib_folder, program='vcfallelicprimitives', parameters=params)
 
-        try:
-            print(command)
-            subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print(exc.output)
-            print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
+        if verbose is True:
+             print("Command line for running vcfallelicprimitives is: {0}".format(runner.cmd_line))
+
+        runner.run_checkoutput()
 
         return outprefix
 
     def run_gatk_VariantsToAllelicPrimitives(self, outprefix, reference,
-                                             outdir=None, compress=None):
+                                             outdir=None, compress=None, verbose=None):
         '''
         Run GATK VariantsToAllelicPrimitives in order to decompose MNPs
          into more basic/primitive alleles
@@ -241,6 +247,8 @@ class VcfNormalize(object):
                    If provided, then put output files in this folder
         compress : boolean, optional
                    bgzip compress the normalized VCF
+        verbose : bool, optional
+                  if true, then increase verbosity
 
         Returns
         -------
@@ -257,38 +265,32 @@ class VcfNormalize(object):
 
         outprefix = outprefix+".aprimitives.vcf"
 
-        command = "java -jar {0}/GenomeAnalysisTK.jar -T VariantsToAllelicPrimitives -R {1} -V {2}"\
-        " -o {3}".format(self.gatk_folder, reference, self.vcf, outprefix)
+        Arg = namedtuple('Argument', 'option value')
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print(exc.output)
-            print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
+        args=[Arg('-T','VariantsToAllelicPrimitives'), Arg('-R',reference),
+              Arg('-V',self.vcf), Arg('-o',outprefix) ]
+        
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args)
 
-        if compress == 'True':
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
 
-            bgzip_path = ""
-            if self.bgzip_folder:
-                bgzip_path = "{0}/bgzip".format(self.bgzip_folder)
-            else:
-                bgzip_path = "bgzip"
+        stdout,stderr=runner.run_popen()
 
-            command = "{0} -c {1} > {1}.gz ".format(bgzip_path, outprefix)
+        lines=stderr.split("\n")
+        p = re.compile('#* ERROR')
+        for i in lines:
+            m = p.match(i)
+            if m:
+                print("Something went wrong while running GATK VariantsToAllelicPrimitives. This was the error message: {0}".format(stderr))
+                raise Exception()
 
-            try:
-                subprocess.check_output(command, shell=True)
-            except subprocess.CalledProcessError as exc:
-                print(exc.output)
-                print('ERROR RUNNING COMMAND: {0} '.format(exc.cmd))
-
+        if compress is True:
+            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', outprefix, '>', outprefix+".gz"])
+            compressRunner.run_checkoutput()
             #delete tmp files
             os.remove(outprefix)
             os.remove(outprefix+".idx")
             outprefix += ".gz"
-            return outprefix
-
-        elif compress == 'False' or compress is None:
-            return outprefix
-        else:
-            raise Exception("Compress option: {0} is not recognized".format(compress))
+        
+        return outprefix    

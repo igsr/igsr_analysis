@@ -7,6 +7,10 @@ Created on 13 Feb 2017
 import os
 import subprocess
 import tempfile
+import pdb
+
+from Utils.RunProgram import RunProgram
+from collections import namedtuple
 
 class VcfQC(object):
     '''
@@ -54,7 +58,7 @@ class VcfQC(object):
         self.tabix_folder = tabix_folder
 
     def calc_concordance(self, truth_vcf, truth_sample, call_sample, outprefix,
-                         outdir=None, intervals=None):
+                         outdir=None, intervals=None, verbose=None):
         '''
         Method to calculate the genotype concordance between VcfQC.vcf and Truth VCF.
         It will run Picard's GenotypeConcordance
@@ -74,6 +78,8 @@ class VcfQC(object):
         intervals : str, Required
                     One or more interval list files that will be used to limit the
                     genotype concordance
+        verbose : bool, optional
+                  if true, then print the command line used for running this program
 
         Returns
         -------
@@ -81,25 +87,27 @@ class VcfQC(object):
 
         '''
 
+        if self.picard_folder is None:
+            raise Exception("Folder containing Picard jar file is required")
+
         if outdir:
             outprefix = "%s/%s" % (outdir, outprefix)
 
-        command = "java -jar "
-        if self.picard_folder:
-            command += self.picard_folder+"/"
+        Arg = namedtuple('Argument', 'option value')
 
-        command += "picard.jar GenotypeConcordance TRUTH_VCF={0} CALL_VCF={1} "\
-        "TRUTH_SAMPLE={2} CALL_SAMPLE={3} O={4}".format(truth_vcf, self.vcf,
-                                                        truth_sample, call_sample, outprefix)
+        args=[Arg('TRUTH_VCF',truth_vcf), Arg('CALL_VCF',self.vcf), Arg('TRUTH_SAMPLE',truth_sample), 
+              Arg('CALL_SAMPLE',call_sample), Arg('O',outprefix)] 
 
         if intervals:
-            command += " INTERVALS={0}".format(intervals)
+            args.append(Arg('INTERVALS',intervals))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            raise Exception(exc.output)
+        runner=RunProgram(program='java -jar {0}/picard.jar GenotypeConcordance'.format(self.picard_folder), args=args, arg_sep='=')
 
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout=runner.run_checkoutput()
+        
         gtp_con = GTPconcordance(summary_metrics_file=outprefix+\
                                  ".genotype_concordance_summary_metrics")
 
