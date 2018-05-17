@@ -148,7 +148,7 @@ sub pipeline_analyses {
                 'type' => 'both',
                 'outprefix' => $self->o('outprefix'),
                 'reference' => $self->o('reference'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '500Mb',
 	    -flow_into => {
@@ -162,7 +162,7 @@ sub pipeline_analyses {
             -parameters => {
                 'filepath' => '#out_vcf#',
                 'tabix_folder' => $self->o('tabix_folder'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '500Mb',
 	    -flow_into => {
@@ -179,7 +179,7 @@ sub pipeline_analyses {
                 'downstream_pipe' => '~/bin/vt/vt sort - | ~/bin/vt/vt uniq -',
                 'bgzip_folder' => $self->o('bgzip_folder'),
                 'vcflib_folder' => $self->o('vcflib_folder'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '5Gb',
 	    -analysis_capacity => 1,
@@ -198,7 +198,7 @@ sub pipeline_analyses {
                 'type' => 'both',
                 'outprefix' => $self->o('outprefix'),
                 'reference' => $self->o('reference'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '1Gb',
 	    -flow_into => {
@@ -215,7 +215,7 @@ sub pipeline_analyses {
                 'compress' => 'True',
                 'type' => 'indels',
                 'biallelic' => 'True',
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '2Gb',
 	    -flow_into => {
@@ -229,7 +229,7 @@ sub pipeline_analyses {
             -parameters => {
                 'filepath' => '#out_vcf#',
                 'tabix_folder' => $self->o('tabix_folder'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '500Mb',
 	    -flow_into => {
