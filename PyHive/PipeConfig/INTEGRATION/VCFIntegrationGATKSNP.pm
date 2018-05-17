@@ -152,7 +152,7 @@ sub pipeline_analyses {
                 'type' => 'both',
                 'outprefix' => $self->o('outprefix'),
                 'reference' => $self->o('reference'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '500Mb',
 	    -flow_into => {
@@ -166,7 +166,7 @@ sub pipeline_analyses {
             -parameters => {
                 'filepath' => '#out_vcf#',
                 'tabix_folder' => $self->o('tabix_folder'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '500Mb',
 	    -flow_into => {
@@ -183,12 +183,13 @@ sub pipeline_analyses {
                 'downstream_pipe' => '~/bin/vt/vt sort - | ~/bin/vt/vt uniq -',
                 'bgzip_folder' => $self->o('bgzip_folder'),
                 'vcflib_folder' => $self->o('vcflib_folder'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '2Gb',
 	    -flow_into => {
                 1 => ['mergemultiallelic']
-	    }
+	    },
+	    -analysis_capacity => 1
         },
 
         {   -logic_name => 'mergemultiallelic',
@@ -201,7 +202,7 @@ sub pipeline_analyses {
                 'type' => 'both',
                 'outprefix' => $self->o('outprefix'),
                 'reference' => $self->o('reference'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '500Mb',
 	    -flow_into => {
@@ -218,7 +219,7 @@ sub pipeline_analyses {
                 'compress' => 'True',
                 'type' => 'snps',
                 'biallelic' => 'True',
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '500Mb',
 	    -flow_into => {
@@ -232,7 +233,7 @@ sub pipeline_analyses {
             -parameters => {
                 'filepath' => '#out_vcf#',
                 'tabix_folder' => $self->o('tabix_folder'),
-                'work_dir' => $self->o('work_dir')
+                'work_dir' => $self->o('work_dir')."/normalization"
             },
             -rc_name => '500Mb',
 	    -flow_into => {
@@ -456,7 +457,7 @@ sub pipeline_analyses {
                 'bcftools_folder' => $self->o('bcftools_folder'),
                 'verbose' => 'True',
 		'log_dir' => $self->o('log_dir'),
-		'threads' => 1,
+		'threads' => 5,
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
