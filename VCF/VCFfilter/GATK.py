@@ -12,6 +12,7 @@ import json
 import glob
 import ast
 import pdb
+import re
 
 class GATK(object):
     '''
@@ -164,7 +165,7 @@ class GATK(object):
             }
 
     def run_applyrecalibration(self, mode, recal_file, tranches_file, outprefix,
-                               ts_filter_level=99.0, compress=True, verbose=None):
+                               ts_filter_level=99.0, num_threads=1, compress=True, verbose=None):
         '''
         Run GATK's ApplyRecalibration on a VcfFilter object
 
@@ -180,6 +181,8 @@ class GATK(object):
                     Prefix used for the output
         ts_filter_level : float, Optional
                           The truth sensitivity level at which to start filtering. Default=99.0
+        num_threads : int, Optional
+                   Number of data threads to allocate to this analysis. Default=1
         compress : boolean, Default= True
                    Compress the recalibrated VCF
         verbose : bool, Optional
@@ -203,7 +206,7 @@ class GATK(object):
         Arg = namedtuple('Argument', 'option value')
 
         args=[Arg('-T', 'ApplyRecalibration'), Arg('-R', self.reference), Arg('-input', self.vcf), Arg('-mode', mode),
-              Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file),
+              Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file), Arg('--num_threads', num_threads),
               Arg('-tranchesFile', tranches_file) ]
 
         compressRunner=None
@@ -231,7 +234,7 @@ class GATK(object):
         # create an index for the recalibrated file
         if compress is True:
             tabixRunner=RunProgram(path=self.tabix_folder,program='tabix',parameters=[outfile])
-            stdout,stderr=tabixRunner.run_checkoutput()
+            stdout=tabixRunner.run_checkoutput()
 
         return outfile
 
