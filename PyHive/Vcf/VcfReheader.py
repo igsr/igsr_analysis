@@ -43,11 +43,7 @@ class VcfReheader(eHive.BaseRunnable):
             outfile=vcf_object.reheader(newheader=self.param_required('newheader'), samplefile=self.param('samplefile'),
                                         outprefix=outprefix)
         else:
-            try:
-                outfile=vcf_object.reheader(newheader=self.param_required('newheader'), outprefix=outprefix)
-            except Exception as error:
-                print('Caught this error: ' + repr(error))
-                
+            outfile=vcf_object.reheader(newheader=self.param_required('newheader'), outprefix=outprefix)
 
         self.param('vcf_f', outfile)
 
