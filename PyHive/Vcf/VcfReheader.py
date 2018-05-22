@@ -1,5 +1,6 @@
 import eHive
 import os
+import pdb
 import tempfile
 from VcfUtils import VcfUtils
 
@@ -7,6 +8,7 @@ class VcfReheader(eHive.BaseRunnable):
     """Modify the header in a VCF file"""
 
     def run(self):
+        pdb.set_trace()
         filepath=self.param_required('filepath')
         newheader=self.param_required('newheader')
 
@@ -41,7 +43,11 @@ class VcfReheader(eHive.BaseRunnable):
             outfile=vcf_object.reheader(newheader=self.param_required('newheader'), samplefile=self.param('samplefile'),
                                         outprefix=outprefix)
         else:
-            outfile=vcf_object.reheader(newheader=self.param_required('newheader'), outprefix=outprefix)
+            try:
+                outfile=vcf_object.reheader(newheader=self.param_required('newheader'), outprefix=outprefix)
+            except Exception as error:
+                print('Caught this error: ' + repr(error))
+                
 
         self.param('vcf_f', outfile)
 
