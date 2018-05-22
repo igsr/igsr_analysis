@@ -630,6 +630,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'beagle_folder' => $self->o('beagle_folder'),
+		'beagle_jar' => $self->o('beagle_jar'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
 		'outprefix' => '#vcf_file#',
 		'niterations' => 15, #recommended in Supp P3
@@ -649,6 +650,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'beagle_folder' => $self->o('beagle_folder'),
+		'beagle_jar' => $self->o('beagle_jar'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
                 'outprefix' => '#vcf_file#',
                 'niterations' => 15, #recommended in Supp P3

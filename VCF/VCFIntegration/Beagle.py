@@ -81,8 +81,8 @@ class Beagle(object):
         Compressed VCF file with the genotype calls
         '''
 
-        if self.beagle_jar is None:
-            raise Exception("Provide the Beagle jar file name for this object instance")
+        if self.beagle_folder is None or self.beagle_jar is None:
+            raise Exception("Provide the folder containing the Beagle jar file and the Beagle jar file name")
 
         Arg = namedtuple('Argument', 'option value')
         args=[]
