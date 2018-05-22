@@ -43,9 +43,8 @@ def test_correct_ambiguity(vcf_ambiguity):
     outfile=vcf_ambiguity.correct_ambiguity_codes(outfile='data/outdir/test.corrected.vcf.gz')
 
     assert os.path.exists("data/outdir/test.corrected.vcf.gz")
-
 def test_vcf_reheader(vcf_object):
-    outfile=vcf_object.reheader(newheader="data/newheader.txt", outprefix="data/outdir/test1") 
+    outfile=vcf_object.reheader(newheader="data/newheader.txt", outprefix="data/outdir/test1", verbose=True) 
 
     assert os.path.exists("data/outdir/test1.reheaded.vcf.gz")
 
@@ -64,7 +63,7 @@ def test_combine_uncompressed(vcf_object):
     Test the combine method producing a VCF
     '''
     vcf_object.combine(labels=['gatk','lc_bcftools'],reference='data/exampleFASTA.fasta',outprefix='out_combine',
-                       outdir='data/outdir/',genotypemergeoption='UNIQUIFY')
+                       outdir='data/outdir/', verbose=True, genotypemergeoption='UNIQUIFY')
 
     assert os.path.exists("data/outdir/out_combine.vcf")
     assert os.path.exists("data/outdir/out_combine.vcf.idx")

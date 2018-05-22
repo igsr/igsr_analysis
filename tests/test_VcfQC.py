@@ -18,7 +18,7 @@ def clean_tmp():
     yield
     print("Cleanup files")
     os.remove('data/outdir/test_VcfQC.stats')
-"""
+
 def test_stats(vcf_object):
     '''
     Test function to run Bcftools stats on a VCF file
@@ -34,7 +34,7 @@ def test_stats(vcf_object):
     assert stats.summary_numbers['number of multiallelic SNP sites:']==4
     assert stats.summary_numbers['number of MNPs:']==10
     assert stats.summary_numbers['number of multiallelic sites:']==20
-"""
+
 def test_stats_with_region(vcf_object):
     '''
     Test function to run Bcftools stats on a VCF file
@@ -45,7 +45,6 @@ def test_stats_with_region(vcf_object):
     assert stats.summary_numbers['number of SNPs:']==9
     assert stats.summary_numbers['number of indels:']==3
     
-"""
 def test_get_chros(vcf_object):
     chr_file = pytest.config.getoption("--chr_file")
     dict=vcf_object.get_chros(chr_f=chr_file, verbose=True)
@@ -66,5 +65,5 @@ def test_run_CollectVariantCallingMetrics(vcf_object,clean_tmp):
 
     assert cvcm.vc_detail_metrics['DBSNP_TITV']=='2.666667'
     assert cvcm.vc_detail_metrics['HET_HOMVAR_RATIO']=='2.84375'
-"""
+
 

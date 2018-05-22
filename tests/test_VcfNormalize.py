@@ -56,7 +56,7 @@ def test_run_vcfallelicprimitives_downstream_pipe(vcf_object):
     '''
     outfile=vcf_object.run_vcfallelicprimitives(outprefix='data/outdir/test1', 
                                                 downstream_pipe='~/bin/vt/vt sort -',
-                                                compress=True)
+                                                verbose=True, compress=True)
     assert os.path.exists(outfile)
 
 def test_run_GATK_VariantsToAllelicPrimitives(vcf_object, clean_tmp):
@@ -68,4 +68,4 @@ def test_run_GATK_VariantsToAllelicPrimitives(vcf_object, clean_tmp):
                                                             reference=pytest.config.getoption("--reference"),
                                                             compress=True, verbose=True)
     assert os.path.exists(outfile)
-    
+   
