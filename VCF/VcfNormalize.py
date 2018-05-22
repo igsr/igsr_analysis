@@ -72,7 +72,7 @@ class VcfNormalize(object):
         -------
         A string with path to normalized file
         '''
-        
+
         if self.vt_folder is None:
             raise Exception("Provide a vt_folder containing the vt binary")
 
@@ -90,14 +90,16 @@ class VcfNormalize(object):
             parameters.append('-n')
 
         runner=None
-        compressRunner=None
+        pipelist=None
         if compress is True:
             outprefix += ".gz"
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
-            runner=RunProgram(path=self.vt_folder, program='vt normalize', args=args, parameters=parameters, downpipe=[compressRunner])
+            pipelist=[compressRunner]
         elif compress is None or compress is False:
             args.append(Arg('-o',outprefix))
-            runner=RunProgram(path=self.vt_folder, program='vt normalize', args=args, parameters=parameters)
+
+        runner=RunProgram(path=self.vt_folder, program='vt normalize', args=args, parameters=parameters, downpipe=pipelist)
+
 
         if verbose is True:
              print("Command line for running vt normalize is: {0}".format(runner.cmd_line))
@@ -161,7 +163,7 @@ class VcfNormalize(object):
 
         return outprefix
 
-    def run_vcfallelicprimitives(self, outprefix, compress=False, outdir=None,
+    def run_vcfallelicprimitives(self, outprefix, compress=True, outdir=None,
                                  keepinfo=True, keepgeno=True, downstream_pipe=None, verbose=None):
         '''
         Run vcfallelicprimitives on a vcf file
@@ -214,14 +216,15 @@ class VcfNormalize(object):
             params.append("| {0}".format(downstream_pipe))
 
         runner=None
-        compressRunner=None
+        pipelist=None
         if compress is True:
             outprefix += ".gz"
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
-            runner=RunProgram(path=self.vcflib_folder, program='vcfallelicprimitives', parameters=params, downpipe=[compressRunner])
+            pipelist=[compressRunner]
         elif compress is None or compress is False:
             params.extend(['>',outprefix])
-            runner=RunProgram(path=self.vcflib_folder, program='vcfallelicprimitives', parameters=params)
+
+        runner=RunProgram(path=self.vcflib_folder, program='vcfallelicprimitives', parameters=params, downpipe=pipelist)
 
         if verbose is True:
              print("Command line for running vcfallelicprimitives is: {0}".format(runner.cmd_line))
