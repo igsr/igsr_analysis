@@ -209,14 +209,15 @@ class GATK(object):
               Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file), Arg('--num_threads', num_threads),
               Arg('-tranchesFile', tranches_file) ]
 
-        compressRunner=None
+        pipelist=None
         if compress is True:
             outfile += ".gz"
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outfile])
+            pipelist=[compressRunner]
         else:
             args.append(Arg('-o',outfile))
 
-        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, downpipe=[compressRunner])
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, downpipe=pipelist)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))

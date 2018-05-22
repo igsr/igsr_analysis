@@ -99,3 +99,5 @@ def test_VcfconvertPL2GL(clean_tmp):
     except subprocess.CalledProcessError as exc:
         assert False
         raise Exception(exc.output)
+
+"""
