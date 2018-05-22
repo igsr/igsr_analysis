@@ -10,7 +10,7 @@ class run_Beagle(eHive.BaseRunnable):
     
     def run(self):
     
-        vcf_g=Beagle(vcf=self.param_required('vcf_file'),beagle_folder=self.param_required('beagle_folder'))
+        vcf_g=Beagle(vcf=self.param_required('vcf_file'),beagle_folder=self.param_required('beagle_folder'), beagle_jar=self.param_required('beagle_jar'))
 
         verbose=None
         if self.param_is_defined('verbose'):
