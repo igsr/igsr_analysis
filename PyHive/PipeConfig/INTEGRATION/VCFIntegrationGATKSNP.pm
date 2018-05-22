@@ -29,6 +29,7 @@ sub default_options {
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'beagle_folder' => '~/bin/beagle/',
+	'beagle_jar' => 'beagle.08Jun17.d8b.jar',
 	'caller' => 'UG', # VariantRecalibrator
 	'centromeres' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/centromeres_and_gaps.bed', # BED file with centromeres and gaps in order to be considered by PyHive.Factories.CoordFactory
 	'gatk_folder' => '~/bin/GATK/',
@@ -635,6 +636,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'beagle_folder' => $self->o('beagle_folder'),
+		'beagle_jar' => $self->o('beagle_jar'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
 		'outprefix' => '#vcf_file#',
 		'niterations' => 15, #recommended in Supp P3
@@ -654,6 +656,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'beagle_folder' => $self->o('beagle_folder'),
+		'beagle_jar' => $self->o('beagle_jar'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
                 'outprefix' => '#vcf_file#',
                 'niterations' => 15, #recommended in Supp P3
