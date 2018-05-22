@@ -85,15 +85,16 @@ class GATK(object):
         for k,v in kwargs.items():
             arguments.append(Arg(" --{0}".format(k),v))
         
-        compressRunner=None
+        pipelist=None
         if compress is True:
             outprefix += ".vcf.gz"
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
+            pipelist=[compressRunner]
         else:
             outprefix += ".vcf"
             arguments.append(Arg('-o',outprefix))
 
-        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=arguments, downpipe=[compressRunner])
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=arguments, downpipe=pipelist)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))

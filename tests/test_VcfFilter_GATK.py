@@ -23,7 +23,6 @@ def clean_tmp():
     for f in files:
         os.remove(f)
 
-
 def test_run_variantrecalibrator(vcf_object):
     '''
     Test method to run VariantRecalibrator. This test throw an error because the paths specified in data/resources_snps.json 
@@ -43,4 +42,14 @@ def test_applyrecalibration(vcf_object):
                                           tranches_file='data/test.tranches', outprefix='data/outdir/test',
                                           verbose=True)
 
-    
+def test_applyrecalibration_uncompressed(vcf_object):
+    '''
+    Test method to run ApplyRecalibration in order to generate an uncompressed VCF.
+    This test throw an error because the 'recal_file' and 'tranches_file' files  are ficticious
+    '''
+
+    with pytest.raises(Exception):
+        vcf_object.run_applyrecalibration(mode='SNP', recal_file='data/test.recal',
+                                          tranches_file='data/test.tranches', outprefix='data/outdir/test',
+                                          compress=False, verbose=True)    
+
