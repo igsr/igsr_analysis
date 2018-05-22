@@ -36,6 +36,14 @@ def test_run_ug(gatk_object):
 
     assert os.path.isfile(outfile) is True
 
+def test_run_ug_nocompress(gatk_object):
+    '''
+    Test function to run GATK UG on a BAM file generating an uncompressed VCF
+    '''
+
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test',verbose=True, compress=False)
+
+    assert os.path.isfile(outfile) is True
 
 def test_run_ug_with_ivals(gatk_object):
     '''
@@ -43,7 +51,7 @@ def test_run_ug_with_ivals(gatk_object):
     analyze on the command line
     '''
 
-    outfile=gatk_object.run_ug(outprefix='data/outdir/test1', intervals= 'chr1:10000-30000')
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test1', verbose=True, intervals= 'chr1:10000-30000')
 
     assert os.path.isfile(outfile) is True
 

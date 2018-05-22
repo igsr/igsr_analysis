@@ -75,31 +75,27 @@ class VcfUtils(object):
         -------
         Path to the VCF with the modified header
         '''
-
-        command = ""
-        if self.bcftools_folder:
-            command += self.bcftools_folder + "/"
-
+    
         outfile=outprefix+".reheaded.vcf.gz"
 
+        Arg = namedtuple('Argument', 'option value')
+
+        args=[Arg('-h', newheader), Arg('-o',outfile)]
+
         if samplefile is not None:
-            command += "bcftools reheader -h {0} -o {1} -s {2} {3}".format(newheader, outfile, samplefile, self.vcf)
-        else:
-            command += "bcftools reheader -h {0} -o {1} {2}".format(newheader, outfile, self.vcf)
+            args.append(Arg('-s',samplefile))
+
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools reheader', args=args, parameters=[self.vcf])
 
         if verbose is True:
-            print("Command is: %s" % command)
+            print("Command line is: {0}".format(runner.cmd_line))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Cmd used was {0}".format(exc.cmd))
-            raise Exception(exc.output)
+        stdout=runner.run_checkoutput()
 
         return outfile
 
     def combine(self, labels, reference, outprefix, compress=False, outdir=None, ginterval=None, 
-                genotypemergeoption=None, filteredrecordsmergetype=None, threads=1, options=None):
+                genotypemergeoption=None, filteredrecordsmergetype=None, threads=1, options=None, verbose=False):
         '''
         Combine VCFs using GATK's CombineVariants into a single VCF
 
@@ -128,82 +124,68 @@ class VcfUtils(object):
                   Number of trades to use. Default=1
         options : list, optional
                    List of options. i.e. ['-env','--filteredAreUncalled']
+        verbose : bool, optional
+                  increase the verbosity, default=False
     
         Returns
         -------
         Path to the merged VCF
         '''
+        
+        Arg = namedtuple('Argument', 'option value')
+
+        args=[Arg('-T','CombineVariants'), Arg('-R',reference), Arg('-nt', threads)]
 
         variants_str=""
         for path, label in zip(self.vcflist, labels):
             if os.path.isfile(path) == False:
                 print("Error reading from {0}".format(path))
                 raise Exception("File does not exist")
-            variants_str+="-V:{0} {1} ".format(label,path)
-        
-        command = ""
-        if self.java_folder:
-            command += "{0}/".format(self.java_folder)
+            args.append(Arg('-V:{0}'.format(label),path))
 
-        command += "java -jar "
-
-        if self.gatk_folder:
-            command += "{0}/".format(self.gatk_folder)
-        
         outfile=""
-
         if outdir:
             outfile= "{0}/".format(outdir)
-
         outfile+= "{0}.vcf".format(outprefix)
-
-        command += "GenomeAnalysisTK.jar -T CombineVariants {0} -R {1} -nt {2} ".format(variants_str, 
-                                                                                        reference,
-                                                                                        threads)
-        if ginterval is not None:
-            command += "-L {0} ".format(ginterval)
         
+        if ginterval is not None:
+            args.append(Arg('-L',ginterval))
+
         if genotypemergeoption is not None:
-            command += "--genotypemergeoption {0} ".format(genotypemergeoption)
+            args.append(Arg('--genotypemergeoption', genotypemergeoption))
 
         if filteredrecordsmergetype is not None:
-            command += "--filteredrecordsmergetype {0} ".format(filteredrecordsmergetype)
+            args.append(Arg('--filteredrecordsmergetype', filteredrecordsmergetype))
 
+        params=[]
         if options:
             for opt in options:
-                command += "{0} ".format(opt)
-        
-        if compress is True:
-            bgzip_path = ""
-            if self.bgzip_folder:
-                bgzip_path = "{0}/bgzip".format(self.bgzip_folder)
-            else:
-                bgzip_path = "bgzip"
+                params.append(opt)
 
-            command += " | {0} -c > {1}.gz".format(bgzip_path, outfile)
-        else :
-            command += " -o {0}".format(outfile)
-        
-        try:
-            print(command)
-            p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
-            stdout, stderr = p.communicate()
-            lines=stderr.split("\n")
-            p = re.compile('#* ERROR')
-            for i in lines:
-                m = p.match(i)
-                if m:
-                    print("Something went wrong while running CombineVariants. This was the error message: {0}".format(stderr))
-                    raise Exception()
-        except subprocess.CalledProcessError as exc:
-            print("Something went wrong while running CombineVariants.\n"
-                  "Command used was: %s" % command)
-            raise Exception(exc.output)
-
+        pipelist=None
         if compress is True:
-            return outfile+".gz"
+            outfile += ".gz"
+            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outfile])
+            pipelist=[compressRunner]
         else:
-            return outfile
+            args.append(Arg('-o', outfile))
+
+        runner=RunProgram(path=self.java_folder, program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, parameters=params, downpipe=pipelist)
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout,stderr=runner.run_popen()
+
+        lines=stderr.split("\n")
+        p = re.compile('#* ERROR')
+        for i in lines:
+            m = p.match(i)
+            if m:
+                print("Something went wrong while running GATK CombineVariants. This was the error message: {0}".format(stderr))
+                raise Exception()
+
+        return outfile
 
 
     def rename_chros(self, chr_types, outfile, compress=True):
@@ -315,21 +297,18 @@ class VcfUtils(object):
         -------
         Path to the vcf.gz file without the GT information
         '''
+        
+        Arg = namedtuple('Argument', 'option value')
+         
+        args=[Arg('-o',outfile), Arg('-O', 'z')]
 
-        command = ""
-        if self.bcftools_folder:
-            command += self.bcftools_folder + "/"
-
-        command += "bcftools view -G {0} -o {1} -O z".format(self.vcf, outfile)
+        runner=RunProgram(path=self.bcftools_folder, 
+                          program='bcftools view -G', args=args, parameters=[self.vcf])
 
         if verbose is True:
-            print("Command is: %s" % command)
+            print("Command line is: {0}".format(runner.cmd_line))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Cmd used was {0}".format(exc.cmd))
-            raise Exception(exc.output)
+        stdout=runner.run_checkoutput()
 
         return outfile
 
@@ -349,21 +328,18 @@ class VcfUtils(object):
         -------
         Path to the vcf.gz file without the INFO annotation
         '''
-         
-        command = ""
-        if self.bcftools_folder:
-            command += self.bcftools_folder + "/"
+        
+        Arg = namedtuple('Argument', 'option value')
 
-        command += "bcftools annotate --remove INFO {0} -o {1} -O z".format(self.vcf, outfile)
+        args=[Arg('-o',outfile), Arg('-O','z')]
+
+        runner=RunProgram(path=self.bcftools_folder,
+                          program='bcftools annotate --remove INFO', args=args, parameters=[self.vcf])
 
         if verbose is True:
-            print("Command is: %s" % command)
+            print("Command line is: {0}".format(runner.cmd_line))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Cmd used was {0}".format(exc.cmd))
-            raise Exception(exc.output)
+        stdout=runner.run_checkoutput()
 
         return outfile
 
@@ -384,23 +360,19 @@ class VcfUtils(object):
         Path to the vcf.gz file with the PL fields converted
         
         '''
-        command = ""
-        if self.bcftools_folder:
-            command += self.bcftools_folder + "/"
 
-        command += "bcftools +tag2tag {0} -o {1} -Oz -- -r --pl-to-gl".format(self.vcf, outfile)
-        print(command)
+        Arg = namedtuple('Argument', 'option value')
+
+        params=[self.vcf,'-Oz','--','-r','--pl-to-gl']
+
+        runner=RunProgram(path=self.bcftools_folder,
+                          program='bcftools +tag2tag', args=[Arg('-o',outfile)], parameters=params)
 
         if verbose is True:
-            print("Command is: %s" % command)
+            print("Command line is: {0}".format(runner.cmd_line))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            print("Cmd used was {0}".format(exc.cmd))
-            raise Exception(exc.output)
+        stdout=runner.run_checkoutput()
 
         return outfile
-
         
         
