@@ -16,9 +16,13 @@ class ApplyRecalibration(eHive.BaseRunnable):
         if self.param_is_defined('ts_filter_level'):
             ts_filter_level=self.param('ts_filter_level')
 
+        threads=1
+        if self.param_is_defined('threads'):
+            threads=self.param('threads')
+
         outfile=VcfFilterO.run_applyrecalibration(mode=self.param_required('mode'), recal_file=self.param_required('recal_file'), 
                                                   ts_filter_level=ts_filter_level,tranches_file=self.param_required('tranches_file'), 
-                                                  outprefix=self.param_required('filepath'))
+                                                  num_threads=threads, outprefix=self.param_required('filepath'))
 
         self.param('vcf_filt', outfile)
         self.param('vcf_filt_ix', outfile+".tbi")
