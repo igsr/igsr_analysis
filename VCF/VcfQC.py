@@ -127,6 +127,7 @@ class VcfQC(object):
                       If provided, the chros in the file will be compared with the
                       chromosomes in self.vcf
         verbose : boolean, optional
+                  Increase verbosity
 
         Returns
         -------
@@ -138,28 +139,25 @@ class VcfQC(object):
             'in_B' whose values will be the chros NOT present in self.vcf and PRESENT in 'chr_f'
         '''
 
-        command = ""
-        if self.bcftools_folder:
-            command += self.bcftools_folder+"/"
+        params=['--no-header',self.vcf, "|cut -f1 |uniq"]
+        
+        Arg = namedtuple('Argument', 'option value')
 
-        command += "bcftools view --no-header {0} ".format(self.vcf)
+        args=[]
 
         if filter_str != None:
-            command += "-f {0} ".format(filter_str)
+            args.append(Arg('-f', filter_str))
 
-        command += "|cut -f1 |uniq"
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=params)
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
 
         out_str = ""
 
-        try:
-            if verbose is True:
-                print("Command is: %s" % command)
-            out = subprocess.check_output(command, shell=True)
-            out_str = out.decode("utf-8")
-            out_str = out_str.rstrip('\n')
-
-        except subprocess.CalledProcessError as exc:
-            raise Exception(exc.output)
+        out=runner.run_checkoutput()
+        out_str = out.decode("utf-8")
+        out_str = out_str.rstrip('\n')
 
         list_of_chros = out_str.split("\n")
 
@@ -180,7 +178,7 @@ class VcfQC(object):
             'in_B' : list(in_b)
             }
 
-    def number_variants_in_region(self, region, outprefix):
+    def number_variants_in_region(self, region, outprefix, verbose=None):
         '''
         Method to get the number of variants in a particular region/s
 
@@ -191,30 +189,32 @@ class VcfQC(object):
                  which the number will be calculated
         outprefix : str, Required
                    Prefix for outfile
+        verbose : boolean, optional
+                  Increase verbosity
 
         Returns
         -------
         File with the number of variants for each particular region
         '''
 
-        command = ""
-
-        if self.bedtools_folder:
-            command += self.bedtools_folder+"/"
-
         outprefix = outprefix+".counts"
+        
+        params=['-counts','>',outprefix]
 
-        command += "bedtools coverage -a {0} -b {1} -counts > {2}".\
-        format(region, self.vcf, outprefix)
+        Arg = namedtuple('Argument', 'option value')
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            raise Exception(exc.output)
+        args=[Arg('-a',region), Arg('-b', self.vcf)]
+
+        runner=RunProgram(path=self.bedtools_folder, program='bedtools coverage', args=args, parameters=params)
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout=runner.run_checkoutput()
 
         return outprefix
 
-    def run_CollectVariantCallingMetrics(self, outprefix, truth_vcf, intervals=None):
+    def run_CollectVariantCallingMetrics(self, outprefix, truth_vcf, intervals=None, verbose=None):
 
         '''
         Method to run Picard's CollectVariantCallingMetrics on a VcfQC object.
@@ -228,26 +228,31 @@ class VcfQC(object):
                    Reference VCF file
         intervals : str, Optional
                     Target intervals to restrict analysis to
+        verbose : boolean, optional
+                  Increase verbosity
 
         Returns
         -------
         This function returns a CollectVCallingMetrics object
         '''
 
-        command = "java -jar "
-        if self.picard_folder:
-            command += self.picard_folder+"/"
+        if self.picard_folder is None:
+            raise Exception("Provide a picard folder") 
 
-        command += "picard.jar CollectVariantCallingMetrics I={0} O={1} "\
-        "DBSNP={2}".format(self.vcf, outprefix, truth_vcf)
+
+        Arg = namedtuple('Argument', 'option value')
+
+        args=[Arg('I',self.vcf), Arg('O',outprefix), Arg('DBSNP',truth_vcf)]
 
         if intervals:
-            command += " TI={0}".format(intervals)
+            args.extend(Arg('TI', intervals))
 
-        try:
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            raise Exception(exc.output)
+        runner=RunProgram(program='java -jar {0}/picard.jar CollectVariantCallingMetrics'.format(self.picard_folder), args=args, arg_sep="=")
+            
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout=runner.run_checkoutput()
 
         #create CollectVCallingMetrics object with the output files
         cvcmetrics = CollectVCallingMetrics(vc_detail_metrics_file=outprefix\
@@ -364,36 +369,31 @@ class VcfQC(object):
         A BcftoolsStats object
         '''
 
-        command = ""
-        if self.bcftools_folder:
-            command += self.bcftools_folder+"/"
-
-        command += "bcftools stats {0} ".format(self.vcf)
+        Arg = namedtuple('Argument', 'option value')
+          
+        args=[]
 
         if region != None:
             outpath = "{0}.{1}".format(outpath, region)
-            command += "-r {0} ".format(region)
+            args.append(Arg('-r',region))
 
         if region_file != None:
-            command += "-R {0} ".format(region_file)
+            args.append(Arg('-R',region_file))
 
         if filter_str != None:
             outpath = outpath+".filter_str"
-            command += "-f {0} ".format(filter_str)
+            args.append(Arg('-f',filter_str))
 
         outpath = outpath+".stats"
-        command += "> {0}".format(outpath)
+        
+        params=[self.vcf,'>',outpath]
 
-        try:
-            if verbose is True:
-                print("Command is: %s" % command)
-            subprocess.check_output(command, shell=True)
-        except subprocess.CalledProcessError as exc:
-            raise Exception(exc.output)
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools stats', args=args, parameters=params)
 
-        #parse output file
-        if os.path.isfile(outpath) is False:
-            raise Exception("File with bcftools stats %s does not exist" % outpath)
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        runner.run_checkoutput()
 
         stats = BcftoolsStats(filename=outpath)
 
@@ -413,7 +413,7 @@ class VcfQC(object):
                 elif line.startswith('SiS\t'):
                     no_singleton_snps = line.split('\t')[3]
                     stats.no_singleton_snps = no_singleton_snps
-
+                    
             stats.summary_numbers = d
         return stats
 
