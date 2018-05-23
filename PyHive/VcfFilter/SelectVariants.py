@@ -15,12 +15,16 @@ class SelectVariants(eHive.BaseRunnable):
         vcf = BCFTools(vcf=filepath, bcftools_folder=self.param_required('bcftools_folder'))
 
         outprefix=""
-
         if self.param_is_defined('work_dir'):
             file=os.path.split(filepath)[1]
             outprefix=self.param('work_dir')+"/"+file
         else:
             outprefix=filepath
+
+        uncalled=None
+        if self.param_is_defined('uncalled'):
+            uncalled=self.param('uncalled')
+            if uncalled != 'include' and uncalled != 'exclude': raise Exception("Valid 'uncalled' values are 'include'/'exclude'")
 
         outfile=vcf.select_variants(outprefix=outprefix)
         

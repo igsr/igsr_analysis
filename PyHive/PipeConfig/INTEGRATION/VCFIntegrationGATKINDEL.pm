@@ -530,7 +530,8 @@ sub pipeline_analyses {
                 'filepath' => '#vcf_filt#',
                 'outprefix' => '#vcf_filt#',
                 'work_dir' => $self->o('work_dir'),
-                'bcftools_folder' => $self->o('bcftools_folder')
+                'bcftools_folder' => $self->o('bcftools_folder'),
+		'uncalled' => 'exclude', #it is necessary to exclude sites with missing genotypes in order for Beagle not to crash
             },
             -rc_name => '500Mb',
 	    -flow_into => {
