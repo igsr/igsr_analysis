@@ -209,13 +209,15 @@ class BCFTools(object):
 
         return outprefix
 
-    def select_variants(self, outprefix, verbose=None):
+    def select_variants(self, outprefix, uncalled=None, verbose=None):
         '''
         Run bcftools view to select only the variants (exclude the 0|0 genotypes)
 
         Parameters
         ---------
         outprefix : str, Required. Prefix used for the output file
+        uncalled : str, optional. Select/Exclude sites with an uncalled genotype. 
+                   Possible values are: 'exclude', 'include'
         verbose : Boolean, optional
                   Increase verbosity
 
@@ -229,7 +231,15 @@ class BCFTools(object):
 
         args=[Arg('-o',outfile),Arg('-O','z')]
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=[self.vcf])
+        params=[]
+        if uncalled=='exclude':
+            params.append('-U')
+        elif uncalled=='include':
+            params.append('-u')
+
+        params.append(self.vcf)
+
+        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=params)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))

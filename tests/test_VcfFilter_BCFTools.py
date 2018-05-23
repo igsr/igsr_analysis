@@ -80,6 +80,16 @@ def test_select_variants(vcf_object):
 
     assert os.path.isfile(outfile) is True
 
+def test_select_variants_exclude_uncalled(vcf_object):
+    '''
+    Test method to select only the variants (exclude the 0|0 genotypes) and also exclude the sites with uncalled genoytpes
+    from a VCF file
+    '''
+
+    outfile=vcf_object.select_variants(outprefix='data/outdir/test', uncalled='exclude', verbose=True)
+
+    assert os.path.isfile(outfile) is True
+
 def test_filter(vcf_object,clean_tmp):
     '''
     Test method to filter variants from a VCF file by running bcftools filter
