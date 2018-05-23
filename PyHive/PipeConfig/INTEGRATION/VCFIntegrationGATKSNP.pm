@@ -533,6 +533,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'filepath' => '#vcf_filt#',
+		'uncalled' => 'exclude', #it is necessary to exclude sites with missing genotypes in order for Beagle not to crash
                 'outprefix' => '#vcf_filt#',
                 'work_dir' => $self->o('work_dir'),
                 'bcftools_folder' => $self->o('bcftools_folder')
