@@ -33,7 +33,7 @@ class VcfConcat(eHive.BaseRunnable):
         logfile_url="{0}/merge_vcf.log".format(self.param_required('log_dir'))
         logf=open(logfile_url,'w')
         logf.write("#ix chunk\n")
-        for k in d.keys():
+        for k in sorted(d):
             logf.write("{0} {1}\n".format(k,d[k]))
         logf.close
 
