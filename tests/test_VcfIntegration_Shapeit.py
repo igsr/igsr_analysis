@@ -1,7 +1,7 @@
 import os
 import pytest
 import glob
-from VCFIntegration import Shapeit
+from VCF.VCFIntegration import Shapeit
 
 # test_VcfIntegration_Shapeit.py
 

@@ -83,7 +83,7 @@ class GATK(object):
         arguments=[Arg('-T','UnifiedGenotyper'), Arg('-R',self.reference), Arg('-I',self.bam), Arg('-glm',glm), Arg('-nt',nt)]
 
         for k,v in kwargs.items():
-            arguments.append(Arg(" --{0}".format(k),v))
+            if v is not None: arguments.append(Arg(" --{0}".format(k),v))
         
         pipelist=None
         if compress is True:
@@ -100,13 +100,5 @@ class GATK(object):
             print("Command line is: {0}".format(runner.cmd_line))
             
         stdout,stderr=runner.run_popen()
-
-        lines=stderr.split("\n")
-        p = re.compile('#* ERROR')
-        for i in lines:
-            m = p.match(i)
-            if m:
-                print("Something went wrong while running GATK UnifiedGenotyper. This was the error message: {0}".format(stderr))
-                raise Exception()
 
         return outprefix

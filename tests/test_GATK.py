@@ -3,7 +3,7 @@ import pytest
 import glob
 import pdb
 
-from GATK import GATK 
+from VariantCalling import GATK 
 
 # test_GATK.py
 

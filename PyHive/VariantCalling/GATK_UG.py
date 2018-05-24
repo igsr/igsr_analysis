@@ -5,7 +5,7 @@ import pdb
 import sys
 import glob
 
-from GATK import GATK
+from VariantCalling import GATK
 
 class GATK_UG(eHive.BaseRunnable):
     '''
@@ -94,7 +94,7 @@ class GATK_UG(eHive.BaseRunnable):
         if self.param_is_defined('alleles'):
             alleles=self.param('alleles')
 
-        genotyping_mode=None
+        genotyping_mode='DISCOVERY'
         if self.param_is_defined('genotyping_mode'):
             genotyping_mode=self.param('genotyping_mode')
 
@@ -114,7 +114,8 @@ class GATK_UG(eHive.BaseRunnable):
                                    glm=self.param_required('glm'),
                                    output_mode=self.param_required('output_mode'),
                                    downsample_to_coverage=dcov,
-                                   alleles=alleles, genotyping_mode=genotyping_mode,
+                                   alleles=alleles, 
+                                   genotyping_mode=genotyping_mode,
                                    intervals=intervals, nt=nt, 
                                    max_deletion_fraction=max_deletion_fraction)
 

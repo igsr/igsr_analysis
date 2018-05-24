@@ -1,3 +1,3 @@
-from VCFIntegration.Beagle import Beagle
-from VCFIntegration.Shapeit import Shapeit
-from VCFIntegration.SNPTools import SNPTools
+from VCF.VCFIntegration.Beagle import Beagle
+from VCF.VCFIntegration.Shapeit import Shapeit
+from VCF.VCFIntegration.SNPTools import SNPTools

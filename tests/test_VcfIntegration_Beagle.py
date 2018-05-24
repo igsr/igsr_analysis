@@ -2,7 +2,7 @@ import os
 import pytest
 import glob
 import warnings
-from VCFIntegration import Beagle
+from VCF.VCFIntegration import Beagle
 
 # test_VcfIntegration_Beagle.py
 @pytest.fixture
