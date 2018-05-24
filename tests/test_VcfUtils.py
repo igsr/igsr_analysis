@@ -3,7 +3,7 @@ import pytest
 import glob
 import pdb
 
-from VcfUtils import VcfUtils
+from VCF.VcfUtils import VcfUtils
 
 # test_VcfUtils.py
 

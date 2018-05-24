@@ -3,6 +3,7 @@ import pytest
 import glob
 import warnings
 from BamQC import BamQC
+import pdb
 
 # test_BamQC.py
 @pytest.fixture
@@ -75,7 +76,7 @@ def test_run_CollectHsMetrics(bam_object):
     assert cMetrics.metrics['PF_UNIQUE_READS']=='33'
     assert cMetrics.metrics['PF_UQ_BASES_ALIGNED']=='2508'
 
-def test_Wes_create_cov_barplot(bam_object, clean_tmp):
+def test_Wes_create_cov_barplot(bam_object):
     cMetrics=bam_object.run_CollectHsMetrics(baits_file='data/test.ival',outfile='data/outdir/example')
     cMetrics.create_cov_barplot('data/outdir/example.CollectHsMetrics.barplot.pdf')
 
@@ -88,4 +89,5 @@ def test_run_CollectWgsMetrics(bam_object):
 def test_Wgs_create_cov_barplot(bam_object, clean_tmp):
     cMetrics=bam_object.run_CollectWgsMetrics(reference='data/exampleFASTA.fasta',outfile='data/outdir/out_runCollectWgsMetrics.txt')
     cMetrics.create_cov_barplot('data/outdir/example.CollectWgsMetrics.barplot.pdf')
+
 

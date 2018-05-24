@@ -2,7 +2,7 @@ import os
 import pytest
 import glob
 import warnings
-from VCFIntegration import SNPTools
+from VCF.VCFIntegration import SNPTools
 
 # test_vcfqc.py
 @pytest.fixture
