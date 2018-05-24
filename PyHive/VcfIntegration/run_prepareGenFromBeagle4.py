@@ -1,7 +1,7 @@
 import eHive
 import os
 import pdb
-from VCFIntegration.Beagle import Beagle
+from VCF.VCFIntegration.Beagle import Beagle
 
 class run_prepareGenFromBeagle4(eHive.BaseRunnable):
     '''

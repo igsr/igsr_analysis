@@ -177,14 +177,6 @@ class VcfUtils(object):
 
         stdout,stderr=runner.run_popen()
 
-        lines=stderr.split("\n")
-        p = re.compile('#* ERROR')
-        for i in lines:
-            m = p.match(i)
-            if m:
-                print("Something went wrong while running GATK CombineVariants. This was the error message: {0}".format(stderr))
-                raise Exception()
-
         return outfile
 
 

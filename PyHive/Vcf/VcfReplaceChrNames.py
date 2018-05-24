@@ -3,7 +3,7 @@ import os
 import tempfile
 import pdb
 
-from VcfUtils import VcfUtils
+from VCF.VcfUtils import VcfUtils
 
 class VcfReplaceChrNames(eHive.BaseRunnable):
     """Modify the style (UCSC or Ensembl) of the chr names in a VCF file"""

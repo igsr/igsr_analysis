@@ -19,7 +19,7 @@ def pytest_addoption(parser):
     parser.addoption('--bcftools_folder', default='~/bin/bcftools-1.6/' ,action='store_true', help='Folder containing bcftools binaries')
     parser.addoption('--beagle_jar', default='beagle.08Jun17.d8b.jar' ,action='store_true', help='Name of Beagle jar file')
     parser.addoption('--beagle_folder', default='~/bin/beagle/' ,action='store_true', help='Folder with Beagle jar file')
-    parser.addoption('--prepareGenFromBeagle4_folder', default='/homes/ernesto/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/prepareGenFromBeagle4/bin/', action='store_true', help='Folder with prepareGenFromBeagle4 binary')
+    parser.addoption('--prepareGenFromBeagle4_folder', default='/homes/ernesto/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/', action='store_true', help='Folder with prepareGenFromBeagle4 binary')
     parser.addoption('--ligateHAPLOTYPES_folder', default='/homes/ernesto/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/', action='store_true', help='Folder with ligateHAPLOTYPES binary')
     parser.addoption('--shapeit_folder', default='~/bin/shapeit2_v2_12/bin/' ,action='store_true', help='Folder with SHAPEIT binary')
     parser.addoption('--gatk_folder', default='~/bin/GATK/', action='store_true', help='Path to folder containing the GATK jar file')

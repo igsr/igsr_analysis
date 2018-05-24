@@ -3,7 +3,7 @@ import pytest
 import glob
 import pdb
 
-from VcfNormalize import VcfNormalize
+from VCF.VcfNormalize import VcfNormalize
 
 # test_VcfNormalize.py
 
