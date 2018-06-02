@@ -58,7 +58,9 @@ sub default_options {
 	'main' => 20, # SHAPEIT
 	'samplefile' => undef, # SHAPEIT
 	'window_bglchnks' => undef, # makeBGLCHUNKS
-	'overlap_bglchnks' => undef, # makeBGLCHUNKS
+        'overlap_bglchnks' => undef, # makeBGLCHUNKS
+	'window_shapeitchnks' => undef, # makeBGLCHUNKS 4 Shapeit
+	'overlap_shapeitchnks' => undef, # makeBGLCHUNKS 4 Shapeit
 	'genome_file' => undef, #PyHive.Factories.CoordFactory. Used to generate the chunks
 	'window_coordfactory_4transposebam' =>  undef, #PyHive.Factories.CoordFactory used for the transposebam analysis
 	'outprefix' => 'combined.all.chr20', # Prefix used for all output files
@@ -609,8 +611,6 @@ sub pipeline_analyses {
 		'filepath' => '#vcf_f#',
 		'makeBGLCHUNKS_folder' => $self->o('makeBGLCHUNKS_folder'),
 		'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
-		'correct' => 1,
-		'chro' => '#chromname#',
 		'window' => $self->o('window_bglchnks'),
 		'overlap' => $self->o('overlap_bglchnks'),
 		'verbose' => 1
@@ -682,12 +682,12 @@ sub pipeline_analyses {
         },
 
 	{   -logic_name => 'chunk_factory2',
-            -module     => 'PyHive.Factories.BeagleChunkFactory',
+            -module     => 'PyHive.Factories.ShapeitChunkFactory',
             -language   => 'python3',
             -parameters => {
 		'filepath' => '#vcf_file#',
                 'makeBGLCHUNKS_folder' => $self->o('makeBGLCHUNKS_folder'),
-                'work_dir' => $self->o('work_dir'),
+                'work_dir' => $self->o('work_dir')."/#chromname#/shapeit",
                 'window' => $self->o('window_bglchnks'),
                 'overlap' => $self->o('overlap_bglchnks'),
                 'verbose' => 1
