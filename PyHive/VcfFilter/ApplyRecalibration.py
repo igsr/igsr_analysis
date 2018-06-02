@@ -11,7 +11,7 @@ class ApplyRecalibration(eHive.BaseRunnable):
 
         self.warning('Analysing file: %s'% self.param_required('filepath'))
 
-        VcfFilterO = GATK(vcf=self.param_required('filepath'),caller=self.param_required('caller'),gatk_folder=self.param_required('gatk_folder'), reference=self.param_required('reference'), bgzip_folder=self.param('bgzip_folder'), tabix_folder=self.param('tabix_folder'))
+        VcfFilterO = GATK(vcf=self.param_required('filepath'),caller=self.param_required('caller'),gatk_folder=self.param_required('gatk_folder'), reference=self.param_required('reference'), bgzip_folder=self.param('bgzip_folder'), tabix_folder=self.param('tabix_folder'), tmp_dir=self.param('tmp_dir'))
 
         ts_filter_level=None
         if self.param_is_defined('ts_filter_level'):

@@ -33,6 +33,7 @@ sub default_options {
 	'caller' => 'UG', # VariantRecalibrator
 	'centromeres' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/centromeres_and_gaps.bed', # BED file with centromeres and gaps in order to be considered by PyHive.Factories.CoordFactory
 	'gatk_folder' => '~/bin/GATK/',
+	'java_tmpdir' => '/gpfs/nobackup/resequencing_informatics/ernesto/tmp', # necessary for GATK ApplyRecalibration not to crash 
 	'ginterval' => undef, # if defined, then do the integration for a certain genomic region
 	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',
 	'vcflib_folder' => '~/bin/vcflib/bin/', # folder containing the vcfallelicprimitives binary
@@ -513,6 +514,7 @@ sub pipeline_analyses {
             -parameters    => {
                 'filepath' => '#merged_file#',
                 'work_dir' => $self->o('work_dir'),
+		'tmp_dir' => $self->o('java_tmpdir'),
                 'caller' => $self->o('caller'),
                 'gatk_folder' => $self->o('gatk_folder'),
                 'bgzip_folder' => $self->o('bgzip_folder'),
