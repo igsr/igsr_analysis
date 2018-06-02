@@ -20,7 +20,7 @@ class GATK(object):
     '''
 
 
-    def __init__(self, vcf, reference, caller='UG',  bgzip_folder=None, tabix_folder=None, gatk_folder=None):
+    def __init__(self, vcf, reference, caller='UG',  bgzip_folder=None, tabix_folder=None, gatk_folder=None, tmp_dir=None):
         '''
         Constructor
 
@@ -39,6 +39,9 @@ class GATK(object):
                         Path to folder containing the tabix binary
         gatk_folder : str, Optional
                        Path to folder containing GATK's jar file
+        tmp_dir : str, Optional
+                     Path to java temporary directory. This needs to be
+                     set for GATK modules such as ApplyRecalibrator that fails because there is not enough space in the default java tmp dir
         '''
 
         if os.path.isfile(vcf) is False:
@@ -50,6 +53,7 @@ class GATK(object):
         self.bgzip_folder = bgzip_folder
         self.tabix_folder = tabix_folder
         self.gatk_folder = gatk_folder
+        self.tmp_dir = tmp_dir
 
     def run_variantrecalibrator(self, resources, mode,
                                 max_gaussians=None, intervals=None,
@@ -205,9 +209,12 @@ class GATK(object):
         
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-T', 'ApplyRecalibration'), Arg('-R', self.reference), Arg('-input', self.vcf), Arg('-mode', mode),
-              Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file), Arg('--num_threads', num_threads),
-              Arg('-tranchesFile', tranches_file) ]
+        args=[]
+
+        args.extend([Arg('-jar', '{0}/GenomeAnalysisTK.jar'.format(self.gatk_folder)), Arg('-T', 'ApplyRecalibration'), 
+                     Arg('-R', self.reference), Arg('-input', self.vcf), Arg('-mode', mode),
+                     Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file), Arg('--num_threads', num_threads),
+                     Arg('-tranchesFile', tranches_file) ])
 
         pipelist=None
         if compress is True:
@@ -216,8 +223,14 @@ class GATK(object):
             pipelist=[compressRunner]
         else:
             args.append(Arg('-o',outfile))
+            
+        program_str=None
+        if self.tmp_dir is not None:
+            program_str="java -Djava.io.tmpdir={0}".format(self.tmp_dir)
+        else:
+            program_str="java"
 
-        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, downpipe=pipelist)
+        runner=RunProgram(program=program_str, args=args, downpipe=pipelist)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))

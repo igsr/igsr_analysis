@@ -51,5 +51,21 @@ def test_applyrecalibration_uncompressed(vcf_object):
     with pytest.raises(Exception):
         vcf_object.run_applyrecalibration(mode='SNP', recal_file='data/test.recal',
                                           tranches_file='data/test.tranches', outprefix='data/outdir/test',
-                                          compress=False, verbose=True)    
+                                          compress=False, verbose=True)
+
+def test_applyrecalibration_tmpdir():
+    '''
+    Test method to run ApplyRecalibration by setting the tmp_dir for Java.
+    This test throw an error because the 'recal_file' and 'tranches_file' files  are ficticious
+    '''
+
+    vcf_file = pytest.config.getoption("--vcf")
+    gatk_folder = pytest.config.getoption("--gatk_folder")
+    reference = pytest.config.getoption("--reference")
+    vcf_object=GATK(vcf=vcf_file,gatk_folder=gatk_folder,reference=reference,tmp_dir='data/tmp')
+
+    with pytest.raises(Exception):
+        vcf_object.run_applyrecalibration(mode='SNP', recal_file='data/test.recal',
+                                          tranches_file='data/test.tranches', outprefix='data/outdir/test',
+                                          compress=False, verbose=True)
 
