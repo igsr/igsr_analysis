@@ -21,8 +21,13 @@ class VariantRecalibrator(eHive.BaseRunnable):
             optional_params['max_gaussians']=self.param('max_gaussians')
         if self.param_is_defined('tranches'):
             optional_params['tranches']=self.param('tranches')
+        
+        verbose=False
+        if self.param_is_defined('verbose'):
+            verbose=True
 
-        d_out=vcf.run_variantrecalibrator(self.param_required('resources'),mode=self.param_required('mode'), outprefix=self.param_required('filepath'), **optional_params)
+        d_out=vcf.run_variantrecalibrator(self.param_required('resources'),mode=self.param_required('mode'), outprefix=self.param_required('filepath'), verbose=verbose, 
+                                          **optional_params)
         
         self.param('recal_f', d_out['recal_f'])
         self.param('tranches_f', d_out['tranches_f'])
