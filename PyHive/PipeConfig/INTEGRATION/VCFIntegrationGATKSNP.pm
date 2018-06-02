@@ -43,7 +43,7 @@ sub default_options {
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
 	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'transposebam_folder' => '/homes/ernesto/lib/reseqtrack//c_code/transpose_bam/',
-	'tranches' => '[100.0,99.9,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
+	'tranches' => '[100.0,99.9,99.5,99.2,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
 	'resources_snps' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
         'resources_indels' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_indels.json', # VariantRecalibrator
 	'snps_annotations' => undef, # VQSR. annotations for recalibrating snps
@@ -62,6 +62,8 @@ sub default_options {
 	'samplefile' => undef, # SHAPEIT
 	'window_bglchnks' => undef, # makeBGLCHUNKS
         'overlap_bglchnks' => undef, # makeBGLCHUNKS
+	'window_shapeitchnks' => undef, # makeBGLCHUNKS 4 Shapeit
+        'overlap_shapeitchnks' => undef, # makeBGLCHUNKS 4 Shapeit
 #	'window_bglchnks' => 12000, # recommended in supp of phase3 for makeBGLCHUNKS
 #	'overlap_bglchnks' => 2000, # recommended in supp of phase 3 for makeBGLCHUNKS
 	'genome_file' => undef, #PyHive.Factories.CoordFactory. Used to generate the chunks
@@ -495,6 +497,7 @@ sub pipeline_analyses {
                 'resources' => $self->o('resources_snps'),
                 'tranches' => $self->o('tranches'),
                 'intervals' => $self->o('ginterval'),
+		'verbose' => 'True',
                 'mode' => 'SNP'
             },
 	    -flow_into => {
@@ -517,7 +520,7 @@ sub pipeline_analyses {
                 'reference' => $self->o('reference'),
                 'recal_file' => '#recal_f#',
 		'threads' => 1,
-		'ts_filter_level' => 99.9,
+		'ts_filter_level' => 99.5,
                 'tranches_file' => '#tranches_f#',
                 'mode' => 'SNP'
             },
@@ -615,8 +618,6 @@ sub pipeline_analyses {
 		'filepath' => '#vcf_f#',
 		'makeBGLCHUNKS_folder' => $self->o('makeBGLCHUNKS_folder'),
 		'work_dir' => $self->o('work_dir')."/#chromname#/beagle",
-		'correct' => 1,
-		'chro' => '#chromname#',
 		'window' => $self->o('window_bglchnks'),
 		'overlap' => $self->o('overlap_bglchnks'),
 		'verbose' => 1
@@ -688,14 +689,14 @@ sub pipeline_analyses {
         },
 
 	{   -logic_name => 'chunk_factory2',
-            -module     => 'PyHive.Factories.BeagleChunkFactory',
+            -module     => 'PyHive.Factories.ShapeitChunkFactory',
             -language   => 'python3',
             -parameters => {
 		'filepath' => '#vcf_file#',
                 'makeBGLCHUNKS_folder' => $self->o('makeBGLCHUNKS_folder'),
-                'work_dir' => $self->o('work_dir'),
-                'window' => $self->o('window_bglchnks'),
-                'overlap' => $self->o('overlap_bglchnks'),
+                'work_dir' => $self->o('work_dir')."/#chromname#/shapeit/",
+                'window' => $self->o('window_shapeitchnks')
+                'overlap' => $self->o('overlap_shapeitchnks'),
                 'verbose' => 1
             },
             -rc_name => '500Mb',
