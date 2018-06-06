@@ -77,8 +77,8 @@ def test_run_CollectHsMetrics(bam_object):
     assert cMetrics.metrics['PF_UQ_BASES_ALIGNED']=='2508'
 
 def test_Wes_create_cov_barplot(bam_object):
-    cMetrics=bam_object.run_CollectHsMetrics(baits_file='data/test.ival',outfile='data/outdir/example')
-    cMetrics.create_cov_barplot('data/outdir/example.CollectHsMetrics.barplot.pdf')
+    cMetrics=bam_object.run_CollectHsMetrics(baits_file='data/test.ival',outfile='data/out/example')
+    cMetrics.create_cov_barplot('data/out/example.CollectHsMetrics.barplot.pdf')
 
 def test_run_CollectWgsMetrics(bam_object):
     cMetrics=bam_object.run_CollectWgsMetrics(reference='data/exampleFASTA.fasta')
@@ -87,7 +87,7 @@ def test_run_CollectWgsMetrics(bam_object):
     assert cMetrics.metrics['SD_COVERAGE']=='0.037257'
 
 def test_Wgs_create_cov_barplot(bam_object, clean_tmp):
-    cMetrics=bam_object.run_CollectWgsMetrics(reference='data/exampleFASTA.fasta',outfile='data/outdir/out_runCollectWgsMetrics.txt')
-    cMetrics.create_cov_barplot('data/outdir/example.CollectWgsMetrics.barplot.pdf')
+    cMetrics=bam_object.run_CollectWgsMetrics(reference='data/exampleFASTA.fasta',outfile='data/out/out_runCollectWgsMetrics.txt')
+    cMetrics.create_cov_barplot('data/out/example.CollectWgsMetrics.barplot.pdf')
 
 
