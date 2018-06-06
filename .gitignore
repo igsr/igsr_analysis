@@ -49,3 +49,5 @@ local.properties
 .scala_dependencies
 .worksheet
 
+# ignore cached files
+__pycache__/
