@@ -2,7 +2,7 @@ import os
 import pytest
 import glob
 
-from VCFfilter import GATK
+from VCF.VCFfilter.GATK import GATK
 
 # test_VcfFilter_GATK.py
 

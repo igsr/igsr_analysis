@@ -2,7 +2,7 @@ import eHive
 import os
 import pdb
 
-from VCFIntegration.Shapeit import Shapeit
+from VCF.VCFIntegration.Shapeit import Shapeit
 
 class run_ligateHAPLOTYPES(eHive.BaseRunnable):
     '''

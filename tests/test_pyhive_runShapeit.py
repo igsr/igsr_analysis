@@ -25,6 +25,7 @@ def test_runShapeit():
     -verbose True".format(hive_scripts, shapeit_folder, work_dir, 'data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample', 
                           'data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample', 
                           'data/SHAPEIT/scaffold' ,'test')
+    print(command)
 
     try:
         subprocess.check_output(command, shell=True)
@@ -71,4 +72,5 @@ def test_run_Shapeit_convert2vcf(clean_tmp):
     except subprocess.CalledProcessError as exc:
         assert False
         raise Exception(exc.output)
+
 
