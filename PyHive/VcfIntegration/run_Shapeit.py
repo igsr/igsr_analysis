@@ -2,7 +2,7 @@ import eHive
 import os
 import pdb
 import re
-from VCFIntegration.Shapeit import Shapeit
+from VCF.VCFIntegration.Shapeit import Shapeit
 
 class run_Shapeit(eHive.BaseRunnable):
     """Run SHAPEIT"""

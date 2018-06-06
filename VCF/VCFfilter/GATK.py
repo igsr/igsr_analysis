@@ -141,15 +141,6 @@ class GATK(object):
 
         stdout,stderr=runner.run_popen()
 
-        lines=stderr.split("\n")
-        p = re.compile('#* ERROR')
-        for i in lines:
-            m = p.match(i)
-            if m:
-                print("Something went wrong while running GATK VariantRecalibrator. This was the error message: {0}".format(stderr))
-                raise Exception()
-
-
         recal_f = glob.glob("{0}*.recal".format(outprefix))
         tranches_f = glob.glob("{0}*.tranches".format(outprefix))
 
@@ -236,14 +227,6 @@ class GATK(object):
             print("Command line is: {0}".format(runner.cmd_line))
 
         stdout,stderr=runner.run_popen()
-
-        lines=stderr.split("\n")
-        p = re.compile('#* ERROR')
-        for i in lines:
-            m = p.match(i)
-            if m:
-                print("Something went wrong while running GATK ApplyRecalibration. This was the error message: {0}".format(stderr))
-                raise Exception()
 
         # create an index for the recalibrated file
         if compress is True:

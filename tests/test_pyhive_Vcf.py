@@ -3,9 +3,7 @@ import pytest
 import subprocess
 import glob
 
-from VcfUtils import VcfUtils
-
-# test_pyhive_Vcf.py
+#from VcfUtils import VcfUtils
 
 @pytest.fixture
 def clean_tmp():
@@ -100,4 +98,3 @@ def test_VcfconvertPL2GL(clean_tmp):
         assert False
         raise Exception(exc.output)
 
-"""

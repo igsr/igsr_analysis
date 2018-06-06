@@ -1,11 +1,10 @@
 import os
 import pytest
 import pdb
-
-from Utils.RunProgram import RunProgram 
+ 
+from Utils import RunProgram
 
 # test_Utils_RunProgram.py
-
 
 def test_run_program_withoneparam():
     '''
@@ -13,25 +12,24 @@ def test_run_program_withoneparam():
 
     It will run the shell 'echo' command with one parameter
     '''
-    
+
     runner=RunProgram(program='echo',parameters=['hello'])
 
-    stdout,stderr=runner.run()
+    stdout=runner.run_checkoutput()
 
-    assert stdout=="hello\n"
+    assert stdout.decode("utf-8")=="hello\n"
 
 def test_run_program_withstderr():
     '''
     Test function for the 'run' method
 
-    It will try to run the shell 'echo' incorrectly and will dump some content on STDERR 
+    It will try to run the shell 'echo' incorrectly and will throw an Exception 
     '''
 
     runner=RunProgram(program='cho', parameters=['-n','hello'])
 
-    stdout,stderr=runner.run()
-
-    assert stderr is not ""
+    with pytest.raises(Exception):
+        runner.run_checkoutput()
 
 def test_run_inapipe():
     '''
@@ -42,6 +40,7 @@ def test_run_inapipe():
     
     runner=RunProgram(program='cat', parameters=['data/newheader.txt'],downpipe=[down_cmd])
 
-    stdout,stderr=runner.run()
+    stdout=runner.run_checkoutput()
 
-    assert stdout=='67\n'
+    assert stdout.decode("utf-8")=='67\n'
+

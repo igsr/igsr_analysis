@@ -1,6 +1,6 @@
 import os
 import pytest
-from VcfQC import VcfQC
+from VCF.VcfQC import VcfQC
 
 # test_vcfqc.py
 

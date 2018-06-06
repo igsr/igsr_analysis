@@ -2,7 +2,7 @@ import eHive
 import os
 import pdb
 
-from VcfUtils import VcfUtils
+from VCF.VcfUtils import VcfUtils
 
 class convertPL2GL(eHive.BaseRunnable):
     """Convert PL fields in the VCF to GL"""
