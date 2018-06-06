@@ -2,7 +2,7 @@ import eHive
 import os
 import re
 import pdb
-from VCFIntegration.Shapeit import Shapeit
+from VCF.VCFIntegration.Shapeit import Shapeit
 
 class run_Shapeit_convert2vcf(eHive.BaseRunnable):
     '''Run SHAPEIT's -convert to generate a VCF file'''

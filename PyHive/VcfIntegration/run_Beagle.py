@@ -3,7 +3,7 @@ import os
 import pdb
 import glob
 
-from VCFIntegration.Beagle import Beagle
+from VCF.VCFIntegration.Beagle import Beagle
 
 class run_Beagle(eHive.BaseRunnable):
     """Run Beagle on a VCF containing Genotype likelihoods"""

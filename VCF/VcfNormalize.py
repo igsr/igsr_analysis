@@ -280,14 +280,6 @@ class VcfNormalize(object):
 
         stdout,stderr=runner.run_popen()
 
-        lines=stderr.split("\n")
-        p = re.compile('#* ERROR')
-        for i in lines:
-            m = p.match(i)
-            if m:
-                print("Something went wrong while running GATK VariantsToAllelicPrimitives. This was the error message: {0}".format(stderr))
-                raise Exception()
-
         if compress is True:
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', outprefix, '>', outprefix+".gz"])
             compressRunner.run_checkoutput()

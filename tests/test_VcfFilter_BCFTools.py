@@ -2,7 +2,7 @@ import os
 import pytest
 import glob
 
-from VCFfilter import BCFTools
+from VCF.VCFfilter.BCFTools import BCFTools
 
 # test_vcfFilter_BCFTools.py
 

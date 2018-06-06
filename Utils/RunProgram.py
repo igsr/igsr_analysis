@@ -89,6 +89,13 @@ class RunProgram(object):
 
         p = subprocess.Popen(self.cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
         stdout, stderr = p.communicate()
+
+        lines=stderr.split("\n")
+        p = re.compile('#* ERROR|Error')
+        for i in lines:
+            m = p.match(i)
+            if m:
+                raise Exception(stderr)
        
         return (stdout,stderr)
 
@@ -104,9 +111,8 @@ class RunProgram(object):
         
         try:
             stdout = subprocess.check_output(self.cmd_line, shell=True)
-        except subprocess.CalledProcessError as exp:
-            print("Something went wrong while running {0}".format(self.program))
-            raise Exception(exp.output)
+        except subprocess.CalledProcessError as e:
+            raise
         
         return stdout
 

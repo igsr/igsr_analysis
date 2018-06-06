@@ -12,7 +12,7 @@ def clean_tmp():
     files = glob.glob("data/out/*")
     for f in files:
         os.remove(f)
-
+"""
 def test_chrfactory():
     fa_ix= pytest.config.getoption("faix")
     hive_scripts= pytest.config.getoption("hive_lib")+"/scripts/" 
@@ -25,7 +25,7 @@ def test_chrfactory():
     except subprocess.CalledProcessError as exc:
         assert False
         raise Exception(exc.output)    
-
+"""
 def test_BeagleChunkFactory():
     vcf_f= pytest.config.getoption("vcf_gts")
     beaglechunks_folder=pytest.config.getoption("makeBGLCHUNKS_folder")
@@ -34,6 +34,7 @@ def test_BeagleChunkFactory():
 
     command="perl {0}/standaloneJob.pl PyHive.Factories.BeagleChunkFactory -language python3 -filepath {1} -makeBGLCHUNKS_folder {2} -work_dir {3} -window {4} \
     -overlap {5}".format(hive_scripts, vcf_f, beaglechunks_folder, work_dir, 100, 2)
+    print(command)
     try:
         subprocess.check_output(command, shell=True)
         assert True
@@ -89,4 +90,5 @@ def test_bedtools_make_windows_w_subtract(clean_tmp):
     except subprocess.CalledProcessError as exc:
         assert False
         raise Exception(exc.output)
+
 
