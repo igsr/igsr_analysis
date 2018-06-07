@@ -4,6 +4,7 @@ import os
 import pdb
 import sys
 import glob
+import time
 
 from VariantCalling import GATK
 
@@ -114,7 +115,7 @@ class GATK_UG(eHive.BaseRunnable):
 
         log_file=None
         if self.param_is_defined('log_file'):
-            log_file=self.param('log_file')
+            log_file="{0}_{1}.log".format(self.param('log_file'),time.strftime("%Y%m%d_%H%M%S"))
 
         outfile=gatk_object.run_ug(outprefix=outfile,
                                    glm=self.param_required('glm'),

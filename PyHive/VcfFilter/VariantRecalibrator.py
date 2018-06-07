@@ -1,6 +1,7 @@
 import eHive
 import os
 import pdb
+import time
 from VCFfilter.GATK import GATK
 
 class VariantRecalibrator(eHive.BaseRunnable):
@@ -26,8 +27,12 @@ class VariantRecalibrator(eHive.BaseRunnable):
         if self.param_is_defined('verbose'):
             verbose=True
 
+        log_file=None
+        if self.param_is_defined('log_file'):
+            log_file="{0}_{1}.log".format(self.param('log_file'),time.strftime("%Y%m%d_%H%M%S"))
+
         d_out=vcf.run_variantrecalibrator(self.param_required('resources'),mode=self.param_required('mode'), outprefix=self.param_required('filepath'), verbose=verbose, 
-                                          **optional_params)
+                                          log_file=log_file, **optional_params)
         
         self.param('recal_f', d_out['recal_f'])
         self.param('tranches_f', d_out['tranches_f'])
