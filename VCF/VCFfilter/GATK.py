@@ -58,7 +58,7 @@ class GATK(object):
     def run_variantrecalibrator(self, resources, mode,
                                 max_gaussians=None, intervals=None,
                                 annotations=None, tranches=None,
-                                outprefix="recalibrate",verbose=None):
+                                outprefix="recalibrate",verbose=None,log_file=None):
         '''
         Run GATK's VariantRecalibrator on a VcfFilter object
 
@@ -83,6 +83,8 @@ class GATK(object):
                     Default= recalibrate
         verbose : bool, Optional
                   Increase verbosity
+        log_file : str, Optional
+                   Path to file that will used for logging the GATK stderr and stdout
 
         Returns
         -------
@@ -134,7 +136,7 @@ class GATK(object):
         for elt in tranches:
             args.append(Arg('-tranche', elt))
 
-        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args)
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, log_file=log_file)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
@@ -160,7 +162,7 @@ class GATK(object):
             }
 
     def run_applyrecalibration(self, mode, recal_file, tranches_file, outprefix,
-                               ts_filter_level=99.0, num_threads=1, compress=True, verbose=None):
+                               ts_filter_level=99.0, num_threads=1, compress=True, verbose=None, log_file=None):
         '''
         Run GATK's ApplyRecalibration on a VcfFilter object
 
@@ -182,6 +184,8 @@ class GATK(object):
                    Compress the recalibrated VCF
         verbose : bool, Optional
                   Increase verbosity
+        log_file : str, Optional
+                   Path to file that will used for logging the GATK stderr and stdout
         '''
 
         if self.caller != 'UG':
@@ -221,7 +225,7 @@ class GATK(object):
         else:
             program_str="java"
 
-        runner=RunProgram(program=program_str, args=args, downpipe=pipelist)
+        runner=RunProgram(program=program_str, args=args, downpipe=pipelist, log_file=log_file)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
