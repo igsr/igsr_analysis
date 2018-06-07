@@ -382,6 +382,7 @@ sub pipeline_analyses {
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
+		'log_file' => $self->o('work_dir')."/gatk_ug/gatk_ug",
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
 		'threads' => 1,
@@ -409,6 +410,7 @@ sub pipeline_analyses {
                 'bgzip_folder' => $self->o('bgzip_folder'),
                 'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
                 'work_dir' => $self->o('work_dir')."/gatk_ug",
+		'log_file' => $self->o('work_dir')."/gatk_ug/gatk_ug",
                 'reference' => $self->o('reference'),
                 'outprefix' => '#out_vcf#',
                 'threads' => 1,
@@ -436,6 +438,7 @@ sub pipeline_analyses {
                 'bgzip_folder' => $self->o('bgzip_folder'),
                 'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
                 'work_dir' => $self->o('work_dir')."/gatk_ug",
+		'log_file' => $self->o('work_dir')."/gatk_ug/gatk_ug",
                 'reference' => $self->o('reference'),
                 'outprefix' => '#out_vcf#',
                 'threads' => 1,
@@ -486,6 +489,7 @@ sub pipeline_analyses {
             -parameters    => {
                 'filepath' => '#merged_file#',
                 'work_dir' => $self->o('work_dir'),
+		'log_file' => $self->o('work_dir')."/gatk_variantrecalibratior",
                 'caller' => $self->o('caller'),
 		'annotations' => $self->o('indels_annotations'),
                 'gatk_folder' => $self->o('gatk_folder'),
@@ -508,6 +512,7 @@ sub pipeline_analyses {
             -parameters    => {
                 'filepath' => '#merged_file#',
                 'work_dir' => $self->o('work_dir'),
+		'log_file' => $self->o('work_dir')."/gatk_applyrecalibration",
                 'caller' => $self->o('caller'),
                 'gatk_folder' => $self->o('gatk_folder'),
                 'bgzip_folder' => $self->o('bgzip_folder'),
