@@ -41,7 +41,7 @@ class GATK(object):
         self.gatk_folder = gatk_folder
         self.bgzip_folder = bgzip_folder
 
-    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, verbose=None, **kwargs):
+    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, verbose=None, log_file=None, **kwargs):
         
         '''
         Run GATK UnifiedGenotyper
@@ -71,6 +71,8 @@ class GATK(object):
         genotyping_mode: str, Optional
                          Specifies how to determine the alternate alleles to use for genotyping
                          Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
+        log_file : str, Optional
+                   Path to file that will used for logging the GATK stderr and stdout
 
         Returns
         -------
@@ -81,7 +83,7 @@ class GATK(object):
         Arg = namedtuple('Argument', 'option value')
 
         arguments=[Arg('-T','UnifiedGenotyper'), Arg('-R',self.reference), Arg('-I',self.bam), Arg('-glm',glm), Arg('-nt',nt)]
-
+        
         for k,v in kwargs.items():
             if v is not None: arguments.append(Arg(" --{0}".format(k),v))
         
@@ -94,7 +96,7 @@ class GATK(object):
             outprefix += ".vcf"
             arguments.append(Arg('-o',outprefix))
 
-        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=arguments, downpipe=pipelist)
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=arguments, downpipe=pipelist, log_file=log_file)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
