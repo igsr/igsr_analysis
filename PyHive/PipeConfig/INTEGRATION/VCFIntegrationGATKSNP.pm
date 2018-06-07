@@ -387,6 +387,7 @@ sub pipeline_analyses {
 		'bamlist' => '#merged_bam#',
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'work_dir' => $self->o('work_dir')."/gatk_ug",
+		'log_file' => $self->o('work_dir')."/gatk_ug/gatk_ug",
 		'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
@@ -414,6 +415,7 @@ sub pipeline_analyses {
                 'bamlist' => '#merged_bam#',
                 'bgzip_folder' => $self->o('bgzip_folder'),
                 'work_dir' => $self->o('work_dir')."/gatk_ug",
+		'log_file' => $self->o('work_dir')."/gatk_ug/gatk_ug",
                 'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
                 'reference' => $self->o('reference'),
                 'outprefix' => '#out_vcf#',
@@ -441,6 +443,7 @@ sub pipeline_analyses {
                 'bamlist' => '#merged_bam#',
                 'bgzip_folder' => $self->o('bgzip_folder'),
                 'work_dir' => $self->o('work_dir')."/gatk_ug",
+		'log_file' => $self->o('work_dir')."/gatk_ug/gatk_ug",
                 'max_deletion_fraction' => 1.5, #set this parameter to >1 to disable it
                 'reference' => $self->o('reference'),
                 'outprefix' => '#out_vcf#',
@@ -491,6 +494,7 @@ sub pipeline_analyses {
             -parameters    => {
                 'filepath' => '#merged_file#',
                 'work_dir' => $self->o('work_dir'),
+		'log_file' => $self->o('work_dir')."/gatk_variantrecalibratior",
                 'caller' => $self->o('caller'),
 		'annotations' => $self->o('snps_annotations'),
                 'gatk_folder' => $self->o('gatk_folder'),
@@ -514,6 +518,7 @@ sub pipeline_analyses {
             -parameters    => {
                 'filepath' => '#merged_file#',
                 'work_dir' => $self->o('work_dir'),
+		'log_file' => $self->o('work_dir')."/gatk_applyrecalibration",
 		'tmp_dir' => $self->o('java_tmpdir'),
                 'caller' => $self->o('caller'),
                 'gatk_folder' => $self->o('gatk_folder'),

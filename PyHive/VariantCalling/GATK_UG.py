@@ -4,6 +4,7 @@ import os
 import pdb
 import sys
 import glob
+import time
 
 from VariantCalling import GATK
 
@@ -52,6 +53,8 @@ class GATK_UG(eHive.BaseRunnable):
     dcov: int, Optional
          Target coverage threshold for downsampling to coverage.
          Default value=250
+    log_file: str, Optional
+            Path to log file used to log the GATK UG stderr
 
     Returns
     -------
@@ -110,6 +113,10 @@ class GATK_UG(eHive.BaseRunnable):
         if self.param_is_defined('dcov'):
             dcov=self.param('dcov')
 
+        log_file=None
+        if self.param_is_defined('log_file'):
+            log_file="{0}_{1}.log".format(self.param('log_file'),time.strftime("%Y%m%d_%H%M%S"))
+
         outfile=gatk_object.run_ug(outprefix=outfile,
                                    glm=self.param_required('glm'),
                                    output_mode=self.param_required('output_mode'),
@@ -117,7 +124,8 @@ class GATK_UG(eHive.BaseRunnable):
                                    alleles=alleles, 
                                    genotyping_mode=genotyping_mode,
                                    intervals=intervals, nt=nt, 
-                                   max_deletion_fraction=max_deletion_fraction)
+                                   max_deletion_fraction=max_deletion_fraction,
+                                   log_file=log_file)
 
         self.param('out_vcf', outfile)
 
