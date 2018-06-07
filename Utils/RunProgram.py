@@ -16,7 +16,7 @@ class RunProgram(object):
 
 
     def __init__(self, program, path=None, args=None, arg_sep=' ', parameters=None,
-                 cmd_line=None, downpipe=None):
+                 cmd_line=None, downpipe=None, log_name=None, log_file=None):
         '''
         Constructor
 
@@ -40,6 +40,10 @@ class RunProgram(object):
         downpipe: list of RunProgram objects, Optional
                   List of RunProgram objects that will be executed in a pipe after
                   self.program has been executed
+        log_name: str, Optional
+                  Name of the logger
+        log_file: str, Optional
+                  Path to the file that will be used by the logging library
 
         '''
 
@@ -50,6 +54,8 @@ class RunProgram(object):
         self.parameters = parameters
         self.cmd_line = cmd_line
         self.downpipe = downpipe
+        self.log_name = log_name
+        self.log_file = log_file
 
         #create the command line if is None
         if self.cmd_line is None:
@@ -85,18 +91,37 @@ class RunProgram(object):
         A tuple containing the STDOUT and STDERR from this program
         '''
 
+        log_f=None
+
+        if self.log_file is not None: log_f=open(self.log_file,'w')
+
         #execute cmd_line
+        p = subprocess.Popen(self.cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, bufsize=256, universal_newlines=True)
 
-        p = subprocess.Popen(self.cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,universal_newlines=True)
-        stdout, stderr = p.communicate()
-
-        lines=stderr.split("\n")
-        p = re.compile('#* ERROR|Error')
-        for i in lines:
-            m = p.match(i)
+        #stderr
+        patt = re.compile('#* ERROR|Error')
+        is_exception=False
+        stderr=""
+        for line in p.stderr:
+            line=str(line.rstrip())
+            stderr+=line+"\n"
+            if log_f is not None: log_f.write(line+"\n")
+            m = patt.match(line)
             if m:
-                raise Exception(stderr)
+                is_exception=True
+        
+        #stdout
+        stdout=""
+        for line in p.stdout:
+            line=str(line.rstrip())
+            stdout+=line+"\n"
        
+        if is_exception is True:
+            raise Exception(stderr)
+
+
+        if log_f is not None:log_f.close()
+
         return (stdout,stderr)
 
     def run_checkoutput(self):
