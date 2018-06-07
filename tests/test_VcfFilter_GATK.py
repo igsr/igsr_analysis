@@ -1,6 +1,7 @@
 import os
 import pytest
 import glob
+import time
 
 from VCF.VCFfilter.GATK import GATK
 
@@ -29,18 +30,25 @@ def test_run_variantrecalibrator(vcf_object):
     are fictitious
     '''
 
+    #create timestamp for log file:
+    timestr = time.strftime("%Y%m%d_%H%M%S")
+
     with pytest.raises(Exception):
-        vcf_object.run_variantrecalibrator(outprefix='data/outdir/test', resources='data/resources_snps.json', mode='SNP', verbose=True)
+        vcf_object.run_variantrecalibrator(outprefix='data/outdir/test', resources='data/resources_snps.json', mode='SNP', verbose=True,
+                                           log_file='data/out/gatk_variantrecalibrator_{0}.log'.format(timestr))
 
 def test_applyrecalibration(vcf_object):
     '''
     Test method to run ApplyRecalibration. This test throw an error because the 'recal_file' and 'tranches_file' files  are ficticious
     '''
+
+    #create timestamp for log file:
+    timestr = time.strftime("%Y%m%d_%H%M%S")
     
     with pytest.raises(Exception):
         vcf_object.run_applyrecalibration(mode='SNP', recal_file='data/test.recal', 
                                           tranches_file='data/test.tranches', outprefix='data/outdir/test',
-                                          verbose=True)
+                                          verbose=True,log_file='data/out/gatk_applyrecalibration_{0}.log'.format(timestr))
 
 def test_applyrecalibration_uncompressed(vcf_object):
     '''
@@ -53,7 +61,7 @@ def test_applyrecalibration_uncompressed(vcf_object):
                                           tranches_file='data/test.tranches', outprefix='data/outdir/test',
                                           compress=False, verbose=True)
 
-def test_applyrecalibration_tmpdir():
+def test_applyrecalibration_tmpdir(clean_tmp):
     '''
     Test method to run ApplyRecalibration by setting the tmp_dir for Java.
     This test throw an error because the 'recal_file' and 'tranches_file' files  are ficticious
@@ -68,4 +76,5 @@ def test_applyrecalibration_tmpdir():
         vcf_object.run_applyrecalibration(mode='SNP', recal_file='data/test.recal',
                                           tranches_file='data/test.tranches', outprefix='data/outdir/test',
                                           compress=False, verbose=True)
+
 

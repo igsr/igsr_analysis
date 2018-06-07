@@ -2,6 +2,7 @@ import eHive
 import os
 import datetime
 import pdb
+import time
 from VCFfilter.GATK import GATK
 
 class ApplyRecalibration(eHive.BaseRunnable):
@@ -30,9 +31,13 @@ class ApplyRecalibration(eHive.BaseRunnable):
         if self.param_is_defined('threads'):
             threads=self.param('threads')
 
+        log_file=None
+        if self.param_is_defined('log_file'):
+            log_file="{0}_{1}.log".format(self.param('log_file'),time.strftime("%Y%m%d_%H%M%S"))
+
         outfile=VcfFilterO.run_applyrecalibration(mode=self.param_required('mode'), recal_file=self.param_required('recal_file'), 
                                                   ts_filter_level=ts_filter_level,tranches_file=self.param_required('tranches_file'), 
-                                                  num_threads=threads, outprefix=outprefix)
+                                                  num_threads=threads, outprefix=outprefix, log_file=log_file)
 
         self.param('vcf_filt', outfile)
         self.param('vcf_filt_ix', outfile+".tbi")
