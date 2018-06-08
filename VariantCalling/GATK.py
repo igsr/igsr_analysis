@@ -71,6 +71,10 @@ class GATK(object):
         genotyping_mode: str, Optional
                          Specifies how to determine the alternate alleles to use for genotyping
                          Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
+        output_mode: str, Optional
+                     Which type of calls we should output.
+                     Possible values are: EMIT_VARIANTS_ONLY, EMIT_ALL_CONFIDENT_SITES, EMIT_ALL_SITES
+                     Default: EMIT_VARIANTS_ONLY
         log_file : str, Optional
                    Path to file that will used for logging the GATK stderr and stdout
 
@@ -131,6 +135,9 @@ class GATK(object):
                  When --genotyping_mode is set to
                  GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
                  using only the alleles provide in this callset
+        emitRefConfidence: str, Optional
+                           Mode for emitting reference confidence scores
+                           Possible values are: NONE, BP_RESOLUTION, GVCF
         verbose : bool, optional
                   if true, then print the command line used for running this program
         log_file : str, Optional
