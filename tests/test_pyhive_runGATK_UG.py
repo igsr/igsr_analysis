@@ -9,7 +9,7 @@ import glob
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('out/*')
+    files = glob.glob('data/out/*')
     for f in files:
         os.remove(f)
 
@@ -24,7 +24,7 @@ def test_runGATK_UG(clean_tmp):
     glm = pytest.config.getoption("--glm")
     output_mode = pytest.config.getoption("--output_mode")
 
-    work_dir= "out/"
+    work_dir= "data/out/"
 
     command="perl {0}/standaloneJob.pl PyHive.VariantCalling.GATK_UG -language python3 \
     -outprefix {1} -work_dir {2} -chunk {3} -bamlist {4} -reference {5} \
@@ -50,7 +50,7 @@ def test_runGATK_UG_wlogile(clean_tmp):
     glm = pytest.config.getoption("--glm")
     output_mode = pytest.config.getoption("--output_mode")
 
-    work_dir= "out/"
+    work_dir= "data/out/"
 
     command="perl {0}/standaloneJob.pl PyHive.VariantCalling.GATK_UG -language python3 \
     -outprefix {1} -work_dir {2} -chunk {3} -bamlist {4} -reference {5} \
@@ -79,7 +79,7 @@ def test_runGATK_UG_throws_exception(clean_tmp):
     glm = 'fake'
     output_mode = pytest.config.getoption("--output_mode")
 
-    work_dir= "out/"
+    work_dir= "data/out/"
 
     command="perl {0}/standaloneJob.pl PyHive.VariantCalling.GATK_UG -language python3 \
     -outprefix {1} -work_dir {2} -chunk {3} -bamlist {4} -reference {5} \
