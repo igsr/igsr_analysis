@@ -104,3 +104,64 @@ class GATK(object):
         stdout,stderr=runner.run_popen()
 
         return outprefix
+
+    def run_hc(self, outprefix, compress=True, nt=1, verbose=None, log_file=None, **kwargs):
+        '''
+        Run GATK HaplotypeCaller
+
+        Parameters
+        ----------
+        outprefix : str, Required
+                    Prefix for output VCF file. i.e. /path/to/file/test
+        compress : boolean, Default= True
+                   Compress the output VCF
+        nt : int, Optional
+             Number of data threads to allocate to HC
+        intervals : str, Optional
+                    Path to file with genomic intervals to operate with. Also coordinates
+                    can be set directly on the command line. For example: chr1:100-200
+        standard_min_confidence_threshold_for_calling : int, Optional
+                                                        The minimum phred-scaled confidence threshold at which variants should be called
+                                                        Default: 10
+        genotyping_mode: str, Optional
+                         Specifies how to determine the alternate alleles to use for genotyping
+                         Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
+        alleles: str, Optional
+                 Path to VCF.
+                 When --genotyping_mode is set to
+                 GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
+                 using only the alleles provide in this callset
+        verbose : bool, optional
+                  if true, then print the command line used for running this program
+        log_file : str, Optional
+                   Path to file that will used for logging the GATK stderr and stdout
+
+        Returns
+        -------
+        A VCF file
+
+        '''
+        Arg = namedtuple('Argument', 'option value')
+
+        arguments=[Arg('-T','HaplotypeCaller'), Arg('-R',self.reference), Arg('-I',self.bam)]
+
+        for k,v in kwargs.items():
+            if v is not None: arguments.append(Arg(" --{0}".format(k),v))
+
+        pipelist=None
+        if compress is True:
+            outprefix += ".vcf.gz"
+            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
+            pipelist=[compressRunner]
+        else:
+            outprefix += ".vcf"
+            arguments.append(Arg('-o',outprefix))
+            
+        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), downpipe=pipelist, args=arguments, log_file=log_file)
+
+        if verbose is True:
+            print("Command line is: {0}".format(runner.cmd_line))
+
+        stdout,stderr=runner.run_popen()
+
+        return outprefix

@@ -1,0 +1,45 @@
+INFO  13:46:53,677 HelpFormatter - ----------------------------------------------------------------------------------
+INFO  13:46:53,679 HelpFormatter - The Genome Analysis Toolkit (GATK) v3.7-0-gcfedb67, Compiled 2016/12/12 11:21:18
+INFO  13:46:53,679 HelpFormatter - Copyright (c) 2010-2016 The Broad Institute
+INFO  13:46:53,680 HelpFormatter - For support and documentation go to https://software.broadinstitute.org/gatk
+INFO  13:46:53,680 HelpFormatter - [Fri Jun 08 13:46:53 BST 2018] Executing on Linux 3.10.0-514.16.1.el7.x86_64 amd64
+INFO  13:46:53,680 HelpFormatter - OpenJDK 64-Bit Server VM 1.8.0_131-b11
+INFO  13:46:53,683 HelpFormatter - Program Args: -T HaplotypeCaller -R data/exampleFASTA.fasta -I data/exampleBAM.bam
+INFO  13:46:53,751 HelpFormatter - Executing as ernesto@ebi-cli-001.ebi.ac.uk on Linux 3.10.0-514.16.1.el7.x86_64 amd64; OpenJDK 64-Bit Server VM 1.8.0_131-b11.
+INFO  13:46:53,752 HelpFormatter - Date/Time: 2018/06/08 13:46:53
+INFO  13:46:53,752 HelpFormatter - ----------------------------------------------------------------------------------
+INFO  13:46:53,752 HelpFormatter - ----------------------------------------------------------------------------------
+INFO  13:46:53,854 GenomeAnalysisEngine - Strictness is SILENT
+INFO  13:46:54,073 GenomeAnalysisEngine - Downsampling Settings: Method: BY_SAMPLE, Target Coverage: 500
+INFO  13:46:54,153 SAMDataSource$SAMReaders - Initializing SAMRecords in serial
+INFO  13:46:54,177 SAMDataSource$SAMReaders - Done initializing BAM readers: total time 0.02
+INFO  13:46:54,264 HCMappingQualityFilter - Filtering out reads with MAPQ < 20
+INFO  13:46:54,764 GenomeAnalysisEngine - Preparing for traversal over 1 BAM files
+INFO  13:46:54,867 GenomeAnalysisEngine - Done preparing for traversal
+INFO  13:46:54,868 ProgressMeter - [INITIALIZATION COMPLETE; STARTING PROCESSING]
+INFO  13:46:54,868 ProgressMeter -                 |      processed |    time |         per 1M |           |   total | remaining
+INFO  13:46:54,869 ProgressMeter -        Location | active regions | elapsed | active regions | completed | runtime |   runtime
+INFO  13:46:54,869 HaplotypeCaller - Disabling physical phasing, which is supported only for reference-model confidence output
+INFO  13:46:55,053 StrandBiasTest - SAM/BAM data was found. Attempting to use read data to calculate strand bias annotations values.
+WARN  13:46:55,054 InbreedingCoeff - Annotation will not be calculated. InbreedingCoeff requires at least 10 unrelated samples.
+INFO  13:46:55,054 StrandBiasTest - SAM/BAM data was found. Attempting to use read data to calculate strand bias annotations values.
+INFO  13:46:55,459 HaplotypeCaller - Using global mismapping rate of 45 => -4.5 in log10 likelihood units
+Using AVX accelerated implementation of PairHMM
+INFO  13:47:07,578 VectorLoglessPairHMM - libVectorLoglessPairHMM unpacked successfully from GATK jar file
+INFO  13:47:07,580 VectorLoglessPairHMM - Using vectorized implementation of PairHMM
+INFO  13:47:07,580 VectorLoglessPairHMM - Time spent in setup for JNI call : 0.0
+INFO  13:47:07,581 PairHMM - Total compute time in PairHMM computeLikelihoods() : 0.0
+INFO  13:47:07,581 HaplotypeCaller - Ran local assembly on 0 active regions
+INFO  13:47:07,599 ProgressMeter -            done         100000.0    12.0 s            2.1 m      100.0%    12.0 s       0.0 s
+INFO  13:47:07,599 ProgressMeter - Total runtime 12.73 secs, 0.21 min, 0.00 hours
+INFO  13:47:07,600 MicroScheduler - 31 reads were filtered out during the traversal out of approximately 33 total reads (93.94%)
+INFO  13:47:07,601 MicroScheduler -   -> 0 reads (0.00% of total) failing BadCigarFilter
+INFO  13:47:07,601 MicroScheduler -   -> 0 reads (0.00% of total) failing DuplicateReadFilter
+INFO  13:47:07,601 MicroScheduler -   -> 0 reads (0.00% of total) failing FailsVendorQualityCheckFilter
+INFO  13:47:07,601 MicroScheduler -   -> 31 reads (93.94% of total) failing HCMappingQualityFilter
+INFO  13:47:07,602 MicroScheduler -   -> 0 reads (0.00% of total) failing MalformedReadFilter
+INFO  13:47:07,602 MicroScheduler -   -> 0 reads (0.00% of total) failing MappingQualityUnavailableFilter
+INFO  13:47:07,602 MicroScheduler -   -> 0 reads (0.00% of total) failing NotPrimaryAlignmentFilter
+INFO  13:47:07,603 MicroScheduler -   -> 0 reads (0.00% of total) failing UnmappedReadFilter
+------------------------------------------------------------------------------------------
+Done. ------------------------------------------------------------------------------------------
