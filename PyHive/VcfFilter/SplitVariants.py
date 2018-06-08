@@ -1,7 +1,7 @@
 import eHive
 import os
 import pdb
-from VCFfilter.BCFTools import BCFTools
+from VCF.VCFfilter.BCFTools import BCFTools
 
 class SplitVariants(eHive.BaseRunnable):
     """Split VCF into SNPs and INDELs"""

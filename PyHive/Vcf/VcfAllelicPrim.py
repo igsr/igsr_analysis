@@ -2,7 +2,7 @@ import eHive
 import os
 import pdb
 import datetime
-from VcfNormalize import VcfNormalize
+from VCF.VcfNormalize import VcfNormalize
 
 class VcfAllelicPrim(eHive.BaseRunnable):
     """Run vcfallelicprimitives on a VCF file"""

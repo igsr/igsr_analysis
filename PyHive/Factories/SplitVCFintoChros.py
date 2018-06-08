@@ -1,7 +1,7 @@
 import eHive
 import os
 import sys
-from VCFfilter.BCFTools import BCFTools
+from VCF.VCFfilter.BCFTools import BCFTools
 
 class SplitVCFintoChros(eHive.BaseRunnable):
     """Split a VCF into the chromosomes present in a Fasta index"""

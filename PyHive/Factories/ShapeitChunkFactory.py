@@ -3,7 +3,7 @@ import glob
 import os
 import pdb
 
-from VCFIntegration.Beagle import Beagle
+from VCF.VCFIntegration.Beagle import Beagle
 
 class ShapeitChunkFactory(eHive.BaseRunnable):
     """Run makeBGLCHUNKS in order to create genomic chunks used to be run with Shapeit"""

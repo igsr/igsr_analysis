@@ -6,7 +6,7 @@ import sys
 import random
 import string
 
-from VcfUtils import VcfUtils
+from VCF.VcfUtils import VcfUtils
 
 class VcfCombine(eHive.BaseRunnable):
     '''

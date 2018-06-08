@@ -2,7 +2,7 @@ import eHive
 import os
 import pdb
 import time
-from VCFfilter.GATK import GATK
+from VCF.VCFfilter.GATK import GATK
 
 class VariantRecalibrator(eHive.BaseRunnable):
     """run GATK VariantRecalibrator, which is part of the VQSR filtering procedure"""
