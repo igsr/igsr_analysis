@@ -1,7 +1,7 @@
 import eHive
 import os
 import pdb
-from VCFfilter.BCFTools import BCFTools
+from VCF.VCFfilter.BCFTools import BCFTools
 
 class SelectVariants(eHive.BaseRunnable):
     """Select the variants from a VCF file"""

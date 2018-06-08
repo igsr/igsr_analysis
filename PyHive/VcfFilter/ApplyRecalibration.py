@@ -3,7 +3,7 @@ import os
 import datetime
 import pdb
 import time
-from VCFfilter.GATK import GATK
+from VCF.VCFfilter.GATK import GATK
 
 class ApplyRecalibration(eHive.BaseRunnable):
     """run GATK ApplyRecalibration, which is part of the VQSR filtering procedure"""

@@ -29,9 +29,11 @@ sub default_options {
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'beagle_folder' => '~/bin/beagle/',
+	'beagle_jar' => 'beagle.08Jun17.d8b.jar',
 	'caller' => 'UG', # VariantRecalibrator
 	'centromeres' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/centromeres_and_gaps.bed', # BED file with centromeres and gaps in order to be considered by PyHive.Factories.CoordFactory
 	'gatk_folder' => '~/bin/GATK/',
+	'java_tmpdir' => '/gpfs/nobackup/resequencing_informatics/ernesto/tmp', # necessary for GATK ApplyRecalibration not to crash
 	'ginterval' => undef, # if defined, then do the integration for a certain genomic region
 	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',
 	'vcflib_folder' => '~/bin/vcflib/bin/', # folder containing the vcfallelicprimitives binary
@@ -513,6 +515,7 @@ sub pipeline_analyses {
                 'filepath' => '#merged_file#',
                 'work_dir' => $self->o('work_dir'),
 		'log_file' => $self->o('work_dir')."/gatk_applyrecalibration",
+		'tmp_dir' => $self->o('java_tmpdir'),
                 'caller' => $self->o('caller'),
                 'gatk_folder' => $self->o('gatk_folder'),
                 'bgzip_folder' => $self->o('bgzip_folder'),
@@ -827,9 +830,7 @@ sub pipeline_analyses {
                 'extension' => 'phased.vcf.gz',
 
             },
-        }
-
-	
+        }	
 	];
 }
 
