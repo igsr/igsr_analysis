@@ -209,7 +209,7 @@ class BCFTools(object):
 
         return outprefix
 
-    def select_variants(self, outprefix, uncalled=None, verbose=None):
+    def select_variants(self, outprefix, uncalled=None, threads=1, verbose=None):
         '''
         Run bcftools view to select only the variants (exclude the 0|0 genotypes)
 
@@ -218,6 +218,8 @@ class BCFTools(object):
         outprefix : str, Required. Prefix used for the output file
         uncalled : str, optional. Select/Exclude sites with an uncalled genotype. 
                    Possible values are: 'exclude', 'include'
+        threads: int, optional
+                 Number of output compression threads to use in addition to main thread. Default=0
         verbose : Boolean, optional
                   Increase verbosity
 
@@ -229,7 +231,7 @@ class BCFTools(object):
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-o',outfile),Arg('-O','z')]
+        args=[Arg('-o',outfile),Arg('-O','z'),Arg('--threads',threads)]
 
         params=[]
         if uncalled=='exclude':
