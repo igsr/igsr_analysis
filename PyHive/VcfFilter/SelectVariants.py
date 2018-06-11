@@ -26,7 +26,11 @@ class SelectVariants(eHive.BaseRunnable):
             uncalled=self.param('uncalled')
             if uncalled != 'include' and uncalled != 'exclude': raise Exception("Valid 'uncalled' values are 'include'/'exclude'")
 
-        outfile=vcf.select_variants(outprefix=outprefix)
+        threads=1
+        if self.param_is_defined('threads'):
+            threads=self.param('threads')
+
+        outfile=vcf.select_variants(outprefix=outprefix,threads=threads)
         
         self.param('out_vcf', outfile)
 
