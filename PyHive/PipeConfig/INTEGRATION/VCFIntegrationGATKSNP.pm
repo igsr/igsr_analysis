@@ -559,6 +559,7 @@ sub pipeline_analyses {
             -parameters => {
 		'filepath' => '#out_vcf#',
 		'outprefix' => '#out_vcf#',
+		'threads' => 1,
                 'work_dir' => $self->o('work_dir'),
                 'bcftools_folder' => $self->o('bcftools_folder')
             },

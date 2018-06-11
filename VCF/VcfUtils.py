@@ -335,7 +335,7 @@ class VcfUtils(object):
 
         return outfile
 
-    def convert_PL2GL(self, outfile, verbose=False):
+    def convert_PL2GL(self, outfile, threads=1, verbose=False):
         '''
         Function to convert PL fields into GT.
         This function makes use of Bcftools +tag2tag plugin
@@ -344,6 +344,9 @@ class VcfUtils(object):
         ----------
         outfile : string, required
                   File where the output VCF will be written
+                   Possible values are : KEEP_IF_ANY_UNFILTERED, KEEP_IF_ANY_UNFILTERED, KEEP_UNCONDITIONAL
+        threads : int, optional
+                  Number of trades to use. Default=1
         verbose : bool, optional
                   increase the verbosity, default=False
 
@@ -358,7 +361,9 @@ class VcfUtils(object):
         params=[self.vcf,'-Oz','--','-r','--pl-to-gl']
 
         runner=RunProgram(path=self.bcftools_folder,
-                          program='bcftools +tag2tag', args=[Arg('-o',outfile)], parameters=params)
+                          program='bcftools +tag2tag', 
+                          args=[Arg('--threads',threads), Arg('-o',outfile)], 
+                          parameters=params)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
