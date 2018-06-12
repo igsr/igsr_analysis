@@ -157,7 +157,7 @@ class BCFTools(object):
         
         Parameters
        ----------
-        v_type : str, Required. Valid values are 'snps'/'indels','mnps','other'. Default=snps
+        v_type : str, Required. Valid values are 'snps'/'indels','mnps','other','both'. Default=snps
                  Extract/Filter (depending on the value of the 'action'
                  argument) a certain variant type
         compress : bool, Optional
@@ -170,9 +170,9 @@ class BCFTools(object):
                   Increase verbosity
         '''
 
-        if v_type != "snps" and v_type != "indels" and v_type != "mnps" and v_type != "other":
+        if v_type != "snps" and v_type != "indels" and v_type != "mnps" and v_type != "other" and v_type != "both":
             raise Exception("type value is not valid. Valid values are 'snps'/"
-                            "'indels'/'mnps'/'other'")
+                            "'indels'/'mnps'/'other'/'both'")
         if action != "select" and action != "exclude":
             raise Exception("action value is not valid. Valid values are 'select' or 'exclude'")
 
@@ -182,11 +182,13 @@ class BCFTools(object):
         params=[]
 
         if action == "select":
-            outprefix = outprefix + ".{0}.".format(v_type)
-            args.append(Arg('-v',v_type))
+            if v_type != 'both':
+                outprefix = outprefix + ".{0}.".format(v_type)
+                args.append(Arg('-v',v_type))
         elif action == "exclude":
-            outprefix = outprefix + ".no{0}.".format(v_type)
-            args.append(Arg('-V',v_type))
+            if v_type != 'both':
+                outprefix = outprefix + ".no{0}.".format(v_type)
+                args.append(Arg('-V',v_type))
         if biallelic is True:
             outprefix += "biallelic."
             params.extend(['-m2','-M2'])

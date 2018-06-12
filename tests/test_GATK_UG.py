@@ -6,7 +6,7 @@ import time
 
 from VariantCalling import GATK 
 
-# test_GATK.py
+# test_GATK_UG.py
 
 @pytest.fixture
 def gatk_object():
@@ -92,5 +92,4 @@ def test_run_ug_and_throwerror(gatk_object, clean_tmp):
         outfile=gatk_object.run_ug(outprefix='data/out/test2', glm='INDEL',
                                    log_file='data/out/gatk_ug_{0}.log'.format(timestr),
                                    output_mode='non_valid', nt=1)
-
 
