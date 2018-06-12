@@ -114,7 +114,8 @@ sub resource_classes {
 	'20Gb10cpus' => { 'LSF' => '-n 10 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
 	'20Gb20cpus' => { 'LSF' => '-n 20 -C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
 	'75Gb20cpus' => { 'LSF' => '-n 20 -C0 -M75000 -q '.$self->o('lsf_queue').' -R"select[mem>75000] rusage[mem=75000]"' },
-	'10cpus' => { 'LSF' => '-n 10 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' }
+	'10cpus' => { 'LSF' => '-n 10 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' },
+	'20cpus' => { 'LSF' => '-n 20 -C0 -M1024 -q '.$self->o('lsf_queue').' -R"select[mem>1024] rusage[mem=1024]"' }
     };
 }
 
@@ -543,11 +544,11 @@ sub pipeline_analyses {
                 'filepath' => '#vcf_filt#',
 		'uncalled' => 'exclude', #it is necessary to exclude sites with missing genotypes in order for Beagle not to crash
                 'outprefix' => '#vcf_filt#',
-		'threads' => 1,
+		'threads' => 20,
                 'work_dir' => $self->o('work_dir'),
                 'bcftools_folder' => $self->o('bcftools_folder')
             },
-            -rc_name => '500Mb',
+            -rc_name => '20cpus',
 	    -flow_into => {
 		1 => ['convert_pl2gl']
 	    },
