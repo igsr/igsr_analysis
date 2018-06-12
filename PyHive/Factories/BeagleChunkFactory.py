@@ -12,7 +12,6 @@ class BeagleChunkFactory(eHive.BaseRunnable):
     
         vcf_i=Beagle(vcf=self.param_required('filepath'), makeBGLCHUNKS_folder=self.param_required('makeBGLCHUNKS_folder'))
 
-        pdb.set_trace()
         outfile=""
         if self.param_is_defined('work_dir'):
             if not os.path.isdir(self.param_required('work_dir')):
