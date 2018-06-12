@@ -521,7 +521,7 @@ sub pipeline_analyses {
                 'bgzip_folder' => $self->o('bgzip_folder'),
                 'tabix_folder' => $self->o('tabix_folder'),
                 'reference' => $self->o('reference'),
-		'ts_filter_level' => 50.0,
+		'ts_filter_level' => 95,
                 'recal_file' => '#recal_f#',
                 'tranches_file' => '#tranches_f#',
                 'mode' => 'INDEL'
@@ -646,14 +646,14 @@ sub pipeline_analyses {
 		'outprefix' => '#vcf_file#',
 		'niterations' => 15, #recommended in Supp P3
 		'correct' => 1,
-		'nthreads' => 10,
+		'nthreads' => 5,
 		'verbose' => 1 
             },
 	    -flow_into => {
 		-1 => [ 'run_beagle_himem' ],
 		1 => [ '?accu_name=allbeagle_files&accu_address=[]&accu_input_variable=vcf_f'],
 	    },
-	    -rc_name => '10Gb10cpus'
+	    -rc_name => '10Gb5cpus'
         },
 
 	{   -logic_name => 'run_beagle_himem',
