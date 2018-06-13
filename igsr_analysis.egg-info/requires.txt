@@ -1,0 +1,6 @@
+pandas
+PyMySQL
+scipy
+numpy
+matplotlib
+matplotlib-venn

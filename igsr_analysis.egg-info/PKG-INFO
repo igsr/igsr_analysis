@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: igsr-analysis
+Version: 0.90
+Summary: Code that is relevant for the analysis (Mapping, BAM qc, Variant Calling, Filtering etc...) of IGSR data
+Home-page: UNKNOWN
+Author: Ernesto Lowy
+Author-email: ernestolowy@gmail.com
+License: Apache License 2.0
+Description-Content-Type: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
