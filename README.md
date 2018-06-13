@@ -3,6 +3,19 @@ This repo contains code that is relevant for the analysis (Mapping, BAM qc, Vari
 
 ### Preparing environment
 Modify your $PYTHONPATH to include the required libraries:<br>
-```export PYTHONPATH=${igsr_analysis_dir}/igsr_analysis:${ehive_dir}/wrappers/python3/:$PYTHONPATH```
+```export PYTHONPATH=${ehive_dir}/wrappers/python3/:$PYTHONPATH```
 
-Where ```$igsr_analysis_dir``` and ```$ehive_dir``` are the folders where ```https://github.com/igsr/igsr_analysis.git``` and ```https://github.com/Ensembl/ensembl-hive.git``` have been downloaded
+Modify your $PERL5LIB to include the required libraries:<br>
+export PERL5LIB=${ehive_dir}/modules/:${igsr_analysis_dir}/igsr_analysis/:${PERL5LIB}
+
+### Install dependency
+
+1) Clone repo by doing ```git clone https://github.com/igsr/igsr_analysis.git``` in the desired folder
+2) ```pip install ${igsr_analysis_dir}/dist/igsr_analysis-0.90.tar.gz```
+
+And you are ready to go! 
+
+### Conventions used in this README file:
+
+```${igsr_analysis_dir}``` is the folder where you have cloned https://github.com/igsr/igsr_analysis.git
+```${ehive_dir}``` is the folder where you have cloned https://github.com/Ensembl/ensembl-hive.git
