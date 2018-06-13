@@ -24,7 +24,7 @@ def gatk_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
@@ -36,7 +36,7 @@ def test_run_ug(gatk_object):
     #create timestamp for log file:
     timestr = time.strftime("%Y%m%d_%H%M%S")
 
-    outfile=gatk_object.run_ug(outprefix='data/out/test', log_file='data/out/gatk_ug_{0}.log'.format(timestr))
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test', log_file='data/outdir/gatk_ug_{0}.log'.format(timestr))
 
     assert os.path.isfile(outfile) is True
 
@@ -45,7 +45,7 @@ def test_run_ug_nocompress(gatk_object):
     Test function to run GATK UG on a BAM file generating an uncompressed VCF
     '''
 
-    outfile=gatk_object.run_ug(outprefix='data/out/test',verbose=True, compress=False)
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test',verbose=True, compress=False)
 
     assert os.path.isfile(outfile) is True
 
@@ -55,7 +55,7 @@ def test_run_ug_with_ivals(gatk_object):
     analyze on the command line
     '''
 
-    outfile=gatk_object.run_ug(outprefix='data/out/test1', verbose=True, intervals= 'chr1:10000-30000')
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test1', verbose=True, intervals= 'chr1:10000-30000')
 
     assert os.path.isfile(outfile) is True
 
@@ -64,7 +64,7 @@ def test_run_ug_with_params(gatk_object):
     Test function to run GATK UG on a BAM file using some optional params
     '''
 
-    outfile=gatk_object.run_ug(outprefix='data/out/test2', glm='INDEL', 
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test2', glm='INDEL', 
                                output_mode='EMIT_ALL_SITES', nt=1)
 
     assert os.path.isfile(outfile) is True
@@ -74,7 +74,7 @@ def test_run_ug_with_verbose(gatk_object):
     Test function to run GATK UG on a BAM file using verbose=True
     '''
 
-    outfile=gatk_object.run_ug(outprefix='data/out/test2', glm='INDEL',
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test2', glm='INDEL',
                                output_mode='EMIT_ALL_SITES', nt=1, verbose=True)
 
     assert os.path.isfile(outfile) is True
@@ -89,7 +89,7 @@ def test_run_ug_and_throwerror(gatk_object, clean_tmp):
     timestr = time.strftime("%Y%m%d_%H%M%S")
 
     with pytest.raises(Exception):
-        outfile=gatk_object.run_ug(outprefix='data/out/test2', glm='INDEL',
-                                   log_file='data/out/gatk_ug_{0}.log'.format(timestr),
+        outfile=gatk_object.run_ug(outprefix='data/outdir/test2', glm='INDEL',
+                                   log_file='data/outdir/gatk_ug_{0}.log'.format(timestr),
                                    output_mode='non_valid', nt=1)
 
