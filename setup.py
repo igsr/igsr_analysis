@@ -55,5 +55,5 @@ setup(
         'scripts/p3/analyze_p3_stats.py',
         'scripts/replace_chros_names.py'
     ],
-    install_requires=['pandas','PyMySQL','scipy','numpy','matplotlib','matplotlib-venn'], #external packages as dependencies
+    install_requires=['pandas','PyMySQL','scipy','numpy','matplotlib','matplotlib-venn','pysam'], #external packages as dependencies
 )
