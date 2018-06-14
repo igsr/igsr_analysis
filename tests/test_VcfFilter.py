@@ -18,7 +18,7 @@ def vcf_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
@@ -28,7 +28,7 @@ def test_filter_by_variant_type(vcf_object):
     Will select SNPs from the VCF file
     '''
     
-    outfile=vcf_object.filter_by_variant_type(outprefix='data/out/test')
+    outfile=vcf_object.filter_by_variant_type(outprefix='data/outdir/test')
 
     assert os.path.isfile(outfile) is True
 
@@ -39,7 +39,7 @@ def test_filter_by_variant_type_biallelic(vcf_object):
     using the biallelic option
     '''
 
-    outfile=vcf_object.filter_by_variant_type(outprefix='data/out/test', biallelic=True)
+    outfile=vcf_object.filter_by_variant_type(outprefix='data/outdir/test', biallelic=True)
 
     assert os.path.isfile(outfile) is True
 
@@ -49,6 +49,6 @@ def test_filter_by_variant_type_biallelic_compressed(vcf_object, clean_tmp):
     using the biallelic option
     '''
 
-    outfile=vcf_object.filter_by_variant_type(outprefix='data/out/test', biallelic=True, compress=False)
+    outfile=vcf_object.filter_by_variant_type(outprefix='data/outdir/test', biallelic=True, compress=False)
 
     assert os.path.isfile(outfile) is True

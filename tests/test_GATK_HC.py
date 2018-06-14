@@ -24,7 +24,7 @@ def gatk_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
@@ -36,7 +36,7 @@ def test_run_hc(gatk_object):
     #create timestamp for log file:
     timestr = time.strftime("%Y%m%d_%H%M%S")
 
-    outfile=gatk_object.run_hc(outprefix='data/out/test_hc1', verbose=True, log_file='data/out/gatk_hc_{0}.log'.format(timestr))
+    outfile=gatk_object.run_hc(outprefix='data/outdir/test_hc1', verbose=True, log_file='data/outdir/gatk_hc_{0}.log'.format(timestr))
 
     assert os.path.isfile(outfile) is True
 
@@ -45,6 +45,6 @@ def test_run_hc_nocompress(gatk_object, clean_tmp):
     Test function to run GATK HC on a BAM file generating an uncompressed VCF
     '''
 
-    outfile=gatk_object.run_ug(outprefix='data/out/test_hc2',verbose=True, compress=False)
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test_hc2',verbose=True, compress=False)
 
     assert os.path.isfile(outfile) is True
