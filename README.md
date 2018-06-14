@@ -6,7 +6,10 @@ Modify your $PYTHONPATH to include the required libraries:<br>
 ```export PYTHONPATH=${ehive_dir}/wrappers/python3/:$PYTHONPATH```
 
 Modify your $PERL5LIB to include the required libraries:<br>
-```export PERL5LIB=${ehive_dir}/modules/:${igsr_analysis_dir}/igsr_analysis/:${PERL5LIB}```
+```export PERL5LIB=${ehive_dir}/modules/:${igsr_analysis_dir}/:${PERL5LIB}```
+
+Modify your $PATH to include the location of the eHive scripts:
+```export PATH=${ehive_dir}/scripts/:${PATH}```
 
 ### Install dependency
 
