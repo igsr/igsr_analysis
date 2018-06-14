@@ -7,7 +7,8 @@ setup(
     license="Apache License 2.0",
     author='Ernesto Lowy',
     author_email='ernestolowy@gmail.com',
-    packages=['BamQC','BEDTools','p3','PyHive','ReseqTrackDB','SequenceIndex','Utils','VariantCalling','VCF','tests'],
+    packages=['BamQC','BEDTools','p3','PyHive','PyHive/Attribute','PyHive/Bam','PyHive/BamQC','PyHive/Factories','PyHive/File','PyHive/Seed','PyHive/VariantCalling','PyHive/Vcf',
+              'PyHive/VcfFilter','PyHive/VcfIntegration','PyHive/VcfQC','ReseqTrackDB','SequenceIndex','Utils','VariantCalling','VCF','VCF/VCFfilter','VCF/VCFIntegration/','tests'],
     scripts=[
         'scripts/3way_listcomp.py',
         'scripts/BamQC/run_all_qctests.py',
