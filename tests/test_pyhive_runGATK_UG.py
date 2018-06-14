@@ -9,7 +9,7 @@ import glob
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
@@ -24,7 +24,7 @@ def test_runGATK_UG(clean_tmp):
     glm = pytest.config.getoption("--glm")
     output_mode = pytest.config.getoption("--output_mode")
 
-    work_dir= "data/out/"
+    work_dir= "data/outdir/"
 
     command="perl {0}/standaloneJob.pl PyHive.VariantCalling.GATK_UG -language python3 \
     -outprefix {1} -work_dir {2} -chunk {3} -bamlist {4} -reference {5} \
@@ -50,14 +50,14 @@ def test_runGATK_UG_wlogile(clean_tmp):
     glm = pytest.config.getoption("--glm")
     output_mode = pytest.config.getoption("--output_mode")
 
-    work_dir= "data/out/"
+    work_dir= "data/outdir/"
 
     command="perl {0}/standaloneJob.pl PyHive.VariantCalling.GATK_UG -language python3 \
     -outprefix {1} -work_dir {2} -chunk {3} -bamlist {4} -reference {5} \
     -gatk_folder {6} -bgzip_folder {7} -glm {8} -output_mode {9} -log_file {10} -verbose True".format(hive_scripts, 'out', work_dir,
                                                                                                       "\"['chr1','10000','30000']\"", bam_file,
                                                                                                       reference, gatk_folder, bgzip_folder,
-                                                                                                      glm, output_mode, "data/out/test")
+                                                                                                      glm, output_mode, "data/outdir/test")
     try:
         subprocess.check_output(command, shell=True)
         assert True
@@ -79,7 +79,7 @@ def test_runGATK_UG_throws_exception(clean_tmp):
     glm = 'fake'
     output_mode = pytest.config.getoption("--output_mode")
 
-    work_dir= "data/out/"
+    work_dir= "data/outdir/"
 
     command="perl {0}/standaloneJob.pl PyHive.VariantCalling.GATK_UG -language python3 \
     -outprefix {1} -work_dir {2} -chunk {3} -bamlist {4} -reference {5} \

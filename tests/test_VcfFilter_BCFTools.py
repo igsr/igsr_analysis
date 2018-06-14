@@ -18,7 +18,7 @@ def vcf_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 

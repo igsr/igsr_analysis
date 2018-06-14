@@ -20,7 +20,7 @@ def vcf_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('data/out/*')
+    files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
 
@@ -35,7 +35,7 @@ def test_run_variantrecalibrator(vcf_object):
 
     with pytest.raises(Exception):
         vcf_object.run_variantrecalibrator(outprefix='data/outdir/test', resources='data/resources_snps.json', mode='SNP', verbose=True,
-                                           log_file='data/out/gatk_variantrecalibrator_{0}.log'.format(timestr))
+                                           log_file='data/outdir/gatk_variantrecalibrator_{0}.log'.format(timestr))
 
 def test_applyrecalibration(vcf_object):
     '''
@@ -48,7 +48,7 @@ def test_applyrecalibration(vcf_object):
     with pytest.raises(Exception):
         vcf_object.run_applyrecalibration(mode='SNP', recal_file='data/test.recal', 
                                           tranches_file='data/test.tranches', outprefix='data/outdir/test',
-                                          verbose=True,log_file='data/out/gatk_applyrecalibration_{0}.log'.format(timestr))
+                                          verbose=True,log_file='data/outdir/gatk_applyrecalibration_{0}.log'.format(timestr))
 
 def test_applyrecalibration_uncompressed(vcf_object):
     '''
