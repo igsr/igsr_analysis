@@ -1,0 +1,1 @@
+from BamQC import BamQC
