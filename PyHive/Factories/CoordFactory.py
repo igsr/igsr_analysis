@@ -35,12 +35,13 @@ class CoordFactory(eHive.BaseRunnable):
                                              subtract=subtract,
                                              rextend=rextend,
                                              verbose=verbose)
-        chunks=[]
 
+        chunks2select=None
+        if self.param_is_defined('chunk_ixs'): chunks2select=ast.literal_eval(self.param('chunk_ixs'))
+        chunks=[]
         ix=1
         for c in coord_list:
             if self.param_is_defined('chunk_ixs'):
-                chunks2select = ast.literal_eval(self.param('chunk_ixs'))
                 if ix in chunks2select:
                     chunks.append(
                         {
@@ -55,7 +56,10 @@ class CoordFactory(eHive.BaseRunnable):
                     })
             ix+=1
 
-        if len(coord_list)!=len(chunks): raise Exception("Incorrect number of chunks after processing")
+        if self.param_is_defined('chunk_ixs'):
+            if len(chunks2select)!=len(chunks): raise Exception("Incorrect number of chunks after processing")
+        else:
+            if len(coord_list)!=len(chunks): raise Exception("Incorrect number of chunks after processing")
 
         #write chunks to log file
         if not os.path.isdir(self.param_required('log_dir')):
