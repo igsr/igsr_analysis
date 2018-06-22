@@ -136,7 +136,7 @@ class Beagle(object):
             
         return outfile
 
-    def make_beagle_chunks(self,window,overlap,outfile,verbose=False):
+    def make_beagle_chunks(self,window,overlap,outfile,verbose=True):
         '''
         Method to define chromosome chunks for Beagle
         see https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#gettingstarted
@@ -150,7 +150,7 @@ class Beagle(object):
         outfile: str, required
                  Name of output file. i.e. 'chunk.coordinates'
         verbose : bool, optional
-                  if true, then print the command line used for running this tool.Default=False
+                  if true, then print the command line used for running this tool.Default=True
 
         Returns
         -------
@@ -167,6 +167,7 @@ class Beagle(object):
 
         runner=RunProgram(path="{0}/".format(self.makeBGLCHUNKS_folder), program='makeBGLCHUNKS', args=args)
         
+        print(runner.cmd_line)
         if verbose is True:
              print("Command line for running makeBGLCHUNKS is: {0}".format(runner.cmd_line))
 
