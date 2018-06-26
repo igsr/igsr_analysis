@@ -703,7 +703,7 @@ sub pipeline_analyses {
 		'filepath' => '#vcf_file#',
                 'makeBGLCHUNKS_folder' => $self->o('makeBGLCHUNKS_folder'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/shapeit/",
-                'window' => $self->o('window_shapeitchnks')
+                'window' => $self->o('window_shapeitchnks'),
                 'overlap' => $self->o('overlap_shapeitchnks'),
                 'verbose' => 1
             },
@@ -790,7 +790,7 @@ sub pipeline_analyses {
                 'verbose' => 'True'
             },
             -analysis_capacity => 1,
-            -rc_name => '2Gb',
+            -rc_name => '5Gb',
 	    -flow_into => {
 		1 => {'run_convert_vcf' => {
                     'hap_gz' => '#hap_gz#',
@@ -814,7 +814,7 @@ sub pipeline_analyses {
                 'verbose' => 'True'
             },
             -analysis_capacity => 1,
-            -rc_name => '500Mb',
+            -rc_name => '5Gb',
 #	    -flow_into => {
 #		1 => ['store_phased_vcf']
 #            }
