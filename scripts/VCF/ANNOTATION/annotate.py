@@ -3,6 +3,8 @@ import subprocess
 import re
 import os
 import logging
+import pdb
+import re
 
 parser = argparse.ArgumentParser(description='Script to annotate a VCF')
 
@@ -62,6 +64,9 @@ def mod_AFs(AFfile):
     New allele frequency file some modifications
     '''
 
+    p = re.compile('0\.00+')
+    AF_ixs=[7,10,13,16,19,22]
+
     region=args.region.replace(':','.')
     pops=args.pops.replace(',','_')
     outfile="{0}/AFs.{1}.{2}.sub1.tsv".format(args.outdir,region,pops)
@@ -70,6 +75,10 @@ def mod_AFs(AFfile):
         for line in f:
             line=line.rstrip("\n")
             b=line.split("\t")
+#            pdb.set_trace()
+            for i in AF_ixs:
+                if p.match(b[i]):
+                    b[i]='0'
             str="{0}-{1}\t{0}\t{1}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}".format(b[0],b[1],b[20],b[21],b[22],b[7],b[10],b[13],b[16],b[19])
             wf.write(str+"\n")
             
@@ -131,7 +140,8 @@ def concat_tables(depth_f,ann_tab):
 
     outfile="{0}/concat_f.{1}.txt".format(args.outdir,region)    
     wf=open(outfile,'w')
-    wf.write("#CHR\tFROM\tTO\tDP\tALL_TOTAL_CNT\tALL_ALT_CNT\tALL_FRQ\tEAS_FRQ\tEUR_FRQ\tAFR_FRQ\tAMR_FRQ\tSAS_FRQ\n")
+
+    wf.write("#CHR\tFROM\tTO\tDP\tAN\tAC\tAF\tEAS_AF\tEUR_AF\tAFR_AF\tAMR_AF\tSAS_AF\n")
     with open(tmpfile) as f:
         for line in f:
             line=line.rstrip("\n")
@@ -187,15 +197,15 @@ def get_overlapping_variants(file1,file2,label):
                 wf.write(line+"\n")
                 continue
             if line.split("\t")[1] in intersect_list:
-                line= line+"\t{0}".format(label)
+                line= line+"\t1"
             else:
-                line=line+"\tn.a."
+                line=line+"\t0"
             wf.write(line+"\n")
     wf.close()
     
     return outfile
 
-def add_annotation(file1,label):
+def add_annotation(file1,header,label):
     '''
     Function to add a particular label to all rows in the table
 
@@ -203,6 +213,8 @@ def add_annotation(file1,label):
     ----
     file1: string
            Path to table that will be used in order to add the annotation as the last column
+    header: string
+            Name used in the header for this annotation
     label: string
            Label that will be used and will be added as the last column in the table
 
@@ -218,11 +230,57 @@ def add_annotation(file1,label):
     with open(file1) as f:
         for line in f:
             line=line.rstrip("\n")
+            if line.startswith('#'):
+                line=line+"\t{0}".format(header)
+                wf.write(line+"\n")
+                continue
+            line=line.rstrip("\n")
             line= line+"\t{0}".format(label)
             wf.write(line+"\n")
     wf.close()
 
     return outfile
+
+def add_number_of_samples(file1,ann_vcf):
+    '''
+    Function to add the NS (number of samples) annotation to the annotation table
+
+    Args
+    ----
+    file1: string
+           Path to table that will be used in order to add the annotation as the last column
+    ann_vcf: string
+             Path to VCF with annotations that will be used to obtain the number of samples
+   
+    Returns
+    -------
+    Path to the file that will contain the additional column
+             
+    '''
+    
+    region=args.region.replace(':','.')
+    outfile="{0}/annot_tab2.{1}.txt".format(args.outdir,region)
+
+
+    cmd="bcftools query -l {0} |wc -l".format(ann_vcf)
+
+    try:
+        number_of_samples = subprocess.check_output(cmd, shell=True).decode("utf-8").rstrip('\n')
+        wf=open(outfile,'w')
+        with open(file1) as f:
+            for line in f:
+                line=line.rstrip("\n")
+                if line.startswith('#'):
+                    line=line+"\tNS"
+                    wf.write(line+"\n")
+                    continue
+                else:
+                    line= line+"\t{0}".format(number_of_samples)
+                    wf.write(line+"\n")
+    except subprocess.CalledProcessError as e:
+        raise
+
+
  
 logging.info("Starting the script")
 logging.info("Running get_allele_frequencies")
@@ -241,8 +299,9 @@ logging.info("Running get_overlapping_variants")
 annot_tab=get_overlapping_variants(concat_tab,args.exome,'EX_TARGET')
 logging.info("Done!")
 logging.info("Running add_annotation")
-annot_tab1=add_annotation(annot_tab,'SNP')
+annot_tab1=add_annotation(annot_tab,'VT','SNP')
 logging.info("Done!")
+annot_tab2=add_number_of_samples(annot_tab1,args.ann_vcf)
 
 #delete old files
 os.remove(AFs)
@@ -250,3 +309,4 @@ os.remove(modAFs)
 os.remove(depth_f)
 os.remove(concat_tab)
 os.remove(annot_tab)
+os.remove(annot_tab1)
