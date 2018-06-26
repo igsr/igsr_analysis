@@ -75,11 +75,10 @@ def mod_AFs(AFfile):
         for line in f:
             line=line.rstrip("\n")
             b=line.split("\t")
-#            pdb.set_trace()
             for i in AF_ixs:
                 if p.match(b[i]):
                     b[i]='0'
-            str="{0}-{1}\t{0}\t{1}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}".format(b[0],b[1],b[20],b[21],b[22],b[7],b[10],b[13],b[16],b[19])
+            str="{0}-{1}\t{0}\t{1}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}".format(b[0],b[1],b[3],b[4],b[20],b[21],b[22],b[7],b[10],b[13],b[16],b[19])
             wf.write(str+"\n")
             
     wf.close()
@@ -141,12 +140,13 @@ def concat_tables(depth_f,ann_tab):
     outfile="{0}/concat_f.{1}.txt".format(args.outdir,region)    
     wf=open(outfile,'w')
 
-    wf.write("#CHR\tFROM\tTO\tDP\tAN\tAC\tAF\tEAS_AF\tEUR_AF\tAFR_AF\tAMR_AF\tSAS_AF\n")
+    wf.write("#CHR\tFROM\tTO\tREF\tALT\tDP\tAN\tAC\tAF\tEAS_AF\tEUR_AF\tAFR_AF\tAMR_AF\tSAS_AF\n")
     with open(tmpfile) as f:
         for line in f:
+            pdb.set_trace()
             line=line.rstrip("\n")
             b=line.split(" ")
-            str="{0}\t{1}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}".format(b[2],b[3],b[1],b[5],b[6],b[7],b[8],b[9],b[10],b[11],b[12])
+            str="{0}\t{1}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}".format(b[2],b[3],b[5],b[6],b[1],b[7],b[8],b[9],b[10],b[11],b[12],b[13],b[14])
             wf.write(str+"\n")
 
     wf.close()
@@ -304,9 +304,9 @@ logging.info("Done!")
 annot_tab2=add_number_of_samples(annot_tab1,args.ann_vcf)
 
 #delete old files
-os.remove(AFs)
-os.remove(modAFs)
-os.remove(depth_f)
-os.remove(concat_tab)
-os.remove(annot_tab)
-os.remove(annot_tab1)
+#os.remove(AFs)
+#os.remove(modAFs)
+#os.remove(depth_f)
+#os.remove(concat_tab)
+#os.remove(annot_tab)
+#os.remove(annot_tab1)
