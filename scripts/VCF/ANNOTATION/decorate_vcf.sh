@@ -38,20 +38,20 @@ echo "[INFO] running tabix on the annotation table-DONE"
 
 #decorate the VCF and also change chromosome names
 echo "[INFO] running bcftools annotate"
-dec_outprefix=$(basename -s .vcf.gz $1).$region".decorated.vcf.gz"
-cmd4="bcftools annotate -r $3 -a ann_table/annot_tab2.${region}.txt.gz -h $IGSR_ROOT/SUPPORTING/annots_26062018.txt --rename-chrs $IGSR_ROOT/SUPPORTING/ensembl2ucsc_chrdict.txt -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS $1 -o $dec_outprefix -Oz"
+dec_out=$(basename -s .vcf.gz $1).$region".decorated.vcf.gz"
+cmd4="bcftools annotate -r $3 -a ann_table/annot_tab2.${region}.txt.gz -h $IGSR_ROOT/SUPPORTING/annots_26062018.txt --rename-chrs $IGSR_ROOT/SUPPORTING/ensembl2ucsc_chrdict.txt -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS $1 -o $dec_out -Oz"
 $cmd4
 echo "[INFO] running bcftools annotate-DONE"
 
 #Now, modify the header on the decorated VCF
 echo "[INFO] running bcftools reheader"
-reheaded_outprefix=$(basename -s .vcf.gz $dec_outprefix)".reheaded.vcf.gz"
-cmd5="bcftools reheader -h $IGSR_ROOT/SUPPORTING/header_26062018.txt combined.all.chr20_chr20.filt.vcf.gz.merged.vcf.gz.recalibrated_snps_raw_indels.vcf.gz.onlyvariants.vcf.gz.GL.vcf.gz.ensembl.vcf.gz.phased.20_10000000_10050000.decorated.vcf.gz -o $reheaded_outprefix"
+reheaded_out=$(basename -s .vcf.gz $dec_out)".reheaded.vcf.gz"
+cmd5="bcftools reheader -h $IGSR_ROOT/SUPPORTING/header_26062018.txt $dec_out -o $reheaded_out"
 $cmd5
 echo "[INFO] running bcftools reheader-DONE"
 
 #validate the VCF
 echo "[INFO] running vcf validator"
-cmd6="vcf_validator_linux -i $reheaded_outprefix" 
+cmd6="vcf_validator_linux -i $reheaded_out" 
 $cmd6
 echo "[INFO] running vcf validator-DONE"
