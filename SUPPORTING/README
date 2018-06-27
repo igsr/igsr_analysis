@@ -1,5 +1,6 @@
-This folder contains files that are used in the process of variation calling
+This folder contains files that are used in the process of variation calling:
 
+# Files used to decorate the phased VCF
 annots_*.txt  
 ensembl2ucsc_chrdict.txt  
 header_*.txt  
