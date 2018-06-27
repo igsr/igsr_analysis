@@ -143,7 +143,6 @@ def concat_tables(depth_f,ann_tab):
     wf.write("#CHR\tFROM\tTO\tREF\tALT\tDP\tAN\tAC\tAF\tEAS_AF\tEUR_AF\tAFR_AF\tAMR_AF\tSAS_AF\n")
     with open(tmpfile) as f:
         for line in f:
-            pdb.set_trace()
             line=line.rstrip("\n")
             b=line.split(" ")
             str="{0}\t{1}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}".format(b[2],b[3],b[5],b[6],b[1],b[7],b[8],b[9],b[10],b[11],b[12],b[13],b[14])
@@ -304,9 +303,9 @@ logging.info("Done!")
 annot_tab2=add_number_of_samples(annot_tab1,args.ann_vcf)
 
 #delete old files
-#os.remove(AFs)
-#os.remove(modAFs)
-#os.remove(depth_f)
-#os.remove(concat_tab)
-#os.remove(annot_tab)
-#os.remove(annot_tab1)
+os.remove(AFs)
+os.remove(modAFs)
+os.remove(depth_f)
+os.remove(concat_tab)
+os.remove(annot_tab)
+os.remove(annot_tab1)
