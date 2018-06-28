@@ -40,11 +40,20 @@ def test_run_hc(gatk_object):
 
     assert os.path.isfile(outfile) is True
 
-def test_run_hc_nocompress(gatk_object, clean_tmp):
+def test_run_hc_nocompress(gatk_object):
     '''
     Test function to run GATK HC on a BAM file generating an uncompressed VCF
     '''
 
-    outfile=gatk_object.run_ug(outprefix='data/outdir/test_hc2',verbose=True, compress=False)
+    outfile=gatk_object.run_hc(outprefix='data/outdir/test_hc2',verbose=True, compress=False)
+
+    assert os.path.isfile(outfile) is True
+
+def test_run_hc_multithread(gatk_object,clean_tmp):
+    '''
+    Test function to run GATK HC on a BAM file using more than one thread
+    '''
+
+    outfile=gatk_object.run_hc(outprefix='data/outdir/test_hc2',verbose=True, num_cpu_threads_per_data_thread=2)
 
     assert os.path.isfile(outfile) is True

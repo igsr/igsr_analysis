@@ -79,6 +79,15 @@ def test_run_ug_with_verbose(gatk_object):
 
     assert os.path.isfile(outfile) is True
 
+
+def test_run_ug_multithreaded(gatk_object):
+    '''
+    Test function to run GATK UG on a BAM file using more than one thread
+    '''
+
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test2', glm='INDEL',
+                               output_mode='EMIT_ALL_SITES', nt=2, verbose=True)
+
 def test_run_ug_and_throwerror(gatk_object, clean_tmp):
     '''
     Test function to run GATK UG on a BAM file and will raise an Exception 
@@ -92,4 +101,5 @@ def test_run_ug_and_throwerror(gatk_object, clean_tmp):
         outfile=gatk_object.run_ug(outprefix='data/outdir/test2', glm='INDEL',
                                    log_file='data/outdir/gatk_ug_{0}.log'.format(timestr),
                                    output_mode='non_valid', nt=1)
+
 
