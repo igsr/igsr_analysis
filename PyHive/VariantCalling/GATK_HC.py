@@ -100,7 +100,7 @@ class GATK_HC(eHive.BaseRunnable):
         outfile=gatk_object.run_hc(outprefix=outfile,
                                    alleles=alleles, 
                                    genotyping_mode=genotyping_mode,
-                                   intervals=intervals, nt=nt, 
+                                   intervals=intervals, num_cpu_threads_per_data_thread=nt, 
                                    log_file=log_file)
 
         self.param('out_vcf', outfile)
