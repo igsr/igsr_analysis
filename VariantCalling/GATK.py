@@ -90,7 +90,7 @@ class GATK(object):
         
         for k,v in kwargs.items():
             if v is not None: arguments.append(Arg(" --{0}".format(k),v))
-        
+
         pipelist=None
         if compress is True:
             outprefix += ".vcf.gz"
@@ -109,7 +109,7 @@ class GATK(object):
 
         return outprefix
 
-    def run_hc(self, outprefix, compress=True, nt=1, verbose=None, log_file=None, **kwargs):
+    def run_hc(self, outprefix, compress=True, verbose=None, log_file=None, **kwargs):
         '''
         Run GATK HaplotypeCaller
 
@@ -119,8 +119,8 @@ class GATK(object):
                     Prefix for output VCF file. i.e. /path/to/file/test
         compress : boolean, Default= True
                    Compress the output VCF
-        nt : int, Optional
-             Number of data threads to allocate to HC
+        num_cpu_threads_per_data_thread : int, Optional
+                   controls the number of CPU threads allocated to each data thread
         intervals : str, Optional
                     Path to file with genomic intervals to operate with. Also coordinates
                     can be set directly on the command line. For example: chr1:100-200
