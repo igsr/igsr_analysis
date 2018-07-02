@@ -49,11 +49,14 @@ def test_run_hc_nocompress(gatk_object):
 
     assert os.path.isfile(outfile) is True
 
-def test_run_hc_multithread(gatk_object,clean_tmp):
+def test_run_hc_interval(gatk_object, clean_tmp):
     '''
-    Test function to run GATK HC on a BAM file using more than one thread
+    Test function to run GATK HC on a BAM file using several intervals
     '''
 
-    outfile=gatk_object.run_hc(outprefix='data/outdir/test_hc2',verbose=True, num_cpu_threads_per_data_thread=2)
+    outfile=gatk_object.run_hc(outprefix='data/outdir/test_hc3',verbose=True, intervals=['chr1:10000-20000', 
+                                                                                         'chr1:20001-30000'])
 
     assert os.path.isfile(outfile) is True
+
+
