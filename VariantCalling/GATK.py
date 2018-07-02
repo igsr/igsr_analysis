@@ -41,7 +41,7 @@ class GATK(object):
         self.gatk_folder = gatk_folder
         self.bgzip_folder = bgzip_folder
 
-    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, verbose=None, log_file=None, **kwargs):
+    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, verbose=None, intervals=None, log_file=None, **kwargs):
         
         '''
         Run GATK UnifiedGenotyper
@@ -58,9 +58,10 @@ class GATK(object):
                    Compress the output VCF
         nt : int, Optional
              Number of data threads to allocate to UG
-        intervals : str, Optional
-                    Path to file with genomic intervals to operate with. Also coordinates
-                    can be set directly on the command line. For example: chr1:100-200
+        intervals : : list, Optional
+                    List in which each of the elements is a path to file with genomic intervals to operate with. Also coordinates
+                    can be set directly on the command line. For example: ['chr1:100-200', 'chr2:200-300']. If the list contains
+                    more than one interval, then it is useful to set the --interval_set_rule option
         verbose : bool, optional
                   if true, then print the command line used for running this program
         alleles: str, Optional
@@ -87,6 +88,10 @@ class GATK(object):
         Arg = namedtuple('Argument', 'option value')
 
         arguments=[Arg('-T','UnifiedGenotyper'), Arg('-R',self.reference), Arg('-I',self.bam), Arg('-glm',glm), Arg('-nt',nt)]
+
+        if intervals is not None:
+            for i in intervals:
+                arguments.append(Arg('--intervals',i))
         
         for k,v in kwargs.items():
             if v is not None: arguments.append(Arg(" --{0}".format(k),v))
@@ -109,7 +114,7 @@ class GATK(object):
 
         return outprefix
 
-    def run_hc(self, outprefix, compress=True, verbose=None, log_file=None, **kwargs):
+    def run_hc(self, outprefix, compress=True, verbose=None, log_file=None, intervals=None, **kwargs):
         '''
         Run GATK HaplotypeCaller
 
@@ -121,9 +126,10 @@ class GATK(object):
                    Compress the output VCF
         num_cpu_threads_per_data_thread : int, Optional
                    controls the number of CPU threads allocated to each data thread
-        intervals : str, Optional
-                    Path to file with genomic intervals to operate with. Also coordinates
-                    can be set directly on the command line. For example: chr1:100-200
+        intervals : list, Optional
+                    List in which each of the elements is a path to file with genomic intervals to operate with. Also coordinates
+                    can be set directly on the command line. For example: ['chr1:100-200', 'chr2:200-300']. If the list contains 
+                    more than one interval, then it is useful to set the --interval_set_rule option
         standard_min_confidence_threshold_for_calling : int, Optional
                                                         The minimum phred-scaled confidence threshold at which variants should be called
                                                         Default: 10
@@ -151,6 +157,10 @@ class GATK(object):
         Arg = namedtuple('Argument', 'option value')
 
         arguments=[Arg('-T','HaplotypeCaller'), Arg('-R',self.reference), Arg('-I',self.bam)]
+        
+        if intervals is not None:
+            for i in intervals:
+                arguments.append(Arg('--intervals',i)) 
 
         for k,v in kwargs.items():
             if v is not None: arguments.append(Arg(" --{0}".format(k),v))

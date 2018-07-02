@@ -55,8 +55,9 @@ def test_run_ug_with_ivals(gatk_object):
     analyze on the command line
     '''
 
-    outfile=gatk_object.run_ug(outprefix='data/outdir/test1', verbose=True, intervals= 'chr1:10000-30000')
-
+    outfile=gatk_object.run_ug(outprefix='data/outdir/test1', verbose=True, intervals=['chr1:10000-20000',
+                                                                                       'chr1:20001-30000'])
+    
     assert os.path.isfile(outfile) is True
 
 def test_run_ug_with_params(gatk_object):
