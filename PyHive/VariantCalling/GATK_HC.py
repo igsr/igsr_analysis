@@ -77,13 +77,16 @@ class GATK_HC(eHive.BaseRunnable):
                          gatk_folder=self.param_required('gatk_folder'),
                          bgzip_folder=self.param_required('bgzip_folder'))
 
-        intervals="{0}:{1}-{2}".format(chrom, 
+        intervals=["{0}:{1}-{2}".format(chrom, 
                                        start,
-                                       end)
+                                       end)]
 
+        interval_set_rule="UNION"
         alleles=None
         if self.param_is_defined('alleles'):
             alleles=self.param('alleles')
+            intervals.append(alleles)
+            interval_set_rule="INTERSECTION"
 
         genotyping_mode='DISCOVERY'
         if self.param_is_defined('genotyping_mode'):
@@ -100,7 +103,9 @@ class GATK_HC(eHive.BaseRunnable):
         outfile=gatk_object.run_hc(outprefix=outfile,
                                    alleles=alleles, 
                                    genotyping_mode=genotyping_mode,
-                                   intervals=intervals, num_cpu_threads_per_data_thread=nt, 
+                                   intervals=intervals,
+                                   interval_set_rule=interval_set_rule,
+                                   num_cpu_threads_per_data_thread=nt, 
                                    log_file=log_file)
 
         self.param('out_vcf', outfile)
