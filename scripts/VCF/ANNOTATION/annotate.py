@@ -67,6 +67,7 @@ def mod_AFs(AFfile):
     p = re.compile('0\.00+')
     AF_ixs=[7,10,13,16,19,22]
 
+    pdb.set_trace()
     region=args.region.replace(':','.')
     pops=args.pops.replace(',','_')
     outfile="{0}/AFs.{1}.{2}.sub1.tsv".format(args.outdir,region,pops)
@@ -279,26 +280,24 @@ def add_number_of_samples(file1,ann_vcf):
     except subprocess.CalledProcessError as e:
         raise
 
-
- 
 logging.info("Starting the script")
 logging.info("Running get_allele_frequencies")
 AFs=get_allele_frequencies()
 logging.info("Done!")
 logging.info("Running mod_AFs")
-modAFs=mod_AFs(AFs)
+#modAFs=mod_AFs(AFs)
 logging.info("Done!")
 logging.info("Running get_annotation")
-depth_f=get_annotation(args.ann_vcf,'DP')
+#depth_f=get_annotation(args.ann_vcf,'DP')
 logging.info("Done!")
 logging.info("Running concat_tables")
-concat_tab=concat_tables(depth_f,modAFs)
+#concat_tab=concat_tables(depth_f,modAFs)
 logging.info("Done!")
 logging.info("Running get_overlapping_variants")
-annot_tab=get_overlapping_variants(concat_tab,args.exome,'EX_TARGET')
+#annot_tab=get_overlapping_variants(concat_tab,args.exome,'EX_TARGET')
 logging.info("Done!")
 logging.info("Running add_annotation")
-annot_tab1=add_annotation(annot_tab,'VT','SNP')
+#annot_tab1=add_annotation(annot_tab,'VT','SNP')
 logging.info("Done!")
 annot_tab2=add_number_of_samples(annot_tab1,args.ann_vcf)
 

@@ -17,13 +17,13 @@ region=`echo $3 |sed s/:/./g`
 
 #create folder for annotation table
 mkdir ./ann_table
-rm -f ./ann_table/*
+#rm -f ./ann_table/*
 
 #create the annotation table
 cmd1="python $IGSR_ROOT/scripts/VCF/ANNOTATION/annotate.py --AFcalc $IGSR_ROOT/scripts/VCF/ANNOTATION/ --phased_vcf $1 --sample_panel $IGSR_ROOT/SUPPORTING/integrated_allsamples.20180619.superpopulations.panel --tabix $6 --region $3 --pops $4 --exome $5 --outdir ./ann_table --ann_vcf $2"
-
+echo $cmd1
 echo "[INFO] running Python annotate.py"
-$cmd1
+#$cmd1
 echo "[INFO] running Python annotate.py-DONE"
 
 #echo "[INFO] compression annotation table"
