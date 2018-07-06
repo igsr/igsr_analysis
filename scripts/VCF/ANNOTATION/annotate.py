@@ -5,6 +5,8 @@ import os
 import logging
 import pdb
 import re
+import pandas as pd
+
 
 parser = argparse.ArgumentParser(description='Script to annotate a VCF')
 
@@ -37,52 +39,16 @@ def get_allele_frequencies():
     outfile="{0}/AFs.{1}.{2}.tsv".format(args.outdir,region,pops)
 
     cmd="perl {0}/calculate_allele_frq_from_vcf.pl -vcf {1} -sample_panel {2} -out_file {3} -region {4} -tabix {5} -pop {6}".format(args.AFcalc,
-                                                                                                                                   args.phased_vcf,
-                                                                                                                                   args.sample_panel,
-                                                                                                                                   outfile,
-                                                                                                                                   args.region,
-                                                                                                                                   args.tabix,
-                                                                                                                                   args.pops)
+                                                                                                                                    args.phased_vcf,
+                                                                                                                                    args.sample_panel,
+                                                                                                                                    outfile,
+                                                                                                                                    args.region,
+                                                                                                                                    args.tabix,
+                                                                                                                                    args.pops)
     try:
         stdout = subprocess.check_output(cmd, shell=True)
     except subprocess.CalledProcessError as e:
         raise
-    
-    return outfile
-
-def mod_AFs(AFfile):
-    '''
-    Function to process and select certain columns from the Allele Frequencies file calculated by function 'get_allele_frequencies'
-
-    Args
-    ----
-    AFfile: string
-            Path to file with allele frequencies calculated by function 'get_allele_frequencies'
-
-    Returns
-    -------
-    New allele frequency file some modifications
-    '''
-
-    p = re.compile('0\.00+')
-    AF_ixs=[7,10,13,16,19,22]
-
-    pdb.set_trace()
-    region=args.region.replace(':','.')
-    pops=args.pops.replace(',','_')
-    outfile="{0}/AFs.{1}.{2}.sub1.tsv".format(args.outdir,region,pops)
-    wf=open(outfile,'w')
-    with open(AFfile) as f:
-        for line in f:
-            line=line.rstrip("\n")
-            b=line.split("\t")
-            for i in AF_ixs:
-                if p.match(b[i]):
-                    b[i]='0'
-            str="{0}-{1}\t{0}\t{1}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}".format(b[0],b[1],b[3],b[4],b[20],b[21],b[22],b[7],b[10],b[13],b[16],b[19])
-            wf.write(str+"\n")
-            
-    wf.close()
     
     return outfile
 
@@ -107,7 +73,8 @@ def get_annotation(vcf, ann):
     region=args.region.replace(':','.')
     outfile="{0}/depths.{1}.txt".format(args.outdir,region)
 
-    cmd="bcftools query -f '%CHROM-%POS\\t%INFO/{0}\\n' -r {1} {2} -o {3}".format(ann,args.region,args.ann_vcf,outfile)
+    cmd="bcftools query -f '%CHROM\\t%POS\\t%INFO/{0}\\n' -r {1} {2} -o {3}".format(ann,args.region,args.ann_vcf,outfile)
+
     
     try:
         stdout = subprocess.check_output(cmd, shell=True)
@@ -116,42 +83,46 @@ def get_annotation(vcf, ann):
         
     return outfile
 
-def concat_tables(depth_f,ann_tab):
+def process_AFs(AF_f,depth_f):
     '''
-    Function to join 2 files by the common column (chr-pos in this case)
+    Function to create a table containing the AFs and the depths for each position
 
     Args
     ----
+    AF_f: string
+          Path to file containing the allele frequencies created by 'get_allele_frequencies'
     depth_f: string
-             Path to file with depths obtained after running 'get_annotation'
-    ann_tab: string
-             Path to file with annotations obtained by running the function 'mod_AFs'
+             Path to file containing the depths per position created by function 'get_annotation'
 
+    Returns
+    -------
+    Path to table containing the AFs and the depths
     '''
+ 
+    #Process the AFs
+    cols=['#CHROM','POS','REF','ALT','ALL_TOTAL_CNT','ALL_ALT_CNT','ALL_FRQ','EAS_FRQ','EUR_FRQ','AFR_FRQ','AMR_FRQ','SAS_FRQ']
+    names=['#CHR','POS', 'REF','ALT','AN','AC','AF','EAS_AF','EUR_AF','AFR_AF','AMR_AF','SAS_AF']
+    final=['#CHR','FROM','TO','REF','ALT','DP','AN','AC','AF','EAS_AF','EUR_AF','AFR_AF','AMR_AF','SAS_AF']
+    AFs_df=pd.read_csv(AF_f, sep="\t", usecols=cols, index_col=False)[cols]
+    AFs_df.columns =names
+    AFs_df=AFs_df.round(decimals=2).astype(object)
 
+    #Proces the depths
+    depths_DF=pd.read_csv(depth_f, sep="\t",  header=None)
+    depths_DF.columns=["#CHR","POS","DP"]
+
+    #Merge by chr-pos
+    merged=pd.merge(AFs_df, depths_DF, on=['#CHR','POS'], how='inner')
+    mergedA=merged.assign(TO = lambda x: x.POS)
+    mergedA=mergedA.rename(columns={'POS': 'FROM'})
+    mergedFinal=mergedA[final]
+
+    #output filename
     region=args.region.replace(':','.')
-    tmpfile="{0}/concat_f.{1}.tmp.txt".format(args.outdir,region)
-    cmd="join <(sort {0}) <(sort {1}) > {2}".format(depth_f,ann_tab,tmpfile)
-    
-    try:
-        stdout = subprocess.check_output(cmd, shell=True, executable='/bin/bash')
-    except subprocess.CalledProcessError as e:
-        raise
+    pops=args.pops.replace(',','_')
 
-    outfile="{0}/concat_f.{1}.txt".format(args.outdir,region)    
-    wf=open(outfile,'w')
-
-    wf.write("#CHR\tFROM\tTO\tREF\tALT\tDP\tAN\tAC\tAF\tEAS_AF\tEUR_AF\tAFR_AF\tAMR_AF\tSAS_AF\n")
-    with open(tmpfile) as f:
-        for line in f:
-            line=line.rstrip("\n")
-            b=line.split(" ")
-            str="{0}\t{1}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}".format(b[2],b[3],b[5],b[6],b[1],b[7],b[8],b[9],b[10],b[11],b[12],b[13],b[14])
-            wf.write(str+"\n")
-
-    wf.close()
-
-    os.remove(tmpfile)
+    outfile="{0}/modAF.{1}.{2}.txt".format(args.outdir,pops,region)
+    mergedFinal.to_csv(outfile,sep='\t',index=False,float_format='%g')
 
     return outfile
     
@@ -284,27 +255,24 @@ logging.info("Starting the script")
 logging.info("Running get_allele_frequencies")
 AFs=get_allele_frequencies()
 logging.info("Done!")
-logging.info("Running mod_AFs")
-#modAFs=mod_AFs(AFs)
-logging.info("Done!")
 logging.info("Running get_annotation")
-#depth_f=get_annotation(args.ann_vcf,'DP')
+depth_f=get_annotation(args.ann_vcf,'DP')
 logging.info("Done!")
-logging.info("Running concat_tables")
-#concat_tab=concat_tables(depth_f,modAFs)
-logging.info("Done!")
+logging.info("Running process_AFs")
+afs_table=process_AFs(AFs,depth_f)
 logging.info("Running get_overlapping_variants")
-#annot_tab=get_overlapping_variants(concat_tab,args.exome,'EX_TARGET')
+annot_tab=get_overlapping_variants(afs_table,args.exome,'EX_TARGET')
 logging.info("Done!")
 logging.info("Running add_annotation")
-#annot_tab1=add_annotation(annot_tab,'VT','SNP')
+annot_tab1=add_annotation(annot_tab,'VT','SNP')
 logging.info("Done!")
+logging.info("Running add_number_of_samples")
 annot_tab2=add_number_of_samples(annot_tab1,args.ann_vcf)
+logging.info("Done!")
 
 #delete old files
-os.remove(AFs)
-os.remove(modAFs)
-os.remove(depth_f)
-os.remove(concat_tab)
-os.remove(annot_tab)
-os.remove(annot_tab1)
+#os.remove(AFs)
+#os.remove(afs_table)
+#os.remove(depth_f)
+#os.remove(annot_tab)
+#os.remove(annot_tab1)
