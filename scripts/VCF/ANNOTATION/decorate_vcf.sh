@@ -50,15 +50,8 @@ cmd5="bcftools reheader -h $IGSR_ROOT/SUPPORTING/header_26062018.txt $dec_out -o
 $cmd5
 echo "[INFO] running bcftools reheader-DONE"
 
-#Recompressing to prevent last line errors in the validator
-echo "[INFO] recompressing"
-`zcat $reheaded_out |bgzip -c > tmp.vcf.gz`
-cmd7="mv tmp.vcf.gz $reheaded_out"
-$cmd7
-echo "[INFO] recompressing-DONE"
-
 #validate the VCF
 echo "[INFO] running vcf validator"
-cmd8="vcf_validator_linux -i $reheaded_out" 
-$cmd8
+cmd6="zcat $reheaded_out | vcf_validator_linux" 
+echo $cmd6
 echo "[INFO] running vcf validator-DONE"
