@@ -1,7 +1,7 @@
 import eHive
 import os
 import datetime
-from VCFfilter.BCFTools import BCFTools
+from VCF.VCFfilter.BCFTools import BCFTools
 
 class SubsetVcfWithBed(eHive.BaseRunnable):
     """subset a VCF by excluding/including (depending on the action value) the variants within the regions defined by a BED file"""

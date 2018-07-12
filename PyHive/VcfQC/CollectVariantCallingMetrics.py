@@ -1,6 +1,6 @@
 import eHive
 import os
-from VcfQC import VcfQC
+from VCF.VcfQC import VcfQC
 from ReseqTrackDB import File
 from ReseqTrackDB import ReseqTrackDB
 from ReseqTrackDB import Attribute
