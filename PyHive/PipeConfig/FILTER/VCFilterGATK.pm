@@ -36,6 +36,7 @@ sub default_options {
 	'intervals_f' => undef, # CollectVariantCallingMetrics
 	'caller' => 'UG', # VariantRecalibrator
 	'gatk_folder' => '/homes/ernesto/bin/GATK/', # VariantRecalibrator
+	'java_tmpdir' => '/gpfs/nobackup/resequencing_informatics/ernesto/tmp', # necessary for GATK ApplyRecalibration not to crash 
 	'tranches' => '[100.0,99.9,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]',
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa', # VariantRecalibrator
 	'resources_snps' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
@@ -398,9 +399,11 @@ sub pipeline_analyses {
                 'gatk_folder' => $self->o('gatk_folder'),
 		'bgzip_folder' => $self->o('bgzip_folder'),
 		'tabix_folder' => $self->o('tabix_folder'),
+		'tmp_dir' => $self->o('java_tmpdir'),
                 'reference' => $self->o('reference'),
                 'recal_file' => '#recal_f#',
                 'tranches_file' => '#tranches_f#',
+		'ts_filter_level' => 99.9,
                 'mode' => 'SNP'
             },
 	    -flow_into => {
@@ -426,7 +429,8 @@ sub pipeline_analyses {
                 'reference' => $self->o('reference'),
                 'resources' => $self->o('resources_indels'),
 		'tranches' => $self->o('tranches'),
-		'intervals' => 'chr20:10000000-20000000',
+		'log_file' => $self->o('log_dir')."/gatk_variantrecalibratior",
+#		'intervals' => 'chr20:10000000-20000000',
                 'mode' => 'INDEL',
                 'annotations' => $self->o('indels_annotations'),
                 'max_gaussians' => 4,
@@ -454,6 +458,8 @@ sub pipeline_analyses {
 		'bgzip_folder' => $self->o('bgzip_folder'),
                 'tabix_folder' => $self->o('tabix_folder'),
                 'reference' => $self->o('reference'),
+		'tmp_dir' => $self->o('java_tmpdir'),
+                'ts_filter_level' => 99.5,
                 'recal_file' => '#recal_f#',
                 'tranches_file' => '#tranches_f#',
                 'mode' => 'INDEL'
