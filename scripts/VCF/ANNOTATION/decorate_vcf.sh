@@ -32,24 +32,24 @@ echo "[INFO] compression annotation table-DONE"
 
 echo "[INFO] running tabix on the annotation table"
 cmd3="tabix -f -s1 -b2 -e3 ann_table/annot_tab2.${region}.txt.gz"
-$cmd3
+#$cmd3
 echo "[INFO] running tabix on the annotation table-DONE"
 
 #decorate the VCF and also change chromosome names
 echo "[INFO] running bcftools annotate"
 dec_out=$(basename -s .vcf.gz $1).$region".decorated.vcf.gz"
 cmd4="bcftools annotate -r $3 -a ann_table/annot_tab2.${region}.txt.gz -h $IGSR_ROOT/SUPPORTING/annots_26062018.txt --rename-chrs $IGSR_ROOT/SUPPORTING/ensembl2ucsc_chrdict.txt -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS $1 -o $dec_out -Oz"
-$cmd4
+#$cmd4
 echo "[INFO] running bcftools annotate-DONE"
 
 #Now, modify the header on the decorated VCF
 echo "[INFO] running bcftools reheader"
 reheaded_out=$(basename -s .vcf.gz $dec_out)".reheaded.vcf.gz"
 cmd5="bcftools reheader -h $IGSR_ROOT/SUPPORTING/header_26062018.txt $dec_out -o $reheaded_out"
-$cmd5
+#$cmd5
 echo "[INFO] running bcftools reheader-DONE"
 
 #validate the VCF
 echo "[INFO] running vcf validator"
-`zcat $reheaded_out | vcf_validator_linux` 
+`zcat $reheaded_out | /nfs/production/reseq-info/work/ernesto/bin/vcf_validator/vcf_validator_linux` 
 echo "[INFO] running vcf validator-DONE"

@@ -451,17 +451,14 @@ class File(object):
 
         return md5sum
 
-    def rename(self, filelayout, newlayout, extension, add_date=False, compression=None):
+    def rename(self, newname, extension, add_date=False, compression=None):
         '''
         Change the name of this File object
 
         Parameters
         ----------
-        filelayout: list, Required
-                    Layout for provided file. i.e. ['set','caller','extension','compression'] for a file named
-                    lc.bcftools.vcf.gz
-        newlayout: list, Required
-                   Layout for the new file name. i.e. ['set','caller']
+        newname: str, Required
+                   prefix for the new name
         extension: str, Required
                    Extension to be added to the new filenamed derived from the 'newlayout'. For example, in the previous
                    example, if we use extension='sites.vcf'. Then the new filename will be 'lc.bcftools.sites.vcf'
@@ -477,27 +474,13 @@ class File(object):
         -------
         Nothing
         '''
-        bits=self.name.split('.')
-    
-        if len(bits)!=len(filelayout):
-            print("Passed file contains the following bits: {0}".format(",".join(bits)))
-            print("Specified layout contains the following bits: {0}".format(",".join(filelayout)))
-            raise Exception("Length is not the same for filename bits and its associated annotations that are passed using the file_layout param")
-        
-        d = dict(zip(filelayout, bits))
-
-        newbits=[ d[i] for i in newlayout]
 
         if add_date is True:
             now = datetime.now()
-            newbits.append(now.strftime('%Y%m%d') )
-        
-        newbits.append(extension)
+            newname="{0}.{1}.{2}".format(newname,now.strftime('%Y%m%d'),extension)
 
         if compression is not None:
-            newbits.append(compression)
-
-        newname=".".join(newbits)
+            newname=".{0}".format(compression)
 
         (path,oldfilename)=os.path.split(self.path)
 
