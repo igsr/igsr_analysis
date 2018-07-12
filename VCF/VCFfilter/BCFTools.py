@@ -140,7 +140,7 @@ class BCFTools(object):
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-s',name),Arg('-e',expression),Arg('-o',outfile),Arg('-O','z')]
+        args=[Arg('-s',name),Arg('-e','\'{0}\''.format(expression)),Arg('-o',outfile),Arg('-O','z')]
 
         runner=RunProgram(path=self.bcftools_folder, program='bcftools filter', args=args, parameters=[self.vcf])
 
@@ -201,6 +201,8 @@ class BCFTools(object):
             outprefix += "vcf"
             args.extend([Arg('-o', outprefix),Arg('-O','v')])
             params.append(self.vcf)
+        elif compress is None:
+            raise Exception("'compress' parameter can't be None")
 
         runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=params)
         
