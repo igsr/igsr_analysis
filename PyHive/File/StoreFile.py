@@ -1,7 +1,6 @@
 import eHive
 import os
 import pdb
-import ast
 
 from datetime import datetime
 from ReseqTrackDB import File
@@ -22,8 +21,12 @@ class StoreFile(eHive.BaseRunnable):
 
         # First, rename the file
         fileO=File(path=self.param_required('filename'),type=self.param_required('type'))
-        filelayout=ast.literal_eval(self.param_required('filelayout'))
-        newlayout=ast.literal_eval(self.param_required('newlayout'))
+        layout_dict=self.param_required('layout_dict')
+        newlayout=self.param_required('newlayout').split(",")
+        
+        newbits=[ layout_dict[i] for i in newlayout]
+        
+        newname=".".join(newbits)
 
         compression=None
         if self.param('compression'):
@@ -33,7 +36,7 @@ class StoreFile(eHive.BaseRunnable):
         if self.param('add_date'):
             add_date=True
     
-        fileO.rename(filelayout= filelayout, newlayout= newlayout,
+        fileO.rename(newname= newname,
                      extension= self.param_required('extension'), add_date=add_date, 
                      compression= compression)
 
