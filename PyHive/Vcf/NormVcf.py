@@ -1,7 +1,7 @@
 import eHive
 import os
 import datetime
-from VcfNormalize import VcfNormalize
+from VCF.VcfNormalize import VcfNormalize
 
 class NormVcf(eHive.BaseRunnable):
     """Normalize a VCF file using vt normalize"""
