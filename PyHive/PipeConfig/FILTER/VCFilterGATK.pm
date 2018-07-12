@@ -25,7 +25,7 @@ sub default_options {
 	'store_attributes' => 'False',
 	'newlayout' => undef, # new layout used for the generated files. i.e. [ 'dataset','caller']
 	'filelayout' => undef, # layout of file that is analyzed by the pipeline. i.e. [ 'dataset','caller','date','extension','compression']
-	'bcftools_folder' => undef,
+	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'exclude_bed' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed',
@@ -327,6 +327,7 @@ sub pipeline_analyses {
             -parameters    => {
                 'outprefix' => $self->o('work_dir')."/#initial_filename#.merged.vcf.gz",
                 'bcftools_folder' => $self->o('bcftools_folder'),
+		'log_dir' => $self->o('log_dir'),
                 'verbose' => 'True',
                 'work_dir' => $self->o('work_dir')
             },
@@ -362,11 +363,12 @@ sub pipeline_analyses {
                 'filepath' => '#filepath#',
                 'work_dir' => $self->o('work_dir'),
                 'caller' => $self->o('caller'),
+		'log_file' => $self->o('log_dir')."/gatk_variantrecalibratior",
                 'gatk_folder' => $self->o('gatk_folder'),
                 'reference' => $self->o('reference'),
 		'resources' => $self->o('resources_snps'),
 		'tranches' => $self->o('tranches'),
-		'intervals' => 'chr20:10000000-20000000',
+#		'intervals' => 'chr20:10000000-20000000',
 		'mode' => 'SNP'
             },
 	    -flow_into => {

@@ -245,7 +245,7 @@ class VcfQC(object):
         args=[Arg('I',self.vcf), Arg('O',outprefix), Arg('DBSNP',truth_vcf)]
 
         if intervals:
-            args.extend(Arg('TI', intervals))
+            args.append(Arg('TI', intervals))
 
         runner=RunProgram(program='java -jar {0}/picard.jar CollectVariantCallingMetrics'.format(self.picard_folder), args=args, arg_sep="=")
             
