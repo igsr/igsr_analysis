@@ -43,6 +43,8 @@ class SplitFile(eHive.BaseRunnable):
         self.warning('Splitting file: %s'% filename)
 
         bits=filename.split('.')
+
+        if self.param_required('filelayout') is None: raise Exception("I need the 'filelayout' parameter")
         file_layout=self.param_required('filelayout').split(",")
     
         if len(bits)!=len(file_layout):

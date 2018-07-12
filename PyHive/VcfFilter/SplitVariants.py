@@ -31,7 +31,7 @@ class SplitVariants(eHive.BaseRunnable):
             else:
                 raise Exception("Error. biallelic option should be True or False")
 
-        compress=None
+        compress=True
         if self.param_is_defined('compress'):
             if self.param('compress')=="True":
                 compress=True
