@@ -1,4 +1,4 @@
-package PyHive::PipeConfig::VCFilterSamtoolsWGS;
+package PyHive::PipeConfig::FILTER::VCFilterSamtoolsWGS;
 
 use strict;
 use warnings;
@@ -24,7 +24,7 @@ sub default_options {
 	'store_attributes' => 'False',
         'filelayout' => undef, # file layout that is analyzed by the pipeline. i.e. [ 'dataset','caller','date','extension','compression'],
 	'newlayout' =>  undef, # new layout used for the generated files. i.e. [ 'dataset','caller']
-	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.3/',
+	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'exclude_bed' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed',
         'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
@@ -364,14 +364,14 @@ sub pipeline_analyses {
             },
             -analysis_capacity => 200,
             -rc_name => '500Mb',
-		    -flow_into => {
-			1 => {'index_vcf1' => {
-			    'filepath' => '#out_vcf#',
-			    'vcf_indels' => '#vcf_indels#',
-			    'ix' => '#ix#'
-			      }
-			}
-		},
+	    -flow_into => {
+		1 => {'index_vcf1' => {
+		    'filepath' => '#out_vcf#',
+		    'vcf_indels' => '#vcf_indels#',
+		    'ix' => '#ix#'
+		      }
+		}
+	    },
         },
 
         {   -logic_name => 'index_vcf1',

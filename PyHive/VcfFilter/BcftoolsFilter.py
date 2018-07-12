@@ -1,6 +1,6 @@
 import eHive
 import os
-from VCFfilter.BCFTools import BCFTools
+from VCF.VCFfilter.BCFTools import BCFTools
 
 class BcftoolsFilter(eHive.BaseRunnable):
     """run Bcftools filter on a VCF"""
