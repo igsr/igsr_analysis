@@ -30,7 +30,7 @@ sub default_options {
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'beagle_folder' => '~/bin/beagle/',
 	'beagle_jar' => 'beagle.08Jun17.d8b.jar',
-	'caller' => 'UG', # VariantRecalibrator
+	'caller' => 'UG', # UnifiedGenotyper
 	'centromeres' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/centromeres_and_gaps.bed', # BED file with centromeres and gaps in order to be considered by PyHive.Factories.CoordFactory
 	'gatk_folder' => '~/bin/GATK/',
 	'java_tmpdir' => '/gpfs/nobackup/resequencing_informatics/ernesto/tmp', # necessary for GATK ApplyRecalibration not to crash 
