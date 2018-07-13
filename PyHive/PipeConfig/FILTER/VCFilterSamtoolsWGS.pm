@@ -453,6 +453,8 @@ sub pipeline_analyses {
             -parameters    => {
 		'outprefix' => $self->o('work_dir')."#initial_filename#.merged.vcf.gz",
                 'bcftools_folder' => $self->o('bcftools_folder'),
+		'log_dir' => $self->o('log_dir'),
+                'verbose' => 'True',
 		'work_dir'=> $self->o('work_dir'),
 		'verbose' => "True"
             },

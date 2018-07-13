@@ -96,6 +96,10 @@ class GATK_HC(eHive.BaseRunnable):
         if self.param_is_defined('threads'):
             nt=self.param('threads')
 
+        stand_call_conf=10
+        if self.param_is_defined('stand_call_conf'):
+            stand_call_conf=self.param('stand_call_conf')
+
         log_file=None
         if self.param_is_defined('log_file'):
             log_file="{0}_{1}.log".format(self.param('log_file'),time.strftime("%Y%m%d_%H%M%S"))
@@ -105,7 +109,8 @@ class GATK_HC(eHive.BaseRunnable):
                                    genotyping_mode=genotyping_mode,
                                    intervals=intervals,
                                    interval_set_rule=interval_set_rule,
-                                   num_cpu_threads_per_data_thread=nt, 
+                                   num_cpu_threads_per_data_thread=nt,
+                                   stand_call_conf=stand_call_conf,
                                    log_file=log_file)
 
         self.param('out_vcf', outfile)
