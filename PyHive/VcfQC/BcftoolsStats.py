@@ -4,6 +4,7 @@ from VCF.VcfQC import VcfQC
 from ReseqTrackDB import File
 from ReseqTrackDB import ReseqTrackDB
 from ReseqTrackDB import Attribute
+from distutils.util import strtobool
 
 class BcftoolsStats(eHive.BaseRunnable):
     """run BCFtools stats on a VCF file"""
@@ -46,7 +47,8 @@ class BcftoolsStats(eHive.BaseRunnable):
     
         verbose=None
         if self.param_is_defined('verbose'):
-            verbose=self.__str_to_bool(self.param('verbose'))
+            # converting 'True' or 'False' to boolean
+            verbose=bool(strtobool(self.param('verbose')))
 
         params=dict()
         attr_suffix=""

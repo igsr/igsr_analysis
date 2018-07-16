@@ -22,9 +22,9 @@ sub default_options {
         'work_dir'    => undef,
         'final_dir' => undef,
 	'store_attributes' => 'False',
-        'filelayout' => undef, # file layout that is analyzed by the pipeline. i.e. [ 'dataset','caller','date','extension','compression']
-	'newlayout' =>  undef, # new layout used for the generated files. i.e. [ 'dataset','caller']
-	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.3/',
+        'filelayout' => undef, # file layout that is analyzed by the pipeline. i.e. 'dataset,caller,date,extension,compression'
+	'newlayout' =>  undef, # new layout used for the generated files. i.e. 'dataset,caller'
+	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'exclude_bed' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed',
 	'bed_offtarget' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/EXOME/output_1000G_Exome.v1.bed',
         'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
@@ -186,7 +186,9 @@ sub pipeline_analyses {
                'store_attributes' => $self->o('store_attributes'),
                'picard_folder' => $self->o('picard_folder'),
                'truth_vcf' => $self->o('truth_vcf'),
-               'intervals' => $self->o('intervals_f')
+               'intervals' => $self->o('intervals_f'),
+	       'work_dir' => $self->o('work_dir'),
+	       'verbose' => 'True'
             },
 	    -flow_into => {
                1 => {'store_cvcmetrics_detailmetrics1' => {
@@ -485,6 +487,7 @@ sub pipeline_analyses {
             -parameters    => {
 		'outprefix' => $self->o('work_dir')."#initial_filename#.merged.vcf.gz",
                 'bcftools_folder' => $self->o('bcftools_folder'),
+		'log_dir' => $self->o('log_dir'),
 		'work_dir'=> $self->o('work_dir'),
 		'verbose' => "True"
             },
