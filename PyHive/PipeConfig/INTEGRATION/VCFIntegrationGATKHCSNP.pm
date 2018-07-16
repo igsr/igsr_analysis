@@ -106,7 +106,10 @@ sub resource_classes {
         '8Gb' => { 'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"' },
 	'10Gb5cpus' => { 'LSF' => '-n 5 -C0 -M10000 -q '.$self->o('lsf_queue').' -R"select[mem>10000] rusage[mem=10000]"' },
 	'10Gb10cpus' => { 'LSF' => '-n 10 -C0 -M10000 -q '.$self->o('lsf_queue').' -R"select[mem>10000] rusage[mem=10000]"' },
+	'10Gb4cpus' => { 'LSF' => '-n 4 -C0 -M10288 -q '.$self->o('lsf_queue').' -R"select[mem>10288] rusage[mem=10288]"' },
         '12Gb4cpus' => { 'LSF' => '-n 4 -C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
+	'20Gb4cpus' => { 'LSF' => '-n 4 -C0 -M22288 -q '.$self->o('lsf_queue').' -R"select[mem>22288] rusage[mem=22288]"' },
+	'25Gb4cpus' => { 'LSF' => '-n 4 -C0 -M25288 -q '.$self->o('lsf_queue').' -R"select[mem>25288] rusage[mem=25288]"' },
 	'12Gb' => { 'LSF' => '-C0 -M12288 -q '.$self->o('lsf_queue').' -R"select[mem>12288] rusage[mem=12288]"' },
 	'15Gb' => { 'LSF' => '-n 20 -C0 -M15360 -q '.$self->o('lsf_queue').' -R"select[mem>15360] rusage[mem=15360]"' },
 	'20GbUni' => { 'LSF' => '-C0 -M20000 -q '.$self->o('lsf_queue').' -R"select[mem>20000] rusage[mem=20000]"' },
@@ -387,11 +390,11 @@ sub pipeline_analyses {
 		'log_file' => $self->o('work_dir')."/gatk_hc/gatk_hc",
 		'reference' => $self->o('reference'),
 		'outprefix' => '#out_vcf#',
-		'stand_call_conf' => 0,
+		'standard_min_confidence_threshold_for_calling' => 0,
 		'threads' => 4,
                 'verbose' => 1
             },
-	    -rc_name => '2Gb',
+	    -rc_name => '12Gb4cpus',
 	    -flow_into => {
 	       -1 => [ 'run_gatkhc_snps_himem1'], 
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=out_vcf','?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
@@ -413,11 +416,11 @@ sub pipeline_analyses {
 		'log_file' => $self->o('work_dir')."/gatk_hc/gatk_hc",
                 'reference' => $self->o('reference'),
                 'outprefix' => '#out_vcf#',
-		'stand_call_conf' => 0,
+		'standard_min_confidence_threshold_for_calling' => 0,
                 'threads' => 4,
                 'verbose' => 1
             },
-            -rc_name => '5Gb',
+            -rc_name => '20Gb4cpus',
 	    -flow_into => {
 	       -1 => [ 'run_gatkhc_snps_himem2' ],
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=out_vcf','?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
@@ -439,11 +442,11 @@ sub pipeline_analyses {
 		'log_file' => $self->o('work_dir')."/gatk_hc/gatk_hc",
                 'reference' => $self->o('reference'),
                 'outprefix' => '#out_vcf#',
-		'stand_call_conf' => 0,
+		'standard_min_confidence_threshold_for_calling' => 0,
                 'threads' => 4,
                 'verbose' => 1
             },
-            -rc_name => '8Gb',
+            -rc_name => '25Gb4cpus',
 	    -flow_into => {
                 1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=out_vcf','?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
 	    },

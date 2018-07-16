@@ -1,7 +1,8 @@
 import eHive
+import pdb
 import os
 import datetime
-from VcfNormalize import VcfNormalize
+from VCF.VcfNormalize import VcfNormalize
 
 class VariantsToAllelicPrimitives(eHive.BaseRunnable):
     """Run GATK VariantsToAllelicPrimitives on a VCF file"""
@@ -20,9 +21,16 @@ class VariantsToAllelicPrimitives(eHive.BaseRunnable):
 
         vcfNorm = VcfNormalize(vcf=filepath, gatk_folder=self.param_required('gatk_folder'), bgzip_folder=self.param_required('bgzip_folder'))
         vcf_file=""
-
+        
         if self.param_is_defined('compress'):
-            vcf_file=vcfNorm.run_gatk_VariantsToAllelicPrimitives(outprefix=file,reference=self.param_required('reference'),outdir=work_dir,compress=self.param('compress'))
+            compress=None
+            if self.param('compress') == 'True':
+                compress=True
+            elif self.param('compress') == 'False':
+                compress=False
+            else:
+                raise Exception('compress parameter is not valid: {0}'.format(self.param('compress')))
+            vcf_file=vcfNorm.run_gatk_VariantsToAllelicPrimitives(outprefix=file,reference=self.param_required('reference'),outdir=work_dir,compress=compress)
         else:
             vcf_file=vcfNorm.run_gatk_VariantsToAllelicPrimitives(outprefix=file,reference=self.param_required('reference'),outdir=work_dir)
 
