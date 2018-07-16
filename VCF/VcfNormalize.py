@@ -287,5 +287,9 @@ class VcfNormalize(object):
             os.remove(outprefix)
             os.remove(outprefix+".idx")
             outprefix += ".gz"
+        elif compress is False:
+            return outprefix
+        else:
+            raise Exception("'compress' parameter is not valid")
         
         return outprefix    
