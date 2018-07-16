@@ -2,6 +2,7 @@ import eHive
 import os
 import pdb
 from VCF.VcfQC import VcfQC
+from distutils.util import strtobool
 from ReseqTrackDB import File
 from ReseqTrackDB import ReseqTrackDB
 from ReseqTrackDB import Attribute
@@ -34,11 +35,19 @@ class CollectVariantCallingMetrics(eHive.BaseRunnable):
 
         vcf = VcfQC(vcf=self.param_required('filepath'),picard_folder=self.param_required('picard_folder'))
 
+        verbose=None
+        if self.param_is_defined('verbose'):
+            # converting 'True' or 'False' to boolean
+            verbose=bool(strtobool(self.param('verbose')))
+
+        file=os.path.split(self.param_required('filepath'))[1]
+        outfile=self.param_required('work_dir')+"/"+file
+
         cvcmetrics=""
         if self.param_is_defined('intervals'):
-            cvcmetrics=vcf.run_CollectVariantCallingMetrics(outprefix=self.param_required('filepath'),truth_vcf=self.param_required('truth_vcf'),intervals=self.param('intervals'))
+            cvcmetrics=vcf.run_CollectVariantCallingMetrics(outprefix=outfile,truth_vcf=self.param_required('truth_vcf'),intervals=self.param('intervals'),verbose=verbose)
         else:
-            cvcmetrics=vcf.run_CollectVariantCallingMetrics(outprefix=self.param_required('filepath'),truth_vcf=self.param_required('truth_vcf'))
+            cvcmetrics=vcf.run_CollectVariantCallingMetrics(outprefix=outfile,truth_vcf=self.param_required('truth_vcf'),verbose=verbose)
 
         #store attributes
         if self.param_required('store_attributes')=='True':
