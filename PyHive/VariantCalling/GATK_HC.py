@@ -96,9 +96,9 @@ class GATK_HC(eHive.BaseRunnable):
         if self.param_is_defined('threads'):
             nt=self.param('threads')
 
-        stand_call_conf=10
-        if self.param_is_defined('stand_call_conf'):
-            stand_call_conf=self.param('stand_call_conf')
+        standard_min_confidence_threshold_for_calling=10
+        if self.param_is_defined('standard_min_confidence_threshold_for_calling'):
+            stand_call_conf=self.param('standard_min_confidence_threshold_for_calling')
 
         log_file=None
         if self.param_is_defined('log_file'):
@@ -110,7 +110,7 @@ class GATK_HC(eHive.BaseRunnable):
                                    intervals=intervals,
                                    interval_set_rule=interval_set_rule,
                                    num_cpu_threads_per_data_thread=nt,
-                                   stand_call_conf=stand_call_conf,
+                                   standard_min_confidence_threshold_for_calling=standard_min_confidence_threshold_for_calling,
                                    log_file=log_file)
 
         self.param('out_vcf', outfile)
