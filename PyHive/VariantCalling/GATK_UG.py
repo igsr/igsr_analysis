@@ -55,6 +55,8 @@ class GATK_UG(eHive.BaseRunnable):
          Default value=250
     log_file: str, Optional
             Path to log file used to log the GATK UG stderr
+    verbose : str, Optional
+              Print command line. Possible values are 'True' or 'False'
 
     Returns
     -------
@@ -120,6 +122,12 @@ class GATK_UG(eHive.BaseRunnable):
         if self.param_is_defined('log_file'):
             log_file="{0}_{1}.log".format(self.param('log_file'),time.strftime("%Y%m%d_%H%M%S"))
 
+        verbose=None
+        if self.param_is_defined('verbose'):
+            verbose=True
+        else:
+            verbose=False
+
         outfile=gatk_object.run_ug(outprefix=outfile,
                                    glm=self.param_required('glm'),
                                    output_mode=self.param_required('output_mode'),
@@ -129,7 +137,7 @@ class GATK_UG(eHive.BaseRunnable):
                                    genotyping_mode=genotyping_mode,
                                    intervals=intervals, nt=nt, 
                                    max_deletion_fraction=max_deletion_fraction,
-                                   log_file=log_file)
+                                   log_file=log_file, verbose=verbose)
 
         self.param('out_vcf', outfile)
 

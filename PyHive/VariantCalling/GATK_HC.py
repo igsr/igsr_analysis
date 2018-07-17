@@ -43,6 +43,8 @@ class GATK_HC(eHive.BaseRunnable):
          Default=1
     log_file: str, Optional
             Path to log file used to log the GATK HC stderr
+    verbose : str, Optional
+              Print command line. Possible values are 'True' or 'False'
 
     Returns
     -------
