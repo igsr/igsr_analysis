@@ -163,7 +163,7 @@ class GATK(object):
                 arguments.append(Arg('--intervals',i)) 
 
         for k,v in kwargs.items():
-            if v is not None: arguments.append(Arg(" --{0}".format(k),v))
+            if v is not None: arguments.append(Arg("--{0}".format(k),v))
 
         pipelist=None
         if compress is True:
@@ -179,6 +179,35 @@ class GATK(object):
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run_popen()
+        stdout,stderr,is_error=runner.run_popen(raise_exc=False)
+
+        if is_error is True:
+            '''
+            This piece of code is necessary as GATK crashes when the intersection between the genomic chunk and the alleles passed in the VCF 
+            are calculated and there are no sites.
+
+            If that's the case then GATK  will be run without the interval intersection
+            '''
+            patt = re.compile('##### ERROR MESSAGE: Bad input: The INTERSECTION of your -L options produced no intervals.')
+            lines=stderr.split('\n')
+            interval_error_seen=False
+            for l in lines:
+                m = patt.match(l)
+                if m:
+                    interval_error_seen=True
+                    alleles=([arg.value for arg in arguments if arg.option == '--alleles'])[0]
+                    for k,i in enumerate(arguments):
+                        if i.option == '--intervals' and i.value == alleles:
+                            del arguments[k]
+                        elif i.option == '--interval_set_rule':
+                            del arguments[k]                    
+            if interval_error_seen is False:
+                 raise Exception(stderr)
+            elif interval_error_seen is True:
+                runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), downpipe=pipelist, args=arguments, log_file=log_file)
+                if verbose is True:
+                    print("Command line is: {0}".format(runner.cmd_line))
+                      
+                stdout,stderr,is_error=runner.run_popen(raise_exc=True)
 
         return outprefix
