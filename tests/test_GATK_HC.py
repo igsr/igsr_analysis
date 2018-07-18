@@ -40,6 +40,7 @@ def test_run_hc(gatk_object):
 
     assert os.path.isfile(outfile) is True
 
+
 def test_run_hc_nocompress(gatk_object):
     '''
     Test function to run GATK HC on a BAM file generating an uncompressed VCF
