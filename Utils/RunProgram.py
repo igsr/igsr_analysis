@@ -81,10 +81,15 @@ class RunProgram(object):
         self.cmd_line=cmd_line
         
 
-    def run_popen(self):
+    def run_popen(self, raise_exc=True):
         '''
         Run self.program using subprocess Popen method
         (see https://docs.python.org/2/library/subprocess.html#module-subprocess)
+
+        Arguments
+        ---------
+        raise_exc: Bool, optional
+                   If true, then raise an Exception when error is found. Default= True
 
         Returns
         -------
@@ -116,13 +121,13 @@ class RunProgram(object):
             line=str(line.rstrip())
             stdout+=line+"\n"
        
-        if is_exception is True:
+        if is_exception is True and raise_exc is True:
             raise Exception(stderr)
 
 
         if log_f is not None:log_f.close()
 
-        return (stdout,stderr)
+        return (stdout,stderr,is_exception)
 
     def run_checkoutput(self):
         '''
