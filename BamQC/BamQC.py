@@ -4,9 +4,9 @@ Created on 12 Oct 2016
 @author: ernesto
 '''
 from types import *
-import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import re
 import os
 import sys

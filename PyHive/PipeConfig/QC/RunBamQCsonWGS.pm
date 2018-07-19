@@ -34,13 +34,12 @@ sub default_options {
         'db' => undef,
         'pwd' => undef,
         'work_dir'    => undef,
-        'final_dir' => undef,
         'python_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
         'script_folder' => '/homes/ernesto/lib/reseq-personal/ernesto/igsr/BamQC/src/',
-	'store_attributes' => 'False',
+	'store_attributes' => undef,
         'chk_indel_rg_folder' => '/homes/ernesto/bin/',
 	'verifybamid_folder' => '/nfs/production/reseq-info/work/bin/verifyBamID_1.1.3/verifyBamID/bin/',
-	'genotype_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/QC_on_BAMs/DEVEL/genotypes_test/',
+	'genotype_folder' => undef,
 	'java_folder'    => '/nfs/production/reseq-info/work/bin/java/jdk1.8.0_40/bin/',
         'picard_folder' => '/nfs/production/reseq-info/work/bin/picard-2.7.1/',
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
@@ -127,7 +126,7 @@ sub pipeline_analyses {
                 'port' => $self->o('port'),
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
-		'store_attributes' => 'True'
+		'store_attributes' => $self->o('store_attributes')
             },
         },
 
@@ -161,7 +160,7 @@ sub pipeline_analyses {
                 'port' => $self->o('port'),
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
-                'store_attributes' => 'True'
+                'store_attributes' => $self->o('store_attributes')
             },
         },
 	
@@ -196,7 +195,7 @@ sub pipeline_analyses {
                 'port' => $self->o('port'),
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
-                'store_attributes' => 'True'
+                'store_attributes' => $self->o('store_attributes')
             },
         }
 
