@@ -20,10 +20,14 @@ class run_ligateHAPLOTYPES(eHive.BaseRunnable):
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
 
+        # process the file paths in order to shorten the cmd line
+        cwd=os.getcwd()
+        basenames=[os.path.basename(x) for x in self.param_required('hapgz_list')]
+        chunk_str= " ".join(basenames)
+        os.chdir(self.param_required('work_dir')+"/shapeit")
+
         outprefix=os.path.split(self.param_required('outprefix'))[1]
         outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
-
-        chunk_str= " ".join(self.param_required('hapgz_list'))
 
         shapeit_object=Shapeit(ligateHAPLOTYPES_folder = self.param_required('ligateHAPLOTYPES_folder'))
 
@@ -32,6 +36,8 @@ class run_ligateHAPLOTYPES(eHive.BaseRunnable):
                                                     chunk_str= chunk_str,
                                                     output_prefix= outprefix ,
                                                     verbose=verbose)
+        #go back to current work dir
+        os.chdir(cwd)
         
         self.param('outdict', outdict)
        
