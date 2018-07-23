@@ -114,7 +114,7 @@ class RunProgram(object):
             m = patt.match(line)
             if m:
                 is_exception=True
-        
+
         #stdout
         stdout=""
         for line in p.stdout:
