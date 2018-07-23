@@ -25,7 +25,6 @@ class VcfCombine(eHive.BaseRunnable):
 
         vcf_paths = self.param_required('allfiles2combine')
         labels = self.param_required('alldatasets2combine')
-        pdb.set_trace()
         
         vcf_utils=VcfUtils(vcflist=vcf_paths,bcftools_folder=self.param_required('bcftools_folder'),
                            gatk_folder=self.param_required('gatk_folder'))
