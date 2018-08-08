@@ -109,8 +109,8 @@ class GATK(object):
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
-            
-        stdout,stderr=runner.run_popen()
+          
+        stdout,stderr,is_error=runner.run_popen()
 
         return outprefix
 
