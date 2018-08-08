@@ -1,4 +1,4 @@
-package PyHive::PipeConfig::INTEGRATION::PHASING.pm;
+package PyHive::PipeConfig::INTEGRATION::PHASING;
 
 use strict;
 use warnings;
@@ -24,25 +24,15 @@ sub default_options {
 	'log_dir' => undef,
 	'faix' => undef,
 	'newheader' => undef,
-	'filelist' => undef, # List of Bamfiles used for BAM Transposition. If more than one file then the transposition will be done in different runs
-	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
 	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
 	'beagle_folder' => '~/bin/beagle/',
 	'beagle_jar' => 'beagle.08Jun17.d8b.jar',
-	'caller' => 'UG', # UnifiedGenotyper
 	'gmap_folder' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GENETIC_MAP/CHROS',
-	'vcflib_folder' => '~/bin/vcflib/bin/', # folder containing the vcfallelicprimitives binary
 	'makeBGLCHUNKS_folder' => '~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/',
 	'prepareGenFromBeagle4_folder' => '~/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/prepareGenFromBeagle4/bin/',
 	'ligateHAPLOTYPES_folder' => '~/bin/shapeit2_v2_12/bin/ligateHAPLOTYPES/bin/',
-	'samtools_folder' => '/homes/ernesto/bin/samtools-1.6/bin/',
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
-	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
-	'transposebam_folder' => '/homes/ernesto/lib/reseqtrack//c_code/transpose_bam/',
-	'tranches' => '[100.0,99.9,99.5,99.2,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
-	'resources_snps' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
-	'snps_annotations' => undef, # VQSR. annotations for recalibrating snps
 	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/OMNI/PHASING/ALL.chip.omni_broad_sanger_combined.20140818.refcorr.biallelic.snps', 
 				    '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/AFFY/PHASING/ALL.wgs.nhgri_coriell_affy_6.20140825.genotypes_has_ped.ucsc.hg38.refcorr.biallelic.snps'],
 # SHAPEIT. Specify here the prefix for the scaffolded microarray genotypes
@@ -61,11 +51,8 @@ sub default_options {
         'overlap_shapeitchnks' => undef, # makeBGLCHUNKS 4 Shapeit
 #	'window_bglchnks' => 12000, # recommended in supp of phase3 for makeBGLCHUNKS
 #	'overlap_bglchnks' => 2000, # recommended in supp of phase 3 for makeBGLCHUNKS
-	'genome_file' => undef, #PyHive.Factories.CoordFactory. Used to generate the chunks
-	'window_coordfactory_4transposebam' =>  undef, #PyHive.Factories.CoordFactory used for the transposebam analysis
 	'outprefix' => undef, # Prefix used for all output files
 	'scaffolded_samples' => undef, #PyHive.VcfIntegration.run_ligateHAPLOTYPES
-	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
 	'store_attributes' => 'False',
         'filelayout' => undef, #file layout for final phased file
 	'newlayout' =>  undef, # new file layout for final phased file
@@ -133,7 +120,7 @@ sub pipeline_analyses {
             -module     => 'Bio::EnsEMBL::Hive::RunnableDB::JobFactory',
             -parameters => {
                 'inputcmd'     => 'cat #file#',
-                'column_names' => [ 'initial_filename' ],
+                'column_names' => [ 'out_vcf' ],
             },
             -flow_into => {
                 2 => ['split_chr']
@@ -274,7 +261,6 @@ sub pipeline_analyses {
 		'A->1' => { 'run_ligate_haplotypes' => {'vcf_file' => '#vcf_file#'}}
 	    },
         },
-
 
 	{   -logic_name => 'run_shapeit_lowmem',
             -module     => 'PyHive.VcfIntegration.run_Shapeit',
