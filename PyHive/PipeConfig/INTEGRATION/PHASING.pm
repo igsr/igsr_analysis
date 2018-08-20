@@ -357,10 +357,25 @@ sub pipeline_analyses {
             },
             -analysis_capacity => 1,
             -rc_name => '5Gb',
-#	    -flow_into => {
-#		1 => ['store_phased_vcf']
-#            }
+	    -flow_into => {
+		1 => {'split_filename1' => {'filename' => '#out_vcf#' }}
+	    }
 	},
+
+	{   -logic_name => 'split_filename1',
+            -module     => 'PyHive.File.SplitFile',
+            -language   => 'python3',
+            -parameters => {
+                'filename'     => '#out_vcf#',
+                'filelayout' => $self->o('filelayout')
+            },
+            -flow_into => {
+                1 => {'store_phased_vcf' => { 
+		    'filename' => '#filename#',
+		    'layout_dict' => '#layout_dict#'},
+		}
+            },
+        },
 
 	{   -logic_name => 'store_phased_vcf',
             -module        => 'PyHive.File.StoreFile',
@@ -372,13 +387,12 @@ sub pipeline_analyses {
                 'port' => $self->o('port'),
                 'db' => $self->o('db'),
                 'pwd' => $self->o('pwd'),
-                'type' => 'PHASED_VCF',
+                'type' => 'COMBINED_PHASED_VCF',
                 'final_dir' => $self->o('final_dir'),
-		'filelayout' => $self->o('filelayout'),
-                'newlayout' => $self->o('newlayout'),
+		'newlayout' => $self->o('newlayout'),
+                'layout_dict'=> '#layout_dict#',
                 'add_date' => 'True',
                 'extension' => 'phased.vcf.gz',
-
             },
         }
 
