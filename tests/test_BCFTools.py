@@ -38,3 +38,27 @@ def test_run_bcftools(bcftools_object, clean_tmp):
 
     assert os.path.isfile(outfile) is True
 
+def test_run_bcftools_w_region(bcftools_object, clean_tmp):
+    '''
+    Test function to run BCFTools on a BAM file for a certain region
+    '''
+
+    annots=['DP','SP','AD']
+
+    outfile=bcftools_object.run_bcftools(outprefix='data/outdir/test', annots=annots, E=True, p=True, m_pileup=3, \
+                                         m_call=True, r="chr1:400-1000", v=True)
+
+    assert os.path.isfile(outfile) is True
+
+def test_run_bcftools_w_threads(bcftools_object, clean_tmp):
+    '''
+    Test function to run BCFTools on a BAM file using more than one thread
+    '''
+
+    annots=['DP','SP','AD']
+
+    outfile=bcftools_object.run_bcftools(outprefix='data/outdir/test', annots=annots, E=True, p=True, m_pileup=3, \
+                                         m_call=True, r="chr1:400-1000", threads=2, v=True)
+
+    assert os.path.isfile(outfile) is True
+
