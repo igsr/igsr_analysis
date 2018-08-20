@@ -94,7 +94,7 @@ class GATK_UG(eHive.BaseRunnable):
         intervals=["{0}:{1}-{2}".format(chrom, 
                                        start,
                                        end)]
-        
+
         interval_set_rule="UNION"
         alleles=None
         if self.param_is_defined('alleles'):

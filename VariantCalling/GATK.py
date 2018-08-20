@@ -111,7 +111,7 @@ class GATK(object):
             print("Command line is: {0}".format(runner.cmd_line))
           
         stdout,stderr,is_error=runner.run_popen(raise_exc=False)
-        pdb.set_trace()
+
         if is_error is True:
             '''
             This piece of code is necessary as GATK crashes when the intersection between the genomic chunk and the alleles passed in the VCF
