@@ -51,8 +51,8 @@ sub default_options {
 	'outprefix' => undef, # Prefix used for all output files
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
 	'store_attributes' => 'False',
-        'filelayout' => undef, #file layout for final phased file
-	'newlayout' =>  undef, # new file layout for final phased file
+        'filelayout' => undef, #file layout for original file
+	'newlayout' =>  undef, # new file layout for final file
 	'lsf_queue'   => 'production-rh7'
     };
 }
@@ -279,7 +279,7 @@ sub pipeline_analyses {
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
 		'log_dir' => $self->o('log_dir'),
-#		'chunk_ixs' => '[223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260]',
+		'chunk_ixs' => '[223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260]',
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
@@ -546,7 +546,7 @@ sub pipeline_analyses {
             },
             -rc_name => '500Mb',
 	    -flow_into => {
-		1 => ['index_vcf5']
+		1 => {'index_vcf5' => INPUT_PLUS() }
 	    },
         },
 
@@ -559,6 +559,83 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -rc_name => '500Mb',
+	    -flow_into => {
+		1 => {'split_filename1' => INPUT_PLUS() }
+	    },
+        },
+
+	{   -logic_name => 'split_filename1',
+            -module     => 'PyHive.File.SplitFile',
+            -language   => 'python3',
+            -parameters => {
+                'filename'     => '#out_vcf#',
+                'filelayout' => $self->o('filelayout').",st2,ext2,cmp2,st3,ext3,cmp3,st4,ext4,cmp4,st5,ext5,cmp5",
+            },
+	    -flow_into => {
+                1 => {'store_filt_file' => INPUT_PLUS() }
+            },
+        },
+
+	{   -logic_name => 'store_filt_file',
+            -module        => 'PyHive.File.StoreFile',
+            -language   => 'python3',
+            -parameters    => {
+                'filename' => '#out_vcf#',
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'type' => 'COMBINED_FILT_VCF',
+                'final_dir' => $self->o('final_dir'),
+                'newlayout' => $self->o('newlayout'),
+		'layout_dict'=> '#layout_dict#',
+                'add_date' => 'True',
+                'extension' => 'filt.vcf.gz'
+	    },
+	    -flow_into => {
+		1 => {
+		    'split_filename2' => {
+			'filename' => '#vcf_ix#'
+		    }
+		}
+	    },
+	},
+
+	{   -logic_name => 'split_filename2',
+            -module     => 'PyHive.File.SplitFile',
+            -language   => 'python3',
+            -parameters => {
+                'filename'     => '#filename#',
+                'filelayout' => $self->o('filelayout').",st2,ext2,cmp2,st3,ext3,cmp3,st4,ext4,cmp4,st5,ext5,cmp5,ext6",
+            },
+            -flow_into => {
+                1 => {
+		    'store_filt_ix_file' => {
+                        'filename' => '#filename#',
+			'layout_dict' => '#layout_dict#'
+		    }
+		}
+            },
+        },
+
+	{   -logic_name => 'store_filt_ix_file',
+            -module        => 'PyHive.File.StoreFile',
+            -language   => 'python3',
+            -parameters    => {
+                'filename' => '#filename#',
+                'hostname' => $self->o('hostname'),
+                'username' => $self->o('username'),
+                'port' => $self->o('port'),
+                'db' => $self->o('db'),
+                'pwd' => $self->o('pwd'),
+                'type' => 'COMBINED_FILT_VCF_IX',
+                'final_dir' => $self->o('final_dir'),
+                'newlayout' => $self->o('newlayout'),
+		'layout_dict'=> '#layout_dict#',
+                'add_date' => 'True',
+                'extension' => 'filt.vcf.gz.tbi'
+            }
         }
 	];
 }
