@@ -591,7 +591,7 @@ sub pipeline_analyses {
                 'newlayout' => $self->o('newlayout'),
 		'layout_dict'=> '#layout_dict#',
                 'add_date' => 'True',
-                'extension' => 'filt.vcf.gz'
+                'extension' => $self->o('variant_type').'.filt.vcf.gz'
 	    },
 	    -flow_into => {
 		1 => {
@@ -634,7 +634,7 @@ sub pipeline_analyses {
                 'newlayout' => $self->o('newlayout'),
 		'layout_dict'=> '#layout_dict#',
                 'add_date' => 'True',
-                'extension' => 'filt.vcf.gz.tbi'
+                'extension' => $self->o('variant_type').'.filt.vcf.gz.tbi'
             }
         }
 	];

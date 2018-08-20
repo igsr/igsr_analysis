@@ -39,7 +39,7 @@ class BCFTools(object):
         self.bcftools_folder = bcftools_folder
 
     def run_bcftools(self, outprefix, E=False, p=False, annots=['DP','SP','AD'], P="ILLUMINA", F=0.002, \
-                     C=50, m_pileup=1, m_call=False, d=250, v=False, O='z', ploidy="GRCh38", S=None, verbose=True):
+                     C=50, m_pileup=1, m_call=False, d=250, v=False, O='z', ploidy="GRCh38", threads=1, S=None, r=None, verbose=True):
         
         '''
         Run BCFTools mpileup and then pipe to BCTools call in order to do the variant calling
@@ -86,9 +86,13 @@ class BCFTools(object):
             Possible values are: BCF (b), uncompressed BCF (u), compressed VCF (z), uncompressed VCF (v)
         ploidy : str, Optional
                  predefined ploidy. Default: GRCh38
+        threads : int, Optional
+                  Number of extra output compression threads.Default=1
         S : str, Optional
             call parameter
             File of sample names to include or exclude if prefixed with "^"
+        r: str, Optional
+           Region used for doing the variant calling in the format chr20:10000-20000
         
         verbose : bool, Optional
                   Increase verbosity. Default= True
@@ -112,6 +116,12 @@ class BCFTools(object):
         arguments_mpileup.append(Arg('-C',C))
         arguments_mpileup.append(Arg('-d',d))
         arguments_mpileup.append(Arg('-m',m_pileup))
+        arguments_mpileup.append(Arg('--threads',threads))
+
+        if r is not None:
+            region_str=re.sub(':|-','_',r)
+            outprefix += ".{0}".format(region_str)
+            arguments_mpileup.append(Arg('-r',r))
         
         params_mpileup=[]
         if E is True:
