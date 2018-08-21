@@ -62,7 +62,7 @@ class BCFTools(object):
         P : str, Optional
             mpileup parameter
             Comma-delimited list of patforms (determined by @RG-PL) from which indel candidates are obtained. Default= ILLUMINA
-        F : str, Optional
+        F : float, Optional
             mpileup parameter
             Minimum fraction of gapped reads. Default=0.002
         C : int, Optional
