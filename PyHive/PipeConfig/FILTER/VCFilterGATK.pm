@@ -31,6 +31,7 @@ to your needs:
 -bcftools_stats_region: This option will define the regions used by BCFTools stats: i.e. chr20
 -intervals_f: This points to the Picard-style interval_list file used by Picard CollectVariantCallingMetrics to set 
  the chromosome used to calculate the stats
+-truth_vcf: This points to the truth VCF used by Picard CollectVariantCallingMetrics in order to make calculations
 
 GATK VQSR options:
 -tranches: String representing a list used by GATK VQSR VariantRecalibrator in order to set the levels of truth 
