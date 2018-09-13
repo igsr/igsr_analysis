@@ -2,11 +2,12 @@ from setuptools import setup
 
 setup(
     name='igsr_analysis',
-    version='0.90',
+    version='0.91dev',
     description='Code that is relevant for the analysis (Mapping, BAM qc, Variant Calling, Filtering etc...) of IGSR data',
     license="Apache License 2.0",
     author='Ernesto Lowy',
     author_email='ernestolowy@gmail.com',
+    long_description=open('README.md').read(),
     packages=['BamQC','BEDTools','p3','PyHive','PyHive/Attribute','PyHive/Bam','PyHive/BamQC','PyHive/Factories','PyHive/File','PyHive/Seed','PyHive/VariantCalling','PyHive/Vcf',
               'PyHive/VcfFilter','PyHive/VcfIntegration','PyHive/VcfQC','ReseqTrackDB','SequenceIndex','Utils','VariantCalling','VCF','VCF/VCFfilter','VCF/VCFIntegration/','tests'],
     scripts=[
