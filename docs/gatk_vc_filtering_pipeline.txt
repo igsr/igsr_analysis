@@ -14,7 +14,7 @@ GATK variant calling pipeline example
   Install dependency:
 
   Clone repo by doing git clone https://github.com/igsr/igsr_analysis.git in the desired folder
-  pip install ${igsr_analysis_dir}/dist/igsr_analysis-0.90.tar.gz
+  pip install ${igsr_analysis_dir}/dist/igsr_analysis-0.91.dev0.tar.gz
   And you are ready to go!
 
   Conventions used in this section:
