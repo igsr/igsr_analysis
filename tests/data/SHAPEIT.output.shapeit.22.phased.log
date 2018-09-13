@@ -1,12 +1,12 @@
 Mode    : Converter
 Options : --input-haps data/outdir/output.shapeit.22.haps.gz data/outdir/output.shapeit.22.haps.sample --output-vcf data/outdir/output.shapeit.22.phased.vcf --output-log data/SHAPEIT.output.shapeit.22.phased.log
 Version : v2.r837
-Date    : 06/06/2018 14:16:12
+Date    : 13/09/2018 15:00:17
 
 MODE -convert : CONVERTING/SUBSETTING SHAPEIT HAPLOTYPES
 
 Parameters :
-  * Seed : 1528290972
+  * Seed : 1536847217
   * Parallelisation: 1 threads
   * Ref allele is NOT aligned on the reference genome
 
@@ -23,4 +23,4 @@ Mapping sites and samples of the haplotype set
 
 Writing haplotypes in [data/outdir/output.shapeit.22.phased.vcf] in VCF format
 
-Running time: 2 seconds
+Running time: 1 seconds
