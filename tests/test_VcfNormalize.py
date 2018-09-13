@@ -30,7 +30,7 @@ def clean_tmp():
     files = glob.glob('data/outdir/*')
     for f in files:
         os.remove(f)
-
+"""
 def test_run_vtnormalize(vcf_object):
     outfile=vcf_object.run_vtnormalize(outprefix='data/outdir/test', reference=pytest.config.getoption("--reference"),verbose=True, n=True)
     
@@ -58,7 +58,7 @@ def test_run_vcfallelicprimitives_downstream_pipe(vcf_object):
                                                 downstream_pipe='~/bin/vt/vt sort -',
                                                 verbose=True, compress=True)
     assert os.path.exists(outfile)
-
+"""
 def test_run_GATK_VariantsToAllelicPrimitives(vcf_object, clean_tmp):
     '''
     Test function to run GATK VariantsToAllelicPrimitives
