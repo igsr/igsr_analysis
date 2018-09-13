@@ -80,3 +80,4 @@ def test_prepareGenFromBeagle4(clean_tmp):
     assert os.path.exists(outdict['hap_gz'])
     assert os.path.exists(outdict['hap_sample'])
 
+

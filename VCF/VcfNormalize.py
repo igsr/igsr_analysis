@@ -258,7 +258,7 @@ class VcfNormalize(object):
         A string with path to decomposed file
 
         '''
-
+        pdb.set_trace()
         if self.gatk_folder is None:
             raise Exception("Error. I need that the folder containing the GATK "
                             "jar file is defined!")
@@ -278,7 +278,7 @@ class VcfNormalize(object):
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run_popen()
+        stdout,stderr,is_error=runner.run_popen()
 
         if compress is True:
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', outprefix, '>', outprefix+".gz"])
