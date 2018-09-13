@@ -6,6 +6,7 @@ Home-page: UNKNOWN
 Author: Ernesto Lowy
 Author-email: ernestolowy@gmail.com
 License: Apache License 2.0
+Description-Content-Type: UNKNOWN
 Description: # igsr_analysis
         This repo contains code that is relevant for the analysis (Mapping, BAM qc, Variant Calling, Filtering etc...) of IGSR data 
         
