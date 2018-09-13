@@ -152,7 +152,6 @@ scripts/VCF/UTILS/main.py
 scripts/VCF/UTILS/select_variants.py
 scripts/p3/analyze_p3_stats.py
 tests/conftest.py
-tests/test.py
 tests/test_BCFTools.py
 tests/test_BEDTools.py
 tests/test_BamQC.py
@@ -160,7 +159,6 @@ tests/test_GATK_HC.py
 tests/test_GATK_UG.py
 tests/test_ReseqTrackDB.py
 tests/test_Utils_RunProgram.py
-tests/test_VcfFilter.py
 tests/test_VcfFilter_BCFTools.py
 tests/test_VcfFilter_GATK.py
 tests/test_VcfIntegration_Beagle.py
@@ -235,3 +233,4 @@ tests/data/SNPTools/outdir/NA12878_chr1_1000000_1001000.prob
 tests/data/SNPTools/outdir/NA12878_chr1_1000000_1001000.raw
 tests/data/SNPTools/outdir/NA12878_chr1_1000000_1001000.vcf.gz
 tests/data/SNPTools/outdir/NA12878_chr1_1000000_1001000.weig
+tests/data/outdir/.README.txt
