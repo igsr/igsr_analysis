@@ -258,7 +258,7 @@ class VcfNormalize(object):
         A string with path to decomposed file
 
         '''
-        pdb.set_trace()
+
         if self.gatk_folder is None:
             raise Exception("Error. I need that the folder containing the GATK "
                             "jar file is defined!")
