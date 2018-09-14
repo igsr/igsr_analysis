@@ -1,4 +1,3 @@
-anaconda-client==1.6.6
 asn1crypto==0.24.0
 biopython==1.70
 certifi==2017.7.27.1
@@ -9,7 +8,6 @@ cryptography==2.1.4
 cycler==0.10.0
 decorator==4.2.1
 idna==2.6
-igsr-analysis==0.91.dev0
 ipython-genutils==0.2.0
 jsonschema==2.6.0
 jupyter-core==4.4.0
