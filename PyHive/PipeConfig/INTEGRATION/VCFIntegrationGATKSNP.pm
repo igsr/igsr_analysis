@@ -790,7 +790,7 @@ sub pipeline_analyses {
                 'verbose' => 'True'
             },
             -analysis_capacity => 1,
-            -rc_name => '5Gb',
+            -rc_name => '12Gb',
 	    -flow_into => {
 		1 => {'run_convert_vcf' => {
                     'hap_gz' => '#hap_gz#',
