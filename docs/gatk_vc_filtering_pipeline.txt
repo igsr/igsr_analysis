@@ -12,9 +12,10 @@ GATK variant calling pipeline example
   Modify your $PATH to include the location of the eHive scripts: export PATH=${ehive_dir}/scripts/:${PATH}
 
   Install dependency:
-
-  Clone repo by doing git clone https://github.com/igsr/igsr_analysis.git in the desired folder
-  pip install ${igsr_analysis_dir}/dist/igsr_analysis-0.91.dev0.tar.gz
+  
+  * Clone repo by doing git clone https://github.com/igsr/igsr_analysis.git in the desired folder
+  * pip install ${igsr_analysis_dir}/dist/igsr_analysis-0.91.dev0.tar.gz
+  * Modify $PYTHONPATH to add the folder where your pip installs the Python packages
   And you are ready to go!
 
   Conventions used in this section:
