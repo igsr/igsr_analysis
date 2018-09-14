@@ -3,3 +3,7 @@ language: python
     - "3.6"
   script:
     - pytest
+
+branches:
+  only:
+  - newphasing
