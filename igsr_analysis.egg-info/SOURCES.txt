@@ -154,10 +154,8 @@ scripts/p3/analyze_p3_stats.py
 tests/conftest.py
 tests/test_BCFTools.py
 tests/test_BEDTools.py
-tests/test_BamQC.py
 tests/test_GATK_HC.py
 tests/test_GATK_UG.py
-tests/test_ReseqTrackDB.py
 tests/test_Utils_RunProgram.py
 tests/test_VcfFilter_BCFTools.py
 tests/test_VcfFilter_GATK.py
@@ -167,7 +165,6 @@ tests/test_VcfIntegration_Shapeit.py
 tests/test_VcfNormalize.py
 tests/test_VcfQC.py
 tests/test_VcfUtils.py
-tests/test_pyhive_BamQC.py
 tests/test_pyhive_Factories.py
 tests/test_pyhive_Vcf.py
 tests/test_pyhive_runBCFTools_VC.py
