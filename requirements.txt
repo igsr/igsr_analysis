@@ -3,7 +3,6 @@ biopython==1.70
 certifi==2017.7.27.1
 cffi==1.11.4
 chardet==3.0.4
-clyent==1.2.2
 cryptography==2.1.4
 cycler==0.10.0
 decorator==4.2.1
