@@ -1,4 +1,4 @@
-IGSR_ROOT/scripts/VCF/ANNOTATION/annotate.py# ------
+#
 # Script to decorate a VCF with some annotations. It also changes its header and finally it validates it
 # ------
 # author: Ernesto Lowy (ernestolowy@gmail.com)
