@@ -19,10 +19,10 @@ process getAlleleFrequencies {
 	*/
 
 	output:	
-        file 'out_annotate.txt' into out_Annotate
+        file 'out_allele_fqs/' into out_Annotate
 
 	"""
-	perl ${params.scripts_dir}/calculate_allele_frq_from_vcf.pl -vcf ${params.phased_vcf} -sample_panel ${params.sample_panel} -out_file out_annotate.txt -region ${params.region} -tabix ${params.tabix} -pop ${params.pops}
+	perl ${params.scripts_dir}/calculate_allele_frq_from_vcf.pl -vcf ${params.phased_vcf} -sample_panel ${params.sample_panel} -out_file out_annotate.txt -region ${params.region} -tabix ${params.tabix} -pop ${params.pops} -out_dir out_allele_fqs/
 	"""
 }
 
@@ -74,7 +74,7 @@ process getOverlappingVariants {
 
 process addAnnotation {
 	/*
-	Function to create a table containing the AFs and the depths for each posion
+	Function to add the VariantType annotation to the annotation table
 	*/
 
         input:
