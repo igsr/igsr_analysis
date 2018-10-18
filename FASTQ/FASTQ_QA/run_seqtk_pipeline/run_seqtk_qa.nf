@@ -77,6 +77,7 @@ process runFastqSimpleQA {
 
 	output:
 	file out_fastqa
+	val x into run_id
 
 	script:
         """
@@ -84,4 +85,23 @@ process runFastqSimpleQA {
 	-dbpass ${params.pwd} -dbport ${params.port} -run_id $x -collection_type FASTQ -new_collection_type FQ_OK -min_length ${params.min_length} \
 	-output_dir ${params.output_dir} -program ${params.program} -clobber 1> out_fastqa 
         """
+}
+
+process moveFinalFile {
+	/*
+	Process to move the final output file to the output folder set in params.output_dir
+	*/
+	publishDir "${params.output_dir}", saveAs:{ filename -> "$filename" }
+
+	input:
+        val run_id
+	file out_fastqa
+
+	output:
+	file "${run_id}.seqtk.out"
+	
+	script:
+	"""
+	mv ${out_fastqa} ${run_id}.seqtk.out
+	"""
 }
