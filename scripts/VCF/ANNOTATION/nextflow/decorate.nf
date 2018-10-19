@@ -1,12 +1,31 @@
 #!/usr/bin/env nextflow
 
 /* 
- * VCF annotation pipeline script
+ * VCF annotation Nextflow pipeline script
  *
  * @author
  * Ernesto Lowy <ernesto.lowy@gmail.com>
  *
  */
+
+// params defaults
+params.help = false
+
+//print usage
+if (params.help) {
+    log.info ''
+    log.info 'Pipeline to decorate and validate a certain VCF'
+    log.info '------------------------------------------------'
+    log.info ''
+    log.info 'Usage: '
+    log.info '    nextflow decorate.nf --pwd $DB_PASS --output_dir ./out --dbname elowy_hgdp_03102018 --runs runs.txt'
+    log.info ''
+    log.info 'Options:'
+    log.info '	--help	Show this message and exit.'
+    log.info '	--pwd PWD    Password for connecting the ReseqTrack DB.'
+    log.info '	--dbname DBNAME	       ReseqTrack DB name.'
+    log.info '	--host HOSTNAME	        Hostname of the MySQL ReseqTrack DB.'
+
 
 
 process getAlleleFrequencies {
