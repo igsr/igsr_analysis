@@ -5,6 +5,7 @@
 
 Welcome to igsr_analysis's documentation!
 =========================================
+This is the documentation showing how to run the different pipelines we use for the analysis of IGSR data
 
 Contents:
 
