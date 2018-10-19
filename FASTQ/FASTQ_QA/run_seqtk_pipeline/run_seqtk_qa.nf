@@ -39,7 +39,7 @@ if (params.help) {
     log.info '	--output_dir OUTPUT_DIR     Directory that will contain the output files.'
     log.info '	--runs RUN_FILE	      File containing runs to be analyzed'
     log.info '	       The format of RUN_FILE is:'
-    log.info '	       runID'
+    log.info '	       name'
     log.info '	       ERR0001'
     log.info '	       ERR0002'
     log.info '	       ERR0003' 
@@ -59,7 +59,7 @@ if (params.help) {
 Channel
     .fromPath(run_file)
     .splitCsv(header:true)
-    .map{ row-> row.runId }
+    .map{ row-> row.name }
     .set { runs_ch }
 
 process runFastqSimpleQA {
