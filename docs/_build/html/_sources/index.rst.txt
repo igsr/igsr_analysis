@@ -13,6 +13,7 @@ Contents:
    :maxdepth: 2
 
    VCF.rst
+   usage/installation.rst
 
 Indices and tables
 ==================
