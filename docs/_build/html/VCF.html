@@ -95,7 +95,7 @@ same INDEL could be represented in different ways depending on the caller.</p>
 <td>Run bcftools norm on a vcf file</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#VCF.VcfNormalize.VcfNormalize.run_gatk_VariantsToAllelicPrimitives" title="VCF.VcfNormalize.VcfNormalize.run_gatk_VariantsToAllelicPrimitives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_gatk_VariantsToAllelicPrimitives</span></code></a>(…[,&nbsp;…])</td>
-<td>Run GATK VariantsToAllelicPrimitives in order to decompose MNPs</td>
+<td>Run GATK VariantsToAllelicPrimitives in order to decompose MNPs into more basic/primitive alleles</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfNormalize.VcfNormalize.run_vcfallelicprimitives" title="VCF.VcfNormalize.VcfNormalize.run_vcfallelicprimitives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_vcfallelicprimitives</span></code></a>(outprefix[,&nbsp;…])</td>
 <td>Run vcfallelicprimitives on a vcf file</td>
@@ -114,32 +114,32 @@ same INDEL could be represented in different ways depending on the caller.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
-<dd><p class="first last">prefix for outputfile</p>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfile.</p>
 </dd>
-<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
-<dd><p class="first last">path to Fasta file with reference</p>
+<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Path to Fasta file with reference.</p>
 </dd>
 <dt><strong>multiallelic</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
 <dd><p class="first last">Operate on multiallelic variants and either split or merge them.
 Possible values are: ‘split’/’merge’</p>
 </dd>
-<dt><strong>type: str, optional</strong></dt>
-<dd><p class="first last">If ‘multiallelic’ is defined then operate on this type of variant.
-Possible values are: snps|indels|both|any</p>
+<dt><strong>type:</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘snps’, ‘indels’, ‘both’, ‘any’}, optional</span></dt>
+<dd><p class="first last">If ‘multiallelic’ is defined then operate on this type of variant.</p>
 </dd>
 <dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">If provided, then put output files in this folder</p>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
 </dd>
 <dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">if true, then increase verbosity</p>
+<dd><p class="first last">Ff true, then increase verbosity.</p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A string with path to normalized file</strong></dt>
-<dd></dd>
+<dt><strong>str</strong></dt>
+<dd><p class="first last">A string with path to normalized file.</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -150,36 +150,35 @@ Possible values are: snps|indels|both|any</p>
 <dl class="method">
 <dt id="VCF.VcfNormalize.VcfNormalize.run_gatk_VariantsToAllelicPrimitives">
 <code class="descname">run_gatk_VariantsToAllelicPrimitives</code><span class="sig-paren">(</span><em>outprefix</em>, <em>reference</em>, <em>outdir=None</em>, <em>compress=None</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfNormalize.VcfNormalize.run_gatk_VariantsToAllelicPrimitives" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Run GATK VariantsToAllelicPrimitives in order to decompose MNPs</dt>
-<dd>into more basic/primitive alleles</dd>
-</dl>
+<dd><p>Run GATK VariantsToAllelicPrimitives in order to decompose MNPs
+into more basic/primitive alleles</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
-<dd><p class="first last">prefix for outputfiles</p>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfiles.</p>
 </dd>
-<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
-<dd><p class="first last">Path to fasta file containing the reference</p>
+<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Path to fasta file containing the reference.</p>
 </dd>
 <dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">If provided, then put output files in this folder</p>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
 </dd>
 <dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">bgzip compress the normalized VCF</p>
+<dd><p class="first last">Bgzip compress the normalized VCF.</p>
 </dd>
 <dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">if true, then increase verbosity</p>
+<dd><p class="first last">Ff true, then increase verbosity.</p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A string with path to decomposed file</strong></dt>
-<dd></dd>
+<dt><strong>str</strong></dt>
+<dd><p class="first last">A string with path to decomposed file.</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -198,38 +197,39 @@ indel representation,generating phased genotypes for available samples.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
-<dd><p class="first last">prefix for outputfiles</p>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfiles.</p>
 </dd>
-<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">bgzip compress the normalized VCF</p>
+<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Bgzip compress the normalized VCF.</p>
 </dd>
 <dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">If provided, then put output files in this folder</p>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
 </dd>
-<dt><strong>keepinfo</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional. Default=True</span></dt>
+<dt><strong>keepinfo</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
 <dd><p class="first last">Maintain site and allele-level annotations when decomposing.
 Note that in many cases, such as multisample VCFs, these won’t
 be valid post-decomposition.  For biallelic loci in single-sample
-VCFs, they should be usable with caution</p>
+VCFs, they should be usable with caution. Default=True.</p>
 </dd>
-<dt><strong>keepgeno</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional. Default=True</span></dt>
-<dd><p class="first last">Maintain genotype-level annotations when decomposing.  Similar
-caution should be used for this as for keep-info.</p>
+<dt><strong>keepgeno</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Maintain genotype-level annotations when decomposing. Similar
+caution should be used for this as for keep-info. Default=True.</p>
 </dd>
 <dt><strong>downstream_pipe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
 <dd><p class="first last">If defined, then pipe the output VCF to other tools. 
-i.e. “~/bin/vt/vt sort - | ~/bin/vt/vt uniq -“</p>
+i.e. “~/bin/vt/vt sort - | ~/bin/vt/vt uniq -“.</p>
 </dd>
 <dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">if true, then increase verbosity</p>
+<dd><p class="first last">if true, then increase verbosity.</p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A string with path to decomposed file</strong></dt>
-<dd></dd>
+<dt><strong>str</strong></dt>
+<dd><p class="first last">A string with path to decomposed file</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -246,31 +246,32 @@ i.e. “~/bin/vt/vt sort - | ~/bin/vt/vt uniq -“</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
-<dd><p class="first last">prefix for outputfile</p>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfile.</p>
 </dd>
-<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
-<dd><p class="first last">path to Fasta file with reference</p>
+<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Path to Fasta file with reference.</p>
 </dd>
 <dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">bgzip compress the normalized VCF</p>
+<dd><p class="first last">bgzip compress the normalized VCF.</p>
 </dd>
 <dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">If provided, then put output files in this folder</p>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
 </dd>
 <dt><strong>n</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
 <dd><p class="first last">warns but does not exit when REF is inconsistent
-with reference sequence for non SNPs. Default=False</p>
+with reference sequence for non SNPs. Default=False.</p>
 </dd>
 <dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">if true, then increase verbosity</p>
+<dd><p class="first last">if true, then increase verbosity.</p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A string with path to normalized file</strong></dt>
-<dd></dd>
+<dt><strong>str</strong></dt>
+<dd><p class="first last">A string with path to normalized file.</p>
+</dd>
 </dl>
 </td>
 </tr>
