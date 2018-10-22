@@ -12,10 +12,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-VCF
-===================
-.. automodule:: app
-   :members:
+   VCF.rst
 
 Indices and tables
 ==================
