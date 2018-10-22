@@ -12,7 +12,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-TeacherAPI main
+VCF
 ===================
 .. automodule:: app
    :members:
