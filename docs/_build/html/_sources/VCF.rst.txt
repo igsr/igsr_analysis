@@ -1,6 +1,8 @@
 VCF package
 ===========
 
+This is the documentation for the VCF module
+
 Subpackages
 -----------
 
