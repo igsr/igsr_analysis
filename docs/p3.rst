@@ -1,0 +1,22 @@
+p3 package
+==========
+
+Submodules
+----------
+
+p3.p3BAMQC module
+-----------------
+
+.. automodule:: p3.p3BAMQC
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: p3
+    :members:
+    :undoc-members:
+    :show-inheritance:

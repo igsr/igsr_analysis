@@ -1,8 +1,10 @@
-'''
-Created on 31 Mar 2017
+"""VcfNormalize module.
 
-@author: ernesto
-'''
+This module is used to normalize a file in the VCF format (see https://samtools.github.io/hts-specs/VCFv4.2.pdf).  
+Normalizing a file is basically used to make different VCFs comparable, and it is highly recommended when you are 
+benchmarcking your call set using a reference call set. Normalization is specially important for INDELs, as the 
+same INDEL could be represented in different ways depending on the caller.
+"""
 
 import pdb
 import os
@@ -22,20 +24,20 @@ class VcfNormalize(object):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        vcf : str, Required
-             Path to gzipped vcf file
-        vt_folder : str, Optional
-                      Path to folder containing the vt binary
-        vcflib_folder : str, Optional
-                        Path to folder containing the different vcflib binaries
-        bgzip_folder : str, Optional
-                       Path to folder containing the bgzip binary
-        gatk_folder : str, Optional
-                      Path to folder containing the GATK jar file
-        bcftools_folder : str, Optional
-                        Path to folder containing the bcftools binary
+        Parameters
+        ----------
+        vcf : str
+              Path to gzipped vcf file
+        vt_folder : str, optional
+                    Path to folder containing the vt binary.
+        vcflib_folder : str, optional
+                        Path to folder containing the different vcflib binaries.
+        bgzip_folder : str, optional
+                       Path to folder containing the bgzip binary.
+        gatk_folder : str, optional
+                      Path to folder containing the GATK jar file.
+        bcftools_folder : str, optional
+                          Path to folder containing the bcftools binary.
         '''
 
         if os.path.isfile(vcf) is False:
@@ -54,23 +56,24 @@ class VcfNormalize(object):
 
         Parameters
         ----------
-        outprefix : str, required
-              prefix for outputfile
-        reference : str, required
-              path to Fasta file with reference
+        outprefix : str
+                    Prefix for outputfile.
+        reference : str
+                    Path to Fasta file with reference.
         compress : boolean, optional
-              bgzip compress the normalized VCF
+                   bgzip compress the normalized VCF.
         outdir : str, optional
-            If provided, then put output files in this folder
+                 If provided, then put output files in this folder.
         n : bool, optional
             warns but does not exit when REF is inconsistent
-            with reference sequence for non SNPs. Default=False
+            with reference sequence for non SNPs. Default=False.
         verbose : bool, optional
-                  if true, then increase verbosity
+                  if true, then increase verbosity.
 
         Returns
         -------
-        A string with path to normalized file
+        str
+           A string with path to normalized file.
         '''
 
         if self.vt_folder is None:
@@ -114,24 +117,24 @@ class VcfNormalize(object):
 
         Parameters
         ----------
-        outprefix : str, required
-              prefix for outputfile
-        reference : str, required
-              path to Fasta file with reference
+        outprefix : str
+                    Prefix for outputfile.
+        reference : str
+                    Path to Fasta file with reference.
         multiallelic : str, optional
-              Operate on multiallelic variants and either split or merge them.
-              Possible values are: 'split'/'merge'
-        type: str, optional
-              If 'multiallelic' is defined then operate on this type of variant.
-              Possible values are: snps|indels|both|any
+                       Operate on multiallelic variants and either split or merge them.
+                       Possible values are: 'split'/'merge'
+        type: : {'snps', 'indels', 'both', 'any'}, optional
+                If 'multiallelic' is defined then operate on this type of variant.
         outdir : str, optional
-            If provided, then put output files in this folder
+                 If provided, then put output files in this folder.
         verbose : bool, optional
-                  if true, then increase verbosity
+                  Ff true, then increase verbosity.
 
         Returns
         -------
-        A string with path to normalized file
+        str
+           A string with path to normalized file.
         '''
 
         if outdir:
@@ -173,30 +176,30 @@ class VcfNormalize(object):
 
         Parameters
         ----------
-
-        outprefix : str, required
-              prefix for outputfiles
-        compress : boolean, optional
-              bgzip compress the normalized VCF
+        outprefix : str
+                    Prefix for outputfiles.
+        compress : bool, optional
+                   Bgzip compress the normalized VCF.
         outdir : str, optional
-            If provided, then put output files in this folder
-        keepinfo : bool, optional. Default=True
-            Maintain site and allele-level annotations when decomposing.
-            Note that in many cases, such as multisample VCFs, these won't
-            be valid post-decomposition.  For biallelic loci in single-sample
-            VCFs, they should be usable with caution
-        keepgeno : bool, optional. Default=True
-            Maintain genotype-level annotations when decomposing.  Similar
-            caution should be used for this as for keep-info.
+                 If provided, then put output files in this folder.
+        keepinfo : bool, optional
+                   Maintain site and allele-level annotations when decomposing.
+                   Note that in many cases, such as multisample VCFs, these won't
+                   be valid post-decomposition.  For biallelic loci in single-sample
+                   VCFs, they should be usable with caution. Default=True.
+        keepgeno : bool, optional
+                   Maintain genotype-level annotations when decomposing. Similar
+                   caution should be used for this as for keep-info. Default=True.
         downstream_pipe : str, optional
-            If defined, then pipe the output VCF to other tools. 
-            i.e. "~/bin/vt/vt sort - | ~/bin/vt/vt uniq -"
+                          If defined, then pipe the output VCF to other tools. 
+                          i.e. "~/bin/vt/vt sort - | ~/bin/vt/vt uniq -".
         verbose : bool, optional
-            if true, then increase verbosity
+                  if true, then increase verbosity.
 
         Returns
         -------
-        A string with path to decomposed file
+        str
+           A string with path to decomposed file
         '''
 
         if outdir: 
@@ -237,26 +240,25 @@ class VcfNormalize(object):
                                              outdir=None, compress=None, verbose=None):
         '''
         Run GATK VariantsToAllelicPrimitives in order to decompose MNPs
-         into more basic/primitive alleles
+        into more basic/primitive alleles
 
         Parameters
         ----------
-
-        outprefix : str, required
-                    prefix for outputfiles
-        reference : str, Required
-                     Path to fasta file containing the reference
+        outprefix : str
+                    Prefix for outputfiles.
+        reference : str
+                    Path to fasta file containing the reference.
         outdir : str, optional
-                   If provided, then put output files in this folder
+                 If provided, then put output files in this folder.
         compress : boolean, optional
-                   bgzip compress the normalized VCF
+                   Bgzip compress the normalized VCF.
         verbose : bool, optional
-                  if true, then increase verbosity
+                  Ff true, then increase verbosity.
 
         Returns
         -------
-        A string with path to decomposed file
-
+        str
+           A string with path to decomposed file.
         '''
 
         if self.gatk_folder is None:
@@ -292,4 +294,4 @@ class VcfNormalize(object):
         else:
             raise Exception("'compress' parameter is not valid")
         
-        return outprefix    
+        return outprefix
