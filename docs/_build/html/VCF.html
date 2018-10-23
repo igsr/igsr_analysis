@@ -1,0 +1,962 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>VCF package &#8212; igsr_analysis 0.1.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="VCF.VCFIntegration package" href="VCF.VCFIntegration.html" />
+    <link rel="prev" title="Welcome to igsr_analysis’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="vcf-package">
+<h1>VCF package<a class="headerlink" href="#vcf-package" title="Permalink to this headline">¶</a></h1>
+<p>This is the documentation for the VCF module</p>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="VCF.VCFIntegration.html">VCF.VCFIntegration package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFIntegration.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFIntegration.html#module-VCF.VCFIntegration.Beagle">VCF.VCFIntegration.Beagle module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFIntegration.html#module-VCF.VCFIntegration.SNPTools">VCF.VCFIntegration.SNPTools module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFIntegration.html#module-VCF.VCFIntegration.Shapeit">VCF.VCFIntegration.Shapeit module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFIntegration.html#module-VCF.VCFIntegration">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="VCF.VCFfilter.html">VCF.VCFfilter package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFfilter.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFfilter.html#module-VCF.VCFfilter.BCFTools">VCF.VCFfilter.BCFTools module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFfilter.html#module-VCF.VCFfilter.GATK">VCF.VCFfilter.GATK module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="VCF.VCFfilter.html#module-VCF.VCFfilter">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-VCF.VcfNormalize">
+<span id="vcf-vcfnormalize-module"></span><h2>VCF.VcfNormalize module<a class="headerlink" href="#module-VCF.VcfNormalize" title="Permalink to this headline">¶</a></h2>
+<p>VcfNormalize module.</p>
+<p>This module is used to normalize a file in the VCF format (see <a class="reference external" href="https://samtools.github.io/hts-specs/VCFv4.2.pdf">https://samtools.github.io/hts-specs/VCFv4.2.pdf</a>).  
+Normalizing a file is basically used to make different VCFs comparable, and it is highly recommended when you are 
+benchmarcking your call set using a reference call set. Normalization is specially important for INDELs, as the 
+same INDEL could be represented in different ways depending on the caller.</p>
+<dl class="class">
+<dt id="VCF.VcfNormalize.VcfNormalize">
+<em class="property">class </em><code class="descclassname">VCF.VcfNormalize.</code><code class="descname">VcfNormalize</code><span class="sig-paren">(</span><em>vcf</em>, <em>vt_folder=None</em>, <em>vcflib_folder=None</em>, <em>bgzip_folder=None</em>, <em>gatk_folder=None</em>, <em>bcftools_folder=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfNormalize.VcfNormalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Normalize variants in a VCF file</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfNormalize.VcfNormalize.run_bcftoolsnorm" title="VCF.VcfNormalize.VcfNormalize.run_bcftoolsnorm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bcftoolsnorm</span></code></a>(outprefix,&nbsp;reference[,&nbsp;…])</td>
+<td>Run bcftools norm on a vcf file</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VcfNormalize.VcfNormalize.run_gatk_VariantsToAllelicPrimitives" title="VCF.VcfNormalize.VcfNormalize.run_gatk_VariantsToAllelicPrimitives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_gatk_VariantsToAllelicPrimitives</span></code></a>(…[,&nbsp;…])</td>
+<td>Run GATK VariantsToAllelicPrimitives in order to decompose MNPs into more basic/primitive alleles</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfNormalize.VcfNormalize.run_vcfallelicprimitives" title="VCF.VcfNormalize.VcfNormalize.run_vcfallelicprimitives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_vcfallelicprimitives</span></code></a>(outprefix[,&nbsp;…])</td>
+<td>Run vcfallelicprimitives on a vcf file</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VcfNormalize.VcfNormalize.run_vtnormalize" title="VCF.VcfNormalize.VcfNormalize.run_vtnormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_vtnormalize</span></code></a>(outprefix,&nbsp;reference[,&nbsp;…])</td>
+<td>Run vt normalize on a vcf file</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="VCF.VcfNormalize.VcfNormalize.run_bcftoolsnorm">
+<code class="descname">run_bcftoolsnorm</code><span class="sig-paren">(</span><em>outprefix</em>, <em>reference</em>, <em>multiallelics=None</em>, <em>type=None</em>, <em>outdir=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfNormalize.VcfNormalize.run_bcftoolsnorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run bcftools norm on a vcf file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfile.</p>
+</dd>
+<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Path to Fasta file with reference.</p>
+</dd>
+<dt><strong>multiallelic</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Operate on multiallelic variants and either split or merge them.
+Possible values are: ‘split’/’merge’</p>
+</dd>
+<dt><strong>type:</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘snps’, ‘indels’, ‘both’, ‘any’}, optional</span></dt>
+<dd><p class="first last">If ‘multiallelic’ is defined then operate on this type of variant.</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Ff true, then increase verbosity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>str</strong></dt>
+<dd><p class="first last">A string with path to normalized file.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfNormalize.VcfNormalize.run_gatk_VariantsToAllelicPrimitives">
+<code class="descname">run_gatk_VariantsToAllelicPrimitives</code><span class="sig-paren">(</span><em>outprefix</em>, <em>reference</em>, <em>outdir=None</em>, <em>compress=None</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfNormalize.VcfNormalize.run_gatk_VariantsToAllelicPrimitives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run GATK VariantsToAllelicPrimitives in order to decompose MNPs
+into more basic/primitive alleles</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfiles.</p>
+</dd>
+<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Path to fasta file containing the reference.</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
+</dd>
+<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Bgzip compress the normalized VCF.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Ff true, then increase verbosity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>str</strong></dt>
+<dd><p class="first last">A string with path to decomposed file.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfNormalize.VcfNormalize.run_vcfallelicprimitives">
+<code class="descname">run_vcfallelicprimitives</code><span class="sig-paren">(</span><em>outprefix</em>, <em>compress=True</em>, <em>outdir=None</em>, <em>keepinfo=True</em>, <em>keepgeno=True</em>, <em>downstream_pipe=None</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfNormalize.VcfNormalize.run_vcfallelicprimitives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run vcfallelicprimitives on a vcf file</p>
+<p>This program is used to decompose complex variants into a canonical SNP and
+indel representation,generating phased genotypes for available samples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfiles.</p>
+</dd>
+<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Bgzip compress the normalized VCF.</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
+</dd>
+<dt><strong>keepinfo</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Maintain site and allele-level annotations when decomposing.
+Note that in many cases, such as multisample VCFs, these won’t
+be valid post-decomposition.  For biallelic loci in single-sample
+VCFs, they should be usable with caution. Default=True.</p>
+</dd>
+<dt><strong>keepgeno</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Maintain genotype-level annotations when decomposing. Similar
+caution should be used for this as for keep-info. Default=True.</p>
+</dd>
+<dt><strong>downstream_pipe</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If defined, then pipe the output VCF to other tools. 
+i.e. “~/bin/vt/vt sort - | ~/bin/vt/vt uniq -“.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">if true, then increase verbosity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>str</strong></dt>
+<dd><p class="first last">A string with path to decomposed file</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfNormalize.VcfNormalize.run_vtnormalize">
+<code class="descname">run_vtnormalize</code><span class="sig-paren">(</span><em>outprefix</em>, <em>reference</em>, <em>compress=False</em>, <em>verbose=False</em>, <em>outdir=None</em>, <em>n=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfNormalize.VcfNormalize.run_vtnormalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run vt normalize on a vcf file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfile.</p>
+</dd>
+<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Path to Fasta file with reference.</p>
+</dd>
+<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">bgzip compress the normalized VCF.</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
+</dd>
+<dt><strong>n</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">warns but does not exit when REF is inconsistent
+with reference sequence for non SNPs. Default=False.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">if true, then increase verbosity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>str</strong></dt>
+<dd><p class="first last">A string with path to normalized file.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-VCF.VcfQC">
+<span id="vcf-vcfqc-module"></span><h2>VCF.VcfQC module<a class="headerlink" href="#module-VCF.VcfQC" title="Permalink to this headline">¶</a></h2>
+<p>VcfQC module.</p>
+<p>This module is used to do a series of VCF QC tasks on a VCF file.</p>
+<p>&#64;author: Ernesto Lowy</p>
+<dl class="class">
+<dt id="VCF.VcfQC.BcftoolsStats">
+<em class="property">class </em><code class="descclassname">VCF.VcfQC.</code><code class="descname">BcftoolsStats</code><span class="sig-paren">(</span><em>filename=None</em>, <em>summary_numbers=None</em>, <em>ts_tv=None</em>, <em>ts_tv_1stalt=None</em>, <em>no_singleton_snps=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.BcftoolsStats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to store the results of running BCFtools stats on a VCF file</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="VCF.VcfQC.CollectVCallingMetrics">
+<em class="property">class </em><code class="descclassname">VCF.VcfQC.</code><code class="descname">CollectVCallingMetrics</code><span class="sig-paren">(</span><em>vc_detail_metrics_file</em>, <em>vc_summary_metrics_file</em>, <em>vc_detail_metrics=None</em>, <em>vc_summary_metrics=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.CollectVCallingMetrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to store the results of running picard’s CollectVariantCallingMetrics on a VCF file</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="VCF.VcfQC.GTPconcordance">
+<em class="property">class </em><code class="descclassname">VCF.VcfQC.</code><code class="descname">GTPconcordance</code><span class="sig-paren">(</span><em>summary_metrics_file</em>, <em>summary_metrics_snps=None</em>, <em>summary_metrics_indels=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.GTPconcordance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to store the results of running picard’s GenotypeConcordance on a VCF file</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="VCF.VcfQC.VcfQC">
+<em class="property">class </em><code class="descclassname">VCF.VcfQC.</code><code class="descname">VcfQC</code><span class="sig-paren">(</span><em>vcf</em>, <em>bgzip_folder=None</em>, <em>bcftools_folder=None</em>, <em>bedtools_folder=None</em>, <em>picard_folder=None</em>, <em>r_folder=None</em>, <em>r_scripts=None</em>, <em>tabix_folder=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.VcfQC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to do quality assessment on a VCF file</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfQC.VcfQC.calc_concordance" title="VCF.VcfQC.VcfQC.calc_concordance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_concordance</span></code></a>(truth_vcf,&nbsp;truth_sample,&nbsp;…)</td>
+<td>Method to calculate the genotype concordance between VcfQC.vcf and Truth VCF.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VcfQC.VcfQC.get_chros" title="VCF.VcfQC.VcfQC.get_chros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_chros</span></code></a>([filter_str,&nbsp;chr_f,&nbsp;verbose])</td>
+<td>Method to get a list of chromosomes present in a file</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfQC.VcfQC.number_variants_in_region" title="VCF.VcfQC.VcfQC.number_variants_in_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">number_variants_in_region</span></code></a>(region,&nbsp;outprefix)</td>
+<td>Method to get the number of variants in a particular region/s</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VcfQC.VcfQC.plot_variant_density" title="VCF.VcfQC.VcfQC.plot_variant_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_variant_density</span></code></a>(length,&nbsp;genome,&nbsp;…)</td>
+<td>Method used to plot the variant density along the genome for this VCF file</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfQC.VcfQC.run_CollectVariantCallingMetrics" title="VCF.VcfQC.VcfQC.run_CollectVariantCallingMetrics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_CollectVariantCallingMetrics</span></code></a>(outprefix,&nbsp;…)</td>
+<td>Method to run Picard’s CollectVariantCallingMetrics on a VcfQC object.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VcfQC.VcfQC.stats" title="VCF.VcfQC.VcfQC.stats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stats</span></code></a>(outpath[,&nbsp;filter_str,&nbsp;region,&nbsp;…])</td>
+<td>Run bcftools stats on the VCF file</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="VCF.VcfQC.VcfQC.calc_concordance">
+<code class="descname">calc_concordance</code><span class="sig-paren">(</span><em>truth_vcf</em>, <em>truth_sample</em>, <em>call_sample</em>, <em>outprefix</em>, <em>outdir=None</em>, <em>intervals=None</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.VcfQC.calc_concordance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to calculate the genotype concordance between VcfQC.vcf and Truth VCF.
+It will run Picard’s GenotypeConcordance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>truth_vcf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The VCF containing the truth sample.</p>
+</dd>
+<dt><strong>truth_sample</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The name of the truth sample within the truth VCF.</p>
+</dd>
+<dt><strong>call_sample</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The name of the call sample within the call VCF.</p>
+</dd>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">String used as the prefix in the output file.</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
+</dd>
+<dt><strong>intervals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">One or more interval list files that will be used to limit the
+genotype concordance.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Ff true, then print the command line used for running this program.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>GTPconcordance object</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfQC.VcfQC.get_chros">
+<code class="descname">get_chros</code><span class="sig-paren">(</span><em>filter_str=None</em>, <em>chr_f=None</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.VcfQC.get_chros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get a list of chromosomes present in a file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>filter_str</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If defined, apply this filter string so bcftools view
+apply it before fetching the chros.</p>
+</dd>
+<dt><strong>chr_f</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Path to file with a list of chromosomes (one per line).
+If provided, the chros in the file will be compared with the
+chromosomes in self.vcf.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Increase verbosity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict</strong></dt>
+<dd><p class="first">Dict with a key named ‘in_vcf’ and whose values are the chros that are present in self.vcf.</p>
+<dl class="last docutils">
+<dt>If list_of_chros is defined, then it will also add 3 keys to the dict:</dt>
+<dd><p class="first last">‘both’ whose values will be the chros present in self.vcf and in ‘chr_f’
+‘in_A’ whose values will be the chros PRESENT in self.vcf and NOT in ‘chr_f’
+‘in_B’ whose values will be the chros NOT present in self.vcf and PRESENT in ‘chr_f’.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfQC.VcfQC.number_variants_in_region">
+<code class="descname">number_variants_in_region</code><span class="sig-paren">(</span><em>region</em>, <em>outprefix</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.VcfQC.number_variants_in_region" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get the number of variants in a particular region/s</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>region</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">String with path to the BED file containing the regions for
+which the number will be calculated.</p>
+</dd>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outfile.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Increase verbosity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">File with the number of variants for each particular region.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfQC.VcfQC.plot_variant_density">
+<code class="descname">plot_variant_density</code><span class="sig-paren">(</span><em>length</em>, <em>genome</em>, <em>outprefix</em>, <em>plot_params</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.VcfQC.plot_variant_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method used to plot the variant density along the genome for this VCF file</p>
+<p>This method will calculate the variant density (SNPs, INDELs or both)
+for windows of a certain length (in bp) defined by the user and will
+plot this density along the chromosomes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Length in bp of the genomic windows for which the number
+of variants will be calculated.</p>
+</dd>
+<dt><strong>genome</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">File with genome sizes.</p>
+</dd>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for output file (png file with variant density plot).</p>
+</dd>
+<dt><strong>plot_params</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
+<dd><p class="first">Dictionary containing the graphical parameters used for plot_variants.R:
+{</p>
+<blockquote class="last">
+<div><p>‘height’: int,
+‘chromName_cex’: double
+}.</p>
+</div></blockquote>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Returns png file with the density plot</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfQC.VcfQC.run_CollectVariantCallingMetrics">
+<code class="descname">run_CollectVariantCallingMetrics</code><span class="sig-paren">(</span><em>outprefix</em>, <em>truth_vcf</em>, <em>intervals=None</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.VcfQC.run_CollectVariantCallingMetrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to run Picard’s CollectVariantCallingMetrics on a VcfQC object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outfiles: prefix.variant_calling_detail_metrics
+and prefix.variant_calling_summary_metrics.</p>
+</dd>
+<dt><strong>truth_vcf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Reference VCF file.</p>
+</dd>
+<dt><strong>intervals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Target intervals to restrict analysis to.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Increase verbosity.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>CollectVCallingMetrics object</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfQC.VcfQC.stats">
+<code class="descname">stats</code><span class="sig-paren">(</span><em>outpath</em>, <em>filter_str=None</em>, <em>region=None</em>, <em>region_file=None</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.VcfQC.stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run bcftools stats on the VCF file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outpath</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">output path</p>
+</dd>
+<dt><strong>filter_str</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional.</span></dt>
+<dd><p class="first last">Example:  PASS,.
+Apply filters when calculating the stats.</p>
+</dd>
+<dt><strong>region</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Example: chr20
+Region used for calculating the stats.</p>
+</dd>
+<dt><strong>region_file</strong> <span class="classifier-delimiter">:</span> <span class="classifier">filename, optional</span></dt>
+<dd><p class="first last">BED file with the regions that will be analyzed.</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>BcftoolsStats object</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-VCF.VcfUtils">
+<span id="vcf-vcfutils-module"></span><h2>VCF.VcfUtils module<a class="headerlink" href="#module-VCF.VcfUtils" title="Permalink to this headline">¶</a></h2>
+<p>Created on 03 Aug 2017</p>
+<p>&#64;author: ernesto</p>
+<dl class="class">
+<dt id="VCF.VcfUtils.VcfUtils">
+<em class="property">class </em><code class="descclassname">VCF.VcfUtils.</code><code class="descname">VcfUtils</code><span class="sig-paren">(</span><em>vcf=None</em>, <em>vcflist=None</em>, <em>bcftools_folder=None</em>, <em>bgzip_folder=None</em>, <em>gatk_folder=None</em>, <em>java_folder=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfUtils.VcfUtils" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to represent a misc of actions that can be done on a single or multiple VCF files</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfUtils.VcfUtils.combine" title="VCF.VcfUtils.VcfUtils.combine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine</span></code></a>(labels,&nbsp;reference,&nbsp;outprefix[,&nbsp;…])</td>
+<td>Combine VCFs using GATK’s CombineVariants into a single VCF</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VcfUtils.VcfUtils.convert_PL2GL" title="VCF.VcfUtils.VcfUtils.convert_PL2GL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_PL2GL</span></code></a>(outfile[,&nbsp;threads,&nbsp;verbose])</td>
+<td>Function to convert PL fields into GT.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfUtils.VcfUtils.correct_ambiguity_codes" title="VCF.VcfUtils.VcfUtils.correct_ambiguity_codes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">correct_ambiguity_codes</span></code></a>(outfile)</td>
+<td>Function to correct the ambiguity bases in the VCF.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VcfUtils.VcfUtils.drop_genotypes" title="VCF.VcfUtils.VcfUtils.drop_genotypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_genotypes</span></code></a>(outfile[,&nbsp;verbose])</td>
+<td>Function to drop the Genotype information from a VCF.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfUtils.VcfUtils.drop_info" title="VCF.VcfUtils.VcfUtils.drop_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">drop_info</span></code></a>(outfile[,&nbsp;verbose])</td>
+<td>Function to remove the INFO annotation from a VCF.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VcfUtils.VcfUtils.reheader" title="VCF.VcfUtils.VcfUtils.reheader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reheader</span></code></a>(newheader,&nbsp;outprefix[,&nbsp;samplefile,&nbsp;…])</td>
+<td>Modifiy the VCF’s header with the newheader</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VcfUtils.VcfUtils.rename_chros" title="VCF.VcfUtils.VcfUtils.rename_chros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_chros</span></code></a>(chr_types,&nbsp;outfile[,&nbsp;compress])</td>
+<td>Function to modify the chr names in the VCF file For example: If file has UCSC-type chr names (i.e.</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="VCF.VcfUtils.VcfUtils.combine">
+<code class="descname">combine</code><span class="sig-paren">(</span><em>labels</em>, <em>reference</em>, <em>outprefix</em>, <em>compress=False</em>, <em>outdir=None</em>, <em>ginterval=None</em>, <em>genotypemergeoption=None</em>, <em>filteredrecordsmergetype=None</em>, <em>threads=1</em>, <em>options=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfUtils.VcfUtils.combine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine VCFs using GATK’s CombineVariants into a single VCF</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>labels</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list, required</span></dt>
+<dd><p class="first last">List of labels used for each of the VCFs in self.vcflist. The order of the labels
+should be the same that the VCFs in the list</p>
+</dd>
+<dt><strong>reference</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
+<dd><p class="first last">Path to Fasta file with reference</p>
+</dd>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
+<dd><p class="first last">prefix used for output file</p>
+</dd>
+<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Compress the output VCF with bgzip. Default=False</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Path to folder used to write the results to</p>
+</dd>
+<dt><strong>ginterval</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Genomic interval used to restrict the analysis. i.e. chr20:1000-2000</p>
+</dd>
+<dt><strong>genotypemergeoption</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Determines how we should merge genotype records for samples shared across the ROD files. 
+Possible values are: UNIQUIFY, PRIORITIZE, UNSORTED, REQUIRE_UNIQUE</p>
+</dd>
+<dt><strong>filteredrecordsmergetype</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Determines how we should handle records seen at the same site in the VCF, but with different FILTER fields
+Possible values are : KEEP_IF_ANY_UNFILTERED, KEEP_IF_ANY_UNFILTERED, KEEP_UNCONDITIONAL</p>
+</dd>
+<dt><strong>threads</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Number of trades to use. Default=1</p>
+</dd>
+<dt><strong>options</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list, optional</span></dt>
+<dd><p class="first last">List of options. i.e. [‘-env’,’–filteredAreUncalled’]</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">increase the verbosity, default=False</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Path to the merged VCF</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfUtils.VcfUtils.convert_PL2GL">
+<code class="descname">convert_PL2GL</code><span class="sig-paren">(</span><em>outfile</em>, <em>threads=1</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfUtils.VcfUtils.convert_PL2GL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to convert PL fields into GT.
+This function makes use of Bcftools +tag2tag plugin</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outfile</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, required</span></dt>
+<dd><dl class="first last docutils">
+<dt>File where the output VCF will be written</dt>
+<dd><p class="first last">Possible values are : KEEP_IF_ANY_UNFILTERED, KEEP_IF_ANY_UNFILTERED, KEEP_UNCONDITIONAL</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>threads</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Number of trades to use. Default=1</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">increase the verbosity, default=False</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Path to the vcf.gz file with the PL fields converted</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfUtils.VcfUtils.correct_ambiguity_codes">
+<code class="descname">correct_ambiguity_codes</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfUtils.VcfUtils.correct_ambiguity_codes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to correct the ambiguity bases in the VCF. This ambiguity
+may appear in the REF or ALT columns</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outfile</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, required</span></dt>
+<dd><p class="first last">File where the output VCF will be written</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Path to vcf.gz file compressed with GZIP</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfUtils.VcfUtils.drop_genotypes">
+<code class="descname">drop_genotypes</code><span class="sig-paren">(</span><em>outfile</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfUtils.VcfUtils.drop_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to drop the Genotype information from a VCF.
+This function uses bcftools -G to perform this operation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outfile</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, required</span></dt>
+<dd><p class="first last">File where the output VCF will be written</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">increase the verbosity, default=False</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Path to the vcf.gz file without the GT information</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfUtils.VcfUtils.drop_info">
+<code class="descname">drop_info</code><span class="sig-paren">(</span><em>outfile</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfUtils.VcfUtils.drop_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to remove the INFO annotation from a VCF.
+This function uses bcftools annotate  to perform this operation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outfile</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, required</span></dt>
+<dd><p class="first last">File where the output VCF will be written</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">increase the verbosity, default=False</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Path to the vcf.gz file without the INFO annotation</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfUtils.VcfUtils.reheader">
+<code class="descname">reheader</code><span class="sig-paren">(</span><em>newheader</em>, <em>outprefix</em>, <em>samplefile=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfUtils.VcfUtils.reheader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modifiy the VCF’s header with the newheader</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>newheader</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, required</span></dt>
+<dd><p class="first last">Path to the file containing the new header</p>
+</dd>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, required</span></dt>
+<dd><p class="first last">prefix for output files</p>
+</dd>
+<dt><strong>samplefile</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
+<dd><p class="first last">Path to the file with the sample names that will included
+in the new header</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">increase the verbosity, default=False</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Path to the VCF with the modified header</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VcfUtils.VcfUtils.rename_chros">
+<code class="descname">rename_chros</code><span class="sig-paren">(</span><em>chr_types</em>, <em>outfile</em>, <em>compress=True</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfUtils.VcfUtils.rename_chros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to modify the chr names in the VCF file
+For example:
+If file has UCSC-type chr names (i.e. chr1,chr2,…) then this 
+function will convert the UCSC-type chr names to Ensembl-type 
+chr names (i.e. 1,2,…) or vice-versa</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>chr_types</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, required</span></dt>
+<dd><p class="first">Type of chr names that will be written to the file. 
+Possible values are:</p>
+<blockquote class="last">
+<div><p>‘ucsc’/’ensembl’</p>
+</div></blockquote>
+</dd>
+<dt><strong>outfile</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, required</span></dt>
+<dd><p class="first last">File used for the output VCF</p>
+</dd>
+<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Default: True</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Path to the VCF with the chrosomes renamed</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-VCF">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-VCF" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">igsr_analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">VCF package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-VCF.VcfNormalize">VCF.VcfNormalize module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-VCF.VcfQC">VCF.VcfQC module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-VCF.VcfUtils">VCF.VcfUtils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-VCF">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to igsr_analysis’s documentation!</a></li>
+      <li>Next: <a href="VCF.VCFIntegration.html" title="next chapter">VCF.VCFIntegration package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, ernesto lowy.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/VCF.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
