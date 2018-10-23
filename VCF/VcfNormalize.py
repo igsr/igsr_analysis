@@ -1,6 +1,6 @@
 """VcfNormalize module.
 
-This module is used to normalize a file in the VCF format (see https://samtools.github.io/hts-specs/VCFv4.2.pdf).
+This module is used to normalize a file in the VCF format (see https://samtools.github.io/hts-specs/VCFv4.2.pdf).  
 Normalizing a file is basically used to make different VCFs comparable, and it is highly recommended when you are 
 benchmarcking your call set using a reference call set. Normalization is specially important for INDELs, as the 
 same INDEL could be represented in different ways depending on the caller.

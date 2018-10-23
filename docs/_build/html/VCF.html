@@ -75,7 +75,7 @@
 <div class="section" id="module-VCF.VcfNormalize">
 <span id="vcf-vcfnormalize-module"></span><h2>VCF.VcfNormalize module<a class="headerlink" href="#module-VCF.VcfNormalize" title="Permalink to this headline">¶</a></h2>
 <p>VcfNormalize module.</p>
-<p>This module is used to normalize a file in the VCF format (see <a class="reference external" href="https://samtools.github.io/hts-specs/VCFv4.2.pdf">https://samtools.github.io/hts-specs/VCFv4.2.pdf</a>).
+<p>This module is used to normalize a file in the VCF format (see <a class="reference external" href="https://samtools.github.io/hts-specs/VCFv4.2.pdf">https://samtools.github.io/hts-specs/VCFv4.2.pdf</a>).  
 Normalizing a file is basically used to make different VCFs comparable, and it is highly recommended when you are 
 benchmarcking your call set using a reference call set. Normalization is specially important for INDELs, as the 
 same INDEL could be represented in different ways depending on the caller.</p>
@@ -284,8 +284,9 @@ with reference sequence for non SNPs. Default=False.</p>
 </div>
 <div class="section" id="module-VCF.VcfQC">
 <span id="vcf-vcfqc-module"></span><h2>VCF.VcfQC module<a class="headerlink" href="#module-VCF.VcfQC" title="Permalink to this headline">¶</a></h2>
-<p>Created on 13 Feb 2017</p>
-<p>&#64;author: ernesto</p>
+<p>VcfQC module.</p>
+<p>This module is used to do a series of VCF QC tasks on a VCF file.</p>
+<p>&#64;author: Ernesto Lowy</p>
 <dl class="class">
 <dt id="VCF.VcfQC.BcftoolsStats">
 <em class="property">class </em><code class="descclassname">VCF.VcfQC.</code><code class="descname">BcftoolsStats</code><span class="sig-paren">(</span><em>filename=None</em>, <em>summary_numbers=None</em>, <em>ts_tv=None</em>, <em>ts_tv_1stalt=None</em>, <em>no_singleton_snps=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VcfQC.BcftoolsStats" title="Permalink to this definition">¶</a></dt>
@@ -349,33 +350,33 @@ It will run Picard’s GenotypeConcordance</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>truth_vcf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
-<dd><p class="first last">The VCF containing the truth sample</p>
+<dt><strong>truth_vcf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The VCF containing the truth sample.</p>
 </dd>
-<dt><strong>truth_sample</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
-<dd><p class="first last">The name of the truth sample within the truth VCF</p>
+<dt><strong>truth_sample</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The name of the truth sample within the truth VCF.</p>
 </dd>
-<dt><strong>call_sample</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
-<dd><p class="first last">The name of the call sample within the call VCF</p>
+<dt><strong>call_sample</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">The name of the call sample within the call VCF.</p>
 </dd>
-<dt><strong>outprefix :str, Required</strong></dt>
-<dd><p class="first last">String used as the prefix in the output file</p>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">String used as the prefix in the output file.</p>
 </dd>
 <dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
-<dd><p class="first last">If provided, then put output files in this folder</p>
+<dd><p class="first last">If provided, then put output files in this folder.</p>
 </dd>
-<dt><strong>intervals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
+<dt><strong>intervals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">One or more interval list files that will be used to limit the
-genotype concordance</p>
+genotype concordance.</p>
 </dd>
 <dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
-<dd><p class="first last">if true, then print the command line used for running this program</p>
+<dd><p class="first last">Ff true, then print the command line used for running this program.</p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>It returns a GTPconcordance object</strong></dt>
+<dt><strong>GTPconcordance object</strong></dt>
 <dd></dd>
 </dl>
 </td>
@@ -393,28 +394,31 @@ genotype concordance</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>filter_str</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Optional</span></dt>
+<dt><strong>filter_str</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
 <dd><p class="first last">If defined, apply this filter string so bcftools view
 apply it before fetching the chros.</p>
 </dd>
-<dt><strong>chr_f</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Optional</span></dt>
+<dt><strong>chr_f</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
 <dd><p class="first last">Path to file with a list of chromosomes (one per line).
 If provided, the chros in the file will be compared with the
-chromosomes in self.vcf</p>
+chromosomes in self.vcf.</p>
 </dd>
-<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">Increase verbosity</p>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Increase verbosity.</p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A dict with a key named ‘in_vcf’ and whose values are the chros that are present in self.vcf</strong></dt>
-<dd></dd>
-<dt><strong>If list_of_chros is defined, then it will also add 3 keys to the dict:</strong></dt>
+<dt><strong>dict</strong></dt>
+<dd><p class="first">Dict with a key named ‘in_vcf’ and whose values are the chros that are present in self.vcf.</p>
+<dl class="last docutils">
+<dt>If list_of_chros is defined, then it will also add 3 keys to the dict:</dt>
 <dd><p class="first last">‘both’ whose values will be the chros present in self.vcf and in ‘chr_f’
 ‘in_A’ whose values will be the chros PRESENT in self.vcf and NOT in ‘chr_f’
-‘in_B’ whose values will be the chros NOT present in self.vcf and PRESENT in ‘chr_f’</p>
+‘in_B’ whose values will be the chros NOT present in self.vcf and PRESENT in ‘chr_f’.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </td>
@@ -432,22 +436,23 @@ chromosomes in self.vcf</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>region</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, Required</span></dt>
+<dt><strong>region</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">String with path to the BED file containing the regions for
-which the number will be calculated</p>
+which the number will be calculated.</p>
 </dd>
-<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
-<dd><p class="first last">Prefix for outfile</p>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outfile.</p>
 </dd>
-<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">Increase verbosity</p>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Increase verbosity.</p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>File with the number of variants for each particular region</strong></dt>
-<dd></dd>
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">File with the number of variants for each particular region.</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -467,31 +472,32 @@ plot this density along the chromosomes</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, Required</span></dt>
+<dt><strong>length</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
 <dd><p class="first last">Length in bp of the genomic windows for which the number
-of variants will be calculated</p>
+of variants will be calculated.</p>
 </dd>
-<dt><strong>genome</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
-<dd><p class="first last">File with genome sizes</p>
+<dt><strong>genome</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">File with genome sizes.</p>
 </dd>
-<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
-<dd><p class="first last">Prefix for output file (png file with variant density plot)</p>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for output file (png file with variant density plot).</p>
 </dd>
-<dt><strong>plot_params</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict, Required</span></dt>
+<dt><strong>plot_params</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict</span></dt>
 <dd><p class="first">Dictionary containing the graphical parameters used for plot_variants.R:
 {</p>
 <blockquote class="last">
 <div><p>‘height’: int,
 ‘chromName_cex’: double
-}</p>
+}.</p>
 </div></blockquote>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>Returns png file with the density plot</strong></dt>
-<dd></dd>
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Returns png file with the density plot</p>
+</dd>
 </dl>
 </td>
 </tr>
@@ -508,24 +514,24 @@ of variants will be calculated</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">Prefix for outfiles: prefix.variant_calling_detail_metrics
-and prefix.variant_calling_summary_metrics</p>
+and prefix.variant_calling_summary_metrics.</p>
 </dd>
-<dt><strong>truth_vcf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
-<dd><p class="first last">Reference VCF file</p>
+<dt><strong>truth_vcf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Reference VCF file.</p>
 </dd>
-<dt><strong>intervals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Optional</span></dt>
-<dd><p class="first last">Target intervals to restrict analysis to</p>
+<dt><strong>intervals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Target intervals to restrict analysis to.</p>
 </dd>
-<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
-<dd><p class="first last">Increase verbosity</p>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Increase verbosity.</p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>This function returns a CollectVCallingMetrics object</strong></dt>
+<dt><strong>CollectVCallingMetrics object</strong></dt>
 <dd></dd>
 </dl>
 </td>
@@ -543,25 +549,27 @@ and prefix.variant_calling_summary_metrics</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>outpath</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, required</span></dt>
+<dt><strong>outpath</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">output path</p>
 </dd>
-<dt><strong>filter_str</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional. Example:  PASS,.</span></dt>
-<dd><p class="first last">Apply filters when calculating the stats</p>
+<dt><strong>filter_str</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional.</span></dt>
+<dd><p class="first last">Example:  PASS,.
+Apply filters when calculating the stats.</p>
 </dd>
-<dt><strong>region</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional. Example: chr20</span></dt>
-<dd><p class="first last">Region used for calculating the stats</p>
+<dt><strong>region</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Example: chr20
+Region used for calculating the stats.</p>
 </dd>
-<dt><strong>region_file</strong> <span class="classifier-delimiter">:</span> <span class="classifier">BED file, optional</span></dt>
-<dd><p class="first last">BED file with the regions that will be analyzed</p>
+<dt><strong>region_file</strong> <span class="classifier-delimiter">:</span> <span class="classifier">filename, optional</span></dt>
+<dd><p class="first last">BED file with the regions that will be analyzed.</p>
 </dd>
-<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
 <dd></dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A BcftoolsStats object</strong></dt>
+<dt><strong>BcftoolsStats object</strong></dt>
 <dd></dd>
 </dl>
 </td>
