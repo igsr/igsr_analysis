@@ -1,0 +1,266 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>GATK &#8212; igsr_analysis 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="VariantCalling" href="VariantCalling.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-VariantCalling.GATK">
+<span id="gatk"></span><h1>GATK<a class="headerlink" href="#module-VariantCalling.GATK" title="Permalink to this headline">¶</a></h1>
+<p>Created on 22 Feb 2018</p>
+<p>&#64;author: ernesto</p>
+<dl class="class">
+<dt id="VariantCalling.GATK.GATK">
+<em class="property">class </em><code class="descclassname">VariantCalling.GATK.</code><code class="descname">GATK</code><span class="sig-paren">(</span><em>bam</em>, <em>reference</em>, <em>gatk_folder</em>, <em>bgzip_folder=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VariantCalling.GATK.GATK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to run the different GATK variant callers</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#VariantCalling.GATK.GATK.run_hc" title="VariantCalling.GATK.GATK.run_hc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_hc</span></code></a>(outprefix[,&nbsp;compress,&nbsp;verbose,&nbsp;…])</td>
+<td>Run GATK HaplotypeCaller</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VariantCalling.GATK.GATK.run_ug" title="VariantCalling.GATK.GATK.run_ug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_ug</span></code></a>(outprefix[,&nbsp;glm,&nbsp;compress,&nbsp;nt,&nbsp;…])</td>
+<td>Run GATK UnifiedGenotyper</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="VariantCalling.GATK.GATK.run_hc">
+<code class="descname">run_hc</code><span class="sig-paren">(</span><em>outprefix</em>, <em>compress=True</em>, <em>verbose=None</em>, <em>log_file=None</em>, <em>intervals=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#VariantCalling.GATK.GATK.run_hc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run GATK HaplotypeCaller</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
+<dd><p class="first last">Prefix for output VCF file. i.e. /path/to/file/test</p>
+</dd>
+<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, Default= True</span></dt>
+<dd><p class="first last">Compress the output VCF</p>
+</dd>
+<dt><strong>num_cpu_threads_per_data_thread</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, Optional</span></dt>
+<dd><p class="first last">controls the number of CPU threads allocated to each data thread</p>
+</dd>
+<dt><strong>intervals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list, Optional</span></dt>
+<dd><p class="first last">List in which each of the elements is a path to file with genomic intervals to operate with. Also coordinates
+can be set directly on the command line. For example: [‘chr1:100-200’, ‘chr2:200-300’]. If the list contains 
+more than one interval, then it is useful to set the –interval_set_rule option</p>
+</dd>
+<dt><strong>standard_min_confidence_threshold_for_calling</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, Optional</span></dt>
+<dd><p class="first last">The minimum phred-scaled confidence threshold at which variants should be called
+Default: 10</p>
+</dd>
+<dt><strong>genotyping_mode: str, Optional</strong></dt>
+<dd><p class="first last">Specifies how to determine the alternate alleles to use for genotyping
+Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES</p>
+</dd>
+<dt><strong>alleles: str, Optional</strong></dt>
+<dd><p class="first last">Path to VCF.
+When –genotyping_mode is set to
+GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
+using only the alleles provide in this callset</p>
+</dd>
+<dt><strong>emitRefConfidence: str, Optional</strong></dt>
+<dd><p class="first last">Mode for emitting reference confidence scores
+Possible values are: NONE, BP_RESOLUTION, GVCF</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">if true, then print the command line used for running this program</p>
+</dd>
+<dt><strong>log_file</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Optional</span></dt>
+<dd><p class="first last">Path to file that will used for logging the GATK stderr and stdout</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>A VCF file</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VariantCalling.GATK.GATK.run_ug">
+<code class="descname">run_ug</code><span class="sig-paren">(</span><em>outprefix</em>, <em>glm='SNP'</em>, <em>compress=True</em>, <em>nt=1</em>, <em>verbose=None</em>, <em>intervals=None</em>, <em>log_file=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#VariantCalling.GATK.GATK.run_ug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run GATK UnifiedGenotyper</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
+<dd><p class="first last">Prefix for output VCF file. i.e. /path/to/file/test</p>
+</dd>
+<dt><strong>glm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Required</span></dt>
+<dd><p class="first last">Genotype likelihoods calculation model to employ – SNP is the default option, 
+while INDEL is also available for calling indels and BOTH is available for
+calling both together. Default= SNP</p>
+</dd>
+<dt><strong>compress</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, Default= True</span></dt>
+<dd><p class="first last">Compress the output VCF</p>
+</dd>
+<dt><strong>nt</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, Optional</span></dt>
+<dd><p class="first last">Number of data threads to allocate to UG</p>
+</dd>
+<dt><strong>intervals</strong> <span class="classifier-delimiter">:</span> <span class="classifier">: list, Optional</span></dt>
+<dd><p class="first last">List in which each of the elements is a path to file with genomic intervals to operate with. Also coordinates
+can be set directly on the command line. For example: [‘chr1:100-200’, ‘chr2:200-300’]. If the list contains
+more than one interval, then it is useful to set the –interval_set_rule option</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">if true, then print the command line used for running this program</p>
+</dd>
+<dt><strong>alleles: str, Optional</strong></dt>
+<dd><p class="first last">Path to VCF.
+When –genotyping_mode is set to
+GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
+using only the alleles provide in this callset</p>
+</dd>
+<dt><strong>genotyping_mode: str, Optional</strong></dt>
+<dd><p class="first last">Specifies how to determine the alternate alleles to use for genotyping
+Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES</p>
+</dd>
+<dt><strong>output_mode: str, Optional</strong></dt>
+<dd><p class="first last">Which type of calls we should output.
+Possible values are: EMIT_VARIANTS_ONLY, EMIT_ALL_CONFIDENT_SITES, EMIT_ALL_SITES
+Default: EMIT_VARIANTS_ONLY</p>
+</dd>
+<dt><strong>log_file</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, Optional</span></dt>
+<dd><p class="first last">Path to file that will used for logging the GATK stderr and stdout</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>A VCF file</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">igsr_analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Auto-documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../VCF/VCF.html">VCF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../BEDTools/BEDTools.html">BEDTools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../BamQC/BamQC.html">BamQC</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="VariantCalling.html">VariantCalling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Utils/Utils.html">Utils</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Auto-documentation</a><ul>
+  <li><a href="VariantCalling.html">VariantCalling</a><ul>
+      <li>Previous: <a href="VariantCalling.html" title="previous chapter">VariantCalling</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, ernesto lowy.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/code/VariantCalling/GATK.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

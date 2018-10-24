@@ -9,3 +9,7 @@ Contents:
    :maxdepth: 2
 
    VCF/VCF
+   BEDTools/BEDTools
+   BamQC/BamQC
+   VariantCalling/VariantCalling
+   Utils/Utils
