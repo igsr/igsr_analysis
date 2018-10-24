@@ -1,0 +1,255 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>SNPTools &#8212; igsr_analysis 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-VCF.VCFIntegration.SNPTools">
+<span id="snptools"></span><h1>SNPTools<a class="headerlink" href="#module-VCF.VCFIntegration.SNPTools" title="Permalink to this headline">¶</a></h1>
+<p>Created on 21 Jul 2017</p>
+<p>&#64;author: ernesto</p>
+<dl class="class">
+<dt id="VCF.VCFIntegration.SNPTools.SNPTools">
+<em class="property">class </em><code class="descclassname">VCF.VCFIntegration.SNPTools.</code><code class="descname">SNPTools</code><span class="sig-paren">(</span><em>vcf</em>, <em>snptools_folder=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFIntegration.SNPTools.SNPTools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to operate on a VCF file at the population level and perform
+different SNPTools analysis on it</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VCFIntegration.SNPTools.SNPTools.run_bamodel" title="VCF.VCFIntegration.SNPTools.SNPTools.run_bamodel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bamodel</span></code></a>(sample,&nbsp;bamfiles[,&nbsp;outdir,&nbsp;verbose])</td>
+<td>Method that wraps SNPTools’ bamodel on a VCF containing only Biallelic SNPs See <a class="reference external" href="https://www.hgsc.bcm.edu/software/snptools">https://www.hgsc.bcm.edu/software/snptools</a></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VCFIntegration.SNPTools.SNPTools.run_poprob" title="VCF.VCFIntegration.SNPTools.SNPTools.run_poprob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_poprob</span></code></a>(outprefix,&nbsp;rawlist[,&nbsp;outdir,&nbsp;verbose])</td>
+<td>Method that wraps SNPTools’ poprob on a VCF containing only Biallelic SNPs See <a class="reference external" href="https://www.hgsc.bcm.edu/software/snptools">https://www.hgsc.bcm.edu/software/snptools</a></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VCFIntegration.SNPTools.SNPTools.run_prob2vcf" title="VCF.VCFIntegration.SNPTools.SNPTools.run_prob2vcf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_prob2vcf</span></code></a>(probf,&nbsp;outprefix,&nbsp;chro[,&nbsp;…])</td>
+<td>Method that wraps SNPTools’ prob2vcf on a VCF containing only Biallelic SNPs See <a class="reference external" href="https://www.hgsc.bcm.edu/software/snptools">https://www.hgsc.bcm.edu/software/snptools</a></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="VCF.VCFIntegration.SNPTools.SNPTools.run_bamodel">
+<code class="descname">run_bamodel</code><span class="sig-paren">(</span><em>sample</em>, <em>bamfiles</em>, <em>outdir=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFIntegration.SNPTools.SNPTools.run_bamodel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that wraps SNPTools’ bamodel on a VCF containing only Biallelic SNPs
+See <a class="reference external" href="https://www.hgsc.bcm.edu/software/snptools">https://www.hgsc.bcm.edu/software/snptools</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>sample: str</strong></dt>
+<dd><p class="first last">Sample to analyze</p>
+</dd>
+<dt><strong>bamfiles</strong> <span class="classifier-delimiter">:</span> <span class="classifier">filename</span></dt>
+<dd><p class="first last">File containing the BAM path/s (one per line) for sample</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Outdir for output files</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">If true, then print the command line used for running SNPTools</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Returns a <a href="#id1"><span class="problematic" id="id2">*</span></a>.raw file</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VCFIntegration.SNPTools.SNPTools.run_poprob">
+<code class="descname">run_poprob</code><span class="sig-paren">(</span><em>outprefix</em>, <em>rawlist</em>, <em>outdir=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFIntegration.SNPTools.SNPTools.run_poprob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that wraps SNPTools’ poprob on a VCF containing only Biallelic SNPs
+See <a class="reference external" href="https://www.hgsc.bcm.edu/software/snptools">https://www.hgsc.bcm.edu/software/snptools</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for <a href="#id3"><span class="problematic" id="id4">*</span></a>.prob file</p>
+</dd>
+<dt><strong>rawlist</strong> <span class="classifier-delimiter">:</span> <span class="classifier">filename</span></dt>
+<dd><p class="first last">File containing the paths to the <a href="#id5"><span class="problematic" id="id6">*</span></a>.raw files generated by
+‘run_snptools_bamodel’</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Outdir for output files</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">if true, then print the command line used for running SNPTools</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Returns a <a href="#id7"><span class="problematic" id="id8">*</span></a>.prob file</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VCFIntegration.SNPTools.SNPTools.run_prob2vcf">
+<code class="descname">run_prob2vcf</code><span class="sig-paren">(</span><em>probf</em>, <em>outprefix</em>, <em>chro</em>, <em>outdir=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFIntegration.SNPTools.SNPTools.run_prob2vcf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that wraps SNPTools’ prob2vcf on a VCF containing only Biallelic SNPs
+See <a class="reference external" href="https://www.hgsc.bcm.edu/software/snptools">https://www.hgsc.bcm.edu/software/snptools</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>probf</strong> <span class="classifier-delimiter">:</span> <span class="classifier">filename</span></dt>
+<dd><p class="first last"><a href="#id9"><span class="problematic" id="id10">*</span></a>.prob file generated by ‘run_snptools_poprob’</p>
+</dd>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix used for output file</p>
+</dd>
+<dt><strong>chro</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Chromosome for which the vcf will be generated</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Outdir for output files</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">If true, then print the command line used for running SNPTools</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Compressed VCF file with the population genotype likelihoods</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">igsr_analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Auto-documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../VCF.html">VCF</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Auto-documentation</a><ul>
+  <li><a href="../VCF.html">VCF</a><ul>
+  <li><a href="VCFIntegration.html">VCFIntegration</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, ernesto lowy.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/code/VCF/VCFIntegration/SNPTools.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
