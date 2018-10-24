@@ -1,0 +1,315 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>BCFTools &#8212; igsr_analysis 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="VCFfilter" href="VCFfilter.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-VCF.VCFfilter.BCFTools">
+<span id="bcftools"></span><h1>BCFTools<a class="headerlink" href="#module-VCF.VCFfilter.BCFTools" title="Permalink to this headline">¶</a></h1>
+<p>Created on 27 Feb 2017</p>
+<p>&#64;author: ernesto</p>
+<dl class="class">
+<dt id="VCF.VCFfilter.BCFTools.BCFTools">
+<em class="property">class </em><code class="descclassname">VCF.VCFfilter.BCFTools.</code><code class="descname">BCFTools</code><span class="sig-paren">(</span><em>vcf</em>, <em>bcftools_folder=None</em>, <em>tabix_folder=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFfilter.BCFTools.BCFTools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to perform different filtering/selecting operations using BCFTools
+<a class="reference external" href="https://samtools.github.io/bcftools/bcftools.html">https://samtools.github.io/bcftools/bcftools.html</a></p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VCFfilter.BCFTools.BCFTools.filter" title="VCF.VCFfilter.BCFTools.BCFTools.filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code></a>(name,&nbsp;expression[,&nbsp;verbose])</td>
+<td>Run bcftools filter on a VCF file</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VCFfilter.BCFTools.BCFTools.filter_by_variant_type" title="VCF.VCFfilter.BCFTools.BCFTools.filter_by_variant_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_by_variant_type</span></code></a>(outprefix[,&nbsp;v_type,&nbsp;…])</td>
+<td>Method to filter a VCF file by variant type. For example, to extract only the SNPs</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VCFfilter.BCFTools.BCFTools.select_variants" title="VCF.VCFfilter.BCFTools.BCFTools.select_variants"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_variants</span></code></a>(outprefix[,&nbsp;uncalled,&nbsp;…])</td>
+<td>Run bcftools view to select only the variants (exclude the 0|0 genotypes)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VCFfilter.BCFTools.BCFTools.subset_vcf" title="VCF.VCFfilter.BCFTools.BCFTools.subset_vcf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subset_vcf</span></code></a>(outprefix[,&nbsp;bed,&nbsp;region,&nbsp;outdir,&nbsp;…])</td>
+<td>Subset the vcf file using a BED file/region having the coordinates of the variants to exclude/include</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="VCF.VCFfilter.BCFTools.BCFTools.filter">
+<code class="descname">filter</code><span class="sig-paren">(</span><em>name</em>, <em>expression</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFfilter.BCFTools.BCFTools.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run bcftools filter on a VCF file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">annotate FILTER column with &lt;str&gt;</p>
+</dd>
+<dt><strong>expression</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">exclude sites for which expression is true. i.e. ‘INFO/DP&gt;24304 | MQ&lt;34’</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Increase verbosity</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Path to the filtered VCF file</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VCFfilter.BCFTools.BCFTools.filter_by_variant_type">
+<code class="descname">filter_by_variant_type</code><span class="sig-paren">(</span><em>outprefix</em>, <em>v_type='snps'</em>, <em>compress=True</em>, <em>biallelic=False</em>, <em>action='select'</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFfilter.BCFTools.BCFTools.filter_by_variant_type" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Method to filter a VCF file by variant type. For example, to extract only the SNPs</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>v_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘snps’,’indels’,’mnps’,’other’,’both’}</span></dt>
+<dd><blockquote class="first">
+<div><p>Default=snps
+Extract/Filter (depending on the value of the ‘action’
+argument) a certain variant type</p>
+</div></blockquote>
+<dl class="last docutils">
+<dt>compress <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">If True then generate a vcf.gz file. Default=True</p>
+</dd>
+<dt>biallelic <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Select only biallelic variants. Default=False</p>
+</dd>
+<dt>action <span class="classifier-delimiter">:</span> <span class="classifier">{‘select’, ‘exclude’} </span></dt>
+<dd><p class="first last">Default=select</p>
+</dd>
+<dt>outprefix <span class="classifier-delimiter">:</span> <span class="classifier">str </span></dt>
+<dd><p class="first last">Prefix used for the output files</p>
+</dd>
+<dt>verbose <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Increase verbosity</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Path to the filtered VCF</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VCFfilter.BCFTools.BCFTools.select_variants">
+<code class="descname">select_variants</code><span class="sig-paren">(</span><em>outprefix</em>, <em>uncalled=None</em>, <em>threads=1</em>, <em>verbose=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFfilter.BCFTools.BCFTools.select_variants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run bcftools view to select only the variants (exclude the 0|0 genotypes)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix used for the output file</p>
+</dd>
+<dt><strong>uncalled</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘exclude’,’include’}, optional.</span></dt>
+<dd><p class="first last">Select/Exclude sites with an uncalled genotype</p>
+</dd>
+<dt><strong>threads: int, optional</strong></dt>
+<dd><p class="first last">Number of output compression threads to use in addition to main thread. Default=0</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Boolean, optional</span></dt>
+<dd><p class="first last">Increase verbosity</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Returns the path for the VCF with the selected variants</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VCFfilter.BCFTools.BCFTools.subset_vcf">
+<code class="descname">subset_vcf</code><span class="sig-paren">(</span><em>outprefix</em>, <em>bed=None</em>, <em>region=None</em>, <em>outdir=None</em>, <em>create_index=False</em>, <em>verbose=None</em>, <em>action='exclude'</em>, <em>apply_filters=None</em>, <em>threads=1</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFfilter.BCFTools.BCFTools.subset_vcf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subset the vcf file using a BED file/region having the coordinates of the
+variants to exclude/include</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>bed</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">BED file with coordinates to exclude/include</p>
+</dd>
+<dt><strong>region</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">String with region to consider: chr1, chr1:1000-1500, etc…</p>
+</dd>
+<dt><strong>outprefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for outputfiles</p>
+</dd>
+<dt><strong>outdir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">If provided, then put output files in this folder</p>
+</dd>
+<dt><strong>create_index</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">Generate a tabix index. Default=False</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">verbose</p>
+</dd>
+<dt><strong>action</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Exclude or include variants from the bed file passed through the
+bed option. Default= exclude</p>
+</dd>
+<dt><strong>apply_filters</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Apply a filter string: i.e. “PASS,.”</p>
+</dd>
+<dt><strong>threads</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Number of output compression threads to use in addition to main thread. Default=0</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">Path to gzipped VCF file that will have the desired variants excluded/included</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">igsr_analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Auto-documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../VCF.html">VCF</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Auto-documentation</a><ul>
+  <li><a href="../VCF.html">VCF</a><ul>
+  <li><a href="VCFfilter.html">VCFfilter</a><ul>
+      <li>Previous: <a href="VCFfilter.html" title="previous chapter">VCFfilter</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, ernesto lowy.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/code/VCF/VCFfilter/BCFTools.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

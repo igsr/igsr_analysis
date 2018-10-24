@@ -1,0 +1,278 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Shapeit &#8212; igsr_analysis 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="VCFIntegration" href="VCFIntegration.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-VCF.VCFIntegration.Shapeit">
+<span id="shapeit"></span><h1>Shapeit<a class="headerlink" href="#module-VCF.VCFIntegration.Shapeit" title="Permalink to this headline">¶</a></h1>
+<p>Created on 21 Jul 2017</p>
+<p>&#64;author: ernesto</p>
+<dl class="class">
+<dt id="VCF.VCFIntegration.Shapeit.Shapeit">
+<em class="property">class </em><code class="descclassname">VCF.VCFIntegration.Shapeit.</code><code class="descname">Shapeit</code><span class="sig-paren">(</span><em>bgzip_folder=None</em>, <em>shapeit_folder=None</em>, <em>ligateHAPLOTYPES_folder=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFIntegration.Shapeit.Shapeit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to run SHAPEIT</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VCFIntegration.Shapeit.Shapeit.convert2vcf" title="VCF.VCFIntegration.Shapeit.Shapeit.convert2vcf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert2vcf</span></code></a>(input_prefix,&nbsp;output_prefix[,&nbsp;…])</td>
+<td>Function to use SHAPEIT’s -convert in order to convert the <a href="#id1"><span class="problematic" id="id2">*</span></a>.haps.gz &amp; <a href="#id3"><span class="problematic" id="id4">*</span></a>.haps.sample files into VCF</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#VCF.VCFIntegration.Shapeit.Shapeit.ligate_shapeitchunks" title="VCF.VCFIntegration.Shapeit.Shapeit.ligate_shapeitchunks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ligate_shapeitchunks</span></code></a>(vcf_f,&nbsp;…[,&nbsp;verbose])</td>
+<td>Run ligateHAPLOTYPES to ligate together all haplotype chunks produced by SHAPEIT</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#VCF.VCFIntegration.Shapeit.Shapeit.run_shapeit" title="VCF.VCFIntegration.Shapeit.Shapeit.run_shapeit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_shapeit</span></code></a>(output_prefix[,&nbsp;input_gen,&nbsp;…])</td>
+<td>Run Shapeit</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="VCF.VCFIntegration.Shapeit.Shapeit.convert2vcf">
+<code class="descname">convert2vcf</code><span class="sig-paren">(</span><em>input_prefix</em>, <em>output_prefix</em>, <em>compress=False</em>, <em>verbose=False</em>, <em>logfile=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFIntegration.Shapeit.Shapeit.convert2vcf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to use SHAPEIT’s -convert in order to convert the <a href="#id5"><span class="problematic" id="id6">*</span></a>.haps.gz &amp; <a href="#id7"><span class="problematic" id="id8">*</span></a>.haps.sample files into VCF</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>input_prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix for the files in HAPS/SAMPLE format</p>
+</dd>
+<dt><strong>output_prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">String with the output prefix for the VCF file</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">if true, then print the command line used for running this program</p>
+</dd>
+<dt><strong>logfile</strong> <span class="classifier-delimiter">:</span> <span class="classifier">filename, optional</span></dt>
+<dd><p class="first last">Path to log file</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>filename</strong></dt>
+<dd><p class="first last">A VCF file</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VCFIntegration.Shapeit.Shapeit.ligate_shapeitchunks">
+<code class="descname">ligate_shapeitchunks</code><span class="sig-paren">(</span><em>vcf_f</em>, <em>scaffolded_samples</em>, <em>chunk_str</em>, <em>output_prefix</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFIntegration.Shapeit.Shapeit.ligate_shapeitchunks" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Run ligateHAPLOTYPES to ligate together all haplotype chunks produced by SHAPEIT
+(see <a class="reference external" href="https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#haplegsample">https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#haplegsample</a>)</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>vcf_f</strong> <span class="classifier-delimiter">:</span> <span class="classifier">filename</span></dt>
+<dd><blockquote class="first">
+<div><p>VCF file with the Genotype likelihoods</p>
+</div></blockquote>
+<dl class="last docutils">
+<dt>scaffolded_samples <span class="classifier-delimiter">:</span> <span class="classifier">filename</span></dt>
+<dd><p class="first last">File with the list of samples (separated by ‘</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>‘) that have been scaffolded</strong></dt>
+<dd><dl class="first last docutils">
+<dt>chunk_str <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">String with the paths to the different files generated by SHAPEIT for the different 
+chromosome chunks (i.e. ‘s2.chunk1.hap.gz s2.chunk1.hap.gz s2.chunk1.hap.gz’)</p>
+</dd>
+<dt>output_prefix <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">String with the output prefixes (i.e. ‘output.shapeit.22.ligated.haps.gz output.shapeit.22.ligated.haps.sample’)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict</strong></dt>
+<dd><p class="first last">A dict with the path to the 2 output files (<a href="#id9"><span class="problematic" id="id10">*</span></a>.haps.gz and <a href="#id11"><span class="problematic" id="id12">*</span></a>.haps.sample)</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VCF.VCFIntegration.Shapeit.Shapeit.run_shapeit">
+<code class="descname">run_shapeit</code><span class="sig-paren">(</span><em>output_prefix</em>, <em>input_gen=None</em>, <em>input_init=None</em>, <em>input_scaffold=None</em>, <em>input_bed=None</em>, <em>duohmm=False</em>, <em>input_map=None</em>, <em>verbose=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#VCF.VCFIntegration.Shapeit.Shapeit.run_shapeit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run Shapeit</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>input_gen</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Specifies the genotype/GL input data that you obtain from Beagle4, i.e. ‘input.shapeit.20.gen.gz input.shapeit.20.gen.sample’</p>
+</dd>
+<dt><strong>input_init</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Specifies the haplotypes that you obtain from Beagle4, i.e. ‘input.shapeit.20.hap.gz input.shapeit.20.hap.sample’</p>
+</dd>
+<dt><strong>input_scaffold</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">SNP-array derived haplotype scaffold used by SHAPEIT. It has to be in Impute2 format. i.e. ‘scaffold.haps.gz scaffold.haps.sample’</p>
+</dd>
+<dt><strong>input_bed</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd><p class="first last">Unphased genotypes in Plink Binary BED/BIM/FAM format. i.e. ‘file.bed file.bim file.fam’</p>
+</dd>
+<dt><strong>duohmm</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">If true, then activate the –duohmm option. Default: False</p>
+</dd>
+<dt><strong>output_prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Prefix used for the 2 output files estimated by SHAPEIT, i.e. ‘output.shapeit.20.haps.gz output.shapeit.20.haps.sample’</p>
+</dd>
+<dt><strong>input_map</strong> <span class="classifier-delimiter">:</span> <span class="classifier">filename, optional</span></dt>
+<dd><p class="first last">Path to the file with the genetic map</p>
+</dd>
+<dt><strong>i_from</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Specify the region to be phased</p>
+</dd>
+<dt><strong>i_to</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Specify the region to be phased</p>
+</dd>
+<dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd><p class="first last">If true, then print the command line used for running this program</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>dict</strong></dt>
+<dd><p class="first last">A dict with the path to the 2 output files (<a href="#id13"><span class="problematic" id="id14">*</span></a>.haps.gz and <a href="#id15"><span class="problematic" id="id16">*</span></a>.haps.sample) that can be used with SHAPEIT</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">igsr_analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Auto-documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../VCF.html">VCF</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Auto-documentation</a><ul>
+  <li><a href="../VCF.html">VCF</a><ul>
+  <li><a href="VCFIntegration.html">VCFIntegration</a><ul>
+      <li>Previous: <a href="VCFIntegration.html" title="previous chapter">VCFIntegration</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, ernesto lowy.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/code/VCF/VCFIntegration/Shapeit.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
