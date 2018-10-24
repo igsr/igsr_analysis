@@ -20,29 +20,29 @@ class RunProgram(object):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        program : str, Required
+        Parameters
+        ----------
+        program : str
                   Program to be run
-        path : str, Optional
+        path : str, optional
                Folder containing the 'program'
-        args : list, Optional
+        args : list, optional
                List of named tuples tuples formed by an argument (or option) and 
                its respective value: i.e. arg=namedtuple('Argument', 'option value')
-        parameters : list, Optional
-                      List of parameters ['c','d']
-        arg_sep : char, Optional
+        parameters : list, optional
+                     List of parameters ['c','d']
+        arg_sep : char, optional
                   char used as a separator between argument and value. 
                   i.e. if '=' then we will get 'a'=1
                   Default is a single whitespace (i.e. ' ')
-        cmd_line : str, Optional
+        cmd_line : str, optional
                    String with command line to run
-        downpipe: list of RunProgram objects, Optional
+        downpipe: list, optional
                   List of RunProgram objects that will be executed in a pipe after
                   self.program has been executed
-        log_name: str, Optional
+        log_name: str, optional
                   Name of the logger
-        log_file: str, Optional
+        log_file: filename, optional
                   Path to the file that will be used by the logging library
 
         '''
@@ -86,14 +86,15 @@ class RunProgram(object):
         Run self.program using subprocess Popen method
         (see https://docs.python.org/2/library/subprocess.html#module-subprocess)
 
-        Arguments
-        ---------
-        raise_exc: Bool, optional
+        Parameters
+        ----------
+        raise_exc: bool, optional
                    If true, then raise an Exception when error is found. Default= True
 
         Returns
         -------
-        A tuple containing the STDOUT and STDERR from this program
+        tuple
+             A tuple containing the STDOUT and STDERR from this program
         '''
 
         log_f=None
