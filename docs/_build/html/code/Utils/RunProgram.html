@@ -1,0 +1,190 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>RunProgram &#8212; igsr_analysis 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Utils" href="Utils.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Utils.RunProgram">
+<span id="runprogram"></span><h1>RunProgram<a class="headerlink" href="#module-Utils.RunProgram" title="Permalink to this headline">¶</a></h1>
+<p>Created on 03 May 2018</p>
+<p>&#64;author: ernesto</p>
+<dl class="class">
+<dt id="Utils.RunProgram.RunProgram">
+<em class="property">class </em><code class="descclassname">Utils.RunProgram.</code><code class="descname">RunProgram</code><span class="sig-paren">(</span><em>program</em>, <em>path=None</em>, <em>args=None</em>, <em>arg_sep=' '</em>, <em>parameters=None</em>, <em>cmd_line=None</em>, <em>downpipe=None</em>, <em>log_name=None</em>, <em>log_file=None</em><span class="sig-paren">)</span><a class="headerlink" href="#Utils.RunProgram.RunProgram" title="Permalink to this definition">¶</a></dt>
+<dd><p>SuperClass used to run an external program within a Python script</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#Utils.RunProgram.RunProgram.run_checkoutput" title="Utils.RunProgram.RunProgram.run_checkoutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_checkoutput</span></code></a>()</td>
+<td>Run self.program using subprocess check_output method (see <a class="reference external" href="https://docs.python.org/2/library/subprocess.html#module-subprocess">https://docs.python.org/2/library/subprocess.html#module-subprocess</a>)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#Utils.RunProgram.RunProgram.run_popen" title="Utils.RunProgram.RunProgram.run_popen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_popen</span></code></a>([raise_exc])</td>
+<td>Run self.program using subprocess Popen method (see <a class="reference external" href="https://docs.python.org/2/library/subprocess.html#module-subprocess">https://docs.python.org/2/library/subprocess.html#module-subprocess</a>)</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="Utils.RunProgram.RunProgram.run_checkoutput">
+<code class="descname">run_checkoutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Utils.RunProgram.RunProgram.run_checkoutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run self.program using subprocess check_output method
+(see <a class="reference external" href="https://docs.python.org/2/library/subprocess.html#module-subprocess">https://docs.python.org/2/library/subprocess.html#module-subprocess</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>Stdout produced after running the program</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Utils.RunProgram.RunProgram.run_popen">
+<code class="descname">run_popen</code><span class="sig-paren">(</span><em>raise_exc=True</em><span class="sig-paren">)</span><a class="headerlink" href="#Utils.RunProgram.RunProgram.run_popen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run self.program using subprocess Popen method
+(see <a class="reference external" href="https://docs.python.org/2/library/subprocess.html#module-subprocess">https://docs.python.org/2/library/subprocess.html#module-subprocess</a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>raise_exc: bool, optional</strong></dt>
+<dd><p class="first last">If true, then raise an Exception when error is found. Default= True</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>tuple</strong></dt>
+<dd><p class="first last">A tuple containing the STDOUT and STDERR from this program</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">igsr_analysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Auto-documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../VCF/VCF.html">VCF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../BEDTools/BEDTools.html">BEDTools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../BamQC/BamQC.html">BamQC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../VariantCalling/VariantCalling.html">VariantCalling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="Utils.html">Utils</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Auto-documentation</a><ul>
+  <li><a href="Utils.html">Utils</a><ul>
+      <li>Previous: <a href="Utils.html" title="previous chapter">Utils</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, ernesto lowy.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../_sources/code/Utils/RunProgram.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
