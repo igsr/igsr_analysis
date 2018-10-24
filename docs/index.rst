@@ -12,13 +12,5 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   VCF.rst
-   usage/installation.rst
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   code/index
 
