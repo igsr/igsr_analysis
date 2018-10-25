@@ -1,27 +1,5 @@
-WGS BAM qc pipeline
-===================
-
-Workflow used in IGSR to assess the quality of a certain file in the BAM format produced in a Whole Genome Sequencing experiment.
-This workflow consists on running 3 different types of tests:
-
-* Chkindel_rg
-This test consists on using a simple algorithm to identify runs with unbalanced ratio of short insertion and deletion (greater than 5), which is indicative of low quality data.
-The code to run this test can be found at:
-
-https://github.com/lh3/samtools-legacy/blob/master/examples/chk_indel.c 
-
-* VerifyBAMID
-This test is used to assess sample contamination and sample mix-ups, it uses the VerifyBAMID software.
-More info on this useful piece of software can be found at:
-
-https://genome.sph.umich.edu/wiki/VerifyBamID
-
-* Coverage
-For assessing the coverage we use Picard CollectWgsMetrics. 
-This software generates a complete report on the depth of coverage of the sequencing experiment and the calculated mean coverage value can be used to decide which files to discard.
-More information on this Picard tool can be found at:
-
-https://broadinstitute.github.io/picard/command-line-overview.html#CollectWgsMetrics
+BCFtools WGS variant filtering pipeline
+=======================================
 
 In order to run this workflow we need to do the following:
 
@@ -88,7 +66,7 @@ In order to run this workflow we need to do the following:
   The pipeline is initialised with the hive script ``init_pipeline.pl``. Here is
   an example of how to initialise a pipeline::
 
-     init_pipeline.pl PyHive::PipeConfig::QC::RunBamQCsonWGS \
+     init_pipeline.pl PyHive::PipeConfig::FILTER::VCFilterSamtoolsWGS \
      		      -pipeline_url mysql://g1krw:$DB_PASS@mysql-rs-1kg-prod:4175/hive_dbname \
      		      -db testreseqtrack \
      		      -pwd $DB_PASS \
@@ -107,7 +85,7 @@ In order to run this workflow we need to do the following:
   Then ``-db`` is the name of the Reseqtrack database name used in the section 2.1
   ``-pwd`` is the ReseqTrack DB password
 
-  The rest of the options are documented in the `PyHive::PipeConfig::QC::RunBamQCsonWGS <https://github.com/igsr/igsr_analysis/blob/newphasing/PyHive/PipeConfig/QC/RunBamQCsonWGS.pm>`_
+  The rest of the options are documented in the `PyHive::PipeConfig::FILTER::VCFilterSamtoolsWGS <https://github.com/igsr/igsr_analysis/blob/newphasing/PyHive/PipeConfig/FILTER/VCFilterSamtoolsWGS.pm>`_
   module file. You will probably want to override the defaults for many of
   these options so take a look.
 
