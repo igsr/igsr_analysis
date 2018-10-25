@@ -1,5 +1,5 @@
 
-BCFtools WES variant calling pipeline example
+BCFtools WES variant filtering pipeline
 
 1. Preparing the environment
 
