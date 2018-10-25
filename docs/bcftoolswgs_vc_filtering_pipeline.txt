@@ -1,5 +1,5 @@
 
-BCFtools WGS variant calling pipeline example
+BCFtools WGS variant filtering pipeline
 
 1. Preparing the environment
 
