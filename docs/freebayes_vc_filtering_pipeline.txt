@@ -1,5 +1,5 @@
 
-Freebayes variant calling pipeline example
+Freebayes variant filtering pipeline
 
 1. Preparing the environment
 
