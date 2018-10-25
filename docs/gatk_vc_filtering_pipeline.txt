@@ -1,5 +1,5 @@
 
-GATK variant calling pipeline example
+GATK variant filtering pipeline
 
 1. Preparing the environment
 
