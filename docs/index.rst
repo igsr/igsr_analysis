@@ -20,4 +20,5 @@ Contents:
 
    installation
    code/index
+   workflows/index
 
