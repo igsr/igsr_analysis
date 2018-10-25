@@ -1,0 +1,8 @@
+# sphinx generated files
+_build
+_static
+_templates
+
+# Editor backup files #
+#######################
+*~
