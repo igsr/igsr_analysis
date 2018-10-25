@@ -19,6 +19,6 @@ Contents:
    :maxdepth: 2
 
    installation
-   code/index
    workflows/index
+   code/index
 
