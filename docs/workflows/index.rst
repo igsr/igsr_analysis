@@ -16,3 +16,4 @@ Contents:
    bcftools_wes_filtering_pipeline
    freebayes_filtering_pipeline
    gatk_vc_filtering_pipeline
+   vcf_decoration
