@@ -54,7 +54,7 @@ process getDepths {
 	file 'out_depths.txt' into out_Depths
 
 	"""
-	bcftools query -f '%CHROM\\t%POS\\t%INFO/DP\\n' -r ${params.region} ${params.ann_vcf} -o out_depths.txt
+	${params.bcftools}/bcftools query -f '%CHROM\\t%POS\\t%INFO/DP\\n' -r ${params.region} ${params.ann_vcf} -o out_depths.txt
 	"""
 }
 
@@ -87,7 +87,7 @@ process getOverlappingVariants {
 	file  'out_getOverlappingVariants.txt' into out_getOverlappingVariants
 
         """
-        python ${params.scripts_dir}/get_overlapping_variants.py --outfile out_getOverlappingVariants.txt --afs_table ${out_processAF} --exome ${params.exome} --label 'EX_TARGET' 
+        python ${params.scripts_dir}/get_overlapping_variants.py --outfile out_getOverlappingVariants.txt --afs_table ${out_processAF} --exome ${params.exome} --bedtools_folder ${params.bedtools} --label 'EX_TARGET' 
         """
 }
 
@@ -152,8 +152,8 @@ process runAnnotate {
         file  'out_decorate.vcf.gz' into out_decorate
 
         """
-        tabix -f -s1 -b2 -e3 ${out_AFmatrix_gz}
-	bcftools annotate -r ${params.region} -a ${out_AFmatrix_gz} -h ${params.igsr_root}/SUPPORTING/annots_26062018.txt --rename-chrs ${params.igsr_root}/SUPPORTING/ensembl2ucsc_chrdict.txt -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS ${params.phased_vcf} -o out_decorate.vcf.gz -Oz
+	${params.tabix}/tabix -f -s1 -b2 -e3 ${out_AFmatrix_gz}
+	${params.bcftools}/bcftools annotate -r ${params.region} -a ${out_AFmatrix_gz} -h ${params.igsr_root}/SUPPORTING/annots_26062018.txt --rename-chrs ${params.igsr_root}/SUPPORTING/ensembl2ucsc_chrdict.txt -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS ${params.phased_vcf} -o out_decorate.vcf.gz -Oz
         """
 }
 
@@ -169,7 +169,7 @@ process runReheader {
 	file 'out_reheaded.vcf.gz' into out_reheaded
 
 	"""
-	bcftools reheader -h ${params.igsr_root}/SUPPORTING/header_26062018.txt ${out_decorate} -o out_reheaded.vcf.gz
+	 ${params.bcftools}/bcftools reheader -h ${params.igsr_root}/SUPPORTING/header_26062018.txt ${out_decorate} -o out_reheaded.vcf.gz
 	"""
 }
 
