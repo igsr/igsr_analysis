@@ -1,0 +1,72 @@
+Oct-29 13:30:27.203 [main] DEBUG nextflow.cli.Launcher - $> /nfs/production/reseq-info/work/ernesto/bin/nextflow compare_with_giab.nf
+Oct-29 13:30:27.595 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 18.10.1
+Oct-29 13:30:27.606 [main] INFO  nextflow.cli.CmdRun - Launching `compare_with_giab.nf` [irreverent_woese] - revision: 9ede83c01c
+Oct-29 13:30:27.688 [main] DEBUG nextflow.config.ConfigBuilder - Found config local: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/QC/nextflow.config
+Oct-29 13:30:27.689 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/QC/nextflow.config
+Oct-29 13:30:27.790 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Oct-29 13:30:29.281 [main] DEBUG nextflow.Session - Session uuid: 9ec5a954-feac-4813-9b54-3656a4e7349e
+Oct-29 13:30:29.281 [main] DEBUG nextflow.Session - Run name: irreverent_woese
+Oct-29 13:30:29.282 [main] DEBUG nextflow.Session - Executor pool size: 32
+Oct-29 13:30:29.296 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 18.10.1 build 5003
+  Modified: 24-10-2018 14:03 UTC (15:03 BST)
+  System: Linux 3.10.0-514.16.1.el7.x86_64
+  Runtime: Groovy 2.5.3 on OpenJDK 64-Bit Server VM 1.8.0_131-b11
+  Encoding: UTF-8 (UTF-8)
+  Process: 60139@ebi-cli-001.ebi.ac.uk [10.7.38.2]
+  CPUs: 32 - Mem: 125.7 GB (1 GB) - Swap: 4 GB (47.8 MB)
+Oct-29 13:30:29.389 [main] DEBUG nextflow.Session - Work-dir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/QC/work [nfs]
+Oct-29 13:30:29.389 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/QC/bin
+Oct-29 13:30:29.607 [main] DEBUG nextflow.Session - Session start invoked
+Oct-29 13:30:29.610 [main] DEBUG nextflow.processor.TaskDispatcher - Dispatcher > start
+Oct-29 13:30:29.611 [main] DEBUG nextflow.script.ScriptRunner - > Script parsing
+Oct-29 13:30:30.486 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Oct-29 13:30:31.211 [main] DEBUG nextflow.processor.ProcessFactory - << taskConfig executor: null
+Oct-29 13:30:31.211 [main] DEBUG nextflow.processor.ProcessFactory - >> processorType: 'local'
+Oct-29 13:30:31.275 [main] DEBUG nextflow.executor.Executor - Initializing executor: local
+Oct-29 13:30:31.277 [main] INFO  nextflow.executor.Executor - [warm up] executor > local
+Oct-29 13:30:31.282 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=32; memory=125.7 GB; capacity=32; pollInterval=100ms; dumpInterval=5m
+Oct-29 13:30:31.287 [main] DEBUG nextflow.processor.TaskDispatcher - Starting monitor: LocalPollingMonitor
+Oct-29 13:30:31.287 [main] DEBUG n.processor.TaskPollingMonitor - >>> barrier register (monitor: local)
+Oct-29 13:30:31.289 [main] DEBUG nextflow.executor.Executor - Invoke register for executor: local
+Oct-29 13:30:36.687 [main] DEBUG nextflow.Session - >>> barrier register (process: dropGTPs)
+Oct-29 13:30:36.739 [main] DEBUG nextflow.processor.TaskProcessor - Creating operator > dropGTPs -- maxForks: 32
+Oct-29 13:30:37.028 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Oct-29 13:30:37.028 [main] DEBUG nextflow.Session - Session await
+Oct-29 13:30:37.200 [Actor Thread 3] WARN  nextflow.script.ScriptBinding - Access to undefined parameter `vcf` -- Initialise it to a default value eg. `params.vcf = some_value`
+Oct-29 13:30:37.200 [Actor Thread 3] WARN  nextflow.script.ScriptBinding - Access to undefined parameter `chros` -- Initialise it to a default value eg. `params.chros = some_value`
+Oct-29 13:30:37.930 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Oct-29 13:30:37.941 [Task submitter] INFO  nextflow.Session - [a7/7be668] Submitted process > dropGTPs
+Oct-29 13:30:38.157 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: dropGTPs; status: COMPLETED; exit: 255; error: -; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/QC/work/a7/7be6686a2c95d2c3eb370e493d2f56]
+Oct-29 13:30:38.321 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'dropGTPs'
+
+Caused by:
+  Process `dropGTPs` terminated with an error exit status (255)
+
+Command executed:
+
+  /homes/ernesto/bin/bcftools-1.6//bcftools view -c1 -G null -f.,PASS -r null -o out.sites.vcf.gz -Oz
+  /nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/tabix/tabix out.sites.vcf.gz
+
+Command exit status:
+  255
+
+Command output:
+  (empty)
+
+Command error:
+  [E::hts_open_format] Failed to open file null
+  Failed to open null: No such file or directory
+
+Work dir:
+  /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/QC/work/a7/7be6686a2c95d2c3eb370e493d2f56
+
+Tip: when you have fixed the problem you can continue the execution appending to the nextflow command line the option `-resume`
+Oct-29 13:30:38.330 [Actor Thread 2] DEBUG nextflow.Session - <<< barrier arrive (process: dropGTPs)
+Oct-29 13:30:38.331 [main] DEBUG nextflow.Session - Session await > all process finished
+Oct-29 13:30:38.346 [Task monitor] DEBUG nextflow.Session - Session aborted -- Cause: Process `dropGTPs` terminated with an error exit status (255)
+Oct-29 13:30:38.467 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Oct-29 13:30:38.467 [Task monitor] DEBUG n.processor.TaskPollingMonitor - <<< barrier arrives (monitor: local)
+Oct-29 13:30:38.518 [main] DEBUG nextflow.trace.StatsObserver - Workflow completed > WorkflowStats[succeedCount=0; failedCount=1; ignoredCount=0; cachedCount=0; succeedDuration=0ms; failedDuration=36ms; cachedDuration=0ms]
+Oct-29 13:30:38.756 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Oct-29 13:30:38.787 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
