@@ -1,4 +1,4 @@
-Benchmark with GIAB
+Benchmarking with GIAB
 ===================
 
 This workflow is used in our project to benchmark the sites identified in our call sets for sample NA12878 with the sites identified by the Genome in a Bottle consortium [https://github.com/genome-in-a-bottle]. 
@@ -13,8 +13,8 @@ Dependencies
 
  https://www.nextflow.io/
 
-* Tabix and bgzip
- Tabix and bgzip are part of the HTSlib project, which can be downloaded from:
+* Bgzip and Tabix
+ Bgzip and Tabix are part of the HTSlib project, which can be downloaded from:
 
  https://github.com/samtools/htslib
 
@@ -22,16 +22,6 @@ Dependencies
  Downloadable from:
 
  http://www.htslib.org/download/
-
-* BEDTools
- Downloadable from:
-
- https://github.com/arq5x/bedtools2/releases/
-
-* vcf-validator
- This tool can be obtained from:
-
- https://github.com/EBIvariation/vcf-validator
 
 * IGSR-analysis code base
  The scripts needed to run this workflow can be downloaded by cloning the IGSR-analysis github repo from:

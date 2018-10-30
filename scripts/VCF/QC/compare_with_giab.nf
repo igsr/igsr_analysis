@@ -68,7 +68,7 @@ process excludeNonValid {
 }
 
 
-process selectSNPs {
+process selectVariants {
 	/*
 	Process to select the SNPs from out_sites_nonvalid_vcf
 	*/
@@ -80,7 +80,7 @@ process selectSNPs {
 	file 'out.sites.nonvalid.snps.vcf.gz' into out_sites_nonvalid_snps_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools view -v snps ${out_sites_nonvalid_vcf} -o out.sites.nonvalid.snps.vcf.gz -O z
+	${params.bcftools_folder}/bcftools view -v ${v_type} ${out_sites_nonvalid_vcf} -o out.sites.nonvalid.snps.vcf.gz -O z
 	"""
 }
 
