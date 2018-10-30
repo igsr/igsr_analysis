@@ -19,13 +19,13 @@ if (params.help) {
     log.info '--------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow benchmark_giab.nf --pwd $DB_PASS --output_dir ./out --dbname elowy_hgdp_03102018 --runs runs.txt'
+    log.info '    nextflow compare_with_giab.nf --vcf VCF --chros chr20 '
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
     log.info '	--vcf VCF    Path to the VCF file that will be assessed.'
+    log.info '  --vt  VARIANT_TYPE   Type of variant to benchmark. Possible values are 'snps'/'indels'.'
     log.info '  --chros CHROSTR	  Chromosomes that will be analyzed: chr20 or chr1,chr2.'
-    log.info '  --prefix STR	  String used as prefix for the output VCF file.'
     log.info ''
     exit 1
 }
@@ -70,34 +70,36 @@ process excludeNonValid {
 
 process selectVariants {
 	/*
-	Process to select the SNPs from out_sites_nonvalid_vcf
+	Process to select the variants from out_sites_nonvalid_vcf
 	*/
 
 	input:
 	file out_sites_nonvalid_vcf
 
-	output:
-	file 'out.sites.nonvalid.snps.vcf.gz' into out_sites_nonvalid_snps_vcf
+	out_sites_nonvalid = 'out.sites.nonvalid.'+ params.vt +'.vcf.gz'
 
+	output:
+	file "out.sites.nonvalid.${params.vt}.vcf.gz" into out_sites_nonvalid_vts
+	
 	"""
-	${params.bcftools_folder}/bcftools view -v ${v_type} ${out_sites_nonvalid_vcf} -o out.sites.nonvalid.snps.vcf.gz -O z
+	${params.bcftools_folder}/bcftools view -v ${params.vt} ${out_sites_nonvalid_vcf} -o out.sites.nonvalid.${params.vt}.vcf.gz -O z
 	"""
 }
 
 process intersecionCallSets {
 	/*
-	Process to find the intersection between out_sites_nonvalid_snps_vcf and GIAB call set
+	Process to find the intersection between out_sites_nonvalid_vts and GIAB call set
 	*/
 
 	input:
-	file out_sites_nonvalid_snps_vcf
+	file out_sites_nonvalid_vts
 
 	output:
 	file 'dir/' into out_intersect
 
 	"""
-	tabix ${out_sites_nonvalid_snps_vcf}
-	${params.bcftools_folder}/bcftools isec -p 'dir/' ${out_sites_nonvalid_snps_vcf} ${params.giab}
+	tabix ${out_sites_nonvalid_vts}
+	${params.bcftools_folder}/bcftools isec -p 'dir/' ${out_sites_nonvalid_vts} ${params.giab}
 	"""
 }
 
