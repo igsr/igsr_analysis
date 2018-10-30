@@ -133,19 +133,19 @@ process addAnnotation {
 }
 
 process addNumberSamples {
-	  /*
-  	  Function to add the NS (number of samples) annotation to the annotation table
-  	  */
+	/*
+	Function to add the NS (number of samples) annotation to the annotation table
+	*/
 
-	  input:
-	  file out_addAnnotation
+	input:
+	file out_addAnnotation
 
-	  output:
-	  file  'out_addNumberSamples.txt' into out_addNumberSamples
+	output:
+	file  'out_addNumberSamples.txt' into out_addNumberSamples
 
-	  """
-	  python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_number_of_samples.py --outfile out_addNumberSamples.txt --file1 ${out_addAnnotation} --ann_vcf ${params.ann_vcf}
-	  """
+	"""
+	python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_number_of_samples.py --outfile out_addNumberSamples.txt --file1 ${out_addAnnotation} --ann_vcf ${params.ann_vcf}
+	"""
 }
 
 process compressAFmatrix {
