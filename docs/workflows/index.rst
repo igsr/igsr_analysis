@@ -17,3 +17,4 @@ Contents:
    freebayes_filtering_pipeline
    gatk_vc_filtering_pipeline
    vcf_decoration
+   compare_with_giab_pipeline
