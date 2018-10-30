@@ -54,7 +54,6 @@ How to run the pipeline
 
 * First, you need to create a ``nexflow.config`` file that can be used by Nextflow to set the required variables. Here goes an example of one of these files::
 
-	params.scripts_dir='/nfs/production/reseq-info/work/ernesto/isgr/SCRATCH/17_09_2018/lib/igsr_analysis/scripts/VCF/ANNOTATION/' // location of the folder with all decoration scripts
 	params.sample_panel='/homes/ernesto/lib/igsr_analysis_master/igsr_analysis/SUPPORTING/integrated_allsamples.20180619.superpopulations.panel'
 	params.pops='EAS,EUR,AFR,AMR,SAS' // comma separated list of populations or superpopulations that will be used for the annotation
 	params.exome='/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/ANNOTATION/output_1000G_Exome.v1.ensembl.bed' // path to .BED file with coordinates of the exomes
@@ -64,7 +63,7 @@ How to run the pipeline
 
 * Then, you can start your pipeline by doing::
 
-	nextflow run $IGSR_CODEBASE/decorate.nf --phased_vcf chr20.unannotated.phased.vcf.gz --ann_vcf chr20.ann.unphased.vcf.gz --region 20:1-64444167
+	nextflow run $IGSR_CODEBASE/scripts/VCF/ANNOTATION/decorate.nf --phased_vcf chr20.unannotated.phased.vcf.gz --ann_vcf chr20.ann.unphased.vcf.gz --region 20:1-64444167
 
  Where:
   * ``$IGSR_CODEBASE`` is the folder containing the igsr codebase downloaded from ``https://github.com/igsr/igsr_analysis.git``
