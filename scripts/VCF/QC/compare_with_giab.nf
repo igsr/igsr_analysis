@@ -19,7 +19,7 @@ if (params.help) {
     log.info '--------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow compare_with_giab.nf --vcf VCF --chros chr20 '
+    log.info '    nextflow compare_with_giab.nf --vcf VCF --chros chr20 --vt snps'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
