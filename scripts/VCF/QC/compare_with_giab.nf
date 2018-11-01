@@ -40,6 +40,11 @@ process dropGTPs {
 	Path to a VCF file containing just the filtered sites
 	*/
 
+	memory '500 MB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
 	output:
         file 'out.sites.vcf.gz' into out_sites_vcf
 
@@ -54,6 +59,11 @@ process excludeNonValid {
 	/*
 	This process will exclude the regions defined in a .BED file file from out_sites_vcf
 	*/
+
+	memory '500 MB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
 
 	input:
 	file out_sites_vcf
@@ -73,6 +83,11 @@ process selectVariants {
 	Process to select the variants from out_sites_nonvalid_vcf
 	*/
 
+	memory '500 MB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
 	input:
 	file out_sites_nonvalid_vcf
 
@@ -91,6 +106,11 @@ process intersecionCallSets {
 	Process to find the intersection between out_sites_nonvalid_vts and GIAB call set
 	*/
 
+	memory '500 MB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
 	input:
 	file out_sites_nonvalid_vts
 
@@ -99,7 +119,7 @@ process intersecionCallSets {
 
 	"""
 	tabix ${out_sites_nonvalid_vts}
-	${params.bcftools_folder}/bcftools isec -p 'dir/' ${out_sites_nonvalid_vts} ${params.giab}
+	${params.bcftools_folder}/bcftools isec -c ${params.vt} -p 'dir/' ${out_sites_nonvalid_vts} ${params.giab}
 	"""
 }
 
@@ -109,6 +129,11 @@ process compressIntersected {
 	and to run BCFTools stats on these files
 	*/
 	publishDir 'results', saveAs:{ filename -> "$filename" }
+
+	memory '500 MB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
 
 	input:
 	file out_intersect
@@ -138,6 +163,10 @@ process selectInHighConf {
 	*/
 	publishDir 'results', saveAs:{ filename -> "$filename" }
 	
+	memory '500 MB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
 
 	input:
 	file fp_vcf
