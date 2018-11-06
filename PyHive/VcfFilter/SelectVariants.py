@@ -30,7 +30,7 @@ class SelectVariants(eHive.BaseRunnable):
         if self.param_is_defined('threads'):
             threads=self.param('threads')
 
-        outfile=vcf.select_variants(outprefix=outprefix,threads=threads)
+        outfile=vcf.select_variants(outprefix=outprefix,threads=threads,uncalled=uncalled)
         
         self.param('out_vcf', outfile)
 

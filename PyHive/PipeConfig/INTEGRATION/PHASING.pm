@@ -140,17 +140,35 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir')
             },
 	    -flow_into => {
-		2 => [ 'rename_chros'] 
+		2 => [ 'exclude_uncalled'] 
 	    },
             -analysis_capacity => 1,
             -rc_name => '10cpus'
         },
 
+	{   -logic_name => 'exclude_uncalled',
+            -module        => 'PyHive.VcfFilter.SelectVariants',
+            -language   => 'python3',
+            -parameters    => {
+                'filepath' => '#chr#',
+                'bcftools_folder' => $self->o('bcftools_folder'),
+                'threads' => 1,
+		'uncalled' => 'exclude', 
+                'verbose' => 'True',
+                'work_dir' => $self->o('work_dir')."/#chromname#",
+            },
+	    -flow_into => {
+                1 => { 'rename_chros' => INPUT_PLUS() }
+	    },
+            -analysis_capacity => 1,
+            -rc_name => '1Gb'
+	},
+
 	{   -logic_name => 'rename_chros',
             -module     => 'PyHive.Vcf.VcfReplaceChrNames',
             -language   => 'python3',
             -parameters => {
-		'filepath' => '#chr#',
+		'filepath' => '#out_vcf#',
                 'chr_types' => 'ensembl',
                 'work_dir' => $self->o('work_dir')."/#chromname#",
 		'bgzip_folder' => $self->o('bgzip_folder')
