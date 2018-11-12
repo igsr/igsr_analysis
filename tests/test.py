@@ -1,1 +1,1 @@
-from BamQC import BamQC
+from VCF.VCFfilter.MLclassifier import MLclassifier 
