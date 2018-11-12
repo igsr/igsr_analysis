@@ -37,3 +37,8 @@ def pytest_addoption(parser):
     parser.addoption('--chr_file', default='data/chr_file.txt', action='store_true', help='File with chros for get_chros function')
     parser.addoption('--glm', default='SNP', action='store_true', help='--glm option for GATK UG') 
     parser.addoption('--output_mode', default='EMIT_ALL_SITES', action='store_true', help='--output_mode option for GATK UG')
+    parser.addoption('--tp_annotations_snps', default='data/TP_annotations_snps.chr20.tsv', action='store_true', help='--File with the variant annotations from the True positive SNP call set')
+    parser.addoption('--fp_annotations_snps', default='data/FP_annotations_snps.chr20.tsv', action='store_true', help='--File with the variant annotations from the False positive SNP call set')
+    parser.addoption('--tp_annotations_indels', default='data/TP_annotations_indels.chr20.tsv', action='store_true', help='--File with the variant annotations from the True positive INDEL call set')
+    parser.addoption('--fp_annotations_indels', default='data/FP_annotations_indels.chr20.tsv', action='store_true', help='--File with the variant annotations from the False positive INDEL call set')
+    
