@@ -1,9 +1,8 @@
 language: python
-  python:
-    - "3.6"
-  script:
-    - pytest
 
-branches:
-  only:
-  - newphasing
+python:
+  - 3.6
+
+script:
+  - pytest
+
