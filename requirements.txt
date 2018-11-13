@@ -3,7 +3,6 @@ biopython==1.70
 certifi==2017.7.27.1
 cffi==1.11.4
 chardet==3.0.4
-cryptography==2.1.4
 cycler==0.10.0
 decorator==4.2.1
 idna==2.6
@@ -24,7 +23,6 @@ PySocks==1.6.7
 python-dateutil==2.6.1
 pytz==2017.3
 PyYAML==3.12
-requests==2.18.4
 scipy==1.0.0
 six==1.11.0
 tabulate==0.8.2
