@@ -8,6 +8,7 @@ The International Genome Sample Resource [(IGSR)](http://www.internationalgenome
 * Expand the data collection to include new populations not represented in the 1000 Genomes Project 
 
 This repository contains code used in the different analyses pipelines that we use in the project. To use this code please follow the steps described below
+<<<<<<< HEAD
 
 The International Genome Sample Resource [(IGSR)](http://www.internationalgenome.org/) is a project funded by the [Wellcome Trust](https://wellcome.ac.uk/) created after the finalization of the 1000 Genomes Project in order to maintain and expand the resource. It has the following aims:
 
@@ -16,6 +17,8 @@ The International Genome Sample Resource [(IGSR)](http://www.internationalgenome
 * Expand the data collection to include new populations not represented in the 1000 Genomes Project 
 
 This repository contains code used in the different analyses pipelines that we use in the project. To use this code please follow the steps described below
+=======
+>>>>>>> origin/newphasing
 
 ### Preparing environment
 Modify your $PYTHONPATH to include the required libraries:<br>
