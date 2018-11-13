@@ -4,5 +4,9 @@ python:
   - 3.6
 
 script:
+<<<<<<< HEAD
   - pytest
 
+=======
+  - pytest
+>>>>>>> origin/newphasing
