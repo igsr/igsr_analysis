@@ -12,7 +12,7 @@ def clean_tmp():
     files = glob.glob("data/outdir/*")
     for f in files:
         os.remove(f)
-"""
+
 def test_chrfactory():
     fa_ix= pytest.config.getoption("faix")
     hive_scripts= pytest.config.getoption("hive_lib")+"/scripts/" 
@@ -25,7 +25,7 @@ def test_chrfactory():
     except subprocess.CalledProcessError as exc:
         assert False
         raise Exception(exc.output)    
-"""
+
 def test_BeagleChunkFactory():
     vcf_f= pytest.config.getoption("vcf_gts")
     beaglechunks_folder=pytest.config.getoption("makeBGLCHUNKS_folder")

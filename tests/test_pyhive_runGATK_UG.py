@@ -13,6 +13,7 @@ def clean_tmp():
     for f in files:
         os.remove(f)
 
+
 def test_runGATK_UG(clean_tmp):
 
     shapeit_folder=pytest.config.getoption("shapeit_folder")
@@ -59,6 +60,7 @@ def test_runGATK_UG_with_alleles(clean_tmp):
                                                                                                      "\"['chr1','10000','30000']\"", bam_file,
                                                                                                      reference, gatk_folder, bgzip_folder, alleles,
                                                                                                      glm, output_mode)
+
 
     try:
         subprocess.check_output(command, shell=True)
@@ -120,5 +122,4 @@ def test_runGATK_UG_throws_exception(clean_tmp):
             subprocess.check_output(command, shell=True)
         except subprocess.CalledProcessError as exc:
             raise Exception(exc.output)
-
 
