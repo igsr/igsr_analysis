@@ -280,7 +280,7 @@ class VcfNormalize(object):
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run_popen()
+        stdout,stderr,is_error=runner.run_popen()
 
         if compress is True:
             compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', outprefix, '>', outprefix+".gz"])
