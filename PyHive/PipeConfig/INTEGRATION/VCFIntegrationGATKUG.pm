@@ -23,6 +23,7 @@ sub default_options {
         'final_dir' => undef,
 	'log_dir' => undef,
 	'faix' => undef,
+	'newheader' => undef,
 	'variant_type' => undef, # What type of variant is going to be used with this pipeline. Possible values are 'snps' or 'indels'
 	'filelist' => undef, # List of Bamfiles used for BAM Transposition. If more than one file then the transposition will be done in different runs
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
@@ -608,47 +609,12 @@ sub pipeline_analyses {
                 'filename'     => '#filename#',
                 'filelayout' => $self->o('filelayout').",st2,ext2,cmp2,st3,ext3,cmp3,st4,ext4,cmp4,st5,ext5,cmp5,ext6",
             },
-<<<<<<< HEAD:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
-<<<<<<< HEAD:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKSNP.pm
-            -rc_name => '20Gb10cpus',
-	    -flow_into => {
-                1 => [ '?accu_name=allshapeitoutput_files&accu_address=[]&accu_input_variable=hap_gz']
-	    },
-        },
-
-	{   -logic_name => 'run_ligate_haplotypes',
-            -module        => 'PyHive.VcfIntegration.run_ligateHAPLOTYPES',
-            -language   => 'python3',
-            -parameters    => {
-		'hapgz_list' => '#allshapeitoutput_files#',
-		'vcf_f' => '#vcf_file#',
-		'outprefix' => '#vcf_file#.phased',
-		'scaffolded_samples' => $self->o('scaffolded_samples'),
-                'work_dir' => $self->o('work_dir')."/#chromname#",
-                'ligateHAPLOTYPES_folder' => $self->o('ligateHAPLOTYPES_folder'),
-                'verbose' => 'True'
-            },
-            -analysis_capacity => 1,
-            -rc_name => '12Gb',
-	    -flow_into => {
-		1 => {'run_convert_vcf' => {
-                    'hap_gz' => '#hap_gz#',
-                    'hap_sample' => '#hap_sample#',
-		    'vcf_file' => '#vcf_file#'
-		      },
-=======
-=======
->>>>>>> origin/newphasing:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
             -flow_into => {
                 1 => {
 		    'store_filt_ix_file' => {
                         'filename' => '#filename#',
 			'layout_dict' => '#layout_dict#'
 		    }
-<<<<<<< HEAD:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
->>>>>>> origin/newphasing:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
-=======
->>>>>>> origin/newphasing:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
 		}
             },
         },
