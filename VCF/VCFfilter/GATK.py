@@ -143,7 +143,7 @@ class GATK(object):
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run_popen()
+        stdout,stderr,is_error=runner.run_popen()
 
         recal_f = glob.glob("{0}*.recal".format(outprefix))
         tranches_f = glob.glob("{0}*.tranches".format(outprefix))
@@ -237,7 +237,7 @@ class GATK(object):
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr=runner.run_popen()
+        stdout,stderr,is_error=runner.run_popen()
 
         # create an index for the recalibrated file
         if compress is True:
