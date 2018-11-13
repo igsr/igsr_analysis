@@ -609,6 +609,7 @@ sub pipeline_analyses {
                 'filename'     => '#filename#',
                 'filelayout' => $self->o('filelayout').",st2,ext2,cmp2,st3,ext3,cmp3,st4,ext4,cmp4,st5,ext5,cmp5,ext6",
             },
+<<<<<<< HEAD:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
 <<<<<<< HEAD:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKSNP.pm
             -rc_name => '20Gb10cpus',
 	    -flow_into => {
@@ -637,12 +638,17 @@ sub pipeline_analyses {
 		    'vcf_file' => '#vcf_file#'
 		      },
 =======
+=======
+>>>>>>> origin/newphasing:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
             -flow_into => {
                 1 => {
 		    'store_filt_ix_file' => {
                         'filename' => '#filename#',
 			'layout_dict' => '#layout_dict#'
 		    }
+<<<<<<< HEAD:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
+>>>>>>> origin/newphasing:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
+=======
 >>>>>>> origin/newphasing:PyHive/PipeConfig/INTEGRATION/VCFIntegrationGATKUG.pm
 		}
             },
