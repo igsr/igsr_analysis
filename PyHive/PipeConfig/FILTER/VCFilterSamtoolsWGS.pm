@@ -1,3 +1,49 @@
+=head1 NAME
+
+ PyHive::PipeConfig::FILTER::VCFilterSamtoolsWGS
+
+=head1 SYNOPSIS
+
+This pipeline is used to filter a WGS (Whole Genome Sequencing) VCF generated using BCFTools.
+
+Below in the 'default_options' function we can see the options that will control the behaviour
+of the pipeline. The options that do not have a default value must be set when initializing the
+pipeline using 'init_pipeline.pl'. Here are explanations for some of these options, modify them according
+to your needs:
+
+-hostname, username, port, db, pwd control the connection details for the ReseqTrack database
+-work_dir: folder that will be used to put the intermediate files
+-final_dir: folder that will be used to put the final pipeline files
+
+-store_attributes: Possible values are 'True'/'False'. If 'True' then the pipeline will store the stats
+ on the VCF calculated by some of the programs used by this pipeline (i.e. Picard CollectVariantCallingMetrics,
+ BCFTools stats) in the 'Atttribute' table of the ReseqTrack database
+-filelayout: this is used by the pipeline in order to know how to construct the final filename. It will label
+ each bit in the initial filename with a certain name that will be used by the 'newlayout' parameter in order
+ to construct the final filename. For example: 'dataset,caller,date,extension,compression'
+ for a file named 'lc_ex_bam.freebayes.20170911.chr20_10e6_11e6.vcf.gz'
+-newlayout: if newlayout is 'dataset,caller,extension,compression' and given the value used for 'filelayout'
+ then the final filename will be 'lc_ex_bam.freebayes.vcf.gz'
+
+-exclude_bed: Path to .BED file containing regions that will be filtered from the final VCF file (i.e. centromeres,
+ chrX and chrY non PAR regions, etc.)
+-faix: This file it is in the .faix format and controls the chromosomes in the in initial VCF that will be analyzed
+-bcftools_stats_region: This option will define the regions used by BCFTools stats: i.e. chr20
+-intervals_f: This points to the Picard-style interval_list file used by Picard CollectVariantCallingMetrics to set
+ the chromosome used to calculate the stats
+-truth_vcf: This points to the truth VCF used by Picard CollectVariantCallingMetrics in order to make calculations
+
+BCFTools options:
+ -f_expression_snps: String with the filter expression that will be used with the bcftools filter -e parameter for 
+  filtering the SNPs. i.e.: 'INFO/DP>24304 | MQ<34 | MQ0F>0.049737 | HOB>0.1643732 | SGB>2347.043 | SGB<-64440.286'
+ -f_expression_indels: String with the filter expression that will be used with the bcftools filter -e parameter for 
+  filtering the INDELs. i.e.: 'INFO/DP>23862 | MQ<42 | MQ0F > 0.01032217 | HOB > 0.2026653 | SGB > 2156.129 \
+  | SGB < -28957.772 | IDV > 52 | IMF < 0.387097'
+ -f_name_snps: String used to specify the filter label used for SNPs in the FILTER column of the VCF
+ -f_name_indels: String used to specify the filter label used for INDELs in the FILTER column of the VCF
+
+=cut
+
 package PyHive::PipeConfig::FILTER::VCFilterSamtoolsWGS;
 
 use strict;
@@ -32,7 +78,6 @@ sub default_options {
 	'picard_folder' => '/homes/ernesto/bin', # CollectVariantCallingMetrics
 	'truth_vcf' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/dbsnp_146.hg38.vcf.gz', # CollectVariantCallingMetrics
 	'intervals_f' => undef, # Define what chr to analyze by CollectVariantCallingMetrics
-	'target_bed_file' => undef,
 	'faix' => undef, # this controls what chros will be analyzed
 	'f_expression_snps' => undef,
 	'f_expression_indels' => undef,
