@@ -23,7 +23,6 @@ sub default_options {
         'final_dir' => undef,
 	'log_dir' => undef,
 	'faix' => undef,
-	'newheader' => undef,
 	'variant_type' => undef, # What type of variant is going to be used with this pipeline. Possible values are 'snps' or 'indels'
 	'filelist' => undef, # List of Bamfiles used for BAM Transposition. If more than one file then the transposition will be done in different runs
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
