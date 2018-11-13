@@ -6,9 +6,20 @@
 
 =head1 SYNOPSIS
 
-    init_pipeline.pl PyHive::PipeConfig::RunBamQCsonWES -inputfile file_list -work_dir dir_name -db reseqtrack_db_name -pwd db_pwd
-
     Run all QC tests on a WES (Whole Exome Sequencing BAM) file. chkindel_rg, verifybamid, picard's CollectHsMetrics
+
+Below in the 'default_options' function we can see the options that will control the behaviour
+of the pipeline. The options that do not have a default value must be set when initializing the
+pipeline using 'init_pipeline.pl'. Here are explanations for some of these options, modify them according
+to your needs:
+
+ -hostname, username, port, db, pwd control the connection details for the ReseqTrack database
+ -work_dir: folder that will be used to put the intermediate files
+
+ -store_attributes: Possible values are 'True'/'False'. If 'True' then the pipeline will store the QC stats
+  on the BAM calculated by all programs used by this pipeline in the 'Atttribute' table of the ReseqTrack database
+ -genotype_folder: Folder containing the chip high density microarray VCF that will be used by VerifyBAMID
+ -targetfile: Path to the interval-list file used by Picard CollectHsMetrics with the coordinates of the Exome targets 
 
 =cut
 

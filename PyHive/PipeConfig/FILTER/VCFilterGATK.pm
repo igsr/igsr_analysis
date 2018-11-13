@@ -1,3 +1,49 @@
+=head1 NAME
+
+ PyHive::PipeConfig::FILTER::VCFilterGATK
+
+=head1 SYNOPSIS
+
+This pipeline is used to filter a VCF generated using the Genome Analysis ToolKit (GATK).
+
+Below in the 'default_options' function we can see the options that will control the behaviour 
+of the pipeline. The options that do not have a default value must be set when initializing the
+pipeline using 'init_pipeline.pl'. Here are explanations for some of these options, modify them according 
+to your needs:
+
+-hostname, username, port, db, pwd control the connection details for the ReseqTrack database
+-work_dir: folder that will be used to put the intermediate files
+-final_dir: folder that will be used to put the final pipeline files
+
+-store_attributes: Possible values are 'True'/'False'. If 'True' then the pipeline will store the stats
+ on the VCF calculated by some of the programs used by this pipeline (i.e. Picard CollectVariantCallingMetrics,
+ BCFTools stats) in the 'Atttribute' table of the ReseqTrack database
+-filelayout: this is used by the pipeline in order to know how to construct the final filename. It will label 
+ each bit in the initial filename with a certain name that will be used by the 'newlayout' parameter in order 
+ to construct the final filename. For example: 'dataset,caller,date,extension,compression' 
+ for a file named 'lc_ex_bam.freebayes.20170911.chr20_10e6_11e6.vcf.gz'
+-newlayout: if newlayout is 'dataset,caller,extension,compression' and given the value used for 'filelayout' 
+ then the final filename will be 'lc_ex_bam.freebayes.vcf.gz'
+
+-exclude_bed: Path to .BED file containing regions that will be filtered from the final VCF file (i.e. centromeres,
+ chrX and chrY non PAR regions, etc.)
+-faix: This file it is in the .faix format and controls the chromosomes in the in initial VCF that will be analyzed
+-bcftools_stats_region: This option will define the regions used by BCFTools stats: i.e. chr20
+-intervals_f: This points to the Picard-style interval_list file used by Picard CollectVariantCallingMetrics to set 
+ the chromosome used to calculate the stats
+-truth_vcf: This points to the truth VCF used by Picard CollectVariantCallingMetrics in order to make calculations
+
+GATK VQSR options:
+-tranches: String representing a list used by GATK VQSR VariantRecalibrator in order to set the levels of truth 
+ sensitivity at which to slice the data
+-resources_snps: Path to json file with the location and prior probs of the sites used by GATK VariantRecalibrator
+ to build the model for SNPs
+-resources_indels: Path to json file with the location and prior probs of the sites used by GATK VariantRecalibrator
+ to build the model for INDELs
+-indels_annotations: List with annotations used by GATK VariantRecalibrators to build the model
+
+=cut
+
 package PyHive::PipeConfig::FILTER::VCFilterGATK;
 
 use strict;
