@@ -11,6 +11,7 @@ import pickle
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import Imputer
 
 class MLclassifier(object):
     '''
@@ -107,3 +108,51 @@ class MLclassifier(object):
         self.fitted_model=outfile
 
         return outfile
+
+    def predict(self, outprefix, annotation_f):
+        '''
+        Function to apply a serialized logistic regression model on a file containing the annotations for each site
+        and to predict if the variant is real
+
+        Note. Sites with missing annotations will be imputed with the median of that annotation
+
+        Parameters
+        ----------
+        outprefix: str
+                   String used as the prefix for the fitted model
+        annotation_f: filename
+                      Path to file with the sites and annotations that will be classified
+        '''
+
+        imputer = Imputer(strategy="median")
+
+        # load the serialized model
+        loaded_model = pickle.load(open(self.fitted_model,'rb'))
+
+        outfile='{0}.tsv'.format(outprefix)
+
+        chunksize = 10 ** 6
+        first_chunk=True
+        for chunk in pd.read_csv(annotation_f, chunksize=chunksize, sep='\t', na_values='.'):
+            # remove non-numerical features
+            chunk_num = chunk.drop("# [1]CHROM", axis=1)
+            # impute missing values with median
+            imputer.fit(chunk_num)
+            X = imputer.transform(chunk_num)
+            # create back the dataframe
+            chunk_tr = pd.DataFrame(X, columns=chunk.columns.drop(['# [1]CHROM']))
+            feature_names=chunk_tr.columns.drop(['[2]POS'])
+            # normalization
+            std_scale = preprocessing.StandardScaler().fit(chunk_tr[feature_names])
+            std_array = std_scale.transform(chunk_tr[feature_names])
+            predictions_probs = loaded_model.predict_proba(std_array)
+            final_df = pd.DataFrame({
+                '#CHR': chunk['# [1]CHROM'],
+                'POS': chunk_tr['[2]POS'].astype(int),
+                'prob_0': predictions_probs[:,0],
+                'prob_1': predictions_probs[:,1]})
+            if first_chunk is True:
+                final_df.to_csv(outfile, sep='\t', mode='a', header=True, index= False)
+                first_chunk=False
+            else:
+                final_df.to_csv(outfile, sep='\t', mode='a', header=False, index= False)
