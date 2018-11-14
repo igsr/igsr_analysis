@@ -1,5 +1,5 @@
 Benchmarking with GIAB
-===================
+======================
 
 This workflow is used in our project to benchmark the sites identified in our call sets for sample NA12878 with the sites identified by the Genome in a Bottle consortium [https://github.com/genome-in-a-bottle]. 
 This consortium was created to produce reference data sets that can be used for genome comparison and benchmarking and the high-confidence sites identified by this consortium for sample NA12878 are the result 

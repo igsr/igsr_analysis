@@ -128,7 +128,6 @@ sub pipeline_create_commands {
         ];
 }
 
-
 sub resource_classes {
     my ($self) = @_;
     return {
