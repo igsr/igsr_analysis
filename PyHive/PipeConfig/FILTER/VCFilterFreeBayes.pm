@@ -27,7 +27,7 @@ to your needs:
 
 -exclude_bed: Path to .BED file containing regions that will be filtered from the final VCF file (i.e. centromeres,
  chrX and chrY non PAR regions, etc.)
--faix: This file it is in the .faix format and controls the chromosomes in the in initial VCF that will be analyzed
+-faix: This file is in the .faix format and controls the chromosomes in the initial VCF that will be analyzed
 -bcftools_stats_region: This option will define the regions used by BCFTools stats: i.e. chr20
 -intervals_f: This points to the Picard-style interval_list file used by Picard CollectVariantCallingMetrics to set
  the chromosome used to calculate the stats
