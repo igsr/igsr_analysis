@@ -53,6 +53,10 @@ local.properties
 __pycache__/
 *.py[cod]
 
+# Sphinx build files
+docs/_build/
+
+
 # Editor backup files #
 #######################
 *~

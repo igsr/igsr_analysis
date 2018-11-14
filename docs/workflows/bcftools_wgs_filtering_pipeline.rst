@@ -85,7 +85,7 @@ In order to run this workflow we need to do the following:
   Then ``-db`` is the name of the Reseqtrack database name used in the section 2.1
   ``-pwd`` is the ReseqTrack DB password
 
-  The rest of the options are documented in the `PyHive::PipeConfig::FILTER::VCFilterSamtoolsWGS <https://github.com/igsr/igsr_analysis/blob/newphasing/PyHive/PipeConfig/FILTER/VCFilterSamtoolsWGS.pm>`_
+  The rest of the options are documented in the `PyHive::PipeConfig::FILTER::VCFilterSamtoolsWGS <https://github.com/igsr/igsr_analysis/blob/master/PyHive/PipeConfig/FILTER/VCFilterSamtoolsWGS.pm>`_
   module file. You will probably want to override the defaults for many of
   these options so take a look.
 
