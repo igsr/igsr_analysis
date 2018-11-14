@@ -18,3 +18,4 @@ Contents:
    gatk_vc_filtering_pipeline
    vcf_decoration
    compare_with_giab_pipeline
+   consensus_callset_pipeline
