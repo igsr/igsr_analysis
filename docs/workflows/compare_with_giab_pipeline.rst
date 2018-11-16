@@ -28,6 +28,21 @@ Dependencies
 
  https://github.com/igsr/igsr_analysis.git
 
+Files required
+--------------
+
+* GIAB call set downloaded from::
+
+  ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/NA12878_HG001/latest/GRCh38/
+
+* BED file with the high-confidence regions defined by GIAB and downloaded from::
+
+  ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/NA12878_HG001/latest/GRCh38/
+
+* BED file with the regions that IGSR excludes from the comparison (file named exclude_nonvalid.bed) containing the GRCh38 coordinates 
+  for the centromeres, non PAR regions for chrX and the entire chrY and chrM
+
+
 How to run the pipeline
 -----------------------
 
