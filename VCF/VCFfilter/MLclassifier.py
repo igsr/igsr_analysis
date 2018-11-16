@@ -133,7 +133,7 @@ class MLclassifier(object):
 
         chunksize = 10 ** 6
         first_chunk=True
-        for chunk in pd.read_csv(annotation_f, chunksize=chunksize, sep='\t', na_values='.'):
+        for chunk in pd.read_csv(annotation_f, chunksize=chunksize, sep='\t', index_col=False, na_values='.'):
             # remove non-numerical features
             chunk_num = chunk.drop("# [1]CHROM", axis=1)
             # impute missing values with median
@@ -148,7 +148,7 @@ class MLclassifier(object):
             predictions_probs = loaded_model.predict_proba(std_array)
             final_df = pd.DataFrame({
                 '#CHR': chunk['# [1]CHROM'],
-                'POS': chunk_tr['[2]POS'].astype(int),
+                'POS': chunk['[2]POS'].astype(int),
                 'prob_0': predictions_probs[:,0],
                 'prob_1': predictions_probs[:,1]})
             if first_chunk is True:
