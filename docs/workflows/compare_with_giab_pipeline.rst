@@ -61,7 +61,7 @@ How to run the pipeline
 
  Where:
   * ``$IGSR_CODEBASE`` is the folder containing the igsr codebase downloaded from ``https://github.com/igsr/igsr_analysis.git``
-  * ``--vcf`` is the VCF that will be benchmarked against GIAB
+  * ``--vcf`` is the VCF that will be benchmarked against GIAB. Notice that you will need to create a tabix index of this file before running this pipeline
   * ``--chros`` is the chromosome or comma-separated list of chromosomes that will be analyzed. i.e.: chr20 or chr1,chr2,chr3 and so on...
   * ``--vt`` is the parameter used to set the type of variants that will be analyzed 
 
