@@ -504,7 +504,7 @@ sub pipeline_analyses {
 		1 => ['index_vcf4']
 	    },
             -analysis_capacity => 1,
-            -rc_name => '500Mb'
+            -rc_name => '5Gb5cpus'
         },
 
 	{   -logic_name => 'index_vcf4',
