@@ -64,6 +64,6 @@ process splitVCF {
 
 	"""
 	${params.bcftools_folder}/bcftools view -r ${chr} ${params.giab_vcf} -o ${params.prefix}.${chr}.vcf.gz -O z
-	tabix ${params.prefix}.${chr}.vcf.gz
+	${params.tabix_folder}/tabix ${params.prefix}.${chr}.vcf.gz
 	"""
 }
