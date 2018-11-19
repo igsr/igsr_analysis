@@ -45,9 +45,11 @@ process splitVCF {
 
 	Returns
 	-------
-	Path to a tsv file containing the allele frequencies
+	Returns 2 files per chromosome:
+		1) A VCF format file for each splitted chromosome
+		2) A tabix index for that VCF
 	*/
-	publishDir 'final_dir', saveAs:{ filename -> "$filename" }
+	publishDir 'final_dir'
 
 	memory '1 GB'
         executor 'lsf'
@@ -58,9 +60,10 @@ process splitVCF {
 	val chr from chr_list
 
 	output:
-	file "${params.prefix}.${chr}.vcf.gz"
+	file "${params.prefix}.${chr}.vcf.gz*" into chr_vcf
 
 	"""
 	${params.bcftools_folder}/bcftools view -r ${chr} ${params.giab_vcf} -o ${params.prefix}.${chr}.vcf.gz -O z
+	tabix ${params.prefix}.${chr}.vcf.gz
 	"""
 }
