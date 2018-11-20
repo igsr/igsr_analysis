@@ -17,33 +17,39 @@ class VcfConcat(eHive.BaseRunnable):
         all_ixs = self.param_required('allixs')
         all_files = self.param_required('allchunks_files')
 
+        if len(all_ixs)!= len(all_files):
+            raise Exception("Number of indexes does not match with number files")
+
+        data={}
+        for i in all_files:
+            coord_str=os.path.basename(i).split('.')[-3]
+            chr,start,end=coord_str.split('_')
+            if not chr in data:
+                data[chr]=[(int(start),int(end),i)]
+            else:
+                data[chr].append((int(start),int(end),i))
+
+        sorted_files=[]
+        for i in ['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9',
+                  'chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17',
+                  'chr18','chr19','chr20','chr21','chr22','chrX']:
+            coords=data[i]
+            s_list=sorted(coords, key=lambda element: (element[1], element[2]))
+            for f in s_list:
+                sorted_files.append(f[2])
+
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
-
-        #log file
-        if not os.path.isdir(self.param_required('log_dir')):
-            os.makedirs(self.param_required('log_dir'))
 
         outprefix=os.path.split(self.param_required('outprefix'))[1]
         outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
 
-        d = dict(zip(all_ixs, all_files))
-
-        #write to log file
-        logfile_url="{0}/merge_vcf.log".format(self.param_required('log_dir'))
-        logf=open(logfile_url,'w')
-        logf.write("#ix chunk\n")
-        for k in sorted(d):
-            logf.write("{0} {1}\n".format(k,d[k]))
-        logf.close
-
         """Create tmp file for files to concat"""
         concat_file="%s/concat%s.txt"% (self.param_required('work_dir'),self.random_generator())
-
         f=open(concat_file,'w');
-        for ix in sorted(d):
-            f.write(d[ix]+"\n")
-        f.close()    
+        for k in sorted_files:
+            f.write(k+"\n")
+        f.close()
 
         nt=1 #number of threads
         if self.param_is_defined('threads'):
