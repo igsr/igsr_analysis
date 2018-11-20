@@ -52,18 +52,19 @@ How to run the pipeline
 	params.tabix='/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/tabix' // path to tabix binary
 	params.bgzip='/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/bgzip' // path to bgzip
 	params.non_valid_regions='/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed' // path to BED format file containing the regions that will be excluded from the comparison
-	params.giab='/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/ANALYSIS_READY/CHR20/NA12878.giab.SNP.chr20.non_valid.reheaded.vcf.gz' // path to GIAB call set
 	params.high_conf_regions='/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/chr20DIR/HIGH_CONF_REGIONS/HG001_GRCh38_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X-SOLID_CHROM1-X_v.3.3.2_highconf_nosomaticdel_noCENorHET7.chr20.bed' // path to high-confidence regions as defined by GIAB
 
 * Then, you can start your pipeline by doing::
 
-	nextflow run $IGSR_CODEBASE/scripts/VCF/QC/compare_with_giab.nf --vcf VCF --chros chr20 --vt snps
+	nextflow -c nextflow.config run $IGSR_CODEBASE/scripts/VCF/QC/compare_with_giab.nf --vcf VCF --chros chr20 --vt snps --giab giab.chr20.vcf.gz
 
  Where:
+  * ``-c`` option allows you to specify the path to the ``nextflow.config`` file
   * ``$IGSR_CODEBASE`` is the folder containing the igsr codebase downloaded from ``https://github.com/igsr/igsr_analysis.git``
   * ``--vcf`` is the VCF that will be benchmarked against GIAB. Notice that you will need to create a tabix index of this file before running this pipeline
   * ``--chros`` is the chromosome or comma-separated list of chromosomes that will be analyzed. i.e.: chr20 or chr1,chr2,chr3 and so on...
-  * ``--vt`` is the parameter used to set the type of variants that will be analyzed 
+  * ``--vt`` is the parameter used to set the type of variants that will be analyzed
+  * ``--giab`` is the path to the GIAB VCF for the chromosome/s specified with option ``--chros``
 
 Pipeline output
 ---------------
