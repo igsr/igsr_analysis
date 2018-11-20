@@ -52,7 +52,7 @@ How to run the pipeline
 	params.tabix='/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/tabix' // path to tabix binary
 	params.bgzip='/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/bgzip' // path to bgzip
 	params.non_valid_regions='/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed' // path to BED format file containing the regions that will be excluded from the comparison
-	params.high_conf_regions='/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/chr20DIR/HIGH_CONF_REGIONS/HG001_GRCh38_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X-SOLID_CHROM1-X_v.3.3.2_highconf_nosomaticdel_noCENorHET7.chr20.bed' // path to high-confidence regions as defined by GIAB
+	params.high_conf_regions='/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/chr20DIR/HIGH_CONF_REGIONS/HG001_GRCh38_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X-SOLID_CHROM1-X_v.3.3.2_highconf_nosomaticdel_noCENorHET7.chr20.bed' // path to high-confidence regions as defined by GIAB for chromosome/s defined by the ``--chros`` option
 
 * Then, you can start your pipeline by doing::
 
