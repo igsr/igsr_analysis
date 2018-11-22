@@ -622,7 +622,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'filename'     => '#out_vcf#',
-                'filelayout' => $self->o('filelayout').",st2,ext2,cmp2,st3,ext3,cmp3,st4,ext4,cmp4,st5,ext5,cmp5",
+                'filelayout' => $self->o('filelayout'),
             },
 	    -flow_into => {
                 1 => {'store_filt_file' => INPUT_PLUS() }
@@ -660,7 +660,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'filename'     => '#filename#',
-                'filelayout' => $self->o('filelayout').",st2,ext2,cmp2,st3,ext3,cmp3,st4,ext4,cmp4,st5,ext5,cmp5,ext6",
+                'filelayout' => $self->o('filelayout')+".ext6",
             },
             -flow_into => {
                 1 => {
