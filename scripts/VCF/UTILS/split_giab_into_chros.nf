@@ -2,6 +2,7 @@
 
 /* 
  * Script for splitting the GIAB call set containing multiple chromosomes into 1 VCF per chromosome.
+ * It will only consider the biallelic sites
  *
  * @author
  * Ernesto Lowy <ernesto.lowy@gmail.com>
@@ -36,7 +37,7 @@ if (params.help) {
 }
 
 
-chr_str = params.chros
+chr_str = params.chros.toString()
 chr_list = Channel.from( chr_str.split(','))
 
 process splitVCF {
@@ -60,10 +61,10 @@ process splitVCF {
 	val chr from chr_list
 
 	output:
-	file "${params.prefix}.${chr}.vcf.gz*" into chr_vcf
+	file "${params.prefix}.${chr}.biallelic.vcf.gz*" into chr_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools view -r ${chr} ${params.giab_vcf} -o ${params.prefix}.${chr}.vcf.gz -O z
-	${params.tabix_folder}/tabix ${params.prefix}.${chr}.vcf.gz
+	${params.bcftools_folder}/bcftools view -m2 -M2 -r ${chr} ${params.giab_vcf} -o ${params.prefix}.${chr}.biallelic.vcf.gz -O z
+	${params.tabix_folder}/tabix ${params.prefix}.${chr}.biallelic.vcf.gz
 	"""
 }
