@@ -30,9 +30,9 @@ if (params.help) {
     exit 1
 }
 
-process dropGTPs {
+process excludeNonVariants {
 	/*
-	This process will drop the genotypes from the initial VCF and will also select the variants and the desired chromosomes.
+	This process will select the variants and the desired chromosomes.
 	Additionally, only the variants with the 'PASS' label in the filter column are considered
 
 	Returns
@@ -49,7 +49,7 @@ process dropGTPs {
         file 'out.sites.vcf.gz' into out_sites_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools view -c1 -G ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
+	${params.bcftools_folder}/bcftools view -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
 	${params.tabix} out.sites.vcf.gz
 	"""
 }
@@ -141,7 +141,8 @@ process compressIntersected {
 	output:
 	file 'FP.vcf.gz' into fp_vcf
 	file 'FN.vcf.gz' into fn_vcf
-	file 'TP.vcf.gz' into tp_vcf
+	file 'TP_igsr.vcf.gz' into tp_igsr_vcf
+	file 'TP_giab.vcf.gz' into tp_giab_vcf
 	file 'FP.stats' into fp_stats
 	file 'FN.stats' into fn_stats
 	file 'TP.stats' into tp_stats
@@ -151,17 +152,21 @@ process compressIntersected {
 	${params.bcftools_folder}/bcftools stats ${out_intersect}/0000.vcf > FP.stats 
 	${params.bgzip} -c ${out_intersect}/0001.vcf > FN.vcf.gz
 	${params.bcftools_folder}/bcftools stats ${out_intersect}/0001.vcf > FN.stats
-	${params.bgzip} -c ${out_intersect}/0002.vcf > TP.vcf.gz
+	${params.bgzip} -c ${out_intersect}/0002.vcf > TP_igsr.vcf.gz
 	${params.bcftools_folder}/bcftools stats ${out_intersect}/0002.vcf > TP.stats
+	${params.bgzip} -c ${out_intersect}/0003.vcf > TP_giab.vcf.gz
 	"""
 }
 
 process selectInHighConf {
 	/*
 	Process to select the variants in the intersected call sets
-	that are in high confidence regions as defined in GIAB
+	that are in high confidence regions as defined in GIAB.
+
+	This process will also convert tp_igsr_highconf_vcf and tp_giab_highconf_vcf into .tsv files.
+	This step is necessary for calculating the genotype concordance in the next process
 	*/
-	publishDir 'results', saveAs:{ filename -> "$filename" }
+	publishDir 'results/'
 	
 	memory '500 MB'
         executor 'lsf'
@@ -171,24 +176,60 @@ process selectInHighConf {
 	input:
 	file fp_vcf
 	file fn_vcf
-	file tp_vcf
+	file tp_igsr_vcf
+	file tp_giab_vcf
 
 	output:
 	file 'FP.highconf.vcf.gz' into fp_highconf_vcf
 	file 'FN.highconf.vcf.gz' into fn_highconf_vcf
-	file 'TP.highconf.vcf.gz' into tp_highconf_vcf
+	file 'TP_igsr.highconf.vcf.gz' into tp_igsr_highconf_vcf
+	file 'TP_giab.highconf.vcf.gz' into tp_giab_highconf_vcf
+	file 'TP_igsr.highconf.vcf.gz.tbi' into tp_igsr_highconf_vcf_tbi
+	file 'TP_giab.highconf.vcf.gz.tbi' into tp_giab_highconf_vcf_tbi
 	file 'FP.highconf.stats' into fp_highconf_stats
 	file 'FN.highconf.stats' into fn_highconf_stats
 	file 'TP.highconf.stats' into tp_highconf_stats
+	file 'igsr.tsv' into igsr_tsv
+	file 'giab.tsv' into giab_tsv
+
 	"""
 	tabix ${fp_vcf}
 	tabix ${fn_vcf}
-	tabix ${tp_vcf}
+	tabix ${tp_igsr_vcf}
+	tabix ${tp_giab_vcf}
 	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${fp_vcf} -o FP.highconf.vcf.gz -Oz
 	${params.bcftools_folder}/bcftools stats FP.highconf.vcf.gz > FP.highconf.stats
 	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${fn_vcf} -o FN.highconf.vcf.gz -Oz
 	${params.bcftools_folder}/bcftools stats FN.highconf.vcf.gz > FN.highconf.stats
-	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${tp_vcf} -o TP.highconf.vcf.gz -Oz
-	${params.bcftools_folder}/bcftools stats TP.highconf.vcf.gz > TP.highconf.stats
+	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${tp_igsr_vcf} -o TP_igsr.highconf.vcf.gz -Oz
+	${params.bcftools_folder}/bcftools stats TP_igsr.highconf.vcf.gz > TP.highconf.stats
+	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${tp_giab_vcf} -o TP_giab.highconf.vcf.gz -Oz
+	tabix TP_igsr.highconf.vcf.gz
+	tabix TP_giab.highconf.vcf.gz
+	${params.vcflib_folder}/vcf2tsv -g TP_giab.highconf.vcf.gz | cut -f2,4,5,33 > giab.tsv
+        ${params.vcflib_folder}/vcf2tsv -g TP_igsr.highconf.vcf.gz | cut -f2,4,5,11 > igsr.tsv
+	"""
+}
+
+process calculateGTconcordance {
+	/*
+	Process to calculate the genotype concordance between the files
+	*/
+	publishDir 'results', saveAs:{ filename -> "$filename" }
+
+	memory '500 MB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
+	input:
+	file igsr_tsv
+	file giab_tsv
+
+	output:
+	file 'GT_concordance.txt' into gt_conc
+
+	"""
+	python ${params.igsr_root}/scripts/VCF/QC/calc_gtconcordance.py ${igsr_tsv} ${giab_tsv} > GT_concordance.txt
 	"""
 }
