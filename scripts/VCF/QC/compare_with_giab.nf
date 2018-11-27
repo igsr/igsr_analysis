@@ -33,7 +33,7 @@ if (params.help) {
 process excludeNonVariants {
 	/*
 	This process will select the variants and the desired chromosomes.
-	Additionally, only the variants with the 'PASS' label in the filter column are considered
+	Additionally, only the biallelic variants with the 'PASS' label in the filter column are considered
 
 	Returns
 	-------
@@ -49,7 +49,7 @@ process excludeNonVariants {
         file 'out.sites.vcf.gz' into out_sites_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools view -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
+	${params.bcftools_folder}/bcftools view -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
 	${params.tabix} out.sites.vcf.gz
 	"""
 }
@@ -206,8 +206,8 @@ process selectInHighConf {
 	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${tp_giab_vcf} -o TP_giab.highconf.vcf.gz -Oz
 	tabix TP_igsr.highconf.vcf.gz
 	tabix TP_giab.highconf.vcf.gz
-	${params.vcflib_folder}/vcf2tsv -g TP_giab.highconf.vcf.gz | cut -f2,4,5,33 > giab.tsv
-        ${params.vcflib_folder}/vcf2tsv -g TP_igsr.highconf.vcf.gz | cut -f2,4,5,11 > igsr.tsv
+	${params.bcftools_folder}/bcftools query -f '[%POS\t%REF\t%ALT\t%GT\n]' TP_giab.highconf.vcf.gz > giab.tsv
+	${params.bcftools_folder}/bcftools query -f '[%POS\t%REF\t%ALT\t%GT\n]' TP_igsr.highconf.vcf.gz > igsr.tsv
 	"""
 }
 

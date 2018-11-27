@@ -18,10 +18,10 @@ import pandas as pd
 import sys
 
 #read-in the igsr tsv file
-DF_igsr=pd.read_csv(sys.argv[1], sep='\t',index_col=0)
+DF_igsr=pd.read_csv(sys.argv[1], sep='\t',index_col=0,names=['POS','REF','ALT','GT'])
 
 #read-in the GIAB tsv file
-DF_giab=pd.read_csv(sys.argv[2], sep='\t',index_col=0)
+DF_giab=pd.read_csv(sys.argv[2], sep='\t',index_col=0,names=['POS','REF','ALT','GT'])
 
 #combine 2 dataframes by index
 final_DF=pd.merge(DF_igsr,DF_giab,left_index=True, right_index=True, suffixes=('_igsr', '_giab'))
