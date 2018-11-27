@@ -182,7 +182,7 @@ process runAnnotate {
         file  'out_decorate.vcf.gz' into out_decorate
 
         """
-	${params.tabix}/tabix -f -s1 -b2 -e3 ${out_AFmatrix_gz}
+	${params.tabix} -f -s1 -b2 -e3 ${out_AFmatrix_gz}
 	${params.bcftools}/bcftools annotate -r ${params.region} -a ${out_AFmatrix_gz} -h ${params.igsr_root}/SUPPORTING/annots_26062018.txt --rename-chrs ${params.igsr_root}/SUPPORTING/ensembl2ucsc_chrdict.txt -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS ${params.phased_vcf} -o out_decorate.vcf.gz -Oz
         """
 }
