@@ -1,3 +1,60 @@
+=head1 NAME
+
+ PyHive::PipeConfig::INTEGRATION::PHASING
+
+=head1 SYNOPSIS
+
+This pipeline is used to generate a phased VCF by using Beagle/Shapeit and emulates the analyses from the phase 3
+of the 1000 genomes project. It can be run after generating and integrated call set by using the 
+PyHive::PipeConfig::PHASING.pm
+
+This pipeline is designed to be run for SNPs or INDELs independently or for both variant types together in the same VCF. 
+Important: This workflow can only analyze biallelic variants and it will crash if you try to analyze multiallelic sites.
+
+Below in the 'default_options' function we can see the options that will control the behaviour of the pipeline. 
+The options that do not have a default value must be set when initializing the pipeline using 'init_pipeline.pl'. 
+Here are explanations for some of these options, modify them according to your needs:
+
+-hostname, username, port, db, pwd control the connection details for the ReseqTrack database
+-work_dir: folder that will be used to put the intermediate files
+-final_dir: folder that will be used to put the final pipeline files
+
+-faix: This file is in the .faix format and controls the chromosomes in the initial VCF that will be analyzed
+-filelayout: this is used by the pipeline in order to know how to construct the final filename. It will label
+ each bit in the initial filename with a certain name that will be used by the 'newlayout' parameter in order
+ to construct the final filename. For example: 'dataset,types,date,chr,extension,compression'
+ for a file named 'consensus.snp_indel.20170911.chr20.vcf.gz'
+-newlayout: if newlayout is 'dataset,types,extension,compression' and given the value used for 'filelayout'
+ then the final filename will be 'consensus.snp_indel.vcf.gz'
+-outprefix: Outprefix used for file name
+
+BEAGLE options:
+ -window_bglchnks: Number of sites for each of the chunks created in order to parallelize the Beagle analysis. 
+ The higher the number of sites for each chunk the more resources Beagle will require
+ -overlap_bglchnks: Number of sites overlapping between the Beagle chunks. Chunks need to have overlapping sites
+ in order to be able to concatenate them
+
+SHAPEIT options:
+ -window_shapeitchnks: Number of sites for each of the chunks created in order to parallelize the SHAPEIT analysis.
+ The higher the number of sites for each chunk the more resources SHAPEIT will require
+ -overlap_shapeitchnks: Number of sites overlapping between the SHAPEIT chunks. Chunks need to have overlapping sites
+ in order to be able to concatenate them
+ -inputthr: Probability threshold used to call genotypes in GEN file
+ -window: Mean size of the windows in which conditioning haplotypes are defined.
+ -states: Number of hidden states used for phasing (selected using Hamming distance minimisation).
+ -statesrandom: Number of hidden states used for phasing (selected at random).
+ -burn: Number of burn-in MCMC iterations
+ -run: Number of pruning stages
+ -prune: Number of pruning MCMC iterations
+ -main: Number of main MCMC iterations
+ -input_scaffold_prefix: This option is used to specify the common prefix for all SNP-array derived haplotype scaffold files
+ used by SHAPEIT
+
+ligateHAPLOTYPES options:
+ -scaffolded_samples: Specifies the samples for which the haplotypes are ligated
+
+=cut
+
 package PyHive::PipeConfig::INTEGRATION::PHASING;
 
 use strict;
@@ -35,27 +92,23 @@ sub default_options {
 	'shapeit_folder' => '~/bin/shapeit2_v2_12/bin/',
 	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/OMNI/PHASING/ALL.chip.omni_broad_sanger_combined.20140818.refcorr.biallelic.snps', 
 				    '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/AFFY/PHASING/ALL.wgs.nhgri_coriell_affy_6.20140825.genotypes_has_ped.ucsc.hg38.refcorr.biallelic.snps'],
-# SHAPEIT. Specify here the prefix for the scaffolded microarray genotypes
-	'inputthr' => 1.0, # SHAPEIT
-	'window' => 0.1, # SHAPEIT
-	'states' => 400, # SHAPEIT
-	'statesrandom' => 200, # SHAPEIT
-	'burn' => 0, # SHAPEIT
-	'run' => 12, # SHAPEIT
-	'prune' => 4, # SHAPEIT
-	'main' => 20, # SHAPEIT
-	'samplefile' => undef, # SHAPEIT
-	'window_bglchnks' => undef, # makeBGLCHUNKS
-        'overlap_bglchnks' => undef, # makeBGLCHUNKS
-	'window_shapeitchnks' => undef, # makeBGLCHUNKS 4 Shapeit
-        'overlap_shapeitchnks' => undef, # makeBGLCHUNKS 4 Shapeit
-#	'window_bglchnks' => 12000, # recommended in supp of phase3 for makeBGLCHUNKS
-#	'overlap_bglchnks' => 2000, # recommended in supp of phase 3 for makeBGLCHUNKS
-	'outprefix' => undef, # Prefix used for all output files
-	'scaffolded_samples' => undef, #PyHive.VcfIntegration.run_ligateHAPLOTYPES
+	'inputthr' => 1.0,
+	'window' => 0.1,
+	'states' => 400,
+	'statesrandom' => 200,
+	'burn' => 0,
+	'run' => 12,
+	'prune' => 4,
+	'main' => 20,
+	'window_bglchnks' => undef, 
+        'overlap_bglchnks' => undef,
+	'window_shapeitchnks' => undef,
+        'overlap_shapeitchnks' => undef,
+	'outprefix' => undef,
+	'scaffolded_samples' => undef,
 	'store_attributes' => 'False',
-        'filelayout' => undef, #file layout for final phased file
-	'newlayout' =>  undef, # new file layout for final phased file
+        'filelayout' => undef,
+	'newlayout' =>  undef,
 	'lsf_queue'   => 'production-rh7'
     };
 }
@@ -299,8 +352,7 @@ sub pipeline_analyses {
 		'input_scaffold_prefix' => $self->o('input_scaffold_prefix'),
                 'newheader' => $self->o('newheader'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/shapeit",
-		'thread' => 10,
-                'samplefile' => $self->o('samplefile')
+		'thread' => 10
             },
 	    -rc_name => '10Gb10cpus',
 	    -flow_into => {
@@ -328,8 +380,7 @@ sub pipeline_analyses {
                 'input_scaffold_prefix' => $self->o('input_scaffold_prefix'),
                 'newheader' => $self->o('newheader'),
                 'work_dir' => $self->o('work_dir')."/#chromname#/shapeit",
-                'thread' => 10,
-                'samplefile' => $self->o('samplefile')
+                'thread' => 10
             },
             -rc_name => '20Gb10cpus',
 	    -flow_into => {
