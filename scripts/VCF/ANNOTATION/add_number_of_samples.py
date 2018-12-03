@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser(description='Script to add the NS (number of sa
 
 parser.add_argument('--outfile',help='Output file name',required=True)
 parser.add_argument('--file1',help='Path to table that will be used in order to add the annotation as the last column',required=True)
-parser.add_argument('--ann_vcf',help='Path to VCF with annotations that will be used to obtain the number of samples',required=True)
+parser.add_argument('--phased_vcf',help='Path to phased VCF that will be used to obtain the number of samples',required=True)
 
 args = parser.parse_args()
 
@@ -17,8 +17,8 @@ def add_number_of_samples(file1,ann_vcf):
     ----
     file1: string
            Path to table that will be used in order to add the annotation as the last column
-    ann_vcf: string
-             Path to VCF with annotations that will be used to obtain the number of samples
+    phased_vcf: string
+                Path to phased VCF that will be used to obtain the number of samples
 
     Returns
     -------
@@ -26,7 +26,7 @@ def add_number_of_samples(file1,ann_vcf):
 
     '''
 
-    cmd="bcftools query -l {0} |wc -l".format(ann_vcf)
+    cmd="bcftools query -l {0} |wc -l".format(args.phased_vcf)
 
     try:
         number_of_samples = subprocess.check_output(cmd, shell=True).decode("utf-8").rstrip('\n')
@@ -44,5 +44,5 @@ def add_number_of_samples(file1,ann_vcf):
     except subprocess.CalledProcessError as e:
         raise
 
-add_number_of_samples(args.file1, args.ann_vcf)
+add_number_of_samples(args.file1, args.phased_vcf)
 

@@ -38,6 +38,10 @@ if (params.help) {
     log.info '	--vcf_validator VCF_VALIDATOR	   path to vcf_validator binary .'
     log.info '  --igsr_root IGSR_ROOT folder containing igsr codebase .'
     log.info '  --output_dir OUTPUT_DIR	     output folder where the final decorated VCF will be placed .'
+    log.info '  --outprefix OUTPREFIX	     String used as basename for output files .'
+    log.info '  --header HEADER_FILE	     File with new header to use in the final VCF .'
+    log.info '  --sample_list		     Path to the file with samples present in the VCF to be annotated. These sample ids will be used '
+    log.info '				     in the new header .'
     log.info ''
     exit 1
 }
@@ -53,7 +57,7 @@ process getAlleleFrequencies {
 	*/
 
 	memory '2 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
 
@@ -71,7 +75,7 @@ process getDepths {
 	*/
 
 	memory '1 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
 	
@@ -87,6 +91,11 @@ process processAF {
 	/*
 	Function to create a table containing the AFs and the depths for each position
 	*/
+
+	memory '1 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
 
 	input:
 	file out_Annotate
@@ -112,7 +121,7 @@ process getOverlappingVariants {
 	file  'out_getOverlappingVariants.txt' into out_getOverlappingVariants
 
         """
-        python ${params.igsr_root}/scripts/VCF/ANNOTATION/get_overlapping_variants.py --outfile out_getOverlappingVariants.txt --afs_table ${out_processAF} --exome ${params.exome} --label 'EX_TARGET' 
+        python ${params.igsr_root}/scripts/VCF/ANNOTATION/get_overlapping_variants.py --outfile out_getOverlappingVariants.txt --afs_table ${out_processAF} --exome ${params.exome} --label 'EX_TARGET' --bedtools_folder ${params.bedtools_folder} 
         """
 }
 
@@ -144,7 +153,7 @@ process addNumberSamples {
 	file  'out_addNumberSamples.txt' into out_addNumberSamples
 
 	"""
-	python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_number_of_samples.py --outfile out_addNumberSamples.txt --file1 ${out_addAnnotation} --ann_vcf ${params.ann_vcf}
+	python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_number_of_samples.py --outfile out_addNumberSamples.txt --file1 ${out_addAnnotation} --phased_vcf ${params.phased_vcf}
 	"""
 }
 
@@ -171,7 +180,7 @@ process runAnnotate {
         */
 
 	memory '1 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
 
@@ -190,10 +199,11 @@ process runAnnotate {
 process runReheader {
 	/*
 	Function to modify the header on the decorated VCF
+	This function will also change the chromosome notations
 	*/
 
 	memory '1 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
 
@@ -202,9 +212,11 @@ process runReheader {
 
 	output:
 	file 'out_reheaded.vcf.gz' into out_reheaded
+	file 'out_reheaded.ucsc.vcf.gz' into out_reheaded_ucsc
 
 	"""
-	${params.bcftools_folder}/bcftools reheader -h ${params.igsr_root}/SUPPORTING/header_26062018.txt ${out_decorate} -o out_reheaded.vcf.gz
+	${params.bcftools_folder}/bcftools reheader -h ${params.header} -s ${params.sample_list} ${out_decorate} -o out_reheaded.vcf.gz
+	zcat out_reheaded.vcf.gz | awk '{if(\$0 !~ /^#/) print "chr"\$0; else print \$0}' - |bgzip -c > out_reheaded.ucsc.vcf.gz
 	"""
 }
 
@@ -216,18 +228,18 @@ process runValidator {
 	publishDir 'results', saveAs:{ filename -> "$filename" }
 
 	memory '1 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
 
 	input:
-	file out_reheaded
+	file out_reheaded_ucsc
 
 	output:
-	file "${params.chr}.vcf.validation.txt"
+	file "${params.outprefix}.vcf.validation.txt"
 
 	"""
-	zcat ${out_reheaded} | ${params.vcf_validator} 2> ${params.chr}.vcf.validation.txt 
+	zcat ${out_reheaded_ucsc} | ${params.vcf_validator} 2> ${params.outprefix}.vcf.validation.txt 
 	"""
 }
 
@@ -238,13 +250,13 @@ process moveFinalFile {
 	publishDir 'results', saveAs:{ filename -> "$filename" }
 
 	input:
-	file out_reheaded
+	file out_reheaded_ucsc
 
 	output:
-	file "${params.chr}.GRCh38.phased.vcf.gz"
+	file "${params.outprefix}.GRCh38.phased.vcf.gz"
 	
 	script:
 	"""
-	mv ${out_reheaded} ${params.chr}.GRCh38.phased.vcf.gz
+	mv ${out_reheaded_ucsc} ${params.outprefix}.GRCh38.phased.vcf.gz
 	"""
 }
