@@ -78,7 +78,6 @@ sub default_options {
         'pwd' => undef,
         'work_dir'    => undef,
         'final_dir' => undef,
-	'log_dir' => undef,
 	'faix' => undef,
 	'newheader' => undef,
 	'bcftools_folder' => '~/bin/bcftools-1.6/',
