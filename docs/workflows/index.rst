@@ -19,3 +19,4 @@ Contents:
    vcf_decoration
    compare_with_giab_pipeline
    consensus_callset_pipeline
+   phasing_pipeline
