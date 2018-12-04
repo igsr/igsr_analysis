@@ -212,11 +212,9 @@ process runReheader {
 
 	output:
 	file 'out_reheaded.vcf.gz' into out_reheaded
-	file 'out_reheaded.ucsc.vcf.gz' into out_reheaded_ucsc
 
 	"""
 	${params.bcftools_folder}/bcftools reheader -h ${params.header} -s ${params.sample_list} ${out_decorate} -o out_reheaded.vcf.gz
-	zcat out_reheaded.vcf.gz | awk '{if(\$0 !~ /^#/) print "chr"\$0; else print \$0}' - |bgzip -c > out_reheaded.ucsc.vcf.gz
 	"""
 }
 
@@ -233,13 +231,13 @@ process runValidator {
         cpus 1
 
 	input:
-	file out_reheaded_ucsc
+	file out_reheaded
 
 	output:
 	file "${params.outprefix}.vcf.validation.txt"
 
 	"""
-	zcat ${out_reheaded_ucsc} | ${params.vcf_validator} 2> ${params.outprefix}.vcf.validation.txt 
+	zcat ${out_reheaded} | ${params.vcf_validator} 2> ${params.outprefix}.vcf.validation.txt 
 	"""
 }
 
@@ -247,16 +245,17 @@ process moveFinalFile {
 	/*
 	Process to move the final output file to the output folder set in params.output_dir
 	*/
-	publishDir 'results', saveAs:{ filename -> "$filename" }
+	publishDir 'results/'
 
 	input:
-	file out_reheaded_ucsc
+	file out_reheaded
 
 	output:
-	file "${params.outprefix}.GRCh38.phased.vcf.gz"
+	file "${params.outprefix}.GRCh38.phased.vcf.gz*"
 	
 	script:
 	"""
-	mv ${out_reheaded_ucsc} ${params.outprefix}.GRCh38.phased.vcf.gz
+	mv ${out_reheaded} ${params.outprefix}.GRCh38.phased.vcf.gz
+	${params.tabix} ${params.outprefix}.GRCh38.phased.vcf.gz
 	"""
 }
