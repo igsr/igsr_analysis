@@ -33,10 +33,11 @@ class VcfConcat(eHive.BaseRunnable):
         for i in ['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9',
                   'chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17',
                   'chr18','chr19','chr20','chr21','chr22','chrX']:
-            coords=data[i]
-            s_list=sorted(coords, key=lambda element: (element[1], element[2]))
-            for f in s_list:
-                sorted_files.append(f[2])
+            if i in data:
+                coords=data[i]
+                s_list=sorted(coords, key=lambda element: (element[1], element[2]))
+                for f in s_list:
+                    sorted_files.append(f[2])
 
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
