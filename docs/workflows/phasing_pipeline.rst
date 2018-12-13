@@ -1,7 +1,7 @@
 Phasing pipeline
 ================
 This workflow is used to generate a phased VCF by using Beagle/Shapeit and emulates the analyses from the [ `phase 3 <https://www.nature.com/articles/nature15393>`_] of the 1000 genomes project.  
-It can be run after generating and integrated call set by using the PyHive::PipeConfig::PHASING.pm <https://github.com/igsr/igsr_analysis/blob/master/PyHive/PipeConfig/INTEGRATION/PHASING.pm>
+It can be run after generating and integrated call set by using the `PyHive::PipeConfig::PHASING.pm <https://github.com/igsr/igsr_analysis/blob/master/PyHive/PipeConfig/INTEGRATION/PHASING.pm>`_
 
 This pipeline is designed to be run for SNPs or INDELs independently or for both variant types together in the same VCF.
 *Important:* This workflow can only analyze biallelic variants and it will crash if you try to analyze multiallelic sites.
@@ -55,11 +55,11 @@ In order to generate a combined VCF containing both SNPs+INDELs from 1 SNP VCF +
 
     commands::
 
-    mysql -h <hostname> -P <portnumber> -u <username> -p???? -e "create database testreseqtrack" # where testreseqtrack
+        mysql -h <hostname> -P <portnumber> -u <username> -p???? -e "create database testreseqtrack" # where testreseqtrack
                                                                                                      # is the name you want
                                                                                                      # to give to the ReseqTrack DB
-												     mysql -h <hostname> -P <portnumber> -u <username> -p???? testreseqtrack < $RESEQTRACK/sql/table.sql
-												     mysql -h <hostname> -P <portnumber> -u <username> -p???? testreseqtrack < $RESEQTRACK/sql/views.sql
+	mysql -h <hostname> -P <portnumber> -u <username> -p???? testreseqtrack < $RESEQTRACK/sql/table.sql
+	mysql -h <hostname> -P <portnumber> -u <username> -p???? testreseqtrack < $RESEQTRACK/sql/views.sql
 
     * Conventions used in this section:
 
