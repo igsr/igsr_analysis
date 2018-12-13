@@ -11,11 +11,7 @@ This pipeline is designed to be run for SNPs or INDELs independently or for both
 This pipeline will take as input the VCF file that contains either SNPs, INDELs or both types together. 
 In order to generate a combined VCF containing both SNPs+INDELs from 1 SNP VCF + 1 INDEL VCF you can do the following::
 
-   bcftools concat input1.snps.vcf.gz input2.indels.vcf.gz -o combined.snps_indels.vcf.gz -Oz
-
-After concatenating the SNP with the INDEL file you will need to sort the new VCF::
-
-   bcftools sort -T ./tmp_sort combined.snps_indels.vcf.gz -o combined.snps_indels.sorted.vcf.gz -Oz
+   bcftools concat input1.snps.vcf.gz input2.indels.vcf.gz -o combined.snps_indels.vcf.gz -Oz -a
 
 2. Preparing the environment
 
