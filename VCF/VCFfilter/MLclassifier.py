@@ -109,7 +109,7 @@ class MLclassifier(object):
 
         return outfile
 
-    def predict(self, outprefix, annotation_f):
+    def predict(self, outprefix, annotation_f, filter_label='MLFILT', cutoff=0.8):
         '''
         Function to apply a serialized logistic regression model on a file containing the annotations for each site
         and to predict if the variant is real
@@ -122,6 +122,13 @@ class MLclassifier(object):
                    String used as the prefix for the fitted model
         annotation_f: filename
                       Path to file with the sites and annotations that will be classified
+        filter_label: str, Optional
+                      String with the label used for FILTER that can be used with 'bcftools annotate'
+                      in order to annotate the VCF file. Default='MLFILT'
+        cutoff : float, Optional
+                 Cutoff value used for deciding if a variant is a TP. Sites with a prob_1<cutoff will
+                 be considered as FP and the FILTER column will be the string in the 'filter_label' option.
+                 If prob_1>=cutoff then the FILTER column will be PASS. Default=0.8
         '''
 
         imputer = Imputer(strategy="median")
@@ -146,11 +153,19 @@ class MLclassifier(object):
             std_scale = preprocessing.StandardScaler().fit(chunk_tr[feature_names])
             std_array = std_scale.transform(chunk_tr[feature_names])
             predictions_probs = loaded_model.predict_proba(std_array)
+            
+            #decide if it is a TP or a FP
+            filter_outcome=[]
+            for i in predictions_probs[:,1]:
+                if i >= cutoff: 
+                    filter_outcome.append('PASS')
+                else:
+                    filter_outcome.append(filter_label)
             final_df = pd.DataFrame({
                 '#CHR': chunk['# [1]CHROM'],
                 'POS': chunk['[2]POS'].astype(int),
-                'prob_0': predictions_probs[:,0],
-                'prob_1': predictions_probs[:,1]})
+                'FILTER': filter_outcome,
+                'prob_TP': [ round(elem, 2) for elem in predictions_probs[:,1]]})
             if first_chunk is True:
                 final_df.to_csv(outfile, sep='\t', mode='a', header=True, index= False)
                 first_chunk=False
