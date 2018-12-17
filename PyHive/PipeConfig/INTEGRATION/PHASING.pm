@@ -307,7 +307,7 @@ sub pipeline_analyses {
 	    -flow_into => {
 		1 => {'chunk_factory2' => INPUT_PLUS() }
  	    },
-            -rc_name => '5Gb'
+            -rc_name => '8Gb'
         },
 
 	{   -logic_name => 'chunk_factory2',
