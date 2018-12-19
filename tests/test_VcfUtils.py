@@ -43,6 +43,14 @@ def test_correct_ambiguity(vcf_ambiguity):
     outfile=vcf_ambiguity.correct_ambiguity_codes(outfile='data/outdir/test.corrected.vcf.gz')
 
     assert os.path.exists("data/outdir/test.corrected.vcf.gz")
+
+def test_add_to_header(vcf_ambiguity):
+
+    outfile=vcf_ambiguity.add_to_header(header_f="data/newheader.txt", outfilename="data/outdir/modified_header.txt",
+                                        line_ann='##INFO=test"')
+
+    assert os.path.exists("data/outdir/modified_header.txt")
+    
 def test_vcf_reheader(vcf_object):
     outfile=vcf_object.reheader(newheader="data/newheader.txt", outprefix="data/outdir/test1", verbose=True) 
 
@@ -130,3 +138,4 @@ def test_convert_PL2GL(clean_tmp):
 
     assert os.path.exists("data/outdir/test.gatk.GL.vcf.gz")
 
+"""

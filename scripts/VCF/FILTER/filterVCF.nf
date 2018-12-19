@@ -18,13 +18,16 @@ if (params.help) {
     log.info '---------------------------------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow filterVCF.nf --vcf VCF --true VCF --vt snps'
+    log.info '    nextflow filterVCF.nf --vcf VCF --true VCF --vt snps --annotations ANNOATION_STRING --cutoff 0.95'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
     log.info '	--vcf VCF    Path to the VCF file that will be filtered.'
     log.info '  --true VCF  Path to the VCF file containing the gold-standard sites.'
-    log.info '  --vt  VARIANT_TYPE   Type of variant to benchmark. Poss1ible values are 'snps'/'indels'.'
+    log.info '  --vt  VARIANT_TYPE   Type of variant to filter. Poss1ible values are 'snps'/'indels'.'
+    log.info '  --annotations ANNOTATION_STRING	String containing the annotations to filter, for example:'
+    log.info '	%CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.' 
+    log.info '  --cutoff FLOAT cutoff value used in the filtering.'
     log.info ''
     exit 1
 }
@@ -138,7 +141,7 @@ process get_variant_annotations {
 	and for VCF file to annotate
 	*/
 
-	memory '500 MB'
+	memory '2 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
@@ -146,16 +149,18 @@ process get_variant_annotations {
 	input:
 	file tp_vcf
 	file fp_vcf
+	val chr_1
 
 	output:
 	file 'TP_annotations.tsv' into tp_annotations
 	file 'FP_annotations.tsv' into fp_annotations
 	file 'unfilt_annotations.snps.tsv' into unfilt_annotations
+	val chr_1 into chr_2
 
 	"""
 	${params.bcftools_folder}/bcftools query -H -f '${params.annotations}' ${tp_vcf} > TP_annotations.tsv
 	${params.bcftools_folder}/bcftools query -H -f '${params.annotations}' ${fp_vcf} > FP_annotations.tsv
-	${params.bcftools_folder}/bcftools query -H -f '${params.annotations}' ${params.vcf} > unfilt_annotations.snps.tsv
+	${params.bcftools_folder}/bcftools query -r ${chr_1} -H -f '${params.annotations}' ${params.vcf} > unfilt_annotations.snps.tsv
 	"""
 }
 
@@ -324,13 +329,13 @@ process reannotate_vcf {
         cpus 1
 
 
-	publishDir "results_${chr_1}", saveAs:{ filename -> "$filename" }
+	publishDir "results_${chr_2}", saveAs:{ filename -> "$filename" }
 
 	input:
 	file unfilt_reheaded
 	file predictions_table
 	file predictions_table_tabix
-	val chr_1
+	val chr_2
 
 	output:
 	file 'filt.vcf.gz' into filt_vcf
