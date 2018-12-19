@@ -409,7 +409,7 @@ sub pipeline_analyses {
 		    'vcf_file' => '#vcf_file#'
 		      },
 		}
-	}
+	    }
         },
 
 	{   -logic_name => 'run_convert_vcf',

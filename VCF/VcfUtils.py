@@ -95,6 +95,55 @@ class VcfUtils(object):
 
         return outfile
 
+    def add_to_header(self, header_f, outfilename, line_ann):
+        '''
+        Function to add to the header of a VCF the string passed with 'line_ann'
+
+        Parameters
+        ----------
+        header_f : str
+                   Path to file containing the header file that will be modified
+        outfilename : str
+                      Path to the new header file that is modified
+        line_ann : str
+               Str with line that will be used to add to the header
+
+        Returns
+        -------
+        filename
+                Path to modified header file. The new annotation will be added in the following line
+                after the desired annotation
+        '''
+
+        of=open(outfilename,'w')
+
+        # getting the type of line that is being passed
+        p=re.compile("^##(\w+)=")
+
+        m1=p.match(line_ann)
+        type_ann=m1.group(1)
+
+        line_seen=False
+        with open(header_f) as f:
+            for line in f:
+                line=line.rstrip("\n")
+                m2=p.match(line)
+                if m2 is None:
+                    of.write(line+"\n")
+                    continue
+                type1_ann=m2.group(1)
+                if type_ann==type1_ann and line_seen is False:
+                    line_seen=True
+                    of.write(line+"\n"+line_ann+"\n")
+                    continue
+                else:
+                    of.write(line+"\n")
+        of.close()
+        
+        return outfilename
+
+
+
     def combine(self, labels, reference, outprefix, compress=False, outdir=None, ginterval=None, 
                 genotypemergeoption=None, filteredrecordsmergetype=None, threads=1, options=None, verbose=False):
         '''
