@@ -59,8 +59,8 @@ process excludeNonVariants {
 	file "out.sites.${params.vt}.vcf.gz" into out_sites_vts
 
 	"""
-	${params.bcftools_folder}/bcftools view -v ${params.vt} -G -c1 ${params.vcf} -o out.sites.${params.vt}.vcf.gz -Oz
-	${params.tabix} out.sites.${params.vt}.vcf.gz
+	bcftools view -v ${params.vt} -G -c1 ${params.vcf} -o out.sites.${params.vt}.vcf.gz -Oz
+	tabix out.sites.${params.vt}.vcf.gz
 	"""
 }
 
@@ -82,7 +82,7 @@ process intersecionCallSets {
 
 	"""
 	tabix ${out_sites_vts}
-	${params.bcftools_folder}/bcftools isec -c ${params.vt}  -p 'dir/' ${out_sites_vts} ${params.true}
+	bcftools isec -c ${params.vt}  -p 'dir/' ${out_sites_vts} ${params.true}
 	"""
 }
 
@@ -104,9 +104,9 @@ process compressIntersected {
         file 'TP.vcf.gz' into tp_vcf
 
         """
-        ${params.bgzip} -c ${out_intersect}/0000.vcf > FP.vcf.gz
-        ${params.bgzip} -c ${out_intersect}/0001.vcf > FN.vcf.gz
-        ${params.bgzip} -c ${out_intersect}/0002.vcf > TP.vcf.gz
+        bgzip -c ${out_intersect}/0000.vcf > FP.vcf.gz
+        bgzip -c ${out_intersect}/0001.vcf > FN.vcf.gz
+        bgzip -c ${out_intersect}/0002.vcf > TP.vcf.gz
         """
 }
 
@@ -133,9 +133,9 @@ process get_variant_annotations {
 	val chr into chr
 
 	"""
-	${params.bcftools_folder}/bcftools query -H -f '${params.annotations}' ${tp_vcf} > TP_annotations.tsv
-	${params.bcftools_folder}/bcftools query -H -f '${params.annotations}' ${fp_vcf} > FP_annotations.tsv
-	${params.bcftools_folder}/bcftools query -H -r ${chr} -f '${params.annotations}' ${params.vcf} > unfilt_annotations.snps.tsv
+	bcftools query -H -f '${params.annotations}' ${tp_vcf} > TP_annotations.tsv
+	bcftools query -H -f '${params.annotations}' ${fp_vcf} > FP_annotations.tsv
+	bcftools query -H -r ${chr} -f '${params.annotations}' ${params.vcf} > unfilt_annotations.snps.tsv
 	"""
 }
 
@@ -218,8 +218,8 @@ process compress_predictions {
 	file 'predictions.tsv.gz.tbi' into predictions_table_tabix
 
 	"""
-	${params.bgzip} -c ${predictions} > 'predictions.tsv.gz'
-	${params.tabix} -f -s1 -b3 -e3 'predictions.tsv.gz'
+	bgzip -c ${predictions} > 'predictions.tsv.gz'
+	tabix -f -s1 -b3 -e3 'predictions.tsv.gz'
 	"""
 }
 
@@ -237,7 +237,7 @@ process get_header {
 	file 'header.txt' into header
 
 	"""
-	${params.bcftools_folder}/bcftools view -h ${params.vcf} > header.txt
+	bcftools view -h ${params.vcf} > header.txt
 	"""
 }
 
@@ -268,7 +268,6 @@ process modify_header {
                           	 line_ann='##FILTER=<ID=MLFILT,Description="Binary classifier filter">')
 	vcf_object.add_to_header(header_f='newheader1.txt', outfilename='newheader.txt',
                                  line_ann='##INFO=<ID=prob_TP,Number=1,Type=Float,Description="Probability of being a True positive">')
-
 	"""
 }
 
@@ -290,7 +289,7 @@ process splitVCF {
 	file "unfilt.${chr}.${params.vt}.vcf.gz" into unfilt_vcf_chr
 	
 	"""
-	${params.bcftools_folder}/bcftools view -r ${chr} -v ${params.vt} ${params.vcf} -o unfilt.${chr}.${params.vt}.vcf.gz -Oz
+	bcftools view -r ${chr} -v ${params.vt} ${params.vcf} -o unfilt.${chr}.${params.vt}.vcf.gz -Oz
 	"""
 }
 
@@ -312,7 +311,7 @@ process replace_header {
 	file 'unfilt_reheaded.vcf.gz' into unfilt_vcf_chr_reheaded
 
 	"""
-	${params.bcftools_folder}/bcftools reheader -h ${newheader} -o 'unfilt_reheaded.vcf.gz' ${unfilt_vcf_chr}
+	bcftools reheader -h ${newheader} -o 'unfilt_reheaded.vcf.gz' ${unfilt_vcf_chr}
 	"""
 }
 
@@ -339,6 +338,6 @@ process reannotate_vcf {
 	file 'filt.vcf.gz' into filt_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,FILTER,POS,prob_TP -o filt.vcf.gz -Oz
+	bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,FILTER,POS,prob_TP -o filt.vcf.gz -Oz
 	"""
 }
