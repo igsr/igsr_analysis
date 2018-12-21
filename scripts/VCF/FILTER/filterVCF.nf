@@ -19,7 +19,7 @@ if (params.help) {
     log.info '---------------------------------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow filterVCF.nf --vcf VCF --true VCF --vt snps --annotations ANNOATION_STRING --cutoff 0.95 --threads 5'
+    log.info '    nextflow filterVCF.nf --vcf VCF --true VCF --vt snps --annotations ANNOTATION_STRING --cutoff 0.95 --threads 5'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
@@ -29,7 +29,7 @@ if (params.help) {
     log.info '  --annotations ANNOTATION_STRING	String containing the annotations to filter, for example:'
     log.info '	%CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.' 
     log.info '  --cutoff FLOAT Cutoff value used in the filtering.'
-    log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1
+    log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info ''
     exit 1
 }
@@ -340,6 +340,6 @@ process reannotate_vcf {
 	file 'filt.vcf.gz' into filt_vcf
 
 	"""
-	bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,FILTER,POS,prob_TP -o filt.vcf.gz --threads ${threads} -Oz
+	bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,FILTER,POS,prob_TP -o filt.vcf.gz --threads ${params.threads} -Oz
 	"""
 }
