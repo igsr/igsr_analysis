@@ -340,6 +340,6 @@ process reannotate_vcf {
 	file 'filt.vcf.gz' into filt_vcf
 
 	"""
-	bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,FILTER,POS,prob_TP -o filt.vcf.gz --threads ${params.threads} -Oz
+	bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,POS,FILTER,prob_TP -o filt.vcf.gz --threads ${params.threads} -Oz
 	"""
 }
