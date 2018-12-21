@@ -129,6 +129,11 @@ class MLclassifier(object):
                  Cutoff value used for deciding if a variant is a TP. Sites with a prob_1<cutoff will
                  be considered as FP and the FILTER column will be the string in the 'filter_label' option.
                  If prob_1>=cutoff then the FILTER column will be PASS. Default=0.8
+
+        Returns
+        -------
+        filename
+                 Path to table file with predictions
         '''
 
         imputer = Imputer(strategy="median")
@@ -166,8 +171,11 @@ class MLclassifier(object):
                 'POS': chunk['[2]POS'].astype(int),
                 'FILTER': filter_outcome,
                 'prob_TP': [ round(elem, 2) for elem in predictions_probs[:,1]]})
+            # change order of columns
+            final_df=final_df[['#CHR','POS','FILTER','prob_TP']]
             if first_chunk is True:
                 final_df.to_csv(outfile, sep='\t', mode='a', header=True, index= False)
                 first_chunk=False
             else:
                 final_df.to_csv(outfile, sep='\t', mode='a', header=False, index= False)
+        return outfile
