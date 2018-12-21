@@ -9,6 +9,7 @@
 
 // params defaults
 params.help = false
+params.threads = 1
 
 
 //print usage
@@ -18,7 +19,7 @@ if (params.help) {
     log.info '---------------------------------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow filterVCF.nf --vcf VCF --true VCF --vt snps --annotations ANNOATION_STRING --cutoff 0.95'
+    log.info '    nextflow filterVCF.nf --vcf VCF --true VCF --vt snps --annotations ANNOATION_STRING --cutoff 0.95 --threads 5'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
@@ -27,7 +28,8 @@ if (params.help) {
     log.info '  --vt  VARIANT_TYPE   Type of variant to filter. Poss1ible values are 'snps'/'indels'.'
     log.info '  --annotations ANNOTATION_STRING	String containing the annotations to filter, for example:'
     log.info '	%CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.' 
-    log.info '  --cutoff FLOAT cutoff value used in the filtering.'
+    log.info '  --cutoff FLOAT Cutoff value used in the filtering.'
+    log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1
     log.info ''
     exit 1
 }
@@ -53,13 +55,13 @@ process excludeNonVariants {
 	memory '500 MB'
         executor 'local'
         queue "${params.queue}"
-        cpus 1
+        cpus "${params.threads}"
 
 	output:
 	file "out.sites.${params.vt}.vcf.gz" into out_sites_vts
 
 	"""
-	bcftools view -v ${params.vt} -G -c1 ${params.vcf} -o out.sites.${params.vt}.vcf.gz -Oz
+	bcftools view -v ${params.vt} -G -c1 ${params.vcf} -o out.sites.${params.vt}.vcf.gz --threads ${params.threads} -Oz
 	tabix out.sites.${params.vt}.vcf.gz
 	"""
 }
@@ -279,7 +281,7 @@ process splitVCF {
 	memory '500 MB'
         executor 'local'
         queue "${params.queue}"
-        cpus 1
+        cpus "${params.threads}"
 
 	input:
 	val chr
@@ -289,7 +291,7 @@ process splitVCF {
 	file "unfilt.${chr}.${params.vt}.vcf.gz" into unfilt_vcf_chr
 	
 	"""
-	bcftools view -r ${chr} -v ${params.vt} ${params.vcf} -o unfilt.${chr}.${params.vt}.vcf.gz -Oz
+	bcftools view -r ${chr} -v ${params.vt} ${params.vcf} -o unfilt.${chr}.${params.vt}.vcf.gz --threads ${params.threads} -Oz
 	"""
 }
 
@@ -323,7 +325,7 @@ process reannotate_vcf {
 	memory '500 MB'
         executor 'local'
         queue "${params.queue}"
-        cpus 1
+        cpus "${params.threads}"
 
 
 	publishDir "results_${chr_1}", saveAs:{ filename -> "$filename" }
@@ -338,6 +340,6 @@ process reannotate_vcf {
 	file 'filt.vcf.gz' into filt_vcf
 
 	"""
-	bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,FILTER,POS,prob_TP -o filt.vcf.gz -Oz
+	bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,FILTER,POS,prob_TP -o filt.vcf.gz --threads ${threads} -Oz
 	"""
 }
