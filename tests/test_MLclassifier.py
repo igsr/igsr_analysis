@@ -25,7 +25,7 @@ def test_train_snps():
    
     assert os.path.isfile(outfile) is True
 
-def test_train_indels(clean_tmp):
+def test_train_indels():
     '''
     Train the model for INDELs
     '''
@@ -34,5 +34,16 @@ def test_train_indels(clean_tmp):
     outfile=ML_obj.train(outprefix="data/outdir/fitted_logreg_indels",
                          tp_annotations=pytest.config.getoption('--tp_annotations_indels'),
                          fp_annotations=pytest.config.getoption('--fp_annotations_indels'))
+
+    assert os.path.isfile(outfile) is True
+
+def test_apply_model(clean_tmp):
+
+    ML_obj=MLclassifier(bcftools_folder = pytest.config.getoption('bcftools_folder'),
+                        fitted_model = 'data/outdir/fitted_logreg_snps.sav')
+
+    outfile=ML_obj.predict(outprefix="data/outdir/predictions", 
+                           annotation_f=pytest.config.getoption('--tp_annotations_snps'), 
+                           cutoff=0.95)
 
     assert os.path.isfile(outfile) is True
