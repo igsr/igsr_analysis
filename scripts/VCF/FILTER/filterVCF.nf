@@ -221,7 +221,7 @@ process compress_predictions {
 
 	"""
 	bgzip -c ${predictions} > 'predictions.tsv.gz'
-	tabix -f -s1 -b3 -e3 'predictions.tsv.gz'
+	tabix -f -s1 -b2 -e2 'predictions.tsv.gz'
 	"""
 }
 
