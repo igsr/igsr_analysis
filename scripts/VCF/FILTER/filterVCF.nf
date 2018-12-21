@@ -9,6 +9,7 @@
 
 // params defaults
 params.help = false
+params.queue = 'production-rh7'
 
 
 //print usage
