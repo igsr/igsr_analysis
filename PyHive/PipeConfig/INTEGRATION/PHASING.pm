@@ -213,7 +213,6 @@ sub pipeline_analyses {
 	    -flow_into => {
                 1 => { 'rename_chros' => INPUT_PLUS() }
 	    },
-            -analysis_capacity => 1,
             -rc_name => '1Gb'
 	},
 
