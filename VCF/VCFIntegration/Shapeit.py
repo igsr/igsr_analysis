@@ -96,8 +96,6 @@ class Shapeit(object):
 
         runner=RunProgram(path=self.shapeit_folder, program='shapeit', args=args, parameters=params)
 
-        pdb.set_trace()
-
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
