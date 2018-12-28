@@ -424,7 +424,7 @@ sub pipeline_analyses {
                 'verbose' => 'True'
             },
             -analysis_capacity => 1,
-            -rc_name => '5Gb',
+            -rc_name => '8Gb',
 	    -flow_into => {
 		1 => {'split_filename1' => {'filename' => '#out_vcf#' }}
 	    }
