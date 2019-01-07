@@ -164,7 +164,7 @@ process train_model {
 
 	from VCF.VCFfilter.MLclassifier import MLclassifier
 
-	ML_obj=MLclassifier(bcftools_folder = '${params.bcftools_folder}')
+	ML_obj=MLclassifier()
 
 	outfile=ML_obj.train(outprefix="fitted_logreg_snps",
 			tp_annotations='${tp_annotations}',
@@ -195,8 +195,7 @@ process apply_model {
 
 	from VCF.VCFfilter.MLclassifier import MLclassifier
 
-	ML_obj=MLclassifier(bcftools_folder = '${params.bcftools_folder}',
-		fitted_model = '${trained_model}')
+	ML_obj=MLclassifier(fitted_model = '${trained_model}')
 
 	ML_obj.predict(outprefix="predictions", annotation_f='${unfilt_annotations}', cutoff=${params.cutoff})
 	"""
