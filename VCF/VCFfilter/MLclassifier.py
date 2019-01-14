@@ -8,6 +8,7 @@ import numpy as np
 import os
 import pdb
 import pickle
+import gc
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -35,6 +36,40 @@ class MLclassifier(object):
         self.fitted_model = fitted_model
         self.bcftools_folder = bcftools_folder
 
+    def __chunk_preprocessing(self, chunk, is_valid=None):
+        '''
+        Private method to preprocess each Data frame chunk
+
+        Parameters
+        ----------
+        chunk : dataframe
+        is_valid : int, optional
+                    Value to add in the 'is_valid' column
+
+        Returns
+        -------
+        A preprocessed dataframe for a particular chunk
+        
+        '''
+        pdb.set_trace()
+
+        # remove NA values
+        chunk.dropna(inplace=True)
+
+        # normalization of the different features
+        feature_names=chunk_.columns
+        std_scale = preprocessing.StandardScaler().fit(chunk[feature_names])
+        std_array = std_scale.transform(chunk[feature_names])
+
+        # 'preprocessing' returns a NumPy array, so we need to transform to a Pandas data frame:
+        aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
+        
+        # Now, let's add the column with the status of the variant( is_valid=0 or is_valid=1) to the normalized data frame
+        aDF_std.insert(loc=0, column='is_valid', value=is_valid)
+
+        return aDF_std
+
+    @profile
     def train(self, tp_annotations, fp_annotations, outprefix, test_size=0.25):
         '''
         Function to train the binary classifier using a gold standart call set
@@ -58,38 +93,60 @@ class MLclassifier(object):
         '''
 
         # create 2 dataframes from tsv files
-        DF_TP=pd.read_csv(tp_annotations, sep="\t", na_values=['.'])
-        DF_FP=pd.read_csv(fp_annotations, sep="\t", na_values=['.'])
+        DF_TP_chks=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], usecols=['[3]DP', '[4]RPB', '[5]MQB', '[6]BQB',
+                                                                              '[7]MQSB', '[8]SGB', '[9]MQ0F', '[10]ICB', '[11]HOB', '[12]MQ'], chunksize=1000000)
+        DF_FP_chks=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], usecols=['[3]DP', '[4]RPB', '[5]MQB', '[6]BQB',
+                                                                              '[7]MQSB', '[8]SGB', '[9]MQ0F', '[10]ICB', '[11]HOB', '[12]MQ'], chunksize=1000000)
+        DF_TP_list=[]
+        DF_FP_list=[]
 
-        DF_TP=DF_TP.assign(is_valid=1)
-        DF_FP=DF_FP.assign(is_valid=0)
+        for chunk in DF_TP_chks:
+            DF_TP_list.append(self.__chunk_preprocessing(chunk, is_valid=1))
+
+        for chunk in DF_FP_chks:
+            DF_FP_list.append(self.__chunk_preprocessing(chunk, is_valid=0))
+
+        del DF_TP_chks,DF_FP_chks,chunk
+
+        gc.collect()
+
+        DF_TP=pd.concat(DF_TP_list)
+        DF_FP=pd.concat(DF_FP_list)
+
+        del DF_TP_list,DF_FP_list
+
+        gc.collect()
 
         frames = [DF_TP,DF_FP]
-        DF = pd.concat(frames)
+        
+        del DF_TP,DF_FP
 
-        # remove NA values
-        DF_noNA=DF.dropna()
+        gc.collect()
+        
+        DF = pd.concat(frames,copy=False)
 
-        # normalization of the different features
-        feature_names=DF_noNA.columns.drop(['# [1]CHROM','[2]POS','is_valid'])
-        std_scale = preprocessing.StandardScaler().fit(DF_noNA[feature_names])
-        std_array = std_scale.transform(DF_noNA[feature_names])
+        del frames
 
-        # 'preprocessing' returns a NumPy array, so we need to transform to a Pandas data frame:
-        aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
-
-        # Now, let's add the column with the status of the variant( is_valid=0 or is_valid=1) to the normalized data frame
-        aDF_std.insert(loc=0, column='is_valid', value=DF_noNA['is_valid'].values)
-
+        gc.collect()
+        
         # Let's the separate the predictors from the binary output
-        predictors=aDF_std[feature_names]
+        feature_names=DF.columns.drop('is_valid')
+        predictors=DF[feature_names]
 
         # Now, let's create a dataframe with the outcome
-        outcome=aDF_std[['is_valid']]
+        outcome=DF[['is_valid']]
+
+        del DF
+
+        gc.collect()
 
         # Now, let's split the initial dataset into a training set that will be used to train the model and a test set,
         # which will be used to assess the performance of the fitted model
         x_train, x_test, y_train, y_test = train_test_split(predictors, outcome, test_size=test_size)
+
+        del predictors,outcome
+        
+        gc.collect()
 
         logisticRegr = LogisticRegression(verbose=1)
         logisticRegr.fit(x_train, y_train.values.ravel())
