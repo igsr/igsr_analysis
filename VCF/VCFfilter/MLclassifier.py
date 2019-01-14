@@ -51,13 +51,12 @@ class MLclassifier(object):
         A preprocessed dataframe for a particular chunk
         
         '''
-        pdb.set_trace()
 
         # remove NA values
         chunk.dropna(inplace=True)
 
         # normalization of the different features
-        feature_names=chunk_.columns
+        feature_names=chunk.columns
         std_scale = preprocessing.StandardScaler().fit(chunk[feature_names])
         std_array = std_scale.transform(chunk[feature_names])
 
@@ -69,7 +68,6 @@ class MLclassifier(object):
 
         return aDF_std
 
-    @profile
     def train(self, tp_annotations, fp_annotations, outprefix, test_size=0.25):
         '''
         Function to train the binary classifier using a gold standart call set
@@ -142,6 +140,10 @@ class MLclassifier(object):
 
         # Now, let's split the initial dataset into a training set that will be used to train the model and a test set,
         # which will be used to assess the performance of the fitted model
+
+        # convert data types if any column is either 'int64' or 'float64'
+        predictors[predictors.columns[predictors.dtypes == 'int64']]=predictors[predictors.columns[predictors.dtypes == 'int64']].astype('int16')
+        predictors[predictors.columns[predictors.dtypes == 'float64']]=predictors[predictors.columns[predictors.dtypes == 'float64']].astype('float16')
         x_train, x_test, y_train, y_test = train_test_split(predictors, outcome, test_size=test_size)
 
         del predictors,outcome

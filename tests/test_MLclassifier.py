@@ -25,6 +25,16 @@ def test_train_snps():
    
     assert os.path.isfile(outfile) is True
 
+def test_train_snps_gz():
+    '''
+    Train the model for SNPs using 2 gzipped annotation files
+    '''
+
+    ML_obj=MLclassifier(bcftools_folder = pytest.config.getoption('bcftools_folder'))
+    outfile=ML_obj.train(outprefix="data/outdir/fitted_logreg_snps",
+                         tp_annotations=pytest.config.getoption('--tp_annotations_snps_gz'),
+                         fp_annotations=pytest.config.getoption('--fp_annotations_snps_gz'))
+
 def test_train_indels():
     '''
     Train the model for INDELs
@@ -47,3 +57,4 @@ def test_apply_model(clean_tmp):
                            cutoff=0.95)
 
     assert os.path.isfile(outfile) is True
+
