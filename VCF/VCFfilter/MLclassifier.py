@@ -89,12 +89,16 @@ class MLclassifier(object):
         filename
                  Path to serialized fitted model
         '''
+        # check if tp_annotations and fp_annotations have the same columns and get columns names
+        DF_TP_columns=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], nrows=1).columns
+        DF_FP_columns=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], nrows=1).columns
 
-        # create 2 dataframes from tsv files
-        DF_TP_chks=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], usecols=['[3]DP', '[4]RPB', '[5]MQB', '[6]BQB',
-                                                                              '[7]MQSB', '[8]SGB', '[9]MQ0F', '[10]ICB', '[11]HOB', '[12]MQ'], chunksize=1000000)
-        DF_FP_chks=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], usecols=['[3]DP', '[4]RPB', '[5]MQB', '[6]BQB',
-                                                                              '[7]MQSB', '[8]SGB', '[9]MQ0F', '[10]ICB', '[11]HOB', '[12]MQ'], chunksize=1000000)
+        if DF_TP_columns.equals((DF_FP_columns)) is False: raise("Indices in the passed dataframes are not equal")
+
+        # create 2 dataframes from tsv files skipping the 2 first columns, as it is assumed that the 1st is 'chr' and 2nd is 'pos'
+        DF_TP_chks=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_TP_columns))],chunksize=1000000)
+        DF_FP_chks=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_FP_columns))],chunksize=1000000)
+
         DF_TP_list=[]
         DF_FP_list=[]
 
@@ -104,6 +108,7 @@ class MLclassifier(object):
         for chunk in DF_FP_chks:
             DF_FP_list.append(self.__chunk_preprocessing(chunk, is_valid=0))
 
+        pdb.set_trace()
         del DF_TP_chks,DF_FP_chks,chunk
 
         gc.collect()
@@ -121,7 +126,7 @@ class MLclassifier(object):
 
         gc.collect()
         
-        DF = pd.concat(frames,copy=False)
+        DF = pd.concat(frames)
 
         del frames
 
@@ -141,9 +146,6 @@ class MLclassifier(object):
         # Now, let's split the initial dataset into a training set that will be used to train the model and a test set,
         # which will be used to assess the performance of the fitted model
 
-        # convert data types if any column is either 'int64' or 'float64'
-        predictors[predictors.columns[predictors.dtypes == 'int64']]=predictors[predictors.columns[predictors.dtypes == 'int64']].astype('int16')
-        predictors[predictors.columns[predictors.dtypes == 'float64']]=predictors[predictors.columns[predictors.dtypes == 'float64']].astype('float16')
         x_train, x_test, y_train, y_test = train_test_split(predictors, outcome, test_size=test_size)
 
         del predictors,outcome
