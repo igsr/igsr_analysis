@@ -44,7 +44,7 @@ chrChannel=Channel.from( chrList )
 
 process get_variant_annotations {
 	/*
-	Process to get the variant annotations from the unfiltered VCF file
+	Process to get the variant annotations for the selected ${params.vt} from the unfiltered VCF file
 	*/
 
 	memory '2 GB'
@@ -56,11 +56,13 @@ process get_variant_annotations {
 	val chr from chrChannel
 
 	output:
-	file 'unfilt_annotations.snps.tsv.gz' into unfilt_annotations
+	file 'unfilt_annotations.vt.tsv.gz' into unfilt_annotations
 	val chr into chr
 
 	"""
-	bcftools query -H -r ${chr} -f '${params.annotations}' ${params.vcf} | bgzip -c > unfilt_annotations.snps.tsv.gz
+	bcftools view -v ${params.vt} ${params.vcf} -o out.vt.vcf.gz -Oz
+	tabix out.vt.vcf.gz
+	bcftools query -H -r ${chr} -f '${params.annotations}' out.vt.vcf.gz | bgzip -c > unfilt_annotations.vt.tsv.gz
 	"""
 }
 
@@ -178,10 +180,10 @@ process splitVCF {
 
 	output:
 	val chr into chr_1
-	file "unfilt.${chr}.${params.vt}.vcf.gz" into unfilt_vcf_chr
+	file "unfilt.${chr}.vcf.gz" into unfilt_vcf_chr
 	
 	"""
-	bcftools view -r ${chr} -v ${params.vt} ${params.vcf} -o unfilt.${chr}.${params.vt}.vcf.gz --threads ${params.threads} -Oz
+	bcftools view -r ${chr} ${params.vcf} -o unfilt.${chr}.vcf.gz --threads ${params.threads} -Oz
 	"""
 }
 
