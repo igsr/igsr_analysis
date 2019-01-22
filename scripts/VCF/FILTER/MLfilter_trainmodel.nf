@@ -142,7 +142,7 @@ process train_model {
         queue "${params.queue}"
         cpus 1
 
-	publishDir "trained_model", saveAs:{ filename -> "$filename" }	
+	publishDir "trained_model", mode: 'copy', overwrite: true
 
 	input:
 	file tp_annotations
