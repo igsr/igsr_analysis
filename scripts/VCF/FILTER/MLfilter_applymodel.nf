@@ -60,9 +60,9 @@ process get_variant_annotations {
 	val chr into chr
 
 	"""
-	bcftools view -v ${params.vt} ${params.vcf} -o out.vt.vcf.gz -Oz
-	tabix out.vt.vcf.gz
-	bcftools query -H -r ${chr} -f '${params.annotations}' out.vt.vcf.gz | bgzip -c > unfilt_annotations.vt.tsv.gz
+	bcftools view -c1 -r ${chr} -v ${params.vt} ${params.vcf} -o out.onlyvariants.vt.vcf.gz -Oz --threads ${params.threads}
+	tabix out.onlyvariants.vt.vcf.gz
+	bcftools query -H -r ${chr} -f '${params.annotations}' out.onlyvariants.vt.vcf.gz | bgzip -c > unfilt_annotations.vt.tsv.gz
 	"""
 }
 
@@ -167,7 +167,7 @@ process modify_header {
 
 process splitVCF {
 	/*
-	This process will filter the unfiltered VCF into a single chromosome
+	This process will select a single chromosome from the VCF
 	*/
 
 	memory '500 MB'
@@ -219,8 +219,7 @@ process reannotate_vcf {
         queue "${params.queue}"
         cpus "${params.threads}"
 
-
-	publishDir "results_${chr_1}", saveAs:{ filename -> "$filename" }
+	publishDir "results_${chr_1}", mode: 'copy', overwrite: true
 
 	input:
 	file unfilt_vcf_chr_reheaded
