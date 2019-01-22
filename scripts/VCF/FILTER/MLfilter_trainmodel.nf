@@ -137,7 +137,7 @@ process train_model {
 	Regression binary classifier
 	*/
 
-	memory '2 GB'
+	memory '5 GB'
         executor 'local'
         queue "${params.queue}"
         cpus 1

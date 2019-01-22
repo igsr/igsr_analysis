@@ -96,69 +96,43 @@ class MLclassifier(object):
         if DF_TP_columns.equals((DF_FP_columns)) is False: raise("Indices in the passed dataframes are not equal")
 
         # create 2 dataframes from tsv files skipping the 2 first columns, as it is assumed that the 1st is 'chr' and 2nd is 'pos'
-        DF_TP_chks=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_TP_columns))],chunksize=1000000)
-        DF_FP_chks=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_FP_columns))],chunksize=1000000)
+        DF_TP=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_TP_columns))])
+        DF_FP=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_FP_columns))])
 
-        DF_TP_list=[]
-        DF_FP_list=[]
+        #assign outcome=1 if TP and 0 if FP
+        DF_TP=DF_TP.assign(is_valid=1)
+        DF_FP=DF_FP.assign(is_valid=0)
 
-        for chunk in DF_TP_chks:
-            DF_TP_list.append(self.__chunk_preprocessing(chunk, is_valid=1))
-
-        for chunk in DF_FP_chks:
-            DF_FP_list.append(self.__chunk_preprocessing(chunk, is_valid=0))
-
-        pdb.set_trace()
-        del DF_TP_chks,DF_FP_chks,chunk
-
-        gc.collect()
-
-        DF_TP=pd.concat(DF_TP_list)
-        DF_FP=pd.concat(DF_FP_list)
-
-        del DF_TP_list,DF_FP_list
-
-        gc.collect()
-
+        #now, we combine the 2 dataframes
         frames = [DF_TP,DF_FP]
-        
-        del DF_TP,DF_FP
-
-        gc.collect()
-        
         DF = pd.concat(frames)
 
-        del frames
+        #we have several columns with NA values, we will impute the missing values with the median
+        imputer = Imputer(strategy="median")
+        imputer.fit(DF)
+        X = imputer.transform(DF)
 
-        gc.collect()
+        #transforming back to a DF
+        DF_tr = pd.DataFrame(X, columns=DF.columns)
         
-        # Let's the separate the predictors from the binary output
-        feature_names=DF.columns.drop('is_valid')
-        predictors=DF[feature_names]
+        #Normalization of the different features
+        feature_names=DF_tr.columns.drop(['is_valid'])
+        std_scale = preprocessing.StandardScaler().fit(DF_tr[feature_names])
+        std_array = std_scale.transform(DF_tr[feature_names])
 
-        # Now, let's create a dataframe with the outcome
-        outcome=DF[['is_valid']]
+        aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
+        aDF_std.insert(loc=0, column='is_valid', value=DF_tr['is_valid'].values)
 
-        del DF
+        #now, we fit a ML model
+        predictors=aDF_std[feature_names]
+        outcome=aDF_std[['is_valid']]
 
-        gc.collect()
-
-        # Now, let's split the initial dataset into a training set that will be used to train the model and a test set,
-        # which will be used to assess the performance of the fitted model
-
-        x_train, x_test, y_train, y_test = train_test_split(predictors, outcome, test_size=test_size)
-
-        del predictors,outcome
-        
-        gc.collect()
-
+        x_train, x_test, y_train, y_test = train_test_split(predictors, outcome, test_size=0.25)
         logisticRegr = LogisticRegression(verbose=1)
-        logisticRegr.fit(x_train, y_train.values.ravel())
+        logisticRegr.fit(x_train, y_train)
 
-        # Now, we can check the accuracy of our fitted model by using the `x_test` and comparing with the true outcome in `y_test`
-        predictions = logisticRegr.predict(x_test)
+        #and now we assess the fitted model performance
         score = logisticRegr.score(x_test, y_test)
-
         print("Score for the logistic regression fitted model is: {0}".format(score))
         self.score=score
 
@@ -196,7 +170,6 @@ class MLclassifier(object):
         filename
                  Path to table file with predictions
         '''
-
         imputer = Imputer(strategy="median")
 
         # load the serialized model
@@ -204,39 +177,39 @@ class MLclassifier(object):
 
         outfile='{0}.tsv'.format(outprefix)
 
-        chunksize = 10 ** 6
-        first_chunk=True
-        for chunk in pd.read_csv(annotation_f, chunksize=chunksize, sep='\t', index_col=False, na_values='.'):
-            # remove non-numerical features
-            chunk_num = chunk.drop("# [1]CHROM", axis=1)
-            # impute missing values with median
-            imputer.fit(chunk_num)
-            X = imputer.transform(chunk_num)
-            # create back the dataframe
-            chunk_tr = pd.DataFrame(X, columns=chunk.columns.drop(['# [1]CHROM']))
-            feature_names=chunk_tr.columns.drop(['[2]POS'])
-            # normalization
-            std_scale = preprocessing.StandardScaler().fit(chunk_tr[feature_names])
-            std_array = std_scale.transform(chunk_tr[feature_names])
-            predictions_probs = loaded_model.predict_proba(std_array)
-            
-            #decide if it is a TP or a FP
-            filter_outcome=[]
-            for i in predictions_probs[:,1]:
-                if i >= cutoff: 
-                    filter_outcome.append('PASS')
-                else:
-                    filter_outcome.append(filter_label)
-            final_df = pd.DataFrame({
-                '#CHR': chunk['# [1]CHROM'],
-                'POS': chunk['[2]POS'].astype(int),
-                'FILTER': filter_outcome,
-                'prob_TP': [ round(elem, 2) for elem in predictions_probs[:,1]]})
-            # change order of columns
-            final_df=final_df[['#CHR','POS','FILTER','prob_TP']]
-            if first_chunk is True:
-                final_df.to_csv(outfile, sep='\t', mode='a', header=True, index= False)
-                first_chunk=False
+        DF_all=pd.read_csv(annotation_f,sep="\t",na_values=['.'],index_col=False)
+        DF_all_num = DF_all.drop("# [1]CHROM", axis=1)
+
+        # we will impute the missing values by the median
+        imputer.fit(DF_all_num)
+        X = imputer.transform(DF_all_num)
+        DF_all_imp = pd.DataFrame(X, columns=DF_all.columns.drop(['# [1]CHROM']))
+
+        # normalization
+        feature_names=DF_all_imp.columns.drop(['[2]POS'])
+
+        std_scale = preprocessing.StandardScaler().fit(DF_all_imp[feature_names])
+        std_array = std_scale.transform(DF_all_imp[feature_names])
+
+        # Now, we can calculate the probabilities for each of the categories of the dependent variable:
+        predictions_probs = loaded_model.predict_proba(std_array)
+
+        #decide if it is a TP or a FP
+        filter_outcome=[]
+        for i in predictions_probs[:,1]:
+            if i >= cutoff: 
+                filter_outcome.append('PASS')
             else:
-                final_df.to_csv(outfile, sep='\t', mode='a', header=False, index= False)
+                filter_outcome.append(filter_label)
+
+        final_df = pd.DataFrame({
+            '#CHR': DF_all['# [1]CHROM'],
+            'POS': DF_all['[2]POS'].astype(int),
+            'FILTER': filter_outcome,
+            'prob_TP': [ round(elem, 2) for elem in predictions_probs[:,1]]})
+        # change order of columns
+        final_df=final_df[['#CHR','POS','FILTER','prob_TP']]
+
+        final_df.to_csv(outfile, sep='\t', header=True, index= False)
+
         return outfile
