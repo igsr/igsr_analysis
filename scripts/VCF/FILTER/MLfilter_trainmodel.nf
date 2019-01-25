@@ -149,7 +149,7 @@ process train_model {
 	file fp_annotations
 
 	output:
-	file 'fitted_logreg_snps.sav' into trained_model
+	file 'fitted_logreg_vts.sav' into trained_model
 
 	"""
 	#!/usr/bin/env python
@@ -158,7 +158,7 @@ process train_model {
 
 	ML_obj=MLclassifier()
 
-	outfile=ML_obj.train(outprefix="fitted_logreg_snps",
+	outfile=ML_obj.train(outprefix="fitted_logreg_vts",
 			tp_annotations='${tp_annotations}',
 			fp_annotations='${fp_annotations}')
 	"""
