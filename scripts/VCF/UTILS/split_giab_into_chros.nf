@@ -50,7 +50,7 @@ process splitVCF {
 		1) A VCF format file for each splitted chromosome
 		2) A tabix index for that VCF
 	*/
-	publishDir 'final_dir'
+	publishDir 'final_dir', mode: 'copy', overwrite: true
 
 	memory '1 GB'
         executor 'lsf'

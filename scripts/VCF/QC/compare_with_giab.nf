@@ -25,8 +25,12 @@ if (params.help) {
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
     log.info '	--vcf VCF    Path to the VCF file that will be assessed.'
+    log.info '  --giab VCF   Path to the GIAB VCF that will be used as the TRUE call set.'
     log.info '  --vt  VARIANT_TYPE   Type of variant to benchmark. Possible values are 'snps'/'indels'.'
     log.info '  --chros CHROSTR	  Chromosomes that will be analyzed: chr20 or chr1,chr2.'
+    log.info '  --calc_gtps BOOL  If true, then calculte the genotype concordance between params.vcf'
+    log.info '                    and params.giab. If true, the compared VCFs should contain genotype'
+    log.info '                    information.' 
     log.info ''
     exit 1
 }
