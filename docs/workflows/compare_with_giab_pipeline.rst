@@ -60,7 +60,6 @@ How to run the pipeline
 	params.tabix='/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/tabix' // path to tabix binary
 	params.bgzip='/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/bgzip' // path to bgzip
 	params.non_valid_regions='/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed' // path to BED format file containing the regions that will be excluded from the comparison
-	params.vcflib_folder='~/bin/vcflib/bin/' // path to the folder containing vcflib
 	params.igsr_root='/homes/ernesto/lib/igsr_analysis_master_new/igsr_analysis/' // path to IGSR code base
 	params.high_conf_regions='/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GIAB/chr20DIR/HIGH_CONF_REGIONS/HG001_GRCh38_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X-SOLID_CHROM1-X_v.3.3.2_highconf_nosomaticdel_noCENorHET7.chr20.bed' // path to high-confidence regions as defined by GIAB for chromosome/s defined by the ``--chros`` option
 
@@ -75,6 +74,7 @@ How to run the pipeline
   * ``--chros`` is the chromosome or comma-separated list of chromosomes that will be analyzed. i.e.: chr20 or chr1,chr2,chr3 and so on...
   * ``--vt`` is the parameter used to set the type of variants that will be analyzed
   * ``--giab`` is the path to the GIAB VCF for the chromosome/s specified with option ``--chros``
+  * ``--calc_gtps`` if true, then the genotype concordance between ``--giab`` and ``--vcf`` will be calculated
 
 Pipeline output
 ---------------
