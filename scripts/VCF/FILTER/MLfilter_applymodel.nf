@@ -9,6 +9,7 @@
 
 // params defaults
 params.help = false
+params.split_multiallelics = false
 params.threads = 1
 params.queue = 'production-rh7'
 
@@ -27,8 +28,9 @@ if (params.help) {
     log.info '  --model FILE Path to serialized ML fitted model.'
     log.info '  --cutoff FLOAT Cutoff value used in the filtering.'
     log.info '  --annotations ANNOTATION_STRING String containing the annotations to filter, for example:'
+    log.info '    %CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.'
     log.info '  --vt  VARIANT_TYPE   Type of variant to filter. Poss1ible values are 'snps'/'indels'.'
-    log.info '  %CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.'
+    log.info '  --split_multiallelics  true/false  If true then split the multiallelic positions. Default=false.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info ''
     exit 1
@@ -42,6 +44,32 @@ chrChannel=Channel.from( chrList )
 
 //Apply a fitted model obtained after running MLfilter_trainmodel.nf
 
+if (params.split_multiallelics==true) {
+   process split_multiallelic {
+   	   /*
+   	   This process is used to split the multiallelic sites into different lines per allele. It uses bcftools norm 
+   	   for this
+   	    */
+
+	    memory '2 GB'
+	    executor 'local'
+	    queue "${params.queue}"
+	    cpus 1
+
+	    input:
+	    val chr from chrChannel
+
+	    output:
+	    file 'out.splitted.vcf.gz' into splitted_vcf
+	    val chr into chr1
+
+	    """
+	    bcftools norm -r ${chr} -m -${params.vt} ${params.vcf} -o out.splitted.vcf.gz -Oz --threads ${params.threads}
+	    """
+    }
+}
+
+
 process get_variant_annotations {
 	/*
 	Process to get the variant annotations for the selected ${params.vt} from the unfiltered VCF file
@@ -53,11 +81,11 @@ process get_variant_annotations {
         cpus 1
 
 	input:
-	val chr from chrChannel
+	val chr from chr1
 
 	output:
 	file 'unfilt_annotations.vt.tsv.gz' into unfilt_annotations
-	val chr into chr
+	val chr into chr2
 
 	"""
 	bcftools view -c1 -r ${chr} -v ${params.vt} ${params.vcf} -o out.onlyvariants.vt.vcf.gz -Oz --threads ${params.threads}
@@ -155,7 +183,7 @@ process modify_header {
 	#!/usr/bin/env python
 
 	from VCF.VcfUtils import VcfUtils
-
+	
 	vcf_object=VcfUtils(vcf='${params.vcf}')
 
 	vcf_object.add_to_header(header_f='${header}', outfilename='newheader1.txt',
@@ -176,10 +204,10 @@ process splitVCF {
         cpus "${params.threads}"
 
 	input:
-	val chr
+	val chr from chr2
 
 	output:
-	val chr into chr_1
+	val chr into chr3
 	file "unfilt.${chr}.vcf.gz" into unfilt_vcf_chr
 	
 	"""
@@ -219,13 +247,13 @@ process reannotate_vcf {
         queue "${params.queue}"
         cpus "${params.threads}"
 
-	publishDir "results_${chr_1}", mode: 'copy', overwrite: true
+	publishDir "results_${chr2}", mode: 'copy', overwrite: true
 
 	input:
 	file unfilt_vcf_chr_reheaded
 	file predictions_table
 	file predictions_table_tabix
-	val chr_1
+	val chr from chr3
 
 	output:
 	file 'filt.vcf.gz' into filt_vcf
