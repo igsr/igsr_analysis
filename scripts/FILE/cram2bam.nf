@@ -30,7 +30,7 @@ if (params.help) {
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
-    log.info '	--file FILE  File with the urls to the .cram files to be converted.'
+    log.info '	--file FILE  File with the urls pointing to the .cram files to be converted.'
     log.info '    This file needs to have the following format:'
     log.info '    url,dest,prefix'
     log.info '    era-fasp@fasp.sra.ebi.ac.uk:/vol1/ERZ454/ERZ454001/ERR1457180.cram,/nfs/production/reseq-info/work/ernesto/isgr/SCRATCH/31_01_2019/ERR1457180.cram,ERR1457180'
