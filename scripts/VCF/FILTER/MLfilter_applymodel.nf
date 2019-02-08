@@ -20,7 +20,7 @@ if (params.help) {
     log.info '-----------------------------------------------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow MLfilter_applymodel.nf --vcf VCF --model --cutoff 0.95 --threads 5 --vt snps'
+    log.info '    nextflow MLfilter_applymodel.nf --vcf VCF --model --cutoff 0.95 --threads 5 --vt snps --split_multiallelics true'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
