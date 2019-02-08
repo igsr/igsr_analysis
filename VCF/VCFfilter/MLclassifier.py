@@ -36,38 +36,44 @@ class MLclassifier(object):
         self.fitted_model = fitted_model
         self.bcftools_folder = bcftools_folder
 
-    def __chunk_preprocessing(self, chunk, is_valid=None):
+    def __process_df(self, tp_annotations, fp_annotations):
         '''
-        Private method to preprocess each Data frame chunk
+        Private function that performs three types of operations on the tp_annotations
+        and fp_annotations:
+
+        1) Read-in the data
+        2) 
 
         Parameters
         ----------
-        chunk : dataframe
-        is_valid : int, optional
-                    Value to add in the 'is_valid' column
-
-        Returns
-        -------
-        A preprocessed dataframe for a particular chunk
-        
+        tp_annotations : filename
+                         Path to file with the variant annotations derived from the call set with the True positives
+        fp_annotations : filename
+                         Path to file with the variant annotations derived from the call set with the False positives
         '''
-
-        # remove NA values
-        chunk.dropna(inplace=True)
-
-        # normalization of the different features
-        feature_names=chunk.columns
-        std_scale = preprocessing.StandardScaler().fit(chunk[feature_names])
-        std_array = std_scale.transform(chunk[feature_names])
-
-        # 'preprocessing' returns a NumPy array, so we need to transform to a Pandas data frame:
-        aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
         
-        # Now, let's add the column with the status of the variant( is_valid=0 or is_valid=1) to the normalized data frame
-        aDF_std.insert(loc=0, column='is_valid', value=is_valid)
+        #
+        ## Read-in the data
+        #
 
-        return aDF_std
+        # check if tp_annotations and fp_annotations have the same columns and get columns names
+        DF_TP_columns=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], nrows=1).columns
+        DF_FP_columns=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], nrows=1).columns
 
+        if DF_TP_columns.equals((DF_FP_columns)) is False: raise("Indices in the passed dataframes are not equal")
+
+        # create 2 dataframes from tsv files skipping the 2 first columns, as it is assumed that the 1st is 'chr' and 2nd is 'pos'
+        DF_TP=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_TP_columns))])
+        DF_FP=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_FP_columns))])
+
+        #assign outcome=1 if TP and 0 if FP
+        DF_TP=DF_TP.assign(is_valid=1)
+        DF_FP=DF_FP.assign(is_valid=0)
+
+        #now, we combine the 2 dataframes
+        frames = [DF_TP,DF_FP]
+        DF = pd.concat(frames)
+   
     def train(self, tp_annotations, fp_annotations, outprefix, test_size=0.25):
         '''
         Function to train the binary classifier using a gold standart call set
@@ -89,23 +95,12 @@ class MLclassifier(object):
         filename
                  Path to serialized fitted model
         '''
-        # check if tp_annotations and fp_annotations have the same columns and get columns names
-        DF_TP_columns=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], nrows=1).columns
-        DF_FP_columns=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], nrows=1).columns
 
-        if DF_TP_columns.equals((DF_FP_columns)) is False: raise("Indices in the passed dataframes are not equal")
+        self.__process_df(tp_annotations, fp_annotations)
 
-        # create 2 dataframes from tsv files skipping the 2 first columns, as it is assumed that the 1st is 'chr' and 2nd is 'pos'
-        DF_TP=pd.read_csv(tp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_TP_columns))])
-        DF_FP=pd.read_csv(fp_annotations, sep="\t", na_values=['.'], usecols=[i for i in range(2, len(DF_FP_columns))])
-
-        #assign outcome=1 if TP and 0 if FP
-        DF_TP=DF_TP.assign(is_valid=1)
-        DF_FP=DF_FP.assign(is_valid=0)
-
-        #now, we combine the 2 dataframes
-        frames = [DF_TP,DF_FP]
-        DF = pd.concat(frames)
+        #
+        ## Impute missing values
+        #
 
         #we have several columns with NA values, we will impute the missing values with the median
         imputer = Imputer(strategy="median")
@@ -115,7 +110,10 @@ class MLclassifier(object):
         #transforming back to a DF
         DF_tr = pd.DataFrame(X, columns=DF.columns)
         
-        #Normalization of the different features
+        #
+        ## Normalization of different features
+        #
+
         feature_names=DF_tr.columns.drop(['is_valid'])
         std_scale = preprocessing.StandardScaler().fit(DF_tr[feature_names])
         std_array = std_scale.transform(DF_tr[feature_names])
@@ -123,7 +121,10 @@ class MLclassifier(object):
         aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
         aDF_std.insert(loc=0, column='is_valid', value=DF_tr['is_valid'].values)
 
-        #now, we fit a ML model
+        #
+        ## Fitting the ML model
+        #
+
         predictors=aDF_std[feature_names]
         outcome=aDF_std[['is_valid']]
 
@@ -131,12 +132,18 @@ class MLclassifier(object):
         logisticRegr = LogisticRegression(verbose=1)
         logisticRegr.fit(x_train, y_train)
 
-        #and now we assess the fitted model performance
+        #
+        ## Assess the performance of the fitted model
+        #
+
         score = logisticRegr.score(x_test, y_test)
         print("Score for the logistic regression fitted model is: {0}".format(score))
         self.score=score
 
-        # Model persistence
+        #
+        ## Model persistence
+        #
+
         outfile = outprefix+".sav"
         pickle.dump(logisticRegr, open(outfile, 'wb'))
 
@@ -213,3 +220,60 @@ class MLclassifier(object):
         final_df.to_csv(outfile, sep='\t', header=True, index= False)
 
         return outfile
+
+    def rfe(self, tp_annotations, fp_annotations):
+        '''
+        Function to select the variant annotations that are more relevant for
+        predicting if a variant is real. This is achieved by running sklearn.feature_selection.RFE
+        method to perform Recursive Feature Elimination, which works by recursively considering 
+        smaller and smaller sets of features
+
+        Parameters
+        ----------
+        tp_annotations : filename
+                         Path to file with the variant annotations derived from the call set with the True positives
+        fp_annotations : filename
+                         Path to file with the variant annotations derived from the call set with the False positives
+        '''
+        
+        # let's get an array with the values
+
+        DF_TP=pd.read_csv('/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/FILTERING/05_2017/LC_DIR/BCFTOOLS/DEVEL/ONLY_NA12878/FREEBAYES/SNPS/RFE/TP_annotations.tsv.gz',sep="\t",na_values=['.'])
+        DF_FP=pd.read_csv('/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/FILTERING/05_2017/LC_DIR/BCFTOOLS/DEVEL/ONLY_NA12878/FREEBAYES/SNPS/RFE/FP_annotations.tsv.gz',sep="\t",na_values=['.'])
+
+        DF_TP=DF_TP.assign(is_valid=1)
+        DF_FP=DF_FP.assign(is_valid=0)
+
+        frames = [DF_TP,DF_FP]
+        DF = pd.concat(frames)
+
+        DF_num = DF.drop("# [1]CHROM", axis=1)
+
+        imputer = Imputer(strategy="median")
+        imputer.fit(DF_num)
+        X = imputer.transform(DF_num)
+
+        DF_tr = pd.DataFrame(X, columns=DF.columns.drop(['# [1]CHROM']))
+
+        feature_names=DF_tr.columns.drop(['[2]POS','is_valid'])
+
+        std_scale = preprocessing.StandardScaler().fit(DF_tr[feature_names])
+        std_array = std_scale.transform(DF_tr[feature_names])
+
+        aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
+        aDF_std.insert(loc=0, column='is_valid', value=DF_tr['is_valid'].values)
+
+        array = aDF_std.values
+
+        X = array[:,1:40]
+        Y = array[:,0]
+        pdb.set_trace()
+
+        model = LogisticRegression()
+        rfe = RFE(model, 25)
+        fit = rfe.fit(X, Y)
+        print("Number of features: {0}".format(fit.n_features_))
+        print("Selected Features: {0}".format(fit.support_))
+        print("Feature Ranking: {0}".format(fit.ranking_))
+        print("The selected features are:{0}".format(feature_names[fit.support_]))
+        print("All features are:{0}".format(feature_names))
