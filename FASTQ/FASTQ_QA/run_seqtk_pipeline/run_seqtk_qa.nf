@@ -28,16 +28,18 @@ if (params.help) {
     log.info '    nextflow run_seqtk_qa.nf --pwd $DB_PASS --output_dir ./out --dbname elowy_hgdp_03102018 --runs runs.txt'
     log.info ''
     log.info 'Options:'
-    log.info '	--help	Show this message and exit.'
-    log.info '	--pwd PWD	Password for connecting the ReseqTrack DB.'
-    log.info '	--dbname DBNAME	 ReseqTrack DB name.'
-    log.info '	--host HOSTNAME	 Hostname of the MySQL ReseqTrack DB.'
-    log.info '	--user USER		 Username of the MySQL ReseqTrack DB.'
-    log.info '	--port PORT		 Port number of the MySQL ReseqTrack DB.'
+    log.info '	--help	                    Show this message and exit.'
+    log.info '	--pwd PWD	            Password for connecting the ReseqTrack DB.'
+    log.info '	--dbname DBNAME	            ReseqTrack DB name.'
+    log.info '	--host HOSTNAME	            Hostname of the MySQL ReseqTrack DB.'
+    log.info '	--user USER		    Username of the MySQL ReseqTrack DB.'
+    log.info '	--port PORT		    Port number of the MySQL ReseqTrack DB.'
     log.info '	--min_length MIN_LENGTH     Minimum sequence length.'
-    log.info '	--program PROGRAM	      Path to seqtk binary.'
+    log.info '	--program PROGRAM	    Path to seqtk binary.'
+    log.info '	--reseqtrack RESEQTRACK     Path to the reseqtrack repository.'
+    log.info '	--queue QUEUE               Name of the queue to use on the LSF (eg, production-rh74, research-rh74).'
     log.info '	--output_dir OUTPUT_DIR     Directory that will contain the output files.'
-    log.info '	--runs RUN_FILE	      File containing runs to be analyzed'
+    log.info '	--runs RUN_FILE	            File containing runs to be analyzed'
     log.info '	       The format of RUN_FILE is:'
     log.info '	       name'
     log.info '	       ERR0001'
@@ -69,7 +71,7 @@ process runFastqSimpleQA {
 
 	memory '2 GB'
         executor 'lsf'
-        queue 'standard'
+        queue ${params.queue}
         cpus 1
 
 	input:
