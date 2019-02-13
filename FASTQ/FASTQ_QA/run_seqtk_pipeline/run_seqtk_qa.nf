@@ -71,7 +71,7 @@ process runFastqSimpleQA {
 
 	memory '2 GB'
         executor 'lsf'
-        queue ${params.queue}
+        queue params.queue
         cpus 1
 
 	input:
