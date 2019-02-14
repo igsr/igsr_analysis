@@ -13,6 +13,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import Imputer
+from sklearn.feature_selection import RFE
 
 class MLclassifier(object):
     '''
@@ -42,7 +43,8 @@ class MLclassifier(object):
         and fp_annotations:
 
         1) Read-in the data
-        2) 
+        2) Impute the missing values
+        3) Normalize the different features
 
         Parameters
         ----------
@@ -50,6 +52,10 @@ class MLclassifier(object):
                          Path to file with the variant annotations derived from the call set with the True positives
         fp_annotations : filename
                          Path to file with the variant annotations derived from the call set with the False positives
+
+        Return
+        ------
+        A normalized dataframe
         '''
         
         #
@@ -73,6 +79,31 @@ class MLclassifier(object):
         #now, we combine the 2 dataframes
         frames = [DF_TP,DF_FP]
         DF = pd.concat(frames)
+
+        #
+        ## Impute missing values
+        #
+
+        #we have several columns with NA values, we will impute the missing values with the median
+        imputer = Imputer(strategy="median")
+        imputer.fit(DF)
+        X = imputer.transform(DF)
+
+        #transforming back to a DF
+        DF_tr = pd.DataFrame(X, columns=DF.columns)
+
+        #
+        ## Normalization of different features
+        #
+
+        feature_names=DF_tr.columns.drop(['is_valid'])
+        std_scale = preprocessing.StandardScaler().fit(DF_tr[feature_names])
+        std_array = std_scale.transform(DF_tr[feature_names])
+
+        aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
+        aDF_std.insert(loc=0, column='is_valid', value=DF_tr['is_valid'].values)
+
+        return aDF_std
    
     def train(self, tp_annotations, fp_annotations, outprefix, test_size=0.25):
         '''
@@ -96,30 +127,9 @@ class MLclassifier(object):
                  Path to serialized fitted model
         '''
 
-        self.__process_df(tp_annotations, fp_annotations)
+        aDF_std=self.__process_df(tp_annotations, fp_annotations)
 
-        #
-        ## Impute missing values
-        #
-
-        #we have several columns with NA values, we will impute the missing values with the median
-        imputer = Imputer(strategy="median")
-        imputer.fit(DF)
-        X = imputer.transform(DF)
-
-        #transforming back to a DF
-        DF_tr = pd.DataFrame(X, columns=DF.columns)
-        
-        #
-        ## Normalization of different features
-        #
-
-        feature_names=DF_tr.columns.drop(['is_valid'])
-        std_scale = preprocessing.StandardScaler().fit(DF_tr[feature_names])
-        std_array = std_scale.transform(DF_tr[feature_names])
-
-        aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
-        aDF_std.insert(loc=0, column='is_valid', value=DF_tr['is_valid'].values)
+        feature_names=aDF_std.columns.drop(['is_valid'])
 
         #
         ## Fitting the ML model
@@ -221,7 +231,7 @@ class MLclassifier(object):
 
         return outfile
 
-    def rfe(self, tp_annotations, fp_annotations):
+    def rfe(self, tp_annotations, fp_annotations, n_features):
         '''
         Function to select the variant annotations that are more relevant for
         predicting if a variant is real. This is achieved by running sklearn.feature_selection.RFE
@@ -234,46 +244,30 @@ class MLclassifier(object):
                          Path to file with the variant annotations derived from the call set with the True positives
         fp_annotations : filename
                          Path to file with the variant annotations derived from the call set with the False positives
+        n_features : int
+                     Number of features to select by RFE
+
+        Returns
+        -------
+        List with selected annoatations
         '''
         
-        # let's get an array with the values
-
-        DF_TP=pd.read_csv('/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/FILTERING/05_2017/LC_DIR/BCFTOOLS/DEVEL/ONLY_NA12878/FREEBAYES/SNPS/RFE/TP_annotations.tsv.gz',sep="\t",na_values=['.'])
-        DF_FP=pd.read_csv('/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/FILTERING/05_2017/LC_DIR/BCFTOOLS/DEVEL/ONLY_NA12878/FREEBAYES/SNPS/RFE/FP_annotations.tsv.gz',sep="\t",na_values=['.'])
-
-        DF_TP=DF_TP.assign(is_valid=1)
-        DF_FP=DF_FP.assign(is_valid=0)
-
-        frames = [DF_TP,DF_FP]
-        DF = pd.concat(frames)
-
-        DF_num = DF.drop("# [1]CHROM", axis=1)
-
-        imputer = Imputer(strategy="median")
-        imputer.fit(DF_num)
-        X = imputer.transform(DF_num)
-
-        DF_tr = pd.DataFrame(X, columns=DF.columns.drop(['# [1]CHROM']))
-
-        feature_names=DF_tr.columns.drop(['[2]POS','is_valid'])
-
-        std_scale = preprocessing.StandardScaler().fit(DF_tr[feature_names])
-        std_array = std_scale.transform(DF_tr[feature_names])
-
-        aDF_std=pd.DataFrame(data=std_array,columns=feature_names)
-        aDF_std.insert(loc=0, column='is_valid', value=DF_tr['is_valid'].values)
+        aDF_std=self.__process_df(tp_annotations, fp_annotations)
+        feature_names=aDF_std.columns.drop(['is_valid'])
 
         array = aDF_std.values
 
-        X = array[:,1:40]
+        total_feats=array.shape[1]
+        X = array[:,1:total_feats]
         Y = array[:,0]
-        pdb.set_trace()
 
         model = LogisticRegression()
-        rfe = RFE(model, 25)
+        rfe = RFE(model, n_features)
         fit = rfe.fit(X, Y)
         print("Number of features: {0}".format(fit.n_features_))
         print("Selected Features: {0}".format(fit.support_))
         print("Feature Ranking: {0}".format(fit.ranking_))
         print("The selected features are:{0}".format(feature_names[fit.support_]))
         print("All features are:{0}".format(feature_names))
+
+        return feature_names[fit.support_].tolist()
