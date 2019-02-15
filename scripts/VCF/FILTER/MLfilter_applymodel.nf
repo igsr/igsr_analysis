@@ -12,6 +12,7 @@ params.help = false
 params.split_multiallelics = false
 params.threads = 1
 params.queue = 'production-rh7'
+params.executor = 'local'
 
 //print usage
 if (params.help) {
@@ -51,10 +52,10 @@ if (params.split_multiallelics==true) {
    	   for this
    	    */
 
-	    memory '2 GB'
-	    executor 'local'
+	    memory '5 GB'
+	    executor 'lsf'
 	    queue "${params.queue}"
-	    cpus 1
+	    cpus "${params.threads}"
 
 	    input:
 	    val chr from chrChannel
@@ -76,9 +77,9 @@ process get_variant_annotations {
 	*/
 
 	memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
-        cpus 1
+        cpus "${params.threads}"
 
 	input:
 	val chr from chr1
@@ -101,7 +102,7 @@ process apply_model {
 	*/
 
 	memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -128,7 +129,7 @@ process compress_predictions {
 	*/
 
 	memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -199,7 +200,7 @@ process splitVCF {
 	*/
 
 	memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -243,7 +244,7 @@ process reannotate_vcf {
 	*/
 
 	memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
