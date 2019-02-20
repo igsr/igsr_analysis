@@ -54,7 +54,7 @@ process excludeNonVariants {
         file 'out.sites.vcf.gz' into out_sites_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools view -G -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
+	${params.bcftools_folder}/bcftools view -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
 	${params.tabix} out.sites.vcf.gz
 	"""
 }

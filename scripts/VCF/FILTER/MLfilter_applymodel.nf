@@ -31,7 +31,6 @@ if (params.help) {
     log.info '  --annotations ANNOTATION_STRING String containing the annotations to filter, for example:'
     log.info '    %CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.'
     log.info '  --vt  VARIANT_TYPE   Type of variant to filter. Poss1ible values are 'snps'/'indels'.'
-    log.info '  --split_multiallelics  true/false  If true then split the multiallelic positions. Default=false.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info ''
     exit 1
@@ -45,8 +44,7 @@ chrChannel=Channel.from( chrList )
 
 //Apply a fitted model obtained after running MLfilter_trainmodel.nf
 
-if (params.split_multiallelics==true) {
-   process split_multiallelic {
+process split_multiallelic {
    	   /*
    	   This process is used to split the multiallelic sites into different lines per allele. It uses bcftools norm 
    	   for this
@@ -62,14 +60,14 @@ if (params.split_multiallelics==true) {
 
 	    output:
 	    file 'out.splitted.vcf.gz' into splitted_vcf
+	    file 'out.splitted.vcf.gz.tbi' into splitted_vcf_tbi
 	    val chr into chr1
 
 	    """
 	    bcftools norm -r ${chr} -m -${params.vt} ${params.vcf} -o out.splitted.vcf.gz -Oz --threads ${params.threads}
+	    tabix out.splitted.vcf.gz
 	    """
-    }
 }
-
 
 process get_variant_annotations {
 	/*
@@ -83,13 +81,15 @@ process get_variant_annotations {
 
 	input:
 	val chr from chr1
+	file splitted_vcf
+	file splitted_vcf_tbi
 
 	output:
 	file 'unfilt_annotations.vt.tsv.gz' into unfilt_annotations
 	val chr into chr2
 
 	"""
-	bcftools view -c1 -r ${chr} -v ${params.vt} ${params.vcf} -o out.onlyvariants.vt.vcf.gz -Oz --threads ${params.threads}
+	bcftools view -c1 -r ${chr} -v ${params.vt} ${splitted_vcf} -o out.onlyvariants.vt.vcf.gz -Oz --threads ${params.threads}
 	tabix out.onlyvariants.vt.vcf.gz
 	bcftools query -H -r ${chr} -f '${params.annotations}' out.onlyvariants.vt.vcf.gz | bgzip -c > unfilt_annotations.vt.tsv.gz
 	"""
@@ -101,7 +101,7 @@ process apply_model {
 	and to apply this model on the unfiltered VCF
 	*/
 
-	memory '2 GB'
+	memory '5 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
