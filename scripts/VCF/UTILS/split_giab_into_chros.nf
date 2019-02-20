@@ -64,7 +64,7 @@ process splitVCF {
 	file "${params.prefix}.${chr}.biallelic.vcf.gz*" into chr_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools view -m2 -M2 -r ${chr} ${params.giab_vcf} -o ${params.prefix}.${chr}.biallelic.vcf.gz -O z
+	bcftools view -m2 -M2 -r ${chr} ${params.giab_vcf} -o ${params.prefix}.${chr}.biallelic.vcf.gz -O z
 	${params.tabix_folder}/tabix ${params.prefix}.${chr}.biallelic.vcf.gz
 	"""
 }
