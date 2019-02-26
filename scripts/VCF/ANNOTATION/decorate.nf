@@ -35,6 +35,7 @@ if (params.help) {
     log.info '  --pops EAS,EUR,AFR,AMR,SAS	   comma separated list of populations or superpopulations that be analysed .'
     log.info '  --exome EXOME .BED		   format file with coordinates of the exomes .'
     log.info '  --tabix TABIX path to tabix binary .'
+    log.info '  --chrnames  chrnotation_dict   path to dictionary containing the correspondence between chr names.'
     log.info '	--vcf_validator VCF_VALIDATOR	   path to vcf_validator binary .'
     log.info '  --igsr_root IGSR_ROOT folder containing igsr codebase .'
     log.info '  --output_dir OUTPUT_DIR	     output folder where the final decorated VCF will be placed .'
@@ -57,7 +58,7 @@ process getAlleleFrequencies {
 	*/
 
 	memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -75,7 +76,7 @@ process getDepths {
 	*/
 
 	memory '1 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 	
@@ -93,7 +94,7 @@ process processAF {
 	*/
 
 	memory '1 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -114,6 +115,11 @@ process getOverlappingVariants {
         Function to create a table containing the AFs and the depths for each posion
         */
 
+	memory '1 GB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
  	input:
   	file out_processAF
 
@@ -129,6 +135,11 @@ process addAnnotation {
 	/*
 	Function to add the VariantType annotation to the annotation table
 	*/
+
+	memory '1 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
 
         input:
         file out_getOverlappingVariants
@@ -146,6 +157,11 @@ process addNumberSamples {
 	Function to add the NS (number of samples) annotation to the annotation table
 	*/
 
+	memory '1 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
 	input:
 	file out_addAnnotation
 
@@ -161,6 +177,11 @@ process compressAFmatrix {
 	/*
 	Function to compress output of 'addNumberSamples'
 	*/
+
+	memory '500 MB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
 
 	input:
 	file out_addNumberSamples
@@ -180,7 +201,7 @@ process runAnnotate {
         */
 
 	memory '1 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -192,7 +213,7 @@ process runAnnotate {
 
         """
 	${params.tabix} -f -s1 -b2 -e3 ${out_AFmatrix_gz}
-	${params.bcftools_folder}/bcftools annotate -r ${params.region} -a ${out_AFmatrix_gz} -h ${params.igsr_root}/SUPPORTING/annots_26062018.txt --rename-chrs ${params.igsr_root}/SUPPORTING/ensembl2ucsc_chrdict.txt -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS ${params.phased_vcf} -o out_decorate.vcf.gz -Oz
+	${params.bcftools_folder}/bcftools annotate -r ${params.region} -a ${out_AFmatrix_gz} -h ${params.igsr_root}/SUPPORTING/annots_26062018.txt --rename-chrs ${params.chrnames} -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS ${params.phased_vcf} -o out_decorate.vcf.gz -Oz
         """
 }
 
@@ -203,7 +224,7 @@ process runReheader {
 	*/
 
 	memory '1 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -226,7 +247,7 @@ process runValidator {
 	publishDir 'results', saveAs:{ filename -> "$filename" }
 
 	memory '1 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
