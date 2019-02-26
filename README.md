@@ -39,3 +39,5 @@ And you are ready to go!
 
 ```${igsr_analysis_dir}``` is the folder where you have cloned https://github.com/igsr/igsr_analysis.git<br>
 ```${ehive_dir}``` is the folder where you have cloned https://github.com/Ensembl/ensembl-hive.git<br>
+
+[![DOI](https://zenodo.org/badge/99792445.svg)](https://zenodo.org/badge/latestdoi/99792445)
