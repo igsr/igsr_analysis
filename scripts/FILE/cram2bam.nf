@@ -60,9 +60,11 @@ process downloadFile_byWGET {
         */
 
         memory '500 MB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
+	maxForks 10
+	errorStrategy 'ignore'
 
         input:
         set url, file(dest) from paths_ch1
@@ -87,9 +89,11 @@ process downloadFile_byASCP {
 	*/
 
 	memory '500 MB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
+	maxForks 20
+	errorStrategy 'ignore' 
 
         input:
         set url, file(dest) from paths_ch2
@@ -116,9 +120,10 @@ process md5 {
         publishDir "converted", mode: 'copy', overwrite: true
 
         memory '500 MB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
+	errorStrategy 'ignore'
 
         input:
         file down_f from ascp_ch.mix(wget_ch)
@@ -145,9 +150,10 @@ process convert2bam {
         publishDir "converted", mode: 'copy', overwrite: true
 
         memory '12 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus "${params.threads}"
+	errorStrategy 'ignore'
 
         input:
         file down_f from down_f
@@ -168,9 +174,10 @@ process make_index {
         publishDir "converted", mode: 'copy', overwrite: true
 
         memory '2 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus "${params.threads}"
+	errorStrategy 'ignore'
 
         input:
         file out_bam from out_bam
