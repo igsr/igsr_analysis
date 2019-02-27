@@ -47,10 +47,9 @@ if (params.help) {
     exit 1
 }
 
-
-process getAlleleFrequencies {
+process getAlleleFrequencies_snps {
 	/*
-	Function to calculate AFs on a VCF file
+	Process to calculate AFs on a SNP VCF file
 
 	Returns
 	-------
@@ -63,14 +62,40 @@ process getAlleleFrequencies {
         cpus 1
 
 	output:
-	file 'out_annotate.txt' into out_Annotate
+	file 'out_annotate.snp.txt' into out_AnnotateSNP
         
 	"""
-	perl ${params.igsr_root}/scripts/VCF/ANNOTATION/calculate_allele_frq_from_vcf.pl -vcf ${params.phased_vcf} -sample_panel ${params.sample_panel} -out_file out_annotate.txt -region ${params.region} -tabix ${params.tabix} -pop ${params.pops}
+	${params.bcftools_folder}/bcftools view -v snps -r ${params.region} -o out.snp.vcf.gz -Oz ${params.phased_vcf}
+	tabix out.snp.vcf.gz
+	perl ${params.igsr_root}/scripts/VCF/ANNOTATION/calculate_allele_frq_from_vcf.pl -vcf out.snp.vcf.gz -sample_panel ${params.sample_panel} -out_file out_annotate.snp.txt -region ${params.region} -tabix ${params.tabix} -pop ${params.pops}
 	"""
 }
 
-process getDepths {
+process getAlleleFrequencies_indels {
+        /*
+        Process to calculate AFs on a INDEL VCF file
+
+        Returns
+        -------
+        Path to a tsv file containing the allele frequencies
+        */
+
+        memory '2 GB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
+        output:
+        file 'out_annotate.indel.txt' into out_AnnotateINDEL
+
+        """
+        ${params.bcftools_folder}/bcftools view -v indels -r ${params.region} -o out.indels.vcf.gz -Oz ${params.phased_vcf}
+        tabix out.indels.vcf.gz
+        perl ${params.igsr_root}/scripts/VCF/ANNOTATION/calculate_allele_frq_from_vcf.pl -vcf out.indels.vcf.gz -sample_panel ${params.sample_panel} -out_file out_annotate.indel.txt -region ${params.region} -tabix ${params.tabix} -pop ${params.pops}
+        """
+}
+
+process getDepths_snps {
 	/*
 	Function to get the DP annotation from the VCF file
 	*/
@@ -81,14 +106,36 @@ process getDepths {
         cpus 1
 	
 	output:
-	file 'out_depths.txt' into out_Depths
+	file 'out_depths.snps.txt' into out_DepthsSNP
 
 	"""
-	${params.bcftools_folder}/bcftools query -f '%CHROM\\t%POS\\t%INFO/DP\\n' -r ${params.region} ${params.ann_vcf} -o out_depths.txt
+	${params.bcftools_folder}/bcftools view -v snps -r ${params.region} -o out.ann.snp.vcf.gz -Oz ${params.ann_vcf}
+	tabix out.ann.snp.vcf.gz
+	${params.bcftools_folder}/bcftools query -f '%CHROM\\t%POS\\t%INFO/DP\\n' -r ${params.region} out.ann.snp.vcf.gz -o out_depths.snps.txt
 	"""
 }
 
-process processAF {
+process getDepths_indels {
+        /*
+        Function to get the DP annotation from the VCF file
+        */
+
+        memory '1 GB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
+        output:
+        file 'out_depths.indels.txt' into out_DepthsINDEL
+
+        """
+        ${params.bcftools_folder}/bcftools view -v indels -r ${params.region} -o out.ann.indel.vcf.gz -Oz ${params.ann_vcf}
+        tabix out.ann.indel.vcf.gz
+        ${params.bcftools_folder}/bcftools query -f '%CHROM\\t%POS\\t%INFO/DP\\n' -r ${params.region} out.ann.indel.vcf.gz -o out_depths.indels.txt
+        """
+}
+
+process processAF_snps {
 	/*
 	Function to create a table containing the AFs and the depths for each position
 	*/
@@ -99,18 +146,41 @@ process processAF {
         cpus 1
 
 	input:
-	file out_Annotate
-	file out_Depths
+	file out_AnnotateSNP
+	file out_DepthsSNP
 
 	output:
-	file 'out_processAF.txt' into out_processAF
+	file 'out_processAFSNP.txt' into out_processAFSNP
 	
 	"""
-	python ${params.igsr_root}/scripts/VCF/ANNOTATION/process_AFs.py --region ${params.region} --pops ${params.pops} --outfile out_processAF.txt --af_file ${out_Annotate} --depth_f ${out_Depths}
+	python ${params.igsr_root}/scripts/VCF/ANNOTATION/process_AFs.py --region ${params.region} --pops ${params.pops} --outfile out_processAFSNP.txt --af_file ${out_AnnotateSNP} --depth_f ${out_DepthsSNP}
 	"""
 }
 
-process getOverlappingVariants {
+process processAF_indels {
+        /*
+        Function to create a table containing the AFs and the depths for each position
+        */
+
+        memory '1 GB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_AnnotateINDEL
+        file out_DepthsINDEL
+
+        output:
+        file 'out_processAFINDEL.txt' into out_processAFINDEL
+
+        """
+        python ${params.igsr_root}/scripts/VCF/ANNOTATION/process_AFs.py --region ${params.region} --pops ${params.pops} --outfile out_processAFINDEL.txt --af_file ${out_AnnotateINDEL} --depth_f ${out_DepthsINDEL}
+        """
+}
+
+
+process getOverlappingVariants_snps {
         /*
         Function to create a table containing the AFs and the depths for each posion
         */
@@ -121,17 +191,38 @@ process getOverlappingVariants {
         cpus 1
 
  	input:
-  	file out_processAF
+  	file out_processAFSNP
 
 	output:
-	file  'out_getOverlappingVariants.txt' into out_getOverlappingVariants
+	file  'out_getOverlappingVariantsSNP.txt' into out_getOverlappingVariantsSNP
 
         """
-        python ${params.igsr_root}/scripts/VCF/ANNOTATION/get_overlapping_variants.py --outfile out_getOverlappingVariants.txt --afs_table ${out_processAF} --exome ${params.exome} --label 'EX_TARGET' --bedtools_folder ${params.bedtools_folder} 
+        python ${params.igsr_root}/scripts/VCF/ANNOTATION/get_overlapping_variants.py --outfile out_getOverlappingVariantsSNP.txt --afs_table ${out_processAFSNP} --exome ${params.exome} --label 'EX_TARGET' --bedtools_folder ${params.bedtools_folder} 
         """
 }
 
-process addAnnotation {
+process getOverlappingVariants_indels {
+        /*
+        Function to create a table containing the AFs and the depths for each posion
+        */
+
+        memory '1 GB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_processAFINDEL
+
+        output:
+        file  'out_getOverlappingVariantsINDEL.txt' into out_getOverlappingVariantsINDEL
+
+        """
+        python ${params.igsr_root}/scripts/VCF/ANNOTATION/get_overlapping_variants.py --outfile out_getOverlappingVariantsINDEL.txt --afs_table ${out_processAFINDEL} --exome ${params.exome} --label 'EX_TARGET' --bedtools_folder ${params.bedtools_folder}
+        """
+}
+
+process addAnnotation_snps {
 	/*
 	Function to add the VariantType annotation to the annotation table
 	*/
@@ -142,14 +233,57 @@ process addAnnotation {
         cpus 1
 
         input:
-        file out_getOverlappingVariants
+        file out_getOverlappingVariantsSNP
 
         output:
-        file  'out_addAnnotation.txt' into out_addAnnotation
+        file  'out_addAnnotationSNP.txt' into out_addAnnotationSNP
 
         """
-        python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_annotation.py --outfile out_addAnnotation.txt --file1 ${out_getOverlappingVariants} --header 'VT' --label 'SNP'
+        python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_annotation.py --outfile out_addAnnotationSNP.txt --file1 ${out_getOverlappingVariantsSNP} --header 'VT' --label 'SNP'
         """
+}
+
+process addAnnotation_indels {
+        /*
+        Function to add the VariantType annotation to the annotation table
+        */
+
+        memory '1 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_getOverlappingVariantsINDEL
+
+        output:
+        file  'out_addAnnotationINDEL.txt' into out_addAnnotationINDEL
+
+        """
+        python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_annotation.py --outfile out_addAnnotationINDEL.txt --file1 ${out_getOverlappingVariantsINDEL} --header 'VT' --label 'INDEL'
+        """
+}
+
+process mergeAnnotations {
+	/*
+	Function to merge 2 annotation files
+	*/
+
+	memory '1 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+	input:
+	file out_addAnnotationSNP
+	file out_addAnnotationINDEL
+
+	output:
+	file 'out_addAnnotation.txt' into out_addAnnotation
+
+	"""
+	cat ${out_addAnnotationSNP} ${out_addAnnotationINDEL} > out_addAnnotation.txt
+	"""
 }
 
 process addNumberSamples {
@@ -212,8 +346,9 @@ process runAnnotate {
         file  'out_decorate.vcf.gz' into out_decorate
 
         """
-	${params.tabix} -f -s1 -b2 -e3 ${out_AFmatrix_gz}
-	${params.bcftools_folder}/bcftools annotate -r ${params.region} -a ${out_AFmatrix_gz} -h ${params.igsr_root}/SUPPORTING/annots_26062018.txt --rename-chrs ${params.chrnames} -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS ${params.phased_vcf} -o out_decorate.vcf.gz -Oz
+	zcat ${out_AFmatrix_gz} |sort -n -k2,3 | bgzip  > ${out_AFmatrix_gz}.sorted.gz
+	${params.tabix} -f -s1 -b2 -e3 ${out_AFmatrix_gz}.sorted.gz
+	${params.bcftools_folder}/bcftools annotate -r ${params.region} -a ${out_AFmatrix_gz}.sorted.gz -h ${params.igsr_root}/SUPPORTING/annots_26062018.txt --rename-chrs ${params.chrnames} -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS ${params.phased_vcf} -o out_decorate.vcf.gz -Oz
         """
 }
 
