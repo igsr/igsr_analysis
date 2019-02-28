@@ -60,10 +60,10 @@ process downloadFile_byWGET {
         */
 
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
-	maxForks 10
+	maxForks 25
 	errorStrategy 'ignore'
 
         input:
@@ -89,10 +89,10 @@ process downloadFile_byASCP {
 	*/
 
 	memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
-	maxForks 20
+	maxForks 25
 	errorStrategy 'ignore' 
 
         input:
@@ -120,7 +120,7 @@ process md5 {
         publishDir "converted", mode: 'copy', overwrite: true
 
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 	errorStrategy 'ignore'
@@ -150,7 +150,7 @@ process convert2bam {
         publishDir "converted", mode: 'copy', overwrite: true
 
         memory '12 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 	errorStrategy 'ignore'
@@ -174,7 +174,7 @@ process make_index {
         publishDir "converted", mode: 'copy', overwrite: true
 
         memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 	errorStrategy 'ignore'
