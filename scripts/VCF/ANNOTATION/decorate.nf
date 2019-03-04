@@ -10,12 +10,14 @@
 
 // Define defaults
 def defaults = [
-    queue: 'production-rh7'
+    queue: 'production-rh7',
+    errorStrategy: 'ignore'
 ]
 
 // params defaults
 params.help = false
 params.queue = defaults.queue // lsf queue name
+params.errorStrategy = defaults.errorStrategy 
 
 //print usage
 if (params.help) {
@@ -64,9 +66,10 @@ process getAlleleFrequencies_snps {
         */
 
         memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
         set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch1
@@ -91,9 +94,10 @@ process getAlleleFrequencies_indels {
         */
 
         memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
 	input:
         set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch2
@@ -117,6 +121,7 @@ process getDepths_snps {
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
 	input:
         set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch3
@@ -140,6 +145,7 @@ process getDepths_indels {
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
 	input:
         set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch4
@@ -159,10 +165,11 @@ process processAF_snps {
         Function to create a table containing the AFs and the depths for each position
         */
 
-        memory '1 GB'
+        memory '5 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
 	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch5
@@ -182,10 +189,11 @@ process processAF_indels {
         Function to create a table containing the AFs and the depths for each position
         */
 
-        memory '1 GB'
+        memory '5 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
 	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch6
@@ -210,6 +218,7 @@ process getOverlappingVariants_snps {
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
         file out_processAFSNP
@@ -231,6 +240,7 @@ process getOverlappingVariants_indels {
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
         file out_processAFINDEL
@@ -252,6 +262,7 @@ process addAnnotation_snps {
         executor 'local'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
         file out_getOverlappingVariantsSNP
@@ -269,10 +280,11 @@ process addAnnotation_indels {
         Function to add the VariantType annotation to the annotation table
         */
 
-        memory '1 GB'
+        memory '5 GB'
         executor 'local'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
         file out_getOverlappingVariantsINDEL
@@ -294,6 +306,7 @@ process mergeAnnotations {
         executor 'local'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
         file out_addAnnotationSNP
@@ -316,6 +329,7 @@ process addNumberSamples {
         executor 'local'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
         set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch7
@@ -338,6 +352,7 @@ process compressAFmatrix {
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
         file out_addNumberSamples
@@ -360,6 +375,7 @@ process runAnnotate {
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
 	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch8
@@ -385,6 +401,7 @@ process runReheader {
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
 	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch9
@@ -409,6 +426,7 @@ process runValidator {
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+	errorStrategy "${params.errorStrategy}"
 
         input:
 	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch10
