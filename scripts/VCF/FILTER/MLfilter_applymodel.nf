@@ -248,7 +248,7 @@ process reannotate_vcf {
         queue "${params.queue}"
         cpus "${params.threads}"
 
-	publishDir "results_${chr2}", mode: 'copy', overwrite: true
+	publishDir "results_${chr}", mode: 'copy', overwrite: true
 
 	input:
 	file unfilt_vcf_chr_reheaded
