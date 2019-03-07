@@ -54,7 +54,8 @@ Channel
     .fromPath(params.ifile)
     .splitCsv(header:true)
     .map{ row-> tuple(row.phased_vcf, row.ann_vcf, row.region, row.header, row.outprefix, row.outdir) }
-    .into { metadata_ch1; metadata_ch2}
+    .set { metadata_ch}
+
 
 process getAlleleFrequencies_snps {
         /*
@@ -72,13 +73,14 @@ process getAlleleFrequencies_snps {
 	errorStrategy "${params.errorStrategy}"
 
         input:
-        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch1
+        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch
 
         output:
         file 'out_annotate.snp.txt' into out_AnnotateSNP
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_snps_ch1
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch1
 
         """
+	echo "Processed region: ${region}"
         ${params.bcftools_folder}/bcftools view -v snps -r ${region} -o out.snp.vcf.gz -Oz ${phased_vcf}
         tabix out.snp.vcf.gz
         perl ${params.igsr_root}/scripts/VCF/ANNOTATION/calculate_allele_frq_from_vcf.pl -vcf out.snp.vcf.gz -sample_panel ${params.sample_panel} -out_file out_annotate.snp.txt -region ${region} -tabix ${params.tabix} -pop ${params.pops}
@@ -101,13 +103,14 @@ process getAlleleFrequencies_indels {
 	errorStrategy "${params.errorStrategy}"
 
 	input:
-        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch2
+        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch1
 
         output:
         file 'out_annotate.indel.txt' into out_AnnotateINDEL
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_indels_ch1
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch2
 
         """
+	echo "Processed region: ${region}"
         ${params.bcftools_folder}/bcftools view -v indels -r ${region} -o out.indels.vcf.gz -Oz ${phased_vcf}
         tabix out.indels.vcf.gz
         perl ${params.igsr_root}/scripts/VCF/ANNOTATION/calculate_allele_frq_from_vcf.pl -vcf out.indels.vcf.gz -sample_panel ${params.sample_panel} -out_file out_annotate.indel.txt -region ${region} -tabix ${params.tabix} -pop ${params.pops}
@@ -126,14 +129,14 @@ process getDepths_snps {
 	errorStrategy "${params.errorStrategy}"
 
 	input:
-        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_snps_ch1
+        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch2
 
         output:
         file 'out_depths.snps.txt' into out_DepthsSNP
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_snps_ch2
-
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch3
 
         """
+	echo "Processed region: ${region}"
         ${params.bcftools_folder}/bcftools view -v snps -r ${region} -o out.ann.snp.vcf.gz -Oz ${ann_vcf}
         tabix out.ann.snp.vcf.gz
         ${params.bcftools_folder}/bcftools query -f '%CHROM\\t%POS\\t%INFO/DP\\n' -r ${region} out.ann.snp.vcf.gz -o out_depths.snps.txt
@@ -152,13 +155,14 @@ process getDepths_indels {
 	errorStrategy "${params.errorStrategy}"
 
 	input:
-        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_indels_ch1
+        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch3
 
         output:
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_indels_ch2
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch4
         file 'out_depths.indels.txt' into out_DepthsINDEL
 
         """
+	echo "Processed region: ${region}"
         ${params.bcftools_folder}/bcftools view -v indels -r ${region} -o out.ann.indel.vcf.gz -Oz ${ann_vcf}
         tabix out.ann.indel.vcf.gz
         ${params.bcftools_folder}/bcftools query -f '%CHROM\\t%POS\\t%INFO/DP\\n' -r ${region} out.ann.indel.vcf.gz -o out_depths.indels.txt
@@ -177,15 +181,16 @@ process processAF_snps {
 	errorStrategy "${params.errorStrategy}"
 
         input:
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_snps_ch2
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch4
         file out_AnnotateSNP
         file out_DepthsSNP
 
         output:
         file 'out_processAFSNP.txt' into out_processAFSNP
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_snps_ch3
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch5
 
         """
+	echo "Processed region: ${region}"
         python ${params.igsr_root}/scripts/VCF/ANNOTATION/process_AFs.py --region ${region} --pops ${params.pops} --outfile out_processAFSNP.txt --af_file ${out_AnnotateSNP} --depth_f ${out_DepthsSNP}
         """
 }
@@ -202,13 +207,14 @@ process processAF_indels {
 	errorStrategy "${params.errorStrategy}"
 
         input:
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_indels_ch2
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch5
         file out_AnnotateINDEL
         file out_DepthsINDEL
 
         output:
+	echo "Processed region: ${region}"
         file 'out_processAFINDEL.txt' into out_processAFINDEL
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_indels_ch3
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch6
 
         """
         python ${params.igsr_root}/scripts/VCF/ANNOTATION/process_AFs.py --region ${region} --pops ${params.pops} --outfile out_processAFINDEL.txt --af_file ${out_AnnotateINDEL} --depth_f ${out_DepthsINDEL}
@@ -229,13 +235,14 @@ process getOverlappingVariants_snps {
 
         input:
         file out_processAFSNP
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_snps_ch3
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch6
 
         output:
         file  'out_getOverlappingVariantsSNP.txt' into out_getOverlappingVariantsSNP
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_snps_ch4
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch7
 
         """
+	echo "Processed region: ${region}"
         python ${params.igsr_root}/scripts/VCF/ANNOTATION/get_overlapping_variants.py --outfile out_getOverlappingVariantsSNP.txt --afs_table ${out_processAFSNP} --exome ${params.exome} --label 'EX_TARGET' --bedtools_folder ${params.bedtools_folder}
         """
 }
@@ -253,13 +260,14 @@ process getOverlappingVariants_indels {
 
         input:
         file out_processAFINDEL
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_indels_ch3
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch7
 
         output:
         file  'out_getOverlappingVariantsINDEL.txt' into out_getOverlappingVariantsINDEL
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_indels_ch4
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch8
 
         """
+	echo "Processed region: ${region}"
         python ${params.igsr_root}/scripts/VCF/ANNOTATION/get_overlapping_variants.py --outfile out_getOverlappingVariantsINDEL.txt --afs_table ${out_processAFINDEL} --exome ${params.exome} --label 'EX_TARGET' --bedtools_folder ${params.bedtools_folder}
         """
 }
@@ -277,13 +285,14 @@ process addAnnotation_snps {
 
         input:
         file out_getOverlappingVariantsSNP
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_snps_ch4
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch8
 
         output:
         file  'out_addAnnotationSNP.txt' into out_addAnnotationSNP
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_final
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch9
 
         """
+	echo "Processed region: ${region}"
         python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_annotation.py --outfile out_addAnnotationSNP.txt --file1 ${out_getOverlappingVariantsSNP} --header 'VT' --label 'SNP'
         """
 }
@@ -301,12 +310,14 @@ process addAnnotation_indels {
 
         input:
         file out_getOverlappingVariantsINDEL
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_indels_ch4
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch9
 
         output:
         file  'out_addAnnotationINDEL.txt' into out_addAnnotationINDEL
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch10
 
         """
+	echo "Processed region: ${region}"
         python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_annotation.py --outfile out_addAnnotationINDEL.txt --file1 ${out_getOverlappingVariantsINDEL} --header 'VT' --label 'INDEL'
         """
 }
@@ -323,13 +334,16 @@ process mergeAnnotations {
 	errorStrategy "${params.errorStrategy}"
 
         input:
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch10
         file out_addAnnotationSNP
         file out_addAnnotationINDEL
 
         output:
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch11
         file 'out_addAnnotation.txt' into out_addAnnotation
 
         """
+	echo "Processed region: ${region}"
         cat ${out_addAnnotationSNP} ${out_addAnnotationINDEL} > out_addAnnotation.txt
         """
 }
@@ -346,14 +360,15 @@ process addNumberSamples {
 	errorStrategy "${params.errorStrategy}"
 
         input:
-        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_final
+        set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch11
         file out_addAnnotation
 
         output:
         file  'out_addNumberSamples.txt' into out_addNumberSamples
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_final1
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch12
 
         """
+	echo "Processed region: ${region}"
         python ${params.igsr_root}/scripts/VCF/ANNOTATION/add_number_of_samples.py --outfile out_addNumberSamples.txt --file1 ${out_addAnnotation} --phased_vcf ${phased_vcf}
         """
 }
@@ -371,13 +386,14 @@ process compressAFmatrix {
 
         input:
         file out_addNumberSamples
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_final1
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch12
 
         output:
         file  'AFmatrix.txt.gz' into out_AFmatrix_gz
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_final2
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch13
 
         """
+	echo "Processed region: ${region}"
         bgzip -c ${out_addNumberSamples} > AFmatrix.txt.gz
         """
 }
@@ -395,14 +411,15 @@ process runAnnotate {
 	errorStrategy "${params.errorStrategy}"
 
         input:
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_final2
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch13
         file out_AFmatrix_gz
 
         output:
         file  'out_decorate.vcf.gz' into out_decorate
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_final3
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch14
 
         """
+	echo "Processed region: ${region}"
         zcat ${out_AFmatrix_gz} |sort -n -k2,3 | bgzip  > ${out_AFmatrix_gz}.sorted.gz
         ${params.tabix} -f -s1 -b2 -e3 ${out_AFmatrix_gz}.sorted.gz
         ${params.bcftools_folder}/bcftools annotate -r ${region} -a ${out_AFmatrix_gz}.sorted.gz -h ${params.igsr_root}/SUPPORTING/annots_26062018.txt --rename-chrs ${params.chrnames} -c CHROM,FROM,TO,REF,ALT,DP,AN,AC,AF,EAS_AF,EUR_AF,AFR_AF,AMR_AF,SAS_AF,EX_TARGET,VT,NS ${phased_vcf} -o out_decorate.vcf.gz -Oz
@@ -422,14 +439,15 @@ process runReheader {
 	errorStrategy "${params.errorStrategy}"
 
         input:
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_final3
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch14
         file out_decorate
 
         output:
         file 'out_reheaded.vcf.gz' into out_reheaded
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_final4
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch15
 
         """
+	echo "Processed region: ${region}"
         ${params.bcftools_folder}/bcftools reheader -h ${header} -s ${params.sample_list} ${out_decorate} -o out_reheaded.vcf.gz
         """
 }
@@ -448,15 +466,16 @@ process runValidator {
 	errorStrategy "${params.errorStrategy}"
 
         input:
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_final4
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch15
         file out_reheaded
 
         output:
         file "${outprefix}.vcf.validation.txt"
 	file out_reheaded into out_reheaded1
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_final5
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir into metadata_ch16
 
         """
+	echo "Processed region: ${region}"
         zcat ${out_reheaded} | ${params.vcf_validator} 2> ${outprefix}.vcf.validation.txt
         """
 }
@@ -468,7 +487,7 @@ process moveFinalFile {
         publishDir "${outdir}", mode: 'copy', overwrite: true
 
         input:
-	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_final5
+	set phased_vcf,ann_vcf,region,header,outprefix,outdir from metadata_ch16
         file out_reheaded1
 
         output:
@@ -476,6 +495,7 @@ process moveFinalFile {
 
         script:
         """
+	echo "Processed region: ${region}"
         mv ${out_reheaded1} ${outprefix}.GRCh38.phased.vcf.gz
         ${params.tabix} ${outprefix}.GRCh38.phased.vcf.gz
         """
