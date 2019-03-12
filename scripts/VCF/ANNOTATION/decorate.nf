@@ -10,7 +10,7 @@
 
 // Define defaults
 def defaults = [
-    queue: 'production-rh7',
+    queue: 'production-rh74',
     errorStrategy: 'ignore'
 ]
 
