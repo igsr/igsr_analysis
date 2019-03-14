@@ -13,6 +13,8 @@ RUN apt-get update && \
 				   libhts-dev  \
 				   python3 \
 				   python3-pip \
+				   libcurl4-openssl-dev \
+				   libssl-dev \
 				   && apt-get clean
 				   
 WORKDIR tmp/
@@ -29,7 +31,8 @@ RUN autoconf
 RUN ./configure
 RUN make
 RUN make install
-WORKDIR tmp/bcftools
+WORKDIR /tmp/bcftools
+RUN rm -r /tmp/htslib
 
 #install BCFTools
 RUN git clone https://github.com/samtools/bcftools.git
@@ -39,10 +42,29 @@ RUN autoconf
 RUN ./configure
 RUN make
 RUN make install
+WORKDIR /tmp/vcflib
+RUN rm -r /tmp/bcftools
 
+#install vcflib
+RUN git clone --recursive https://github.com/vcflib/vcflib.git
+WORKDIR vcflib/
+RUN make
+RUN cp bin/vcfallelicprimitives /bin/
+ 
 #install igsr-analysis libraries
 WORKDIR /lib
+RUN rm -r /tmp/vcflib/
 RUN git clone https://github.com/igsr/igsr_analysis.git
 ENV PYTHONPATH=/lib/igsr_analysis
+ENV PATH=/bin/:${PATH}
+
+#install vt
+WORKDIR /tmp/vt
+RUN git clone https://github.com/atks/vt.git
+WORKDIR vt/
+RUN make
+RUN cp vt /bin/
+WORKDIR /root/
+RUN rm -r /tmp/vt
 
 RUN pip install pandas sklearn
