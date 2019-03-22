@@ -32,25 +32,6 @@ if (params.help) {
     exit 1
 }
 
-process select_variants {
-	/*
-	Process to select the desired variants type (snps/indels)
-	*/
-
-	memory '500 MB'
-        executor 'local'
-        queue "${params.queue}"
-        cpus "${params.threads}"
-
-	output:
-	file "out.${params.vt}.vcf.gz" into out_vts
-	
-	"""
-	bcftools view -v ${params.vt} ${params.vcf} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
-	"""
-}
-
-
 process split_multiallelic {
 	/*
 	This process will split the multiallelic variants by using BCFTools
@@ -65,15 +46,33 @@ process split_multiallelic {
         queue "${params.queue}"
         cpus "${params.threads}"
 
-	input:
-	file out_vts
-
 	output:
 	file "out.splitted.vcf.gz" into out_splitted
 
 	"""
-	bcftools norm -m -any ${out_vts} -o out.splitted.vcf.gz -Oz --threads ${params.threads}
+	bcftools norm -m -any ${params.vcf} -o out.splitted.vcf.gz -Oz --threads ${params.threads}
 	"""
+}
+
+process select_variants {
+        /*
+        Process to select the desired variants type (snps/indels)
+        */
+
+        memory '500 MB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus "${params.threads}"
+
+	input:
+	file out_splitted
+
+        output:
+        file "out.${params.vt}.vcf.gz" into out_vts
+
+        """
+        bcftools view -v ${params.vt} ${out_splitted} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
+        """
 }
 
 process allelic_primitives {
@@ -91,14 +90,14 @@ process allelic_primitives {
         cpus 1
 
 	input:
-	file out_splitted
+	file out_vts
 
 	output:
 	file "out.splitted.decomp.vcf.gz" into out_decomp
 
 	"""
-	tabix -f ${out_splitted}
-	vcfallelicprimitives -k -g ${out_splitted} |bgzip -c > out.splitted.decomp.vcf.gz
+	tabix -f ${out_vts}
+	vcfallelicprimitives -k -g ${out_vts} |bgzip -c > out.splitted.decomp.vcf.gz
 	"""
 }
 
