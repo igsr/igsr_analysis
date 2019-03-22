@@ -88,7 +88,7 @@ process allelic_primitives {
 	memory '9 GB'
         executor 'local'
         queue "${params.queue}"
-        cpus "${params.threads}"
+        cpus 1
 
 	input:
 	file out_splitted
@@ -102,21 +102,19 @@ process allelic_primitives {
 	"""
 }
 
-process run_vt {
+process run_vt_normalize {
         /*
-        Process to run the following mini-piple: vt normalize | sort | uniq
+        Process to run vt normalize
 
         Returns
         -------
         Path to normalized VCF
         */
 
-	publishDir "norm_result", mode: 'copy', overwrite: true
-
-        memory '2 GB'
+        memory '9 GB'
         executor 'local'
         queue "${params.queue}"
-        cpus "${params.threads}"
+        cpus 1
 
         input:
         file out_decomp
@@ -125,6 +123,59 @@ process run_vt {
         file "${params.outprefix}.norm.vcf.gz" into out_norm
 
         """
-	vt normalize -r ${params.ref} ${out_decomp} | bcftools sort - | vt uniq - | bgzip -c > ${params.outprefix}.norm.vcf.gz 
+	vt normalize -r ${params.ref} ${out_decomp} | bgzip -c > ${params.outprefix}.norm.vcf.gz 
         """
 }
+
+process run_bcftools_sort {
+        /*
+        Process to run bcftools sort
+
+        Returns
+        -------
+        Path to sorted VCF
+        */
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_norm
+
+        output:
+        file "${params.outprefix}.sort.vcf.gz" into out_sort
+
+        """
+        bcftools sort ${out_norm} | bgzip -c > ${params.outprefix}.sort.vcf.gz
+        """
+}
+
+process run_vt_uniq {
+        /*
+        Process to run vt uniq
+
+        Returns
+        -------
+        Path to final normalized file
+        */
+
+        publishDir 'norm_file', saveAs:{ filename -> "$filename" }
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_sort
+
+        output:
+        file "${params.outprefix}.normalized.vcf.gz"
+
+        """
+        vt uniq ${out_sort} | bgzip -c > ${params.outprefix}.normalized.vcf.gz
+        """
+}
+
