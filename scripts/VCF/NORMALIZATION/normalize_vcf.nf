@@ -27,6 +27,7 @@ if (params.help) {
     log.info '  --ref FASTA  Fasta file with the reference.'
     log.info '  --vt SNP/INDEL  Variant type to analyse.'
     log.info '  --outprefix  STRING Prefix used for final file.'
+    log.info '  --tmpdir  DIR  Temp dir used for bcftools sort (in order not to have space issues).'
     log.info '  --threads INT	  Number of threads used by the processes in the pipeline. Default: 1'
     log.info ''
     exit 1
@@ -54,6 +55,32 @@ process split_multiallelic {
 	"""
 }
 
+process allelic_primitives {
+        /*
+        Process to run vcflib vcfallelicprimitives to decompose of MNPs
+
+        Returns
+        -------
+        Path to decomposed VCF
+        */
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_splitted
+
+        output:
+        file "out.splitted.decomp.vcf.gz" into out_decomp
+
+        """
+        tabix -f ${out_splitted}
+        vcfallelicprimitives -k -g ${out_splitted} |bgzip -c > out.splitted.decomp.vcf.gz
+        """
+}
+
 process select_variants {
         /*
         Process to select the desired variants type (snps/indels)
@@ -65,64 +92,13 @@ process select_variants {
         cpus "${params.threads}"
 
 	input:
-	file out_splitted
+	file out_decomp
 
         output:
         file "out.${params.vt}.vcf.gz" into out_vts
 
         """
-        bcftools view -v ${params.vt} ${out_splitted} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
-        """
-}
-
-process allelic_primitives {
-	/*	
-	Process to run vcflib vcfallelicprimitives to decompose of MNPs
-
-	Returns
-	-------
-	Path to decomposed VCF
-	*/
-
-	memory '9 GB'
-        executor 'local'
-        queue "${params.queue}"
-        cpus 1
-
-	input:
-	file out_vts
-
-	output:
-	file "out.splitted.decomp.vcf.gz" into out_decomp
-
-	"""
-	tabix -f ${out_vts}
-	vcfallelicprimitives -k -g ${out_vts} |bgzip -c > out.splitted.decomp.vcf.gz
-	"""
-}
-
-process run_vt_normalize {
-        /*
-        Process to run vt normalize
-
-        Returns
-        -------
-        Path to normalized VCF
-        */
-
-        memory '9 GB'
-        executor 'local'
-        queue "${params.queue}"
-        cpus 1
-
-        input:
-        file out_decomp
-
-        output:
-        file "${params.outprefix}.norm.vcf.gz" into out_norm
-
-        """
-	vt normalize -r ${params.ref} ${out_decomp} | bgzip -c > ${params.outprefix}.norm.vcf.gz 
+        bcftools view -v ${params.vt} ${out_decomp} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
         """
 }
 
@@ -141,13 +117,13 @@ process run_bcftools_sort {
         cpus 1
 
         input:
-        file out_norm
+        file out_vts
 
         output:
         file "${params.outprefix}.sort.vcf.gz" into out_sort
 
         """
-        bcftools sort ${out_norm} | bgzip -c > ${params.outprefix}.sort.vcf.gz
+        bcftools sort ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz -T ${params.tmpdir}
         """
 }
 
