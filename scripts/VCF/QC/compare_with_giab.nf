@@ -12,6 +12,7 @@
 // params defaults
 params.help = false
 params.calc_gtps = false
+params.queue = 'production-rh74'
 
 //print usage
 if (params.help) {
@@ -54,8 +55,8 @@ process excludeNonVariants {
         file 'out.sites.vcf.gz' into out_sites_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools view -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
-	${params.tabix} out.sites.vcf.gz
+	bcftools view -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
+	tabix out.sites.vcf.gz
 	"""
 }
 
@@ -77,7 +78,7 @@ process excludeNonValid {
 	file 'out.sites.nonvalid.vcf.gz' into out_sites_nonvalid_vcf
 
 	"""
-	${params.bcftools_folder}/bcftools view -T ^${params.non_valid_regions} ${out_sites_vcf} -o out.sites.nonvalid.vcf.gz -Oz
+	bcftools view -T ^${params.non_valid_regions} ${out_sites_vcf} -o out.sites.nonvalid.vcf.gz -Oz
 	tabix out.sites.nonvalid.vcf.gz
 	"""
 }
@@ -102,7 +103,7 @@ process selectVariants {
 	file "out.sites.nonvalid.${params.vt}.vcf.gz" into out_sites_nonvalid_vts
 	
 	"""
-	${params.bcftools_folder}/bcftools view -v ${params.vt} ${out_sites_nonvalid_vcf} -o out.sites.nonvalid.${params.vt}.vcf.gz -O z
+	bcftools view -v ${params.vt} ${out_sites_nonvalid_vcf} -o out.sites.nonvalid.${params.vt}.vcf.gz -O z
 	"""
 }
 
@@ -124,7 +125,7 @@ process intersecionCallSets {
 
 	"""
 	tabix ${out_sites_nonvalid_vts}
-	${params.bcftools_folder}/bcftools isec -c ${params.vt} -p 'dir/' ${out_sites_nonvalid_vts} ${params.giab}
+	bcftools isec -c ${params.vt} -p 'dir/' ${out_sites_nonvalid_vts} ${params.giab}
 	"""
 }
 
@@ -153,13 +154,13 @@ process compressIntersected {
 	file 'TP.stats' into tp_stats
 
 	"""
-	${params.bgzip} -c ${out_intersect}/0000.vcf > FP.vcf.gz
-	${params.bcftools_folder}/bcftools stats ${out_intersect}/0000.vcf > FP.stats 
-	${params.bgzip} -c ${out_intersect}/0001.vcf > FN.vcf.gz
-	${params.bcftools_folder}/bcftools stats ${out_intersect}/0001.vcf > FN.stats
-	${params.bgzip} -c ${out_intersect}/0002.vcf > TP_igsr.vcf.gz
-	${params.bcftools_folder}/bcftools stats ${out_intersect}/0002.vcf > TP.stats
-	${params.bgzip} -c ${out_intersect}/0003.vcf > TP_giab.vcf.gz
+	bgzip -c ${out_intersect}/0000.vcf > FP.vcf.gz
+	bcftools stats ${out_intersect}/0000.vcf > FP.stats 
+	bgzip -c ${out_intersect}/0001.vcf > FN.vcf.gz
+	bcftools stats ${out_intersect}/0001.vcf > FN.stats
+	bgzip -c ${out_intersect}/0002.vcf > TP_igsr.vcf.gz
+	bcftools stats ${out_intersect}/0002.vcf > TP.stats
+	bgzip -c ${out_intersect}/0003.vcf > TP_giab.vcf.gz
 	"""
 }
 
@@ -202,17 +203,17 @@ process selectInHighConf {
 	tabix ${fn_vcf}
 	tabix ${tp_igsr_vcf}
 	tabix ${tp_giab_vcf}
-	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${fp_vcf} -o FP.highconf.vcf.gz -Oz
-	${params.bcftools_folder}/bcftools stats FP.highconf.vcf.gz > FP.highconf.stats
-	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${fn_vcf} -o FN.highconf.vcf.gz -Oz
-	${params.bcftools_folder}/bcftools stats FN.highconf.vcf.gz > FN.highconf.stats
-	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${tp_igsr_vcf} -o TP_igsr.highconf.vcf.gz -Oz
-	${params.bcftools_folder}/bcftools stats TP_igsr.highconf.vcf.gz > TP.highconf.stats
-	${params.bcftools_folder}/bcftools view -R ${params.high_conf_regions} ${tp_giab_vcf} -o TP_giab.highconf.vcf.gz -Oz
+	bcftools view -R ${params.high_conf_regions} ${fp_vcf} -o FP.highconf.vcf.gz -Oz
+	bcftools stats FP.highconf.vcf.gz > FP.highconf.stats
+	bcftools view -R ${params.high_conf_regions} ${fn_vcf} -o FN.highconf.vcf.gz -Oz
+	bcftools stats FN.highconf.vcf.gz > FN.highconf.stats
+	bcftools view -R ${params.high_conf_regions} ${tp_igsr_vcf} -o TP_igsr.highconf.vcf.gz -Oz
+	bcftools stats TP_igsr.highconf.vcf.gz > TP.highconf.stats
+	bcftools view -R ${params.high_conf_regions} ${tp_giab_vcf} -o TP_giab.highconf.vcf.gz -Oz
 	tabix TP_igsr.highconf.vcf.gz
 	tabix TP_giab.highconf.vcf.gz
-	${params.bcftools_folder}/bcftools query -f \'[%POS\\t%REF\\t%ALT\\t%GT\\n]\' TP_giab.highconf.vcf.gz > giab.tsv
-	${params.bcftools_folder}/bcftools query -f \'[%POS\\t%REF\\t%ALT\\t%GT\\n]\' TP_igsr.highconf.vcf.gz > igsr.tsv
+	bcftools query -f \'[%POS\\t%REF\\t%ALT\\t%GT\\n]\' TP_giab.highconf.vcf.gz > giab.tsv
+	bcftools query -f \'[%POS\\t%REF\\t%ALT\\t%GT\\n]\' TP_igsr.highconf.vcf.gz > igsr.tsv
 	"""
 }
 
@@ -238,7 +239,7 @@ if (params.calc_gtps==true) {
 	   file 'GT_concordance.txt' into gt_conc
 
 	   """
-	   python ${params.igsr_root}/scripts/VCF/QC/calc_gtconcordance.py ${igsr_tsv} ${giab_tsv} > GT_concordance.txt
+	   python /lib/igsr_analysis/scripts/VCF/QC/calc_gtconcordance.py ${igsr_tsv} ${giab_tsv} > GT_concordance.txt
 	   """
    }
 }
