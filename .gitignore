@@ -62,6 +62,8 @@ docs/_build/
 *~
 *.pyc
 
-*.pyc
+# Pycharm files
+.idea/
 
-*.pyc
+# Compiled files
+__pycache__
