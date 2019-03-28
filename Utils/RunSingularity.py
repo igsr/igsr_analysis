@@ -11,74 +11,63 @@ import string
 import os
 import shutil
 from Utils.RunProgram import RunProgram
-
-
-DEFAULT = {
-    'singularity_executable': 'singularity'
-}
+import json
 
 
 class Singularity(eHive.BaseRunnable):
     CMD_KWARGS = []
+    CMD_ARGS = []
+    CMD = None
+    FILES = dict()
+    PIPELINE = None
 
     def run(self):
-
-        options_dict = {k: self.param(k) for k in self.CMD_KWARGS if self.param_is_defined(k)}
-
-        fastq1, fastq2 = sorted(self.param('fastq'))
-        options_dict['fastq1'] = fastq1
-        options_dict['fastq2'] = fastq2
-        options_dict['star_index'] = self.param_required('star_index')
-        options_dict['num_threads'] = self.param_required('num_threads')
-
-         self.setup(
-            s_cache=self.param_required('singularity_cache'),
-            s_image=self.param_required('singularity_image'),
-            s_executable=self.param_required('singularity_exe'),
-            output_directory=self.param_required('output_directory'),
-            prefix=self.param_required('prefix'),
-            cmd_arguments=options_dict)
-        self.run()
-
-
-    def setup(self, s_cache, s_image, output_directory, prefix, s_executable=None, cmd_arguments=None):
-        """
-
-        :param s_cache: the singularity cache location
-        :param s_image: the singularity image name
-        :param s_executable: the singularity executable (default: 'singularity'
-        """
-        self.singularity_cache = s_cache
-        self.singularity_image = s_image
-        self.singularity_executable = DEFAULT['singularity_executable'] \
-            if s_executable is None else s_executable
-        self.cmd_arguments = dict() if cmd_arguments is None else cmd_arguments
-
-        self.output_directory = output_directory
-        self.working_dir = None
-        self.prefix = prefix
         self.debug = True
+        self.output_directory = self.get_output_directory()
+        self.working_dir = None
+        self.prefix = self.get_prefix()
 
-    def execute(self):
-        """
-
-        :return:
-        """
         # Setup the working directory
         self.open_working_dir()
+
+        # Some logging
+        if self.debug:
+            with open(f"{self.working_dir}_log.txt", 'w') as log:
+                try:
+                    log.write(str(self._BaseRunnable__params.__dict__))
+                except:
+                    pass
+                log.write('\n\n')
+                log.write(json.dumps(self, default=lambda o: getattr(o, '__dict__', str(o))))
+                log.write('\n\n')
+
 
         # Build the commands
         s_cmd = self.make_singularity_command()
         t_cmd = self.make_task_command()
         cmd = f"{s_cmd} {t_cmd}"
-        print(f"Running Command: {cmd}")
 
-        # Run the commands
-        rp = RunProgram(cmd_line=cmd)
-        rp.run_checkoutput()
+        # Some logging
+        if self.debug:
+            with open(f"{self.working_dir}_log.txt", 'w') as log:
+                try:
+                    log.write(str(self._BaseRunnable__params.__dict__))
+                except:
+                    pass
+                log.write('\n\n')
+                log.write(json.dumps(self, default=lambda o: getattr(o, '__dict__', str(o))))
+                log.write('\n\n')
+                log.write(f"Running Command: {cmd}\n\n")
+
+        self.execute_program(cmd)
 
         # Store the outputs and delete the temporary directory
         self.close_working_dir()
+
+    def execute_program(self, cmd):
+        # Run the commands
+        rp = RunProgram(cmd_line=cmd)
+        rp.run_checkoutput()
 
     def make_singularity_command(self):
         """
@@ -87,13 +76,46 @@ class Singularity(eHive.BaseRunnable):
         """
         assert self.working_dir is not None, "Working directory has not been defined"
         command = [
-            self.singularity_executable,
+            self.param_required('singularity_executable'),
             "exec",
-            f"{self.singularity_cache}/{self.singularity_image}",
+            f"{self.param_required('singularity_cache')}/{self.param_required('singularity_image')}",
             f"--pwd {self.working_dir}"
         ]
         command = ' '.join(command)
         return command
+
+    def make_task_command(self):
+        """
+        Override this to define a task to run through singularity
+        """
+        cmd = self.CMD.format(WORKING_DIR=self.working_dir, PREFIX=self.prefix,
+                              ARGS=self.unpack_cmd_kwargs(), **self.get_cmd_args())
+        return cmd
+
+    def get_cmd_args(self):
+        return {k: self.param(k) for k in
+                self.CMD_ARGS if self.param_is_defined(k)}
+
+    def unpack_cmd_kwargs(self):
+        """
+        Utility for unpacking key-value prarmeters in the task command.
+        :return: String, parameters
+        """
+        return ' '.join([f"--{k} {self.param(k)}" for k in self.CMD_KWARGS if self.param_is_defined(k)])
+
+    # ---------------------------------------------------------------------------------------------------
+    #
+    def get_prefix(self):
+        return f"{self.param_required('basename')}.{self.PIPELINE}"
+
+    def get_output_directory(self):
+        root_output = self.param_required('root_output_dir')
+        if self.param_exists('dir_label_params'):
+            dir_label_params = self.param('dir_label_params')
+            output_dir = os.path.join(root_output, *[self.param(d) for d in dir_label_params])
+        else:
+            output_dir = root_output
+        return output_dir
 
     def open_working_dir(self):
         """
@@ -138,18 +160,10 @@ class Singularity(eHive.BaseRunnable):
             shutil.rmtree(self.working_dir)
         return moved_files
 
-    def make_task_command(self):
-        """
-        Override this to define a task to run through singularity
-        """
-        raise NotImplementedError()
-
-    def unpack_cmd_arguments(self):
-        """
-        Utility for unpacking key-value prarmeters in the task command.
-        :return: String, parameters
-        """
-        return ' '.join([f"--{k} {v}" for k, v in self.cmd_arguments.items() if k in self.CMD_KWARGS])
+    def write_output(self):
+        self.warning('Work is done!')
+        files = {k: os.path.join(self.output_directory, v.format(self.prefix)) for k, v in self.FILES.items()}
+        self.dataflow(files, 1)
 
 
 def random_suffix(suffix_length=5):
