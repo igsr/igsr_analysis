@@ -28,6 +28,16 @@ sub default_options {
             require_attributes => $self->o('require_sample_attributes'),
             exclude_attributes => $self->o('exclude_sample_attributes'),
         },
+
+        'sample_attributes'           => [],
+        'sample_columns'              => [ 'sample_id', 'sample_source_id', 'sample_alias' ],
+        'run_attributes'              => [],
+        'run_columns'                 => [ 'run_source_id', 'center_name', 'run_alias' ],
+        'study_attributes'            => [],
+        'study_columns'               => [ 'study_source_id' ],
+        'experiment_attributes'       => [],
+        'experiment_columns'          => [ 'instrument_platform', 'paired_nominal_length' ],
+
         require_run_attributes        => {},
         require_experiment_attributes => {},
         require_study_attributes      => {},
@@ -42,35 +52,29 @@ sub default_options {
         require_sample_columns        => {},
         exclude_sample_columns        => {},
 
+
         singularity_cache             => $self->o('ENV', 'SINGULARITY_CACHEDIR'),
         singularity_image             => 'broadinstitute/gtex_rnaseq:V8',
+        singularity_executable        => 'singularity',
 
         # runnable-specific parameters' defaults:
-
         'lsf_queue'                   => 'production-rh74',
+
 
         'RGSM'                        => '#sample_source_id#',
         'RGPU'                        => '#run_source_id#',
 
-        'sample_attributes'           => [],
-        'sample_columns'              => [ 'sample_id', 'sample_source_id', 'sample_alias' ],
-        'run_attributes'              => [],
-        'run_columns'                 => [ 'run_source_id', 'center_name', 'run_alias' ],
-        'study_attributes'            => [],
-        'study_columns'               => [ 'study_source_id' ],
-        'experiment_attributes'       => [],
-        'experiment_columns'          => [ 'instrument_platform', 'paired_nominal_length' ],
 
-
-        final_output_layout           => '#sample_source_id#/alignment',
-        name_file_module              => 'ReseqTrack::Hive::NameFile::BaseNameFile',
-        name_file_method              => 'basic',
-        name_file_params              => {
-            new_dir       => '#final_output_dir#/#final_output_layout#',
-            new_basename  => '#sample_source_id#.bwa',
-            add_datestamp => 1,
-            suffix        => '.bam',
-        },
+        #
+        # final_output_layout           => '#sample_source_id#/alignment',
+        # name_file_module              => 'ReseqTrack::Hive::NameFile::BaseNameFile',
+        # name_file_method              => 'basic',
+        # name_file_params              => {
+        #     new_dir       => '#final_output_dir#/#final_output_layout#',
+        #     new_basename  => '#sample_source_id#.bwa',
+        #     add_datestamp => 1,
+        #     suffix        => '.bam',
+        # },
 
     };
 }
@@ -88,7 +92,11 @@ sub pipeline_wide_parameters {
     return {
         %{$self->SUPER::pipeline_wide_parameters},
 
-        dir_label_params => [ 'study_source_id', 'sample_source_id', 'run_source_id' ],
+        dir_label_params       => [ 'study_source_id', 'sample_source_id', 'run_source_id' ],
+        singularity_cache      => $self->o('singularity_cache'),
+        singularity_image      => $self->o('singularity_image'),
+        singularity_executable => $self->o('singularity_executable'),
+        basename               => '#sample_alias#.#POPULATION#'
     };
 }
 
@@ -97,17 +105,11 @@ sub resource_classes {
     my ($self) = @_;
     return {
         %{$self->SUPER::resource_classes},
-        '200Mb'  => { 'LSF' => '-C0 -M200 -q ' . $self->o('lsf_queue') . ' -R"select[mem>200] rusage[mem=200]"' },
-        '500Mb'  => { 'LSF' => '-C0 -M512 -q ' . $self->o('lsf_queue') . ' -R"select[mem>512] rusage[mem=512]"' },
-        '1Gb'    => { 'LSF' => '-C0 -M1024 -q ' . $self->o('lsf_queue') . ' -R"select[mem>1024] rusage[mem=1024]"' },
-        '2Gb'    => { 'LSF' => '-C0 -M2048 -q ' . $self->o('lsf_queue') . ' -R"select[mem>2048] rusage[mem=2048]"' },
-        '5Gb'    => { 'LSF' => '-C0 -M5120 -q ' . $self->o('lsf_queue') . ' -R"select[mem>5120] rusage[mem=5120]"' },
-        '8Gb'    => { 'LSF' => '-C0 -M8192 -q ' . $self->o('lsf_queue') . ' -R"select[mem>8192] rusage[mem=8192]"' },
-        '12Gb'   => { 'LSF' => '-C0 -M12288 -q ' . $self->o('lsf_queue') . ' -R"select[mem>12288] rusage[mem=12288]"' },
-        '15Gb'   => { 'LSF' => '-n 20 -C0 -M15360 -q ' . $self->o('lsf_queue') . ' -R"select[mem>15360] rusage[mem=15360]"' },
-        '20Gb'   => { 'LSF' => '-n 20 -C0 -M20000 -q ' . $self->o('lsf_queue') . ' -R"select[mem>20000] rusage[mem=20000]"' },
-        '10cpus' => { 'LSF' => '-n 10 -C0 -M1024 -q ' . $self->o('lsf_queue') . ' -R"select[mem>1024] rusage[mem=1024]"' },
-        '20cpus' => { 'LSF' => '-n 20 -C0 -M5120 -q ' . $self->o('lsf_queue') . ' -R"select[mem>5120] rusage[mem=5120]"' }
+        '200Mb'     => {'LSF' => '-C0 -M200 -q '.$self->o('lsf_queue').' -R"select[mem>200] rusage[mem=200]"'},
+        '4Gb'       => {'LSF' => '-C0 -M4096 -q '.$self->o('lsf_queue').' -R"select[mem>4096] rusage[mem=4096]"'},
+        '5Gb'       => {'LSF' => '-C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"'},
+        '5Gb8cpus'  => {'LSF' => '-n 8 -C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"'},
+        '30Gb6cpus' => {'LSF' => '-n 6 -C0 -M30720 -q '.$self->o('lsf_queue').' -R"select[mem>30720] rusage[mem=30720]"'}
     };
 }
 
@@ -190,21 +192,30 @@ sub pipeline_analyses {
             }
         },
         -flow_into   => {
-            1 => [ 'star_align' ],
+            1 => [ 'test_a' ],
         },
     });
 
+
     push(@analyses, {
-        -logic_name        => 'star_align',
+        -logic_name        => 'test_a',
         -language          => 'python3',
-        -module            => 'PyHive.TOPMed.RunStar',
+        -module            => 'PyHive.TOPMed.Test',
         -parameters        => {
-            singularity_cache => $self->o('singularity_cache'),
-            singularity_image => $self->o('singularity_image'),
-            singularity_exe   => $self->o('singularity_exe'),
+            num_threads       => 4
+        },
+        -rc_name           => '200Mb',
+        -analysis_capacity => 4,
+        -hive_capacity     => 200,
+        -flow_into         => { 1 => [ 'test_b' ] }
+    });
+
+    push(@analyses, {
+        -logic_name        => 'test_b',
+        -language          => 'python3',
+        -module            => 'PyHive.TOPMed.Test',
+        -parameters        => {
             star_index        => $self->o('star_index'),
-            #output_directory  => $self->o('output_dir'),
-            prefix            => 'star',
             num_threads       => 4
         },
         -rc_name           => '200Mb',
@@ -212,6 +223,25 @@ sub pipeline_analyses {
         -hive_capacity     => 200,
         #-flow_into         => { }
     });
+
+    # push(@analyses, {
+    #     -logic_name        => 'star_align',
+    #     -language          => 'python3',
+    #     -module            => 'PyHive.TOPMed.Star',
+    #     -parameters        => {
+    #         singularity_cache => $self->o('singularity_cache'),
+    #         singularity_image => $self->o('singularity_image'),
+    #         singularity_exe   => $self->o('singularity_exe'),
+    #         star_index        => $self->o('star_index'),
+    #         #output_directory  => $self->o('output_dir'),
+    #         prefix            => 'star',
+    #         num_threads       => 4
+    #     },
+    #     -rc_name           => '200Mb',
+    #     -analysis_capacity => 4,
+    #     -hive_capacity     => 200,
+    #     #-flow_into         => { }
+    # });
 
     return \@analyses;
 }
