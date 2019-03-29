@@ -28,11 +28,13 @@ if (params.help) {
     log.info '  --vt  VARIANT_TYPE   Type of variant to use for training the model. Poss1ible values are 'snps'/'indels'.'
     log.info '  --annotations ANNOTATION_STRING	String containing the annotations to filter, for example:'
     log.info '	%CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.' 
+    log.info '  --rfe BOOL If true, then do Recursive Feature Elimination in order to select the annotations that are more relevant for prediction.'
+    log.info '             If false, then train the ML model and skip RFE.'
+    log.info '  --no_features INT Number of features that will be selected.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info ''
     exit 1
 }
-
 
 //Training the classifier. For all sites (across all the chros)
 
@@ -151,6 +153,9 @@ process train_model {
 	output:
 	file 'fitted_logreg_vts.sav' into trained_model
 
+	when:
+  	!params.rfe
+
 	"""
 	#!/usr/bin/env python
 
@@ -162,4 +167,41 @@ process train_model {
 			tp_annotations='${tp_annotations}',
 			fp_annotations='${fp_annotations}')
 	"""
+}
+
+process rfe {
+        /*
+	Process to do Recursive Feature Elimination in order to 
+	select the annotations that are more relevant for prediction'  
+        */
+
+        memory '5 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        publishDir "selected_feats", mode: 'copy', overwrite: true
+
+        input:
+        file tp_annotations
+        file fp_annotations
+
+        output:
+        file 'selected_feats.txt' into selected_feats
+
+        when:
+        params.rfe
+
+        """
+        #!/usr/bin/env python
+	from VCF.VCFfilter.MLclassifier import MLclassifier
+
+	ML_obj=MLclassifier()
+
+	outfile=ML_obj.rfe(
+			tp_annotations='${tp_annotations}',
+			fp_annotations='${fp_annotations}',
+			n_features='${params.no_features}',
+			outreport="selected_feats.txt")
+        """
 }
