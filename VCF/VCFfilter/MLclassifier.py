@@ -231,7 +231,7 @@ class MLclassifier(object):
 
         return outfile
 
-    def rfe(self, tp_annotations, fp_annotations, n_features):
+    def rfe(self, tp_annotations, fp_annotations, n_features, outreport):
         '''
         Function to select the variant annotations that are more relevant for
         predicting if a variant is real. This is achieved by running sklearn.feature_selection.RFE
@@ -246,10 +246,12 @@ class MLclassifier(object):
                          Path to file with the variant annotations derived from the call set with the False positives
         n_features : int
                      Number of features to select by RFE
+        outreport : filename
+                    Filename used to write the report to
 
         Returns
         -------
-        List with selected annoatations
+        filename  Containing report on selected features
         '''
         
         aDF_std=self.__process_df(tp_annotations, fp_annotations)
@@ -262,12 +264,18 @@ class MLclassifier(object):
         Y = array[:,0]
 
         model = LogisticRegression()
-        rfe = RFE(model, n_features)
+        rfe = RFE(model, int(n_features))
         fit = rfe.fit(X, Y)
-        print("Number of features: {0}".format(fit.n_features_))
-        print("Selected Features: {0}".format(fit.support_))
-        print("Feature Ranking: {0}".format(fit.ranking_))
-        print("The selected features are:{0}".format(feature_names[fit.support_]))
-        print("All features are:{0}".format(feature_names))
 
-        return feature_names[fit.support_].tolist()
+        # write selected features report to file
+        f=open(outreport,'w');
+
+        f.write("Number of features: {0}\n".format(fit.n_features_))
+        f.write("Selected Features: {0}\n".format(fit.support_))
+        f.write("Feature Ranking: {0}\n".format(fit.ranking_))
+        f.write("The selected features are:{0}\n".format(feature_names[fit.support_]))
+        f.write("All features are:{0}\n".format(feature_names))
+
+        f.close
+
+        return outreport
