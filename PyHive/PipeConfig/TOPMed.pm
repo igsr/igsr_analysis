@@ -108,6 +108,7 @@ sub resource_classes {
         '200Mb'     => {'LSF' => '-C0 -M200 -q '.$self->o('lsf_queue').' -R"select[mem>200] rusage[mem=200]"'},
         '4Gb'       => {'LSF' => '-C0 -M4096 -q '.$self->o('lsf_queue').' -R"select[mem>4096] rusage[mem=4096]"'},
         '5Gb'       => {'LSF' => '-C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"'},
+        '8Gb'       => {'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"'},
         '5Gb8cpus'  => {'LSF' => '-n 8 -C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"'},
         '30Gb6cpus' => {'LSF' => '-n 6 -C0 -M30720 -q '.$self->o('lsf_queue').' -R"select[mem>30720] rusage[mem=30720]"'}
     };
@@ -192,56 +193,75 @@ sub pipeline_analyses {
             }
         },
         -flow_into   => {
-            1 => [ 'test_a' ],
+            1 => [ 'star_align' ],
         },
     });
 
-
     push(@analyses, {
-        -logic_name        => 'test_a',
+        -logic_name        => 'star_align',
         -language          => 'python3',
-        -module            => 'PyHive.TOPMed.Test',
-        -parameters        => {
-            num_threads       => 4
-        },
-        -rc_name           => '200Mb',
-        -analysis_capacity => 4,
-        -hive_capacity     => 200,
-        -flow_into         => { 1 => [ 'test_b' ] }
-    });
-
-    push(@analyses, {
-        -logic_name        => 'test_b',
-        -language          => 'python3',
-        -module            => 'PyHive.TOPMed.Test',
+        -module            => 'PyHive.TOPMed.Star',
         -parameters        => {
             star_index        => $self->o('star_index'),
-            num_threads       => 4
+            num_threads       => 6
         },
-        -rc_name           => '200Mb',
-        -analysis_capacity => 4,
-        -hive_capacity     => 200,
-        #-flow_into         => { }
+        -rc_name           => '30Gb6cpus',
+        -analysis_capacity => 2,
+        -flow_into         => { 1 => [ 'markduplicates', 'rsem' ] }
     });
 
-    # push(@analyses, {
-    #     -logic_name        => 'star_align',
-    #     -language          => 'python3',
-    #     -module            => 'PyHive.TOPMed.Star',
-    #     -parameters        => {
-    #         singularity_cache => $self->o('singularity_cache'),
-    #         singularity_image => $self->o('singularity_image'),
-    #         singularity_exe   => $self->o('singularity_exe'),
-    #         star_index        => $self->o('star_index'),
-    #         #output_directory  => $self->o('output_dir'),
-    #         prefix            => 'star',
-    #         num_threads       => 4
-    #     },
-    #     -rc_name           => '200Mb',
-    #     -analysis_capacity => 4,
-    #     -hive_capacity     => 200,
-    #     #-flow_into         => { }
-    # });
+    push(@analyses, {
+        -logic_name        => 'rsem',
+        -language          => 'python3',
+        -module            => 'PyHive.TOPMed.Rsem',
+        -parameters        => {
+            rsem_reference   => $self->o('rsem_reference'),
+            memory           => 5,
+            num_threads      => 8,
+        },
+        -rc_name           => '5Gb8cpus',
+        -analysis_capacity => 4,
+    });
+
+    push(@analyses, {
+        -logic_name        => 'markduplicates',
+        -language          => 'python3',
+        -module            => 'PyHive.TOPMed.MarkDuplicates',
+        -parameters        => {
+            memory           => 5,
+            num_threads      => 1,
+        },
+        -rc_name           => '8Gb',
+        -analysis_capacity => 4,
+        -flow_into         => {
+            '1->A' => [ 'markduplicates_indexbam' ],
+            'A->1' => [ 'rnaseqc_counts' ],
+        }
+    });
+
+    push(@analyses, {
+        -logic_name        => 'markduplicates_indexbam',
+        -language          => 'python3',
+        -module            => 'PyHive.TOPMed.IndexBam',
+        -parameters        => {
+            unindexed_bam_file => '#md_bam_file#',
+        },
+        -rc_name           => '200Mb',
+    });
+
+    push(@analyses, {
+        -logic_name        => 'rnaseqc_counts',
+        -language          => 'python3',
+        -module            => 'PyHive.TOPMed.RnaseqcCounts',
+        -parameters        => {
+            genes_gtf        => $self->o('genes_gtf'),
+            genome_fasta     => $self->o('genome_fasta'),
+            memory           => 5,
+        },
+        -rc_name           => '5Gb',
+        -analysis_capacity => 4,
+    });
+
 
     return \@analyses;
 }
