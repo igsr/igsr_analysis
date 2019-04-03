@@ -13,6 +13,7 @@ class Star(Singularity):
     Runs the Star alignment task in the broadinstitute/gtex_rnaseq singularity image.
     """
 
+    PIPELINE = 'Star'
     CMD_KWARGS = [
         "outFilterMultimapNmax", "alignSJoverhangMin", "alignSJDBoverhangMin", "outFilterMismatchNmax",
         "outFilterMismatchNoverLmax", "alignIntronMin", "alignIntronMax", "alignMatesGapMax", "outFilterType",
@@ -24,13 +25,13 @@ class Star(Singularity):
     CMD = ("/src/run_STAR.py {star_index} {fastq1} {fastq2} {PREFIX} "
            "--output_dir {WORKING_DIR} --threads {num_threads} {ARGS}")
     FILES = {
-        'bam_file': "${PREFIX}.Aligned.sortedByCoord.out.bam",
-        'transcriptome_bam': "${PREFIX}.Aligned.toTranscriptome.out.bam",
-        'chimeric_junctions': "${PREFIX}.Chimeric.out.junction",
-        'chimeric_bam_file': "${PREFIX}.Chimeric.out.sorted.bam",
-        'read_counts': "${PREFIX}.ReadsPerGene.out.tab",
-        'junctions': "${PREFIX}.SJ.out.tab",
-        'junctions_pass1': "${PREFIX}._STARpass1/SJ.out.tab"
+        'bam_file': "{PREFIX}.Aligned.sortedByCoord.out.bam",
+        'transcriptome_bam': "{PREFIX}.Aligned.toTranscriptome.out.bam",
+        'chimeric_junctions': "{PREFIX}.Chimeric.out.junction",
+        'chimeric_bam_file': "{PREFIX}.Chimeric.out.sorted.bam",
+        'read_counts': "{PREFIX}.ReadsPerGene.out.tab",
+        'junctions': "{PREFIX}.SJ.out.tab",
+        'junctions_pass1': "{PREFIX}._STARpass1/SJ.out.tab"
         #logs = ["star_out/${prefix}.Log.final.out", "star_out/${prefix}.Log.out", "star_out/${prefix}.Log.progress.out"]
     }
 
@@ -47,8 +48,3 @@ class Star(Singularity):
         options_dict['fastq1'] = fastq1
         options_dict['fastq2'] = fastq2
         return options_dict
-
-
-
-
-
