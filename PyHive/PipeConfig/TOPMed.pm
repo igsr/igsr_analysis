@@ -110,7 +110,8 @@ sub resource_classes {
         '5Gb'       => {'LSF' => '-C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"'},
         '8Gb'       => {'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"'},
         '5Gb8cpus'  => {'LSF' => '-n 8 -C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"'},
-        '30Gb6cpus' => {'LSF' => '-n 6 -C0 -M30720 -q '.$self->o('lsf_queue').' -R"select[mem>30720] rusage[mem=30720]"'}
+        '30Gb6cpus' => {'LSF' => '-n 6 -C0 -M30720 -q '.$self->o('lsf_queue').' -R"select[mem>30720] rusage[mem=30720]"'},
+        '35Gb6cpus' => {'LSF' => '-n 6 -C0 -M35840 -q '.$self->o('lsf_queue').' -R"select[mem>35840] rusage[mem=35840]"'}
     };
 }
 
