@@ -16,11 +16,18 @@ from Utils.RunProgram import RunProgram
 
 
 class Singularity(eHive.BaseRunnable):
-    CMD_KWARGS = []
-    CMD_ARGS = []
-    CMD = None
-    FILES = dict()
+    """
+    The singularity runnable is intended as a base class for running workflow tasks inside singularity images.
+    In most cases, it's sufficient to override the following parameters:
+    - PIPELINE: The name of the pipeline module. Used in logging and as part of the default prefix
+    - CMD: a new-style python format string. This will be the command that should be run in the singularity image.
+    - CMD_ARGS: required arguments. These will be searched for in the 
+    """
     PIPELINE = None
+    CMD = None
+    CMD_ARGS = []
+    CMD_KWARGS = []
+    FILES = dict()
 
     def run(self):
         """
@@ -68,7 +75,6 @@ class Singularity(eHive.BaseRunnable):
         self.working_dir = None
         self.prefix = self.get_prefix()
         self.get_output_file_list()
-        self.debug = True
 
     def get_output_directory(self) -> str:
         """
@@ -78,7 +84,7 @@ class Singularity(eHive.BaseRunnable):
         root_output = self.param_required('root_output_dir')
         if self.param_exists('dir_label_params'):
             dir_label_params = self.param('dir_label_params')
-            output_dir = os.path.join(root_output, *[self.param(d) for d in dir_label_params])
+            output_dir = os.path.join(root_output, *[self.param(d).replace(':', '.') for d in dir_label_params])
         else:
             output_dir = root_output
         return output_dir
@@ -88,7 +94,9 @@ class Singularity(eHive.BaseRunnable):
 
         :return: str, the prefix for the
         """
-        return f"{self.param_required('basename')}.{self.PIPELINE}"
+        prefix = f"{self.param_required('basename')}.{self.PIPELINE}"
+        prefix = prefix.replace(':', '.')
+        return prefix
 
     def get_output_file_list(self) -> Dict[str, str]:
         """
