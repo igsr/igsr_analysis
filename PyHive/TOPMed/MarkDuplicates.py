@@ -20,6 +20,11 @@ class MarkDuplicates(Singularity):
     }
 
     def get_output_file_list(self) -> Dict[str, str]:
+        """
+        The output BAM name follows an unconventional pattern.
+        The easiest way to incorporate this into the runnable is to override this function.
+        :return:
+        """
         out_bam = self.param('bam_file')
         out_bam = out_bam.rsplit('.', 1)[0] + '.md.bam'
         self.FILES['md_bam_file'] = out_bam
