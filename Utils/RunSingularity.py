@@ -29,7 +29,7 @@ class Singularity(eHive.BaseRunnable):
         - CMD_KWARGS: a list of parameter keys that will be unpacked, if they exist in the available params
         - FILES:
     The following parameters must be provided:
-        - singularity_executable: the executable for singularirty (eg '/bin/singularity')
+        - singularity_executable: the executable for singularity (eg '/bin/singularity')
         - singularity_cache: A directory the contains singularity images
         - singularity_image: Name of the image to use
         - root_output_dir: a root location to write to
@@ -40,18 +40,13 @@ class Singularity(eHive.BaseRunnable):
     CMD_KWARGS = []
     FILES = dict()
 
+    __session_suffix = None
+
     def run(self):
         """
         The main method of the runnable which defines the steps that will be taken.
         """
         self.setup()
-
-        # Setup the working directory
-        self.open_working_dir()
-
-        # Log the state of the input parameters
-        with open(f"{self.log_basename}.ehive.log", 'w') as log:
-            log.write(json.dumps(self, default=lambda o: getattr(o, '__dict__', str(o))))
 
         # Build the commands
         s_cmd = self.make_singularity_command()
@@ -70,41 +65,95 @@ class Singularity(eHive.BaseRunnable):
         """
         Setup the general parameters: define the output directory, prefix and verify the file list.
         """
+        # Verify that the runnable is properly configured
         assert self.PIPELINE is not None, "Pipeline name has not been defined."
 
-        self.output_directory = self.get_output_directory()
 
-        self.log_directory = os.path.join(self.output_directory, 'ehive_log')
-        os.makedirs(self.log_directory)
-        self.log_basename = None
+        # Open all directories
+        # Creating a parameter here to assist with logging
+        self.__directories = {
+            'output_directory': self.output_directory,
+            'working_directory': self.working_directory,
+            'log_directory': self.log_directory
+        }
+        for d in self.__directories.values():
+            os.makedirs(d, exist_ok=True)
 
-        self.working_dir = None
-        self.prefix = self.get_prefix()
+        # Log the state of the input parameters
+        with open(f"{self.log_basename}.ehive.log", 'w') as log:
+            log.write(json.dumps(self, default=lambda o: getattr(o, '__dict__', str(o))))
+
         # Verify that the file list is valid (fail fast)
         self.get_output_file_list()
 
-    def get_output_directory(self) -> str:
+    # ================================================================ #
+    # Naming Properties
+    @property
+    def session_suffix(self) -> str:
+        """
+        A randomised code to differentiate repeats of the runnable.
+        :return: str, a randomised set of characters
+        """
+        if self.__session_suffix is None:
+            self.__session_suffix = random_suffix()
+        return self.__session_suffix
+
+    @property
+    def base_prefix(self) -> str:
+        """
+        The base name for the samples.
+        :return: str, the basename for the sample
+        """
+        return self.param_required('basename').replace(':', '.')
+
+    @property
+    def prefix(self) -> str:
+        """
+        A value to be prefixed to the output files
+        :return: str, the prefix to use for files
+        """
+        return f"{self.base_prefix}.{self.PIPELINE}"
+
+    # ================================================================ #
+    # Directory Properties
+    @property
+    def output_directory(self) -> str:
         """
         Gives a location to write files to. If the dir_label_params are defined,
-         the values will be used to create a directory sturcture.
+        the values will be used to create a directory structure.
         :return: str, the path to the output directory
         """
         root_output = self.param_required('root_output_dir')
-        if self.param_exists('dir_label_params'):
+        if self.param_is_defined('dir_label_params'):
             dir_label_params = self.param('dir_label_params')
             output_dir = os.path.join(root_output, *[self.param(d).replace(':', '.') for d in dir_label_params])
         else:
             output_dir = root_output
         return output_dir
 
-    def get_prefix(self) -> str:
+    @property
+    def working_directory(self) -> str:
         """
-        A value to be prefixed to the output files
-        :return: str, the prefix for the
+        A temporary directory where the work is conducted
+        :return: str, the working directory
         """
-        prefix = f"{self.param_required('basename')}.{self.PIPELINE}"
-        prefix = prefix.replace(':', '.')
-        return prefix
+        return os.path.join(self.output_directory, f"{self.prefix}_{self.session_suffix}")
+
+    @property
+    def log_directory(self) -> str:
+        """
+        The location where log files are stored.
+        :return: str, the root logging directory
+        """
+        return os.path.join(self.output_directory, 'ehive_log')
+
+    @property
+    def log_basename(self) -> str:
+        """
+        A path and file name for logging to. Requires a log type at the end.
+        :return: str, the basic logging path and log file name
+        """
+        return os.path.join(self.log_directory, f"{self.base_prefix}.{self.PIPELINE}.{self.session_suffix}")
 
     def get_output_file_list(self) -> Dict[str, str]:
         """
@@ -120,11 +169,10 @@ class Singularity(eHive.BaseRunnable):
         Sets up the singularity command. Includes selection of the executable, image and setting the working directory.
         :return: str, command for singularity
         """
-        assert self.working_dir is not None, "Working directory has not been defined"
         command = [
             self.param_required('singularity_executable'),
             "exec",
-            f"--pwd {self.working_dir}",
+            f"--pwd {self.working_directory}",
             f"{self.param_required('singularity_cache')}/{self.param_required('singularity_image')}",
         ]
         command = ' '.join(command)
@@ -133,22 +181,21 @@ class Singularity(eHive.BaseRunnable):
     def make_task_command(self) -> str:
         """
         Builds the command that will be run within the singularity image.
-        This is a combination of the CMD paramter, the WORKING_DIR (internal), PREFIX (internal),
+        This is a combination of the CMD parameter, the WORKING_DIR (internal), PREFIX (internal),
         ARGS (unpacked internally) and the CMD_ARGS
         :return: str, command within singularity
         """
-        cmd = self.CMD.format(WORKING_DIR=self.working_dir, PREFIX=self.prefix,
+        cmd = self.CMD.format(WORKING_DIR=self.working_directory, PREFIX=self.prefix,
                               ARGS=self.unpack_cmd_kwargs(), **self.get_cmd_args())
         return cmd
 
     def get_cmd_args(self) -> Dict[str, str]:
         """
         Gathers the arguments from the CMD_ARGS.
-        Values that are not defined in both the CMD_ARGS and parmeters are skipped.
+        Values that are not defined in both the CMD_ARGS and parameters are skipped.
         :return: dict{str: str, ...}, a dictionary of command keys and values
         """
-        return {k: self.param(k) for k in
-                self.CMD_ARGS if self.param_is_defined(k)}
+        return {k: self.param(k) for k in self.CMD_ARGS}
 
     def unpack_cmd_kwargs(self) -> str:
         """
@@ -162,7 +209,7 @@ class Singularity(eHive.BaseRunnable):
         Execute the provided command line and check the output.
         :param cmd: str, the command to run
         """
-        with open(f'{self.log_basename}.stderr.txt', 'w') as stderr_fh, \
+        with open(f'{self.log_basename}.stderr.txt', 'wb') as stderr_fh, \
                 open(f'{self.log_basename}.stdout.txt', 'wb') as stdout_fh:
             try:
                 p = subprocess.run(cmd, shell=True, check=True,
@@ -175,38 +222,27 @@ class Singularity(eHive.BaseRunnable):
                 stdout_fh.write(msg)
                 raise err
 
-    def open_working_dir(self):
-        """
-        Create and define the working directory.
-        """
-        session_suffix = random_suffix()
-        working_dir = os.path.join(self.output_directory, f"{self.prefix}_{session_suffix}")
-        os.makedirs(working_dir)
-        self.working_dir = working_dir
-        self.log_basename = os.path.join(self.log_directory,
-                                         f"{self.param_required('basename')}.{self.PIPELINE}.{session_suffix}")
-
     def close_working_dir(self) -> List[Tuple[str, str]]:
         """
         Move the files from the temporary directory to the output directory.
-        This step attempts to be atomic; if the files can not be moved,
-        all files will be returned to the temporary directory
+        This step attempts to be atomic by checking before moving files, but
         :return: list[tuple(str, str), ..], moved files
         """
         file_conflict_msg = "Cannot close working directory, files already exist: {}"
-        files = os.listdir(self.working_dir)
-        transactions = [(os.path.join(self.working_dir, file_name), os.path.join(self.output_directory, file_name))
+        files = os.listdir(self.working_directory)
+        transactions = [(os.path.join(self.working_directory, file_name),
+                         os.path.join(self.output_directory, file_name))
                         for file_name in files]
         # Check first (it violates the pythonic principles of EAFP, but is more atomic than hitting an issue half way)
         conflicts = [dst for src, dst in transactions if os.path.exists(dst)]
         if conflicts:
-            shutil.Error(file_conflict_msg.format(' ; '.join(conflicts)))
+            raise shutil.Error(file_conflict_msg.format(' ; '.join(conflicts)))
         for src, dst in transactions:
             try:
                 shutil.move(src, dst)
             except shutil.Error as err:
                 raise shutil.Error(file_conflict_msg.format(dst)) from err
-        shutil.rmtree(self.working_dir)
+        shutil.rmtree(self.working_directory)
         return transactions
 
     def write_output(self):
