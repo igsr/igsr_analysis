@@ -21,12 +21,11 @@ class Rsem(Singularity):
         'isoforms': "{PREFIX}.rsem.isoforms.results"
     }
 
-    def get_prefix(self) -> str:
+    @property
+    def prefix(self) -> str:
         """
         Overriding the function as the default output is in the format "<prefix>.rsem.*" and
         would otherwise result in <prefix>.rsem.rsem.*
         :return: str, the prefix for output files
         """
-        prefix = f"{self.param_required('basename')}"
-        prefix = prefix.replace(':', '.')
-        return prefix
+        return self.base_prefix

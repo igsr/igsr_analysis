@@ -13,7 +13,7 @@ class Star(Singularity):
     Runs the Star alignment task in the broadinstitute/gtex_rnaseq singularity image.
     """
 
-    PIPELINE = 'Star'
+    PIPELINE = 'star'
     CMD_KWARGS = [
         "outFilterMultimapNmax", "alignSJoverhangMin", "alignSJDBoverhangMin", "outFilterMismatchNmax",
         "outFilterMismatchNoverLmax", "alignIntronMin", "alignIntronMax", "alignMatesGapMax", "outFilterType",
@@ -32,7 +32,6 @@ class Star(Singularity):
         'read_counts': "{PREFIX}.ReadsPerGene.out.tab",
         'junctions': "{PREFIX}.SJ.out.tab",
         'junctions_pass1': "{PREFIX}._STARpass1/SJ.out.tab"
-        #logs = ["star_out/${prefix}.Log.final.out", "star_out/${prefix}.Log.out", "star_out/${prefix}.Log.progress.out"]
     }
 
     def get_cmd_args(self):
