@@ -223,7 +223,7 @@ class MLclassifier(object):
             '#CHR': DF_all['# [1]CHROM'],
             'POS': DF_all['[2]POS'].astype(int),
             'FILTER': filter_outcome,
-            'prob_TP': [ round(elem, 2) for elem in predictions_probs[:,1]]})
+            'prob_TP': [ round(elem, 4) for elem in predictions_probs[:,1]]})
         # change order of columns
         final_df=final_df[['#CHR','POS','FILTER','prob_TP']]
 

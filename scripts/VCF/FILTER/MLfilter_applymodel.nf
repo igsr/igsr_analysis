@@ -100,7 +100,7 @@ process splitVCF {
         tag {chr}
 
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -145,7 +145,7 @@ process split_multiallelic {
 	    tag {chr}
 
 	    memory '5 GB'
-	    executor 'local'
+	    executor 'lsf'
 	    queue "${params.queue}"
 	    cpus "${params.threads}"
 
@@ -169,7 +169,7 @@ process get_variant_annotations {
 	tag {chr}
 
 	memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -188,7 +188,7 @@ process get_variant_annotations {
 	"""
 }
 
-cutoff_values=[0.95,0.96]
+cutoff_values=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
 
 process apply_model {
 	/*
@@ -198,7 +198,7 @@ process apply_model {
 	tag "Apply model for $chr with $cutoff"
 
 	memory '5 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -229,7 +229,7 @@ process compress_predictions {
 	tag "Compress predictions for $chr with $cutoff"
 
 	memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -257,7 +257,7 @@ process reannotate_vcf {
 	tag "reannotate_vcf for $chr with $cutoff"
 
 	memory '500 MB'
-	executor 'local'
+	executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
