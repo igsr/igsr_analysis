@@ -11,6 +11,7 @@
 params.help = false
 params.threads = 1
 params.queue = 'production-rh7'
+params.rfe = false
 
 //print usage
 if (params.help) {
