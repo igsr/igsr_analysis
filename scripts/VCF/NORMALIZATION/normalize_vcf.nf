@@ -42,8 +42,8 @@ process split_multiallelic {
 	Path to splitted VCF
 	*/
 
-	memory '500 MB'
-        executor 'local'
+	memory '2 GB'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -65,7 +65,7 @@ process allelic_primitives {
         */
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -87,7 +87,7 @@ process select_variants {
         */
 
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -112,7 +112,7 @@ process run_bcftools_sort {
         */
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -139,7 +139,7 @@ process run_vt_uniq {
         publishDir 'norm_file', saveAs:{ filename -> "$filename" }
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
