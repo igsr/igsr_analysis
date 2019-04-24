@@ -159,6 +159,11 @@ class MLclassifier(object):
 
         self.fitted_model=outfile
 
+        outfscore= outprefix+".score"
+        f=open(outfscore,'w');
+        f.write("Score for the logistic regression fitted model is: {0}\n".format(score));
+        f.close;
+
         return outfile
 
     def predict(self, outprefix, annotation_f, filter_label='MLFILT', cutoff=0.8):
