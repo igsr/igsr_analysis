@@ -44,18 +44,14 @@ if (params.help) {
 
 log.info 'Starting the analysis.....'
 
-chrs_splitmultiallelic_withchr=Channel.empty()
-chrs_intersecionCallSets=Channel.empty()
-chrs_trainModel=Channel.empty()
-chrs_rfe=Channel.empty()
-chrs_vcfallelic_primitives=Channel.empty()
+chrs_splitmultiallelic_chr=Channel.empty()
 
 if (params.region) {
     log.info '\t--region provided'
 
     chrList = Channel.from( params.region.split(',') )
 
-    chrList.into { chrs_splitmultiallelic_withchr ; chrs_intersecionCallSets; chrs_trainModel; chrs_rfe}
+    chrList.set { chrs_splitmultiallelic_chr}
 }
 
 // Normalization
@@ -74,7 +70,7 @@ process split_multiallelic {
         cpus "${params.threads}"
 
         output:
-        file "out.splitted.vcf.gz" into out_splitted_nochr
+        file "out.splitted.vcf.gz" into out_splitted
 
         when:
         !params.region
@@ -83,38 +79,6 @@ process split_multiallelic {
         bcftools norm -m -any ${params.vcf} -o out.splitted.vcf.gz -Oz --threads ${params.threads}
         """
 }
-
-
-process split_multiallelic_withchr {
-        /*
-        This process will split the multiallelic variants for a particular region by using BCFTools
-
-        Returns
-        -------
-        Path to splitted VCF
-        */
-
-	tag {"Processing: "+chr}
-
-        memory '2 GB'
-        executor 'local'
-        queue "${params.queue}"
-        cpus "${params.threads}"
-
-        input:
-        val chr from chrs_splitmultiallelic_withchr
-
-        output:
-        file "out.splitted.${chr}.vcf.gz" into out_splitted_chr
-
-	when:
-	params.region
-
-        """
-        bcftools norm -r ${chr} -m -any ${params.vcf} -o out.splitted.${chr}.vcf.gz -Oz --threads ${params.threads}
-        """
-}
-
 
 process allelic_primitives {
         /*
@@ -131,10 +95,13 @@ process allelic_primitives {
         cpus 1
 
         input:
-	file out_splitted from out_splitted_chr.mix(out_splitted_nochr)
+	file out_splitted from out_splitted
 
         output:
         file "out.splitted.decomp.vcf.gz" into out_decomp
+
+	when:
+        !params.region
 
         """
         tabix -f ${out_splitted}
@@ -158,11 +125,13 @@ process select_variants {
         output:
         file "out.${params.vt}.vcf.gz" into out_vts
 
+	when:
+        !params.region
+
         """
         bcftools view -v ${params.vt} ${out_decomp} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
         """
 }
-
 
 process run_bcftools_sort {
         /*
@@ -183,6 +152,9 @@ process run_bcftools_sort {
 
         output:
         file "${params.outprefix}.sort.vcf.gz" into out_sort
+
+	when:
+        !params.region
 
         """
 	bcftools sort ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
@@ -209,6 +181,9 @@ process run_vt_uniq {
         output:
         file "${params.outprefix}.normalized.vcf.gz" into out_uniq
 
+	when:
+        !params.region
+
         """
         vt uniq ${out_sort} | bgzip -c > ${params.outprefix}.normalized.vcf.gz
         """
@@ -233,7 +208,10 @@ process excludeNonVariants {
         file out_uniq
 
         output:
-        file "out.onlyvariants.vcf.gz" into out_onlyvariants_chr, out_onlyvariants_nochr
+        file "out.onlyvariants.vcf.gz" into out_onlyvariants
+
+	when:
+        !params.region
 
         """
         bcftools view -c1 ${out_uniq} -o out.onlyvariants.vcf.gz --threads ${params.threads} -Oz
@@ -251,10 +229,10 @@ process intersecionCallSets {
         cpus 1
 
         input:
-        file out_onlyvariants from out_onlyvariants_nochr
+        file out_onlyvariants from out_onlyvariants
 
         output:
-        file 'dir/' into out_intersect_nochr
+        file 'dir/' into out_intersect
 
 	when:
         !params.region
@@ -262,35 +240,6 @@ process intersecionCallSets {
         """
         tabix ${out_onlyvariants}
         bcftools isec -c ${params.vt}  -p 'dir/' ${out_onlyvariants} ${params.true}
-        """
-}
-
-process intersecionCallSets_withchr {
-        /*
-        Process to find the intersection between out_sites_vts and the Gold standard call set
-	for a particular region
-        */
-
-	tag {"Processing: "+chr}	
-
-        memory '500 MB'
-        executor 'local'
-        queue "${params.queue}"
-        cpus 1
-
-        input:
-        file out_onlyvariants from out_onlyvariants_chr
-        val chr from chrs_intersecionCallSets
-
-        output:
-        file 'dir/' into out_intersect_withchr
-
-	when:
-        params.region
-
-        """
-        tabix ${out_onlyvariants}
-        bcftools isec -r ${chr} -c ${params.vt}  -p 'dir/' ${out_onlyvariants} ${params.true}
         """
 }
 
@@ -304,12 +253,15 @@ process compressIntersected {
         cpus 1
 
         input:
-	file out_intersect from out_intersect_withchr.mix(out_intersect_nochr)
+	file out_intersect from out_intersect
 
         output:
         file 'FP.vcf.gz' into fp_vcf
         file 'FN.vcf.gz' into fn_vcf
         file 'TP.vcf.gz' into tp_vcf
+
+	when:
+        !params.region
 
         """
         bgzip -c ${out_intersect}/0000.vcf > FP.vcf.gz
@@ -334,8 +286,11 @@ process get_variant_annotations {
         file fp_vcf
 
         output:
-        file 'TP_annotations.tsv.gz' into tp_annotations_train_nochr, tp_annotations_train_withchr, tp_annotations_rfe_nochr, tp_annotations_rfe_withchr
-        file 'FP_annotations.tsv.gz' into fp_annotations_train_nochr, fp_annotations_train_withchr, fp_annotations_rfe_nochr, fp_annotations_rfe_withchr
+        file 'TP_annotations.tsv.gz' into tp_annotations_train, tp_annotations_rfe
+        file 'FP_annotations.tsv.gz' into fp_annotations_train, fp_annotations_rfe
+
+	when:
+        !params.region
 
         """
         bcftools query -H -f '${params.annotations}' ${tp_vcf} | bgzip -c > TP_annotations.tsv.gz
@@ -357,55 +312,15 @@ process train_model {
         publishDir "trained_model", mode: 'copy', overwrite: true
 
         input:
-        file tp_annotations from tp_annotations_train_nochr
-        file fp_annotations from fp_annotations_train_nochr
+        file tp_annotations from tp_annotations_train
+        file fp_annotations from fp_annotations_train
 
         output:
-        file 'fitted_logreg_vts.sav' into trained_model_nochr
-        file 'fitted_logreg_vts.score' into trained_model_score_nochr
+        file 'fitted_logreg_vts.sav' into trained_model
+        file 'fitted_logreg_vts.score' into trained_model_score
 
         when:
         !params.rfe && !params.region
-
-        """
-        #!/usr/bin/env python
-
-        from VCF.VCFfilter.MLclassifier import MLclassifier
-
-        ML_obj=MLclassifier()
-
-        outfile=ML_obj.train(outprefix="fitted_logreg_vts",
-                        tp_annotations='${tp_annotations}',
-                        fp_annotations='${fp_annotations}')
-        """
-}
-
-process train_model_withchr {
-        /*
-        Process that takes TP_annotations.tsv and FP_annotations.tsv created above and will train the Logistic
-        Regression binary classifier
-        */
-
-	tag {"Processing: "+chr}
-
-        memory '5 GB'
-        executor 'local'
-        queue "${params.queue}"
-        cpus 1
-
-        publishDir "trained_model_${chr}", mode: 'copy', overwrite: true
-
-        input:
-        file tp_annotations from tp_annotations_train_withchr
-        file fp_annotations from fp_annotations_train_withchr
-        val chr from chrs_trainModel
-
-        output:
-        file 'fitted_logreg_vts.sav' into trained_model_withchr
-        file 'fitted_logreg_vts.score' into trained_model_score_withchr
-
-        when:
-        !params.rfe && params.region
 
         """
         #!/usr/bin/env python
@@ -434,11 +349,11 @@ process rfe {
         publishDir "selected_feats", mode: 'copy', overwrite: true
 
         input:
-        file tp_annotations from tp_annotations_rfe_nochr
-        file fp_annotations from fp_annotations_rfe_nochr
+        file tp_annotations from tp_annotations_rfe
+        file fp_annotations from fp_annotations_rfe
 
         output:
-        file 'selected_feats.txt' into selected_feats_nochr
+        file 'selected_feats.txt' into selected_feats
 
         when:
         params.rfe && !params.region
@@ -457,11 +372,332 @@ process rfe {
         """
 }
 
-process rfe_with_chr {
+process split_multiallelic_chr {
+        /*
+        This process will split the multiallelic variants for a particular chr by using BCFTools
+
+        Returns
+        -------
+        Path to splitted VCF
+        */
+
+	tag {"Processing: "+chr}
+
+        memory '2 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus "${params.threads}"
+
+        input:
+        val chr from chrs_splitmultiallelic_chr
+
+        output:
+        file "out.splitted.${chr}.vcf.gz" into out_splitted_chr
+	val chr into chr1
+
+	when:
+	params.region
+
+        """
+        bcftools norm -r ${chr} -m -any ${params.vcf} -o out.splitted.${chr}.vcf.gz -Oz --threads ${params.threads}
+        """
+}
+
+process allelic_primitives_chr {
+        /*
+        Process to run vcflib vcfallelicprimitives to decompose MNPs for a particular chr
+
+        Returns
+        -------
+        Path to decomposed VCF
+        */
+
+	tag {"Processing: "+chr}
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+	file out_splitted from out_splitted_chr
+	val chr from chr1
+
+        output:
+        file "out.splitted.decomp.vcf.gz" into out_decomp_chr
+	val chr into chr2
+
+	when:
+	params.region
+
+        """
+        tabix -f ${out_splitted}
+        vcfallelicprimitives -k -g ${out_splitted} |bgzip -c > out.splitted.decomp.vcf.gz
+        """
+}
+
+process select_variants_chr {
+        /*
+        Process to select the desired variants type (snps/indels) for a particular chr
+        */
+	
+	tag {"Processing: "+chr}
+
+        memory '500 MB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus "${params.threads}"
+
+        input:
+        file out_decomp_chr
+	val chr from chr2
+
+        output:
+        file "out.${params.vt}.vcf.gz" into out_vts_chr
+	val chr into chr3
+	
+	when:
+	params.region
+
+        """
+        bcftools view -v ${params.vt} ${out_decomp_chr} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
+        """
+}
+
+
+process run_bcftools_sort_chr {
+        /*
+        Process to run bcftools sort for a particular chr
+
+        Returns
+        -------
+        Path to sorted VCF
+        */
+
+	tag {"Processing: "+chr}
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_vts_chr
+	val chr from chr3
+
+        output:
+        file "${params.outprefix}.sort.vcf.gz" into out_sort_chr
+	val chr into chr4
+
+	when:
+	params.region
+
+        """
+	bcftools sort ${out_vts_chr} -o ${params.outprefix}.sort.vcf.gz -Oz
+        """
+}
+
+process run_vt_uniq_chr {
+        /*
+        Process to run vt uniq for a particular region
+
+        Returns
+        -------
+        Path to final normalized file for a particular chr
+        */
+
+	tag {"Processing: "+chr}
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_sort_chr
+	val chr from chr4
+
+        output:
+        file "${params.outprefix}.normalized.vcf.gz" into out_uniq_chr
+	val chr into chr5
+
+	when:
+	params.region
+
+        """
+        vt uniq ${out_sort_chr} | bgzip -c > ${params.outprefix}.normalized.vcf.gz
+        """
+}
+
+process excludeNonVariants_chr {
+        /*
+        This process will select the only the variants for a particular chr
+        */
+
+	tag {"Processing: "+chr}
+
+        memory '500 MB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus "${params.threads}"
+
+        input:
+        file out_uniq_chr
+	val chr from chr5
+
+        output:
+        file "out.onlyvariants.vcf.gz" into out_onlyvariants_chr
+	val chr into chr6
+
+	when:
+	params.region
+
+        """
+        bcftools view -c1 ${out_uniq_chr} -o out.onlyvariants.vcf.gz --threads ${params.threads} -Oz
+        """
+}
+
+process intersecionCallSets_chr {
+        /*
+        Process to find the intersection between out_sites_vts and the Gold standard call set
+	for a particular region
+        */
+
+	tag {"Processing: "+chr}	
+
+        memory '500 MB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_onlyvariants from out_onlyvariants_chr
+        val chr from chr6
+
+        output:
+        file 'dir/' into out_intersect_chr
+	val chr into chr7
+
+	when:
+        params.region
+
+        """
+        tabix ${out_onlyvariants}
+        bcftools isec -r ${chr} -c ${params.vt}  -p 'dir/' ${out_onlyvariants} ${params.true}
+        """
+}
+
+process compressIntersected_chr {
+        /*
+        Process to compress the files generated by bcftools isec for a particular chr
+        */
+	
+	tag {"Processing: "+chr}
+
+        memory '500 MB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+	file out_intersect from out_intersect_chr
+	val chr from chr7
+
+        output:
+        file 'FP.vcf.gz' into fp_vcf_chr
+        file 'FN.vcf.gz' into fn_vcf_chr
+        file 'TP.vcf.gz' into tp_vcf_chr
+	val chr into chr8
+
+	when:
+        params.region
+
+        """
+        bgzip -c ${out_intersect}/0000.vcf > FP.vcf.gz
+        bgzip -c ${out_intersect}/0001.vcf > FN.vcf.gz
+        bgzip -c ${out_intersect}/0002.vcf > TP.vcf.gz
+        """
+}
+
+process get_variant_annotations_chr {
+        /*
+        Process to get the variant annotations for training files
+        and for VCF file to annotate (for a single chromosome in this case)
+        */
+
+	tag {"Processing: "+chr}
+
+        memory '2 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file tp_vcf_chr
+        file fp_vcf_chr
+	val chr from chr8
+
+        output:
+        file 'TP_annotations.tsv.gz' into tp_annotations_train_chr, tp_annotations_rfe_chr
+        file 'FP_annotations.tsv.gz' into fp_annotations_train_chr, fp_annotations_rfe_chr
+	val chr into train_model_chr, rfe_chr
+
+	when:
+        params.region
+
+        """
+        bcftools query -H -f '${params.annotations}' ${tp_vcf_chr} | bgzip -c > TP_annotations.tsv.gz
+        bcftools query -H -f '${params.annotations}' ${fp_vcf_chr} | bgzip -c > FP_annotations.tsv.gz
+        """
+}
+
+process train_model_chr {
+        /*
+        Process that takes TP_annotations.tsv and FP_annotations.tsv created above and will train the Logistic
+        Regression binary classifier for a particular chr
+        */
+
+	tag {"Processing: "+chr}
+
+        memory '5 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        publishDir "trained_model_${chr}", mode: 'copy', overwrite: true
+
+        input:
+        file tp_annotations from tp_annotations_train_chr
+        file fp_annotations from fp_annotations_train_chr
+        val chr from train_model_chr
+
+        output:
+        file 'fitted_logreg_vts.sav' into trained_model_chr
+        file 'fitted_logreg_vts.score' into trained_model_score_chr
+
+        when:
+        !params.rfe && params.region
+
+        """
+        #!/usr/bin/env python
+
+        from VCF.VCFfilter.MLclassifier import MLclassifier
+
+        ML_obj=MLclassifier()
+
+        outfile=ML_obj.train(outprefix="fitted_logreg_vts",
+                        tp_annotations='${tp_annotations}',
+                        fp_annotations='${fp_annotations}')
+        """
+}
+ 
+process rfe_chr {
         /*
         Process to do Recursive Feature Elimination in order to
         select the annotations that are more relevant for prediction'
         */
+
+	tag {"Processing: "+chr}
 
         memory '5 GB'
         executor 'local'
@@ -471,12 +707,12 @@ process rfe_with_chr {
         publishDir "selected_feats_${chr}", mode: 'copy', overwrite: true
 
         input:
-        file tp_annotations from tp_annotations_rfe_withchr
-        file fp_annotations from fp_annotations_rfe_withchr
-        val chr from chrs_rfe
+        file tp_annotations from tp_annotations_rfe_chr
+        file fp_annotations from fp_annotations_rfe_chr
+        val chr from rfe_chr
 
         output:
-        file 'selected_feats.txt' into selected_feats_withchr
+        file 'selected_feats.txt' into selected_feats_chr
 
         when:
         params.rfe && params.region
