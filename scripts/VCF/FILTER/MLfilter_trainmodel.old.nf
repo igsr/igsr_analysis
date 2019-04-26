@@ -48,7 +48,6 @@ chrs_splitmultiallelic_withchr=Channel.empty()
 chrs_intersecionCallSets=Channel.empty()
 chrs_trainModel=Channel.empty()
 chrs_rfe=Channel.empty()
-chrs_vcfallelic_primitives=Channel.empty()
 
 if (params.region) {
     log.info '\t--region provided'
@@ -103,18 +102,18 @@ process split_multiallelic_withchr {
 
         input:
         val chr from chrs_splitmultiallelic_withchr
+	
+	when:
+	    params.region
+
 
         output:
         file "out.splitted.${chr}.vcf.gz" into out_splitted_chr
-
-	when:
-	params.region
 
         """
         bcftools norm -r ${chr} -m -any ${params.vcf} -o out.splitted.${chr}.vcf.gz -Oz --threads ${params.threads}
         """
 }
-
 
 process allelic_primitives {
         /*
@@ -185,6 +184,7 @@ process run_bcftools_sort {
         file "${params.outprefix}.sort.vcf.gz" into out_sort
 
         """
+//        bcftools sort ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz -T ${params.tmpdir}
 	bcftools sort ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
         """
 }
@@ -270,8 +270,6 @@ process intersecionCallSets_withchr {
         Process to find the intersection between out_sites_vts and the Gold standard call set
 	for a particular region
         */
-
-	tag {"Processing: "+chr}	
 
         memory '500 MB'
         executor 'local'
@@ -385,8 +383,6 @@ process train_model_withchr {
         Process that takes TP_annotations.tsv and FP_annotations.tsv created above and will train the Logistic
         Regression binary classifier
         */
-
-	tag {"Processing: "+chr}
 
         memory '5 GB'
         executor 'local'
