@@ -21,7 +21,7 @@ if (params.help) {
     log.info '-----------------------------------------------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow MLfilter_applymodel.nf --vcf VCF --model --cutoff 0.95 --threads 5 --vt snps --split_multiallelics true'
+    log.info '    nextflow MLfilter_applymodel.nf --vcf VCF --model --cutoff 0.95 --threads 5 --vt snps'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
@@ -30,18 +30,14 @@ if (params.help) {
     log.info '  --cutoff FLOAT/FLOATs Cutoff value used in the filtering. It also accepts comma-separated list of floats: 0.95,0.96'
     log.info '  --annotations ANNOTATION_STRING String containing the annotations to filter, for example:'
     log.info '    %CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.'
+    log.info '  --chr chr1   Chromosome to be analyzed'
     log.info '  --vt  VARIANT_TYPE   Type of variant to filter. Poss1ible values are 'snps'/'indels'.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info ''
     exit 1
 }
 
-
-chrList=['chr20']
-chrChannel=Channel.from( chrList )
-
-chrChannel.into { chrs_splitmultiallelic; chrs_get_variant_annotations; 
-		chrs_apply_model; chrs_splitVCF; chrs_reannotatevcf }
+log.info 'Starting the analysis.....'
 
 //Apply a fitted model obtained after running MLfilter_trainmodel.nf
 
@@ -97,21 +93,17 @@ process splitVCF {
         /*
         This process will select a single chromosome from the VCF
         */
-        tag {chr}
 
         memory '500 MB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
-        input:
-        val chr from chrs_splitVCF
-
         output:
-        file "unfilt.${chr}.vcf.gz" into unfilt_vcf_chr
+        file "unfilt.${params.chr}.vcf.gz" into unfilt_vcf_chr
 
         """
-        bcftools view -r ${chr} ${params.vcf} -o unfilt.${chr}.vcf.gz --threads ${params.threads} -Oz
+        bcftools view -r ${params.chr} ${params.vcf} -o unfilt.${params.chr}.vcf.gz --threads ${params.threads} -Oz
         """
 }
 
@@ -137,74 +129,195 @@ process replace_header {
         """
 }
 
+// normalize vcf
+
 process split_multiallelic {
-   	   /*
-   	   This process is used to split the multiallelic sites into different lines per allele. It uses bcftools norm 
-   	   for this
-   	    */
-	    tag {chr}
+        /*
+        This process will split the multiallelic variants by using BCFTools
+        Returns
+        -------
+        Path to splitted VCF
+        */
 
-	    memory '5 GB'
-	    executor 'lsf'
-	    queue "${params.queue}"
-	    cpus "${params.threads}"
+        memory '2 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus "${params.threads}"
 
-	    input:
-	    val chr from chrs_splitmultiallelic
+	input:
+	file unfilt_vcf_chr_reheaded from unfilt_vcf_chr_reheaded
 
-	    output:
-	    file 'out.splitted.vcf.gz' into splitted_vcf
-	    file 'out.splitted.vcf.gz.tbi' into splitted_vcf_tbi
+        output:
+        file "out.splitted.vcf.gz" into out_splitted
 
-	    """
-	    bcftools norm -r ${chr} -m -${params.vt} ${params.vcf} -o out.splitted.vcf.gz -Oz --threads ${params.threads}
-	    tabix out.splitted.vcf.gz
-	    """
+        """
+        bcftools norm -m -any ${unfilt_vcf_chr_reheaded} -o out.splitted.vcf.gz -Oz --threads ${params.threads}
+        """
 }
+
+process allelic_primitives {
+        /*
+        Process to run vcflib vcfallelicprimitives to decompose of MNPs
+        Returns
+        -------
+        Path to decomposed VCF
+        */
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+	file out_splitted from out_splitted
+
+        output:
+        file "out.splitted.decomp.vcf.gz" into out_decomp, out_decomp1
+
+        """
+        tabix -f ${out_splitted}
+        vcfallelicprimitives -k -g ${out_splitted} |bgzip -c > out.splitted.decomp.vcf.gz
+        """
+}
+
+process select_variants {
+        /*
+        Process to select the desired variants type (snps/indels)
+        */
+
+        memory '500 MB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus "${params.threads}"
+
+        input:
+        file out_decomp
+
+        output:
+        file "out.${params.vt}.vcf.gz" into out_vts
+
+        """
+        bcftools view -v ${params.vt} ${out_decomp} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
+        """
+}
+
+process run_bcftools_sort {
+        /*
+        Process to run bcftools sort
+        Returns
+        -------
+        Path to sorted VCF
+        */
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_vts
+
+        output:
+        file "out.sort.vcf.gz" into out_sort
+
+        """
+	bcftools sort ${out_vts} -o out.sort.vcf.gz -Oz
+        """
+}
+
+process run_vt_uniq {
+        /*
+        Process to run vt uniq
+        Returns
+        -------
+        Path to final normalized file
+        */
+
+        memory '9 GB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus 1
+
+        input:
+        file out_sort
+
+        output:
+        file "out.normalized.vcf.gz" into out_uniq
+
+        """
+        vt uniq ${out_sort} | bgzip -c > out.normalized.vcf.gz
+        """
+}
+
+process excludeNonVariants {
+        /*
+        This process will select the variants on the unfiltered vcf (all chros) for
+        the particular type defined by 'params.vt'
+        Returns
+        -------
+        Path to a site-VCF file containing just the variants on a particular chromosome
+        */
+
+        memory '500 MB'
+        executor 'local'
+        queue "${params.queue}"
+        cpus "${params.threads}"
+
+        input:
+        file out_uniq
+
+        output:
+        file "out.onlyvariants.vcf.gz" into out_onlyvariants
+
+        """
+        bcftools view -c1 ${out_uniq} -o out.onlyvariants.vcf.gz --threads ${params.threads} -Oz
+        """
+}
+
+// start the application of the model
 
 process get_variant_annotations {
 	/*
 	Process to get the variant annotations for the selected ${params.vt} from the unfiltered VCF file
 	*/
-	tag {chr}
-
+	
 	memory '2 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus "${params.threads}"
 
 	input:
-	val chr from chrs_get_variant_annotations
-	file splitted_vcf
-	file splitted_vcf_tbi
+	file out_onlyvariants
 
 	output:
 	file 'unfilt_annotations.vt.tsv.gz' into unfilt_annotations
 
 	"""
-	bcftools view -c1 -r ${chr} -v ${params.vt} ${splitted_vcf} -o out.onlyvariants.vt.vcf.gz -Oz --threads ${params.threads}
+	tabix ${out_onlyvariants}
+	bcftools view -r ${params.chr} -v ${params.vt} ${out_onlyvariants} -o out.onlyvariants.vt.vcf.gz -Oz --threads ${params.threads}
 	tabix out.onlyvariants.vt.vcf.gz
-	bcftools query -H -r ${chr} -f '${params.annotations}' out.onlyvariants.vt.vcf.gz | bgzip -c > unfilt_annotations.vt.tsv.gz
+	bcftools query -H -r ${params.chr} -f '${params.annotations}' out.onlyvariants.vt.vcf.gz | bgzip -c > unfilt_annotations.vt.tsv.gz
 	"""
 }
 
-cutoff_values=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+cutoff_list = Channel.from( params.cutoff.split(',') )
+
+cutoff_list.set { cutoff_values}
 
 process apply_model {
 	/*
 	Process to read-in the serialized ML model created by running MLfilter_trainmodel.nf
 	and to apply this model on the unfiltered VCF
 	*/
-	tag "Apply model for $chr with $cutoff"
+	tag "Apply model with $cutoff"
 
 	memory '5 GB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
 
 	input:
 	file unfilt_annotations
-        val chr from chrs_apply_model
 	each cutoff from cutoff_values
 
 	output:
@@ -226,10 +339,10 @@ process compress_predictions {
 	/*
 	Process to compress and index the 'predictions.tsv' file generated by process 'apply_model'
 	*/
-	tag "Compress predictions for $chr with $cutoff"
+	tag "Compress predictions with $cutoff"
 
 	memory '500 MB'
-        executor 'lsf'
+        executor 'local'
         queue "${params.queue}"
         cpus 1
 
@@ -246,25 +359,23 @@ process compress_predictions {
 	"""
 }
 
-
-reannotate_parameters = unfilt_vcf_chr_reheaded.combine(predictions_table).combine(chrs_reannotatevcf)
-
+reannotate_parameters = out_decomp1.combine(predictions_table)
 
 process reannotate_vcf {
 	/*
 	Process to reannotate the unfiltered VCF with the information generated after applying the classifier
 	*/
-	tag "reannotate_vcf for $chr with $cutoff"
+	tag "reannotate_vcf with $cutoff"
 
 	memory '500 MB'
-	executor 'lsf'
+	executor 'local'
         queue "${params.queue}"
         cpus "${params.threads}"
 
-	publishDir "results_${chr}", mode: 'copy', overwrite: true
+	publishDir "results_${params.chr}", mode: 'copy', overwrite: true
 
 	input:
-	set file(unfilt_vcf_chr_reheaded), file(predictions_table), file(predictions_table_tabix), val(cutoff), val(chr) from reannotate_parameters
+	set file(out_decomp1), file(predictions_table), file(predictions_table_tabix), val(cutoff) from reannotate_parameters
 
 	output:
 	file(output_cutoff)
@@ -273,6 +384,6 @@ process reannotate_vcf {
         output_cutoff="filt.${cutoff}".replace('.', '_')+".vcf.gz"
 
 	"""
-	bcftools annotate -a ${predictions_table} ${unfilt_vcf_chr_reheaded} -c CHROM,POS,FILTER,prob_TP -o ${output_cutoff} --threads ${params.threads} -Oz
+	bcftools annotate -a ${predictions_table} ${out_decomp1} -c CHROM,POS,FILTER,prob_TP -o ${output_cutoff} --threads ${params.threads} -Oz
 	"""
 }
