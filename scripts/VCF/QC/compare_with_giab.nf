@@ -239,7 +239,7 @@ if (params.calc_gtps==true) {
 	   file 'GT_concordance.txt' into gt_conc
 
 	   """
-	   python /lib/igsr_analysis/scripts/VCF/QC/calc_gtconcordance.py ${igsr_tsv} ${giab_tsv} > GT_concordance.txt
+	   python /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/QC/calc_gtconcordance.py ${igsr_tsv} ${giab_tsv} > GT_concordance.txt
 	   """
    }
 }
