@@ -100,14 +100,14 @@ bsub -J $TEST -q production-rh74 python3 pywrap.py $TEST \
 ```
 
 #### Expected Results:
-* 1) The file `index_bam/example_bam_file.bam.bai` will be created.
-* 2) No messages will be recorded in the error log.
-* 3) Exit code will be 0
+* 1 - The file `index_bam/example_bam_file.bam.bai` will be created.
+* 2 - No messages will be recorded in the error log.
+* 3 - Exit code will be 0
 
 #### Actual Results:
-* 1) PASS: The file `example_bam_file.bam.bai` has been created
-* 2) PASS: Error log contains no messages
-* 3) PASS: Exit code was 0
+* 1 - PASS: The file `example_bam_file.bam.bai` has been created
+* 2 - PASS: Error log contains no messages
+* 3 - PASS: Exit code was 0
 
 **Result:** PASS
 
@@ -119,17 +119,17 @@ bsub -J $TEST -q production-rh74 python3 pywrap.py $TEST \
 "singularity exec --pwd $workdir $s_img samtools index $workdir/not_a_file.bam"
 ```
 #### Expected Results:
-* 1) No `not_a_file.bam.bai` file will be created
-* 2) Error log will include reference to `not_a_file.bam` no existing
-* 3) Exit code will be non-zero
+* 1 - No `not_a_file.bam.bai` file will be created
+* 2 - Error log will include reference to `not_a_file.bam` no existing
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: No `not_a_file.bam.bai` file has been created
-* 2) PASS: Error log includes the message about the missing file:
+* 1 - PASS: No `not_a_file.bam.bai` file has been created
+* 2 - PASS: Error log includes the message about the missing file:
 ```
 samtools index: failed to open "[...]/index_bam/not_a_file.bam": No such file or directory
 ```
-* 3) PASS: non-zero exit status 1
+* 3 - PASS: non-zero exit status 1
 
 **Result:** PASS
 
@@ -141,19 +141,19 @@ bsub -J $TEST -q production-rh74 python3 pywrap.py $TEST \
 "singularity exec --pwd $workdir $s_img samtools index $workdir/truncated_bam.bam"
 ```
 #### Expected Results:
-* 1) No `truncated_bam.bam.bai` file will be created
-* 2) Error log will include a reference to being unable to read the file.
-* 3) Exit code will be non-zero
+* 1 - No `truncated_bam.bam.bai` file will be created
+* 2 - Error log will include a reference to being unable to read the file.
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: No `truncated_bam.bam.bai` file has been created
-* 2) PASS: Error log includes the message about being able to read the file:
+* 1 - PASS: No `truncated_bam.bam.bai` file has been created
+* 2 - PASS: Error log includes the message about being able to read the file:
 ```
 [W::bam_hdr_read] EOF marker is absent. The input is probably truncated
 [E::bgzf_read] Read block operation failed with error -1 after 0 of 4 bytes
 samtools index: failed to create index for "[...]/index_bam/truncated_bam.bam"
 ```
-* 3) PASS: non-zero exit status 1
+* 3 - PASS: non-zero exit status 1
 
 **Result:** PASS
 
@@ -177,18 +177,18 @@ $workdir/subsampleseq_1.fastq.gz $workdir/subsampleseq_2.fastq.gz $TEST --output
 ```
 
 #### Expected Results:
-* 1) No error messages will be recorded in the error log
-* 2) Files will be created at `star/STAR.Test1.functioning_run/`:
+* 1 - No error messages will be recorded in the error log
+* 2 - Files will be created at `star/STAR.Test1.functioning_run/`:
   * `STAR.Test1.functioning_run.Aligned.sortedByCoord.out.bam`
   * `STAR.Test1.functioning_run.Aligned.toTranscriptome.out.bam`
   * `STAR.Test1.functioning_run.Chimeric.out.sorted.bam`
-* 3) Exit code will be 0
+* 3 - Exit code will be 0
 
 #### Actual Results:
-* 1) DEVIATION: Error log contains message: `[bam_sort_core] merging from 0 files and 8 in-memory blocks...`
+* 1 - DEVIATION: Error log contains message: `[bam_sort_core] merging from 0 files and 8 in-memory blocks...`
   * Message is not a failure, considering this deviation a pass.
-* 2) PASS: The files listed were created.
-* 3) PASS: Exit code was 0
+* 2 - PASS: The files listed were created.
+* 3 - PASS: Exit code was 0
 
 **Result:** PASS (with deviations)
 
@@ -202,21 +202,21 @@ $workdir/subsampleseq.truncated_1.fastq.gz $workdir/subsampleseq_2.fastq.gz $TES
 ```
 
 #### Expected Results:
-* 1) Error log includes reference to incomplete file (fastq 1)
-* 2) No bam files created at `star/STAR.Test2.truncated_run_1/`
-* 3) Exit code will be non-zero
+* 1 - Error log includes reference to incomplete file (fastq 1)
+* 2 - No bam files created at `star/STAR.Test2.truncated_run_1/`
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log includes:
+* 1 - PASS: Error log includes:
 ```
 gzip: [...]/star/subsampleseq.truncated_1.fastq.gz: unexpected end of file
 EXITING because of FATAL ERROR in reads input: short read sequence line: 1
 ```
-* 2) DEVIATION: The following bam files were created at `star/STAR.Test2.truncated_run_1/`:
+* 2 - DEVIATION: The following bam files were created at `star/STAR.Test2.truncated_run_1/`:
     - `STAR.Test2.truncated_run_1.Aligned.out.bam`
     - `STAR.Test2.truncated_run_1.Aligned.toTranscriptome.out.bam`
   - However, as the files are empty, this deviation can be considered a pass.
-* 3) PASS: non-zero exit status 1
+* 3 - PASS: non-zero exit status 1
 
 **Result:** PASS (with deviations)
 
@@ -230,21 +230,21 @@ $workdir/subsampleseq_1.fastq.gz $workdir/subsampleseq.truncated_2.fastq.gz $TES
 ```
 
 #### Expected Results:
-* 1) Error log includes reference to incomplete file (fastq 2)
-* 2) No bam files created at `star/STAR.Test3.truncated_run_2/`
-* 3) Exit code will be non-zero
+* 1 - Error log includes reference to incomplete file (fastq 2)
+* 2 - No bam files created at `star/STAR.Test3.truncated_run_2/`
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log includes:
+* 1 - PASS: Error log includes:
 ```
 gzip: [...]/star/subsampleseq.truncated_2.fastq.gz: unexpected end of file
 EXITING because of FATAL ERROR in reads input: quality string length is not equal to sequence length
 ```
-* 2) DEVIATION: The following bam files were created at `star/STAR.Test3.truncated_run_2/`:
+* 2 - DEVIATION: The following bam files were created at `star/STAR.Test3.truncated_run_2/`:
     - `STAR.Test3.truncated_run_2.Aligned.out.bam`
     - `STAR.Test3.truncated_run_2.Aligned.toTranscriptome.out.bam`
   - However, as the files are empty, this deviation can be considered a pass.
-* 3) PASS: non-zero exit status 1
+* 3 - PASS: non-zero exit status 1
 
 **Result:** PASS (with deviations)
 
@@ -258,21 +258,21 @@ $workdir/subsampleseq.truncated_2.fastq.gz $TEST --output_dir $workdir/$TEST --t
 ```
 
 #### Expected Results:
-* 1) Error log includes reference to the missing reference file
-* 2) No bam files created at `star/STAR.Test4.missing_reference/`
-* 3) Exit code will be non-zero
+* 1 - Error log includes reference to the missing reference file
+* 2 - No bam files created at `star/STAR.Test4.missing_reference/`
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log contains the following:
+* 1 - PASS: Error log contains the following:
 ```
 EXITING because of FATAL ERROR: could not open genome file [..]/not_a_STAR_reference/genomeParameters.txt
 SOLUTION: check that the path to genome files, specified in --genomeDir is correct and the files are present, and have user read permsissions
 ```
-* 2) DEVIATION: The following bam files were created at `star/STAR.Test4.missing_reference/`:
+* 2 - DEVIATION: The following bam files were created at `star/STAR.Test4.missing_reference/`:
     - `STAR.Test4.missing_reference.Aligned.out.bam`
     - `STAR.Test4.missing_reference.Aligned.toTranscriptome.out.bam`
   - However, as the files are empty, this deviation can be considered a pass.
-* 3) PASS: non-zero exit status 1
+* 3 - PASS: non-zero exit status 1
 
 **Result:** PASS (with deviations)
 
@@ -297,16 +297,16 @@ $workdir/Aligned.toTranscriptome.bam $TEST"
 ```
 
 #### Expected Results:
-* 1) No message will be included in error log.
-* 2) Files wil be created at `rsem/RSEM.Test1.functioning_run/`:
+* 1 - No message will be included in error log.
+* 2 - Files wil be created at `rsem/RSEM.Test1.functioning_run/`:
   * `RSEM.Test1.functioning_run.rsem.genes.results`
   * `RSEM.Test1.functioning_run.rsem.isoforms.results`
-* 3) Exit code will be 0
+* 3 - Exit code will be 0
 
 #### Actual Results:
-* 1) DEVIATION: Error log contains warning messages from Perl but no messages related to errors.
-* 2) PASS: The files have been created.
-* 3) PASS: Exit code was 0
+* 1 - DEVIATION: Error log contains warning messages from Perl but no messages related to errors.
+* 2 - PASS: The files have been created.
+* 3 - PASS: Exit code was 0
 
 **Result:** PASS (with deviations)
 
@@ -321,19 +321,19 @@ $workdir/truncated.Aligned.toTranscriptome.bam $TEST"
 ```
 
 #### Expected Results:
-* 1) Error log will include an error message relating to the truncated file
-* 2) Results files will not be created at: `rsem/RSEM.Test2.truncated_bam/`
-* 3) Exit code will be non-zero
+* 1 - Error log will include an error message relating to the truncated file
+* 2 - Results files will not be created at: `rsem/RSEM.Test2.truncated_bam/`
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log includes the message
+* 1 - PASS: Error log includes the message
 ```
 [W::bam_hdr_read] EOF marker is absent. The input is probably truncated.
 ```
-* 2) FAIL: Files *were* created at `rsem/RSEM.Test2.truncated_bam/`:
+* 2 - FAIL: Files *were* created at `rsem/RSEM.Test2.truncated_bam/`:
   - `RSEM.Test2.truncated_bam.rsem.genes.results`
   - `RSEM.Test2.truncated_bam.rsem.isoforms.results`
-* 3) FAIL: Error code *is* 0
+* 3 - FAIL: Error code *is* 0
 
 **Results:** Fail
 
@@ -347,15 +347,15 @@ bsub -J $TEST -q production-rh74 -M$MEM -n 8 -R"select[mem>$MEM] rusage[mem=$MEM
 $workdir/truncated.Aligned.toTranscriptome.bam $TEST"
 ```
 #### Expected Results:
-* 1) Error log will include an error message relating to the missing file
-* 2) Results files will not be created at: `rsem/RSEM.Test3.missing_reference`
-* 3) Exit code will be non-zero
+* 1 - Error log will include an error message relating to the missing file
+* 2 - Results files will not be created at: `rsem/RSEM.Test3.missing_reference`
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log includes the message:
+* 1 - PASS: Error log includes the message:
 `Cannot open [..]/not_an_rsem_reference/rsem_reference.grp! It may not exist.`
-* 2) PASS: No results files were created in the output location
-* 3) PASS: non-zero exit status 1
+* 2 - PASS: No results files were created in the output location
+* 3 - PASS: non-zero exit status 1
 
 **Results:** Pass
 
@@ -377,18 +377,18 @@ bsub -J $TEST -q production-rh74 -M$MEM -R"select[mem>$MEM] rusage[mem=$MEM]" py
 ```
 
 #### Expected Results:
-* 1) Error log contains no error messages
-* 2) The file `example_bam_file.md.bam` has been created
-* 3) Exit code will be 0
+* 1 - Error log contains no error messages
+* 2 - The file `example_bam_file.md.bam` has been created
+* 3 - Exit code will be 0
 
 #### Actual Results:
-* 1) PASS: The error log includes the output from picard. There are no errors listed. eg:
+* 1 - PASS: The error log includes the output from picard. There are no errors listed. eg:
 ```
 [Fri May 31 15:52:45 UTC 2019] picard.sam.markduplicates.MarkDuplicates done. Elapsed time: 0.84 minutes.
 Runtime.totalMemory()=3769159680
 ```
-* 2) PASS: The file `example_bam_file.md.bam` exists.
-* 3) PASS: Exit code was 0
+* 2 - PASS: The file `example_bam_file.md.bam` exists.
+* 3 - PASS: Exit code was 0
 
 **Result:** PASS (with deviations)
 
@@ -402,17 +402,17 @@ $workdir/truncated_bam.bam markdups -o $workdir --memory 5"
 ```
 
 #### Expected Results:
-* 1) Error log contains reference to the truncated file
-* 2) No file created at `truncated_bam.md.bam`
-* 3) Exit code will be non-zero
+* 1 - Error log contains reference to the truncated file
+* 2 - No file created at `truncated_bam.md.bam`
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log includes the message:
+* 1 - PASS: Error log includes the message:
 ```
 Exception in thread "main" htsjdk.samtools.FileTruncatedException: Premature end of file: [..]/mark_duplicates/truncated_bam.bam
 ```
-* 2) FAIL: The file `truncated_bam.md.bam` *does* exist. This is a failing condition.
-* 3) PASS: non-zero exit status 1
+* 2 - FAIL: The file `truncated_bam.md.bam` *does* exist. This is a failing condition.
+* 3 - PASS: non-zero exit status 1
 
 **Result:** FAIL
 
@@ -426,18 +426,18 @@ $workdir/not_a_bam_file.bam markdups -o $workdir --memory 5"
 ```
 
 #### Expected Results:
-* 1) Error log contains a reference to the missing file
-* 2) The file `not_a_bam_file.md.bam` will not be created.
-* 3) Exit code will be non-zero
+* 1 - Error log contains a reference to the missing file
+* 2 - The file `not_a_bam_file.md.bam` will not be created.
+* 3 - Exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log contains the following line:
+* 1 - PASS: Error log contains the following line:
 ```
 Exception in thread "main" htsjdk.samtools.SAMException:
 Cannot read non-existent file: [..]/not_a_bam_file.bam
 ```
-* 2) PASS: The file `not_a_bam_file.md.bam` has not been created.
-* 3) PASS: non-zero exit status 1
+* 2 - PASS: The file `not_a_bam_file.md.bam` has not been created.
+* 3 - PASS: non-zero exit status 1
 
 **Result:** PASS
 
@@ -462,14 +462,14 @@ $refs_dir/gencode/gencode.v29.GRCh38.ERCC.genes.gtf $refs_dir/Homo_sapiens_assem
 ```
 
 #### Expected Results:
-* 1) Error log will contain no messages
-* 2) Files will be created at `rnaseq_counts/RnaseqcCounts.Test1.functioning_run`
-* 3) Exit status return code will be 0
+* 1 - Error log will contain no messages
+* 2 - Files will be created at `rnaseq_counts/RnaseqcCounts.Test1.functioning_run`
+* 3 - Exit status return code will be 0
 
 #### Actual Results:
-* 1) PASS: Error log is empty
-* 2) PASS: Files were created
-* 3) PASS: Exit code was 0
+* 1 - PASS: Error log is empty
+* 2 - PASS: Files were created
+* 3 - PASS: Exit code was 0
 
 **Results:** PASS
 
@@ -485,17 +485,17 @@ $refs_dir/gencode/gencode.v29.GRCh38.ERCC.genes.gtf $refs_dir/Homo_sapiens_assem
 ```
 
 #### Expected Results:
-* 1) Error log will contain message referencing the missing file
-* 2) No output files will be created at `rnaseq_counts/RnaseqcCounts.Test2.missing_bam`
-* 3) The exit code will be non-zero
+* 1 - Error log will contain message referencing the missing file
+* 2 - No output files will be created at `rnaseq_counts/RnaseqcCounts.Test2.missing_bam`
+* 3 - The exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log includes the message:
+* 1 - PASS: Error log includes the message:
 ```
 org.broadinstitute.sting.utils.exceptions.UserException$CouldNotReadInputFile: Couldn't read file [..]/not_a_bam_file.bam because java.io.FileNotFoundException: [..]/not_a_bam_file.bam (No such file or directory)
 ```
-* 2) PASS: Temporary files *do* exist at `rnaseq_counts/RnaseqcCounts.Test2.missing_bam` but none of the output files have been generated
-* 3) PASS: Exit code returned: `non-zero exit status 1`
+* 2 - PASS: Temporary files *do* exist at `rnaseq_counts/RnaseqcCounts.Test2.missing_bam` but none of the output files have been generated
+* 3 - PASS: Exit code returned: `non-zero exit status 1`
 
 **Results:** PASS (with deviation)
 
@@ -511,14 +511,14 @@ $refs_dir/gencode/not_a_gencode_refernce.gtf $refs_dir/Homo_sapiens_assembly38_n
 ```
 
 #### Expected Results:
-* 1) Error log will reference the missing gencode reference
-* 2) No output files generated at `rnaseq_counts/RnaseqcCounts.Test3.missing_gencode_reference/`
-* 3) The exit code will be non-zero
+* 1 - Error log will reference the missing gencode reference
+* 2 - No output files generated at `rnaseq_counts/RnaseqcCounts.Test3.missing_gencode_reference/`
+* 3 - The exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: Error log includes the line: `java.io.FileNotFoundException: /[..]/not_a_gencode_refernce.gtf (No such file or directory)`
-* 2) PASS: No output files generated. Only temporary files in the directory.
-* 3) PASS: Exit code returned: `non-zero exit status 1`
+* 1 - PASS: Error log includes the line: `java.io.FileNotFoundException: /[..]/not_a_gencode_refernce.gtf (No such file or directory)`
+* 2 - PASS: No output files generated. Only temporary files in the directory.
+* 3 - PASS: Exit code returned: `non-zero exit status 1`
 
 **Results:** PASS
 
@@ -533,14 +533,14 @@ $refs_dir/gencode/gencode.v29.GRCh38.ERCC.genes.gtf $refs_dir/not_a_genome_refer
 --java /usr/lib/jvm/java-1.7.0-openjdk-amd64/bin/java -o $workdir/$TEST --memory 7 --rnaseqc_flags noDoC strictMode"
 ```
 #### Expected Results:
-* 1) Error log will reference the missing sequence reference file
-* 2) No output files generated at `rnaseq_counts/RnaseqcCounts.Test4.missing_reference_seq`
-* 3) The exit code will be non-zero
+* 1 - Error log will reference the missing sequence reference file
+* 2 - No output files generated at `rnaseq_counts/RnaseqcCounts.Test4.missing_reference_seq`
+* 3 - The exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: The error log includes: `java.io.FileNotFoundException: /[..]/not_a_genome_reference.fasta.fai (No such file or directory)`
-* 2) PASS: No output files generated. Only temporary files in the directory.
-* 3) PASS: Exit code returned: `non-zero exit status 1`
+* 1 - PASS: The error log includes: `java.io.FileNotFoundException: /[..]/not_a_genome_reference.fasta.fai (No such file or directory)`
+* 2 - PASS: No output files generated. Only temporary files in the directory.
+* 3 - PASS: Exit code returned: `non-zero exit status 1`
 
 **Results:** PASS
 
@@ -556,12 +556,12 @@ $refs_dir/gencode/gencode.v29.GRCh38.ERCC.genes.gtf $refs_dir/Homo_sapiens_assem
 ```
 
 #### Expected Results:
-* 1) The error message will reference the missing directory
-* 2) The exit code will be non-zero
+* 1 - The error message will reference the missing directory
+* 2 - The exit code will be non-zero
 
 #### Actual Results:
-* 1) PASS: The standard error log includes the message:
+* 1 - PASS: The standard error log includes the message:
 ```FileNotFoundError: [Errno 2] No such file or directory: '[..]/rnaseq_counts/not_an_output_dir'```
-* 2) PASS: Exit code returned: `non-zero exit status 1`
+* 2 - PASS: Exit code returned: `non-zero exit status 1`
 
 **Results:** PASS
