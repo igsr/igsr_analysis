@@ -2,16 +2,13 @@
 
 import unittest
 from unittest import mock
-import string
-import os
-import tempfile
-import shutil
 
 from PyHive.TOPMed.Star import Star
 from PyHive.TOPMed.Rsem import Rsem
 from PyHive.TOPMed.RnaseqcCounts import RnaseqcCounts
 from PyHive.TOPMed.MarkDuplicates import MarkDuplicates
 from PyHive.TOPMed.IndexBam import IndexBam
+from PyHive.TOPMed.SamtoolsQuickcheck import SamtoolsQuickcheck
 
 
 class AbstractSingularity():
@@ -87,5 +84,7 @@ class TestIndexBam(AbstractSingularity, unittest.TestCase):
         return IndexBam
 
 
-
+class TestQuickCheck(AbstractSingularity, unittest.TestCase):
+    def set_singularity_type(self):
+        return SamtoolsQuickcheck
 
