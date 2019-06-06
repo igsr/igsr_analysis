@@ -68,7 +68,6 @@ class Singularity(eHive.BaseRunnable):
         # Verify that the runnable is properly configured
         assert self.PIPELINE is not None, "Pipeline name has not been defined."
 
-
         # Open all directories
         # Creating a parameter here to assist with logging
         self.__directories = {

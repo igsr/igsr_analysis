@@ -52,7 +52,6 @@ sub default_options {
         require_sample_columns        => {},
         exclude_sample_columns        => {},
 
-
         singularity_cache             => $self->o('ENV', 'SINGULARITY_CACHEDIR'),
         singularity_image             => 'broadinstitute/gtex_rnaseq:V8',
         singularity_executable        => 'singularity',
@@ -60,10 +59,8 @@ sub default_options {
         # runnable-specific parameters' defaults:
         'lsf_queue'                   => 'production-rh74',
 
-
         'RGSM'                        => '#sample_source_id#',
         'RGPU'                        => '#run_source_id#',
-
 
         #
         # final_output_layout           => '#sample_source_id#/alignment',
@@ -105,13 +102,22 @@ sub resource_classes {
     my ($self) = @_;
     return {
         %{$self->SUPER::resource_classes},
+        # Index Bam, samtools quickcheck
         '200Mb'     => {'LSF' => '-C0 -M200 -q '.$self->o('lsf_queue').' -R"select[mem>200] rusage[mem=200]"'},
+        # Mark Duplicates
+        '8Gb'       => {'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"'},
+        # RnaSeQcCounts
+        '10Gb'      => {'LSF' => '-C0 -M10240 -q '.$self->o('lsf_queue').' -R"select[mem>10240] rusage[mem=10240]"'},
+        # RSEM
+        '10Gb8cpus' => {'LSF' => '-n 8 -C0 -M10240 -q '.$self->o('lsf_queue').' -R"select[mem>10240] rusage[mem=10240]"'},
+        # STAR
+        '38Gb8cpus' => {'LSF' => '-n 8 -C0 -M38912 -q '.$self->o('lsf_queue').' -R"select[mem>38912] rusage[mem=38912]"'},
+        # --- Other:
         '4Gb'       => {'LSF' => '-C0 -M4096 -q '.$self->o('lsf_queue').' -R"select[mem>4096] rusage[mem=4096]"'},
         '5Gb'       => {'LSF' => '-C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"'},
-        '8Gb'       => {'LSF' => '-C0 -M8192 -q '.$self->o('lsf_queue').' -R"select[mem>8192] rusage[mem=8192]"'},
         '5Gb8cpus'  => {'LSF' => '-n 8 -C0 -M5120 -q '.$self->o('lsf_queue').' -R"select[mem>5120] rusage[mem=5120]"'},
         '30Gb6cpus' => {'LSF' => '-n 6 -C0 -M30720 -q '.$self->o('lsf_queue').' -R"select[mem>30720] rusage[mem=30720]"'},
-        '35Gb6cpus' => {'LSF' => '-n 6 -C0 -M35840 -q '.$self->o('lsf_queue').' -R"select[mem>35840] rusage[mem=35840]"'}
+        '35Gb6cpus' => {'LSF' => '-n 6 -C0 -M35840 -q '.$self->o('lsf_queue').' -R"select[mem>35840] rusage[mem=35840]"'},
     };
 }
 
@@ -206,10 +212,24 @@ sub pipeline_analyses {
             star_index        => $self->o('star_index'),
             num_threads       => 6
         },
-        -rc_name           => '30Gb6cpus',
+        -rc_name           => '38Gb8cpus',
         -analysis_capacity => 2,
-        -flow_into         => { 1 => [ 'markduplicates', 'rsem' ] }
+        -flow_into         => {
+            '1->A' => [ 'samtools_quickcheck_transcriptome' ],
+            'A->1' => [ 'markduplicates', 'rsem' ]
+        }
     });
+
+    push(@analyses, {
+        -logic_name        => 'samtools_quickcheck_transcriptome',
+        -language          => 'python3',
+        -module            => 'PyHive.TOPMed.SamtoolsQuickcheck',
+        -parameters        => {
+            bam_file_to_check => '#transcriptome_bam#',
+        },
+        -rc_name           => '200Mb',
+    });
+
 
     push(@analyses, {
         -logic_name        => 'rsem',
@@ -217,10 +237,10 @@ sub pipeline_analyses {
         -module            => 'PyHive.TOPMed.Rsem',
         -parameters        => {
             rsem_reference   => $self->o('rsem_reference'),
-            memory           => 5,
+            memory           => 10,
             num_threads      => 8,
         },
-        -rc_name           => '5Gb8cpus',
+        -rc_name           => '10Gb8cpus',
         -analysis_capacity => 4,
     });
 
@@ -229,7 +249,7 @@ sub pipeline_analyses {
         -language          => 'python3',
         -module            => 'PyHive.TOPMed.MarkDuplicates',
         -parameters        => {
-            memory           => 5,
+            memory           => 8,
             num_threads      => 1,
         },
         -rc_name           => '8Gb',
@@ -257,9 +277,9 @@ sub pipeline_analyses {
         -parameters        => {
             genes_gtf        => $self->o('genes_gtf'),
             genome_fasta     => $self->o('genome_fasta'),
-            memory           => 5,
+            memory           => 10,
         },
-        -rc_name           => '5Gb',
+        -rc_name           => '10Gb',
         -analysis_capacity => 4,
     });
 
