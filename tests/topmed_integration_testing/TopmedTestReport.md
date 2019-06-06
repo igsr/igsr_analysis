@@ -4,10 +4,10 @@ In production, the pipeline follows the following hierarchy:
 `eHive -> bsub -> python eHive Runnable -> Singularity -> topmed component`
 eHive catches any errors that occur in bsub, eg memory limits, and logs these.
 Any errors thrown by singularity or the topmed component will be caught by the python eHive runnable.
-As the capture of errors at the bsub level is a well tested and proven feature of eHive, we will only be concered in this testing protocol with exercising errors raised by topmed comonents. Therefore errors triggered by bsub memory limits will not be necessary.
+As the capture of errors at the bsub level is a well tested and proven feature of eHive, we will only be concerned in this testing protocol with exercising errors raised by topmed components. Therefore errors triggered by bsub memory limits will not be necessary.
 In these tests a python script, `pywrap.py`, will emulate the functionality of the python eHive runnable. It uses the same command to execute singularity and capture logs.
 
-The tests were excetued at: `/hps/nobackup/production/reseq-info/galdam/Topmed_Integration_Testing`
+The tests were executed at: `/hps/nobackup/production/reseq-info/galdam/Topmed_Integration_Testing`
 
 
 # Summary of Results
@@ -28,6 +28,14 @@ Test 1: Functioning Run   | PASS   | Messages posted to stderr   | Messages are 
 Test 2: Truncated Run 1   | PASS   | Empty BAM files are created | Exit code is non-zero. Files are only kept on a 0 exit code.
 Test 3: Truncated Run 2   | PASS   | Empty BAM files are created | Exit code is non-zero. Files are only kept on a 0 exit code.
 Test 4: Missing Reference | PASS   | Empty BAM files are created | Exit code is non-zero. Files are only kept on a 0 exit code.
+
+**Samtools Quickcheck**
+
+Test                    | Status | Deviations | Mitigation
+------------------------|--------|------------|------------
+Test 1: Functioning Run | PASS   | NA         | NA
+Test 2: Missing files   | PASS   | NA         | NA
+Test 3: Truncated files | PASS   | NA         | NA
 
 **RSEM**
 
@@ -275,6 +283,75 @@ SOLUTION: check that the path to genome files, specified in --genomeDir is corre
 * 3 - PASS: non-zero exit status 1
 
 **Result:** PASS (with deviations)
+
+
+# Samtools Quickcheck Tests
+## Setup Environment
+```
+cd /hps/nobackup/production/reseq-info/galdam/Topmed_Integration_Testing
+s_img=/nfs/production/reseq-info/work/GTEx-Pipeline/singularity_cache/broadinstitute/gtex_rnaseq:V8
+workdir=/hps/nobackup/production/reseq-info/galdam/Topmed_Integration_Testing/quickcheck
+```
+
+## Quickcheck Test 1: Functioning Run
+#### Command:
+```
+TEST="Quickcheck.Test1.functioning_run"
+bsub -J $TEST -q production-rh74 python3 pywrap.py $TEST \
+"singularity exec --pwd $workdir $s_img samtools quickcheck $workdir/Aligned.toTranscriptome.bam"
+```
+
+#### Expected Results:
+* 1 - No messages will be recorded in the error log.
+* 2 - Exit code will be 0
+
+#### Actual Results:
+* 1 - PASS: Error log contains no messages
+* 2 - PASS: Exit code was 0
+
+**Result:** PASS
+
+## Quickcheck Test 2: Missing File
+#### Command:
+```
+TEST="Quickcheck.Test2.missing_file"
+bsub -J $TEST -q production-rh74 python3 pywrap.py $TEST \
+"singularity exec --pwd $workdir $s_img samtools quickcheck $workdir/not_a_file.bam"
+```
+
+#### Expected Results:
+* 1 - The error log will reference the missing file.
+* 2 - Exit code will be non-zero
+
+#### Actual Results:
+* 1 - PASS: Error log included:
+```
+[..]quickcheck/not_a_file.bam could not be opened for reading.
+```
+* 2 - PASS: Returned non-zero exit status 2.
+
+**Result:** PASS
+
+## Quickcheck Test 3: Truncated File
+#### Command:
+```
+TEST="Quickcheck.Test3.truncated_file"
+bsub -J $TEST -q production-rh74 python3 pywrap.py $TEST \
+"singularity exec --pwd $workdir $s_img samtools quickcheck $workdir/truncated.Aligned.toTranscriptome.bam"
+```
+
+#### Expected Results:
+* 1 - The error log will reference the truncated file.
+* 2 - Exit code will be non-zero
+
+#### Actual Results:
+* 1 - PASS: Error log included:
+```
+[..]quickcheck/truncated.Aligned.toTranscriptome.bam was missing EOF block when one should be present.
+```
+* 2 - PASS: returned non-zero exit status 16.
+
+**Result:** PASS
 
 # RSEM Tests
 ## Setup Environment
