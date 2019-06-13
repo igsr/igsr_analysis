@@ -454,6 +454,28 @@ class BcftoolsStats(object):
         self.ts_tv_1stalt = ts_tv_1stalt
         self.no_singleton_snps = no_singleton_snps
 
+    def summary2tsv(self):
+        '''
+        Function to write summary_numbers in tsv format
+
+        Returns
+        -------
+        tsv file with summary numbers 
+        '''
+        outfile="{0}.summary.tsv".format(self.filename)
+
+        summary_numbers=self.summary_numbers
+        header="#filename\t"
+        header+="\t".join(summary_numbers.keys()).replace(":","").replace(" ","_")
+        
+        values=self.filename+"\t"
+        values+="\t".join([str(n) for n in summary_numbers.values()])
+
+        f=open(outfile,'w');
+        f.write(header+"\n")
+        f.write(values+"\n")
+        f.close
+
     def __str__(self):
         sb = []
         for key in self.__dict__:
