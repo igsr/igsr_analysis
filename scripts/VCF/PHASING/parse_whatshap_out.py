@@ -1,13 +1,14 @@
 import glob
 import os
 import pdb
+import sys
 from collections import defaultdict
 from prettytable import PrettyTable
 
 all_blocks_d = defaultdict(list)
 larg_block_d = defaultdict(list)
 
-for file in glob.glob("/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/BENCHMARKING/WHATSHAP/SNPS/GRCh38/out.*.log"):
+for file in glob.glob(sys.argv[1]+"/out.*.log"):
     chromosome=int(os.path.basename(file).split('.')[1])
     all_block=False
     larg_block=False
