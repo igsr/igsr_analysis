@@ -46,7 +46,7 @@ if (params.help) {
 Channel
     .fromPath(params.file)
     .splitCsv(header:true)
-    .map{ row-> tuple(row.url, file(row.dest)) }
+    .map{ row-> tuple(row.url, row.name) }
     .into { paths_ch1; paths_ch2 }
 
 
@@ -56,55 +56,61 @@ process downloadFile_byWGET {
 
         Returns
         -------
-	Path to the CRAM file to be downloaded
+        Path to the CRAM file to be downloaded
         */
+
+        publishDir "converted", mode: 'symlink', overwrite: true
 
         memory '500 MB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
-	maxForks 25
-	errorStrategy 'ignore'
+        maxForks 25
+        errorStrategy 'terminate'
 
         input:
-        set url, file(dest) from paths_ch1
+        set url, name from paths_ch1
 
         output:
-        file(dest) into wget_ch
+        file "${name}" into wget_ch
+        val name into wget_name_ch
         when:
         params.wget
 
         """
-	wget ${url} -O ${dest}
+        wget ${url} -O ${name}
         """
 }
 
 process downloadFile_byASCP {
-	/*
-	This process uses ASPERA for downloading the file
+        /*
+        This process uses ASPERA for downloading the file
 
-	Returns
-	-------
-	Path to the file to be downloaded
-	*/
+        Returns
+        -------
+        Path to the file to be downloaded
+        */
 
-	memory '500 MB'
+        publishDir "converted", mode: 'symlink', overwrite: true
+
+        memory '500 MB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
-	maxForks 25
-	errorStrategy 'ignore' 
+        maxForks 25
+        errorStrategy 'ignore'
 
         input:
-        set url, file(dest) from paths_ch2
+        set url, name from paths_ch2
 
-	output:
-	file(dest) into ascp_ch
-	when:
-	params.ascp
+        output:
+        file(dest) into ascp_ch
+        val name into ascp_name_ch
+        when:
+        params.ascp
 
-	"""	
-	ascp -i ${params.key_file} -Tr -Q -l ${params.transfer_rate} -P${params.port} -L- ${url} ${dest}
+        """
+        ascp -i ${params.key_file} -Tr -Q -l ${params.transfer_rate} -P${params.port} -L- ${url} ${dest}
         """
 }
 
@@ -117,23 +123,25 @@ process md5 {
         md5sum of downloaded file
         */
 
-        publishDir "converted", mode: 'copy', overwrite: true
+        publishDir "converted", mode: 'symlink', overwrite: true
 
         memory '2 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
-	errorStrategy 'ignore'
+        errorStrategy 'ignore'
 
         input:
         file down_f from ascp_ch.mix(wget_ch)
+        val name from ascp_name_ch.mix(wget_name_ch)
 
         output:
-        file down_f into down_f
-        file "${down_f}.md5" into md5
+        file "${name}.md5" into md5
+	file down_f into down_f_md5_ch
+	val name into md5_name_ch
 
         """
-        md5sum ${down_f} > ${down_f}.md5
+        md5sum ${down_f} > ${name}.md5
         """
 }
 
@@ -147,7 +155,7 @@ process convert2bam {
         Path to a BAM file
         */
 
-        publishDir "converted", mode: 'copy', overwrite: true
+        publishDir "converted", mode: 'link', overwrite: true
 
         memory '15 GB'
         executor 'lsf'
@@ -156,13 +164,14 @@ process convert2bam {
 	errorStrategy 'ignore'
 
         input:
-        file down_f from down_f
+        file down_f from down_f_md5_ch
+	val name from md5_name_ch
 
         output:
-        file "${down_f}.bam" into out_bam
+        file "${name}.bam" into out_bam
 
         """
-        samtools view -b -o ${down_f}.bam ${down_f} --threads ${params.threads}
+        samtools view -b -o ${name}.bam ${down_f} --threads ${params.threads}
         """
 }
 
@@ -171,7 +180,7 @@ process make_index {
         Process to create a samtools index on the converted BAM file
         */
 
-        publishDir "converted", mode: 'copy', overwrite: true
+        publishDir "converted", mode: 'link', overwrite: true
 
         memory '15 GB'
         executor 'lsf'
