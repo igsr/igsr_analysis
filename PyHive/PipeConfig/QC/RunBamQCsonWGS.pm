@@ -45,16 +45,15 @@ sub default_options {
         'pwd' => undef,
         'work_dir'    => undef,
         'python_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
-        'script_folder' => '/homes/ernesto/lib/reseq-personal/ernesto/igsr/BamQC/src/',
 	'store_attributes' => undef,
         'chk_indel_rg_folder' => '/homes/ernesto/bin/',
 	'verifybamid_folder' => '/nfs/production/reseq-info/work/bin/verifyBamID_1.1.3/verifyBamID/bin/',
 	'genotype_folder' => undef,
 	'java_folder'    => '/nfs/production/reseq-info/work/bin/java/jdk1.8.0_40/bin/',
-        'picard_folder' => '/nfs/production/reseq-info/work/bin/picard-2.7.1/',
+        'picard_folder' => '/nfs/production/reseq-info/work/bin/picard.2.20.3/',
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
-        'samtools_folder' => '/nfs/production/reseq-info/work/bin/samtools-1.3/',
-        'lsf_queue'   => 'production-rh7',
+        'samtools_folder' => '/nfs/production/reseq-info/work/bin/samtools-1.9/bin/',
+        'lsf_queue'   => 'production-rh74',
     };
 }
 
@@ -120,7 +119,7 @@ sub pipeline_analyses {
                 'chk_indel_rg_folder' => $self->o('chk_indel_rg_folder'),
                 'work_dir' => $self->o('work_dir'),
             },
-	    -analysis_capacity => 20,
+	    -analysis_capacity => 50,
             -rc_name => '500Mb',
 	    -flow_into => {
 		1 => ['store_chkindelrg_attribute']
@@ -138,6 +137,7 @@ sub pipeline_analyses {
                 'pwd' => $self->o('pwd'),
 		'store_attributes' => $self->o('store_attributes')
             },
+	    -analysis_capacity => 1
         },
 
 	{   -logic_name => 'run_verifybamid',
@@ -154,7 +154,7 @@ sub pipeline_analyses {
                 'verifybamid_folder' => $self->o('verifybamid_folder'),
                 'work_dir' => $self->o('work_dir')
             },
-	    -analysis_capacity => 1,
+	    -analysis_capacity => 50,
             -rc_name => '1Gb',
 	    -flow_into => {
                 1 => ['store_vfbamid_attribute']
@@ -172,6 +172,7 @@ sub pipeline_analyses {
                 'pwd' => $self->o('pwd'),
                 'store_attributes' => $self->o('store_attributes')
             },
+	    -analysis_capacity => 1
         },
 	
 	{   -logic_name => 'run_picard_on_wgsfile',
@@ -189,7 +190,7 @@ sub pipeline_analyses {
                 'work_dir' => $self->o('work_dir'),
                 'reference' => $self->o('reference'),
             },
-            -analysis_capacity => 20,
+            -analysis_capacity => 50,
             -rc_name => '12Gb',
 	    -flow_into => {
                 1 => ['store_picard_attribute']
@@ -207,10 +208,11 @@ sub pipeline_analyses {
                 'pwd' => $self->o('pwd'),
                 'store_attributes' => $self->o('store_attributes')
             },
+	    -analysis_capacity => 1
         }
 
 	];
 }
 
 1;
-=cut
+
