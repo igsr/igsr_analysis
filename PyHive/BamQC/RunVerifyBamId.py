@@ -2,6 +2,7 @@ import eHive
 import os
 import glob
 import fnmatch
+import pdb
 import re
 from BamQC import BamQC
 from ReseqTrackDB import *
@@ -71,8 +72,8 @@ class RunVerifyBamId(eHive.BaseRunnable):
                             freemix=freemix.rstrip(".")
                             chipmix=(str(chipmix)[-2:] == '.0' and str(chipmix)[:-2] or str(chipmix))
 
-                            name1="%s_%s_%s:freemix" %(filename,sample,rg)
-                            name2="%s_%s_%s:chipmix" %(filename,sample,rg)
+                            name1="%s_%s:freemix" %(sample,rg)
+                            name2="%s_%s:chipmix" %(sample,rg)
                             a1=Attribute(table_name="file",other_id=fileO.dbID,name=name1,value=freemix)
                             a2=Attribute(table_name="file",other_id=fileO.dbID,name=name2,value=chipmix)
                             vfbamid_list.append(a1.__dict__)
