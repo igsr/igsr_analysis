@@ -66,7 +66,7 @@ process downloadFile_byWGET {
         queue "${params.queue}"
         cpus 1
         maxForks 25
-        errorStrategy 'terminate'
+        errorStrategy 'ignore'
 
         input:
         set url, name from paths_ch1
