@@ -12,7 +12,7 @@ import pandas as pd
 import argparse
 import matplotlib
 matplotlib.use('Agg')
-from ReseqTrackDB import ReseqTrackD
+from ReseqTrackDB import ReseqTrackDB
 
 #get command line arguments
 
