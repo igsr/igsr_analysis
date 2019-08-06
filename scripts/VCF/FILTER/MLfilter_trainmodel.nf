@@ -23,7 +23,7 @@ if (params.help) {
     log.info '---------------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow MLfilter_trainmodel.nf --vcf VCF --true VCF --vt snps --annotations ANNOTATION_STRING --threads 5'
+    log.info '    nextflow MLfilter_trainmodel.nf --vcf VCF --true VCF --vt snps --annotations ANNOTATION_STRING --threads 5 --outprefix out'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
@@ -38,6 +38,7 @@ if (params.help) {
     log.info '  --no_features INT Number of features that will be selected if params.rfe is true.'
     log.info '  --tmpdir FOLDER What folder to use as tmpdir for bcftools sort.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
+    log.info '  --outprefix OUTPREFIX Prefix for output files.'
     log.info ''
     exit 1
 }
@@ -157,7 +158,7 @@ process run_bcftools_sort {
         !params.region
 
         """
-	bcftools sort ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
+	bcftools sort -T ${params.tmpdir} ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
         """
 }
 
@@ -493,7 +494,7 @@ process run_bcftools_sort_chr {
 	params.region
 
         """
-	bcftools sort ${out_vts_chr} -o ${params.outprefix}.sort.vcf.gz -Oz
+	bcftools sort -T ${params.tmpdir} ${out_vts_chr} -o ${params.outprefix}.sort.vcf.gz -Oz
         """
 }
 
