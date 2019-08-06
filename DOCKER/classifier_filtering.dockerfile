@@ -24,7 +24,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
 #install HTSlib
-RUN git clone https://github.com/samtools/htslib.git
+RUN git clone --branch 1.9 https://github.com/samtools/htslib.git
 WORKDIR htslib
 RUN autoheader
 RUN autoconf
@@ -35,7 +35,7 @@ WORKDIR /tmp/bcftools
 RUN rm -r /tmp/htslib
 
 #install BCFTools
-RUN git clone https://github.com/samtools/bcftools.git
+RUN git clone --branch 1.9 https://github.com/samtools/bcftools.git
 WORKDIR bcftools/
 RUN autoheader
 RUN autoconf
