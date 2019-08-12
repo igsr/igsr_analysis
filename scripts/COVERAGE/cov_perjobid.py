@@ -6,15 +6,20 @@ import re
 
 parser = argparse.ArgumentParser(description='Calculate average cov for a job id in a Hive database')
 
-parser.add_argument('--id', required=True, help='Job id to analyse' )
+parser.add_argument('--id', required=True, help='Job id to analyse')
+parser.add_argument('--host', required=True, help='Host name for ehive database')
+parser.add_argument('--user', required=True, help='User name for ehive database')
+parser.add_argument('--port', required=True, help='Port number for ehive database')
+parser.add_argument('--pwd', required=True, help='Password for ehive database')
+parser.add_argument('--db', required=True, help='Ehive database name')
 
 args = parser.parse_args()
 
-db=HiveDB(host = 'mysql-rs-1kg-prod.ebi.ac.uk',
-          user = 'g1krw',
-          port = 4175,
-          pwd = 'thousandgenomes',
-          db = 'elowy_vc_1000g_highcov_30042019')
+db=HiveDB(host = args.host,
+          user = args.user,
+          port = args.port,
+          pwd = args.pwd,
+          db = args.db)
 
 def print_coverage(jid):
     j=db.fetch_job_byid(id=int(jid))
