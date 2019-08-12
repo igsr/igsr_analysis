@@ -56,7 +56,7 @@ WORKDIR /lib
 RUN rm -r /tmp/vcflib/
 RUN git clone https://github.com/igsr/igsr_analysis.git
 ENV PYTHONPATH=/lib/igsr_analysis
-ENV PATH=/bin/:${PATH}
+ENV PATH=/bin/:/lib/igsr_analysis/scripts/VCF/QC/:${PATH}
 
 #install vt
 WORKDIR /tmp/vt
