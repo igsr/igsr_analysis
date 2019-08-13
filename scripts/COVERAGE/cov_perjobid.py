@@ -17,7 +17,7 @@ args = parser.parse_args()
 
 db=HiveDB(host = args.host,
           user = args.user,
-          port = args.port,
+          port = int(args.port),
           pwd = args.pwd,
           db = args.db)
 
