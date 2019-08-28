@@ -36,6 +36,8 @@ if (params.help) {
     exit 1
 }
 
+params.non_valid_regions = false
+
 process excludeNonVariants {
 	/*
 	This process will select the variants sites on the desired chromosomes.
@@ -76,6 +78,8 @@ process excludeNonValid {
 
 	output:
 	file 'out.sites.nonvalid.vcf.gz' into out_sites_nonvalid_vcf
+	when:
+	params.non_valid_regions
 
 	"""
 	bcftools view -T ^${params.non_valid_regions} ${out_sites_vcf} -o out.sites.nonvalid.vcf.gz -Oz
@@ -95,21 +99,19 @@ process selectVariants {
         cpus 1
 
 	input:
-	file out_sites_nonvalid_vcf
-
-	out_sites_nonvalid = 'out.sites.nonvalid.'+ params.vt +'.vcf.gz'
+	file out_sites_vcf1 from out_sites_vcf.mix(out_sites_nonvalid_vcf)
 
 	output:
-	file "out.sites.nonvalid.${params.vt}.vcf.gz" into out_sites_nonvalid_vts
+	file "out.sites.${params.vt}.vcf.gz" into out_sites_vt
 	
 	"""
-	bcftools view -v ${params.vt} ${out_sites_nonvalid_vcf} -o out.sites.nonvalid.${params.vt}.vcf.gz -O z
+	bcftools view -v ${params.vt} ${out_sites_vcf1} -o out.sites.${params.vt}.vcf.gz -O z
 	"""
 }
 
 process intersecionCallSets {
 	/*
-	Process to find the intersection between out_sites_nonvalid_vts and GIAB call set
+	Process to find the intersection between out_sites_vt and GIAB call set
 	*/
 
 	memory '500 MB'
@@ -118,14 +120,14 @@ process intersecionCallSets {
         cpus 1
 
 	input:
-	file out_sites_nonvalid_vts
+	file out_sites_vt
 
 	output:
 	file 'dir/' into out_intersect
 
 	"""
-	tabix ${out_sites_nonvalid_vts}
-	bcftools isec -c ${params.vt} -p 'dir/' ${out_sites_nonvalid_vts} ${params.giab}
+	tabix ${out_sites_vt}
+	bcftools isec -c ${params.vt} -p 'dir/' ${out_sites_vt} ${params.giab}
 	"""
 }
 
@@ -239,7 +241,7 @@ if (params.calc_gtps==true) {
 	   file 'GT_concordance.txt' into gt_conc
 
 	   """
-	   calc_gtconcordance.py ${igsr_tsv} ${giab_tsv} > GT_concordance.txt
+	   /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/QC/calc_gtconcordance.py ${igsr_tsv} ${giab_tsv} > GT_concordance.txt
 	   """
    }
 }
