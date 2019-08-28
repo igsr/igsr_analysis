@@ -31,6 +31,7 @@ if (params.help) {
     log.info '  --annotations ANNOTATION_STRING String containing the annotations to filter, for example:'
     log.info '    %CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.'
     log.info '  --chr chr1   Chromosome to be analyzed'
+    log.info '  --tmpdir FOLDER What folder to use as tmpdir for bcftools sort.'
     log.info '  --vt  VARIANT_TYPE   Type of variant to filter. Poss1ible values are 'snps'/'indels'.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info ''
@@ -221,7 +222,7 @@ process run_bcftools_sort {
         file "out.sort.vcf.gz" into out_sort
 
         """
-	bcftools sort ${out_vts} -o out.sort.vcf.gz -Oz
+	bcftools sort -T ${params.tmpdir} ${out_vts} -o out.sort.vcf.gz -Oz
         """
 }
 
@@ -386,7 +387,7 @@ process reannotate_vcf {
 
 	"""
 	bcftools annotate -a ${predictions_table} ${out_decomp1} -c CHROM,POS,FILTER,prob_TP -o reannotated.vcf.gz --threads ${params.threads} -Oz
-	bcftools sort reannotated.vcf.gz -o ${output_cutoff} -Oz
+	bcftools sort -T ${params.tmpdir} reannotated.vcf.gz -o ${output_cutoff} -Oz
 	tabix ${output_cutoff}
 	"""
 }
