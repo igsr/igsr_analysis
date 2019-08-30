@@ -39,54 +39,51 @@ if (params.help) {
 params.non_valid_regions = false
 
 process excludeNonVariants {
-	/*
-	This process will select the variants sites on the desired chromosomes.
-	Additionally, only the biallelic variants with the 'PASS' label in the filter column are considered
+        /*
+        This process will select the variants sites on the desired chromosomes.
+        Additionally, only the biallelic variants with the 'PASS' label in the filter column are considered
 
-	Returns
-	-------
-	Path to a VCF file containing just the filtered sites
-	*/
+        Returns
+        -------
+        Path to a VCF file containing just the filtered sites
+        */
 
-	memory '500 MB'
+        memory '500 MB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
-	output:
+        output:
         file 'out.sites.vcf.gz' into out_sites_vcf
+        when:
+        !params.non_valid_regions
 
-	"""
-	bcftools view -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
-	tabix out.sites.vcf.gz
-	"""
+        """
+        bcftools view -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
+        tabix out.sites.vcf.gz
+        """
 }
-
 
 process excludeNonValid {
-	/*
-	This process will exclude the regions defined in a .BED file file from out_sites_vcf
-	*/
+        /*
+        This process will exclude the regions defined in a .BED file file from out_sites_vcf
+        */
 
-	memory '500 MB'
+        memory '500 MB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
-	input:
-	file out_sites_vcf
+        output:
+        file 'out.sites.nonvalid.vcf.gz' into out_sites_nonvalid_vcf
+        when:
+        params.non_valid_regions
 
-	output:
-	file 'out.sites.nonvalid.vcf.gz' into out_sites_nonvalid_vcf
-	when:
-	params.non_valid_regions
-
-	"""
-	bcftools view -T ^${params.non_valid_regions} ${out_sites_vcf} -o out.sites.nonvalid.vcf.gz -Oz
-	tabix out.sites.nonvalid.vcf.gz
-	"""
+        """
+        bcftools view -T ^${params.non_valid_regions} -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.nonvalid.vcf.gz -Oz
+        tabix out.sites.nonvalid.vcf.gz
+        """
 }
-
 
 process selectVariants {
 	/*
