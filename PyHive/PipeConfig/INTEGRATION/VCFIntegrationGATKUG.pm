@@ -85,8 +85,8 @@ sub default_options {
 	'variant_type' => undef, # What type of variant is going to be used with this pipeline. Possible values are 'snps' or 'indels'
 	'filelist' => undef,
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
-	'bcftools_folder' => '~/bin/bcftools-1.6/',
-	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
+	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.9/',
+	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/envs/ehive/bin/',
 	'caller' => 'UG', # UnifiedGenotyper
 	'glm' => undef, # UnifiedGenotyper options
 	'dcov' => 250, # UnifiedGenotyper options
@@ -96,7 +96,7 @@ sub default_options {
 	'ginterval' => undef, # if defined, then do the integration for a certain genomic region
 	'vcflib_folder' => '~/bin/vcflib/bin/', # folder containing the vcfallelicprimitives binary
 	'samtools_folder' => '/homes/ernesto/bin/samtools-1.6/bin/',
-	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
+	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/envs/ehive/bin/',
 	'transposebam_folder' => '/homes/ernesto/lib/reseqtrack//c_code/transpose_bam/',
 	'tranches' => '[100.0,99.9,99.5,99.2,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
 	'resources' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
@@ -108,7 +108,7 @@ sub default_options {
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa',
         'filelayout' => undef, #file layout for original file
 	'newlayout' =>  undef, # new file layout for final file
-	'lsf_queue'   => 'production-rh7'
+	'lsf_queue'   => 'production-rh74'
     };
 }
 

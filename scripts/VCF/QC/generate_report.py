@@ -165,7 +165,6 @@ for dir in data.keys():
 
     print(tabulate(df1, headers='keys', tablefmt='psql'))
 
-    pdb.set_trace()
     outfile="{0}.{1}.xlsx".format(args.outprefix,os.path.basename(dir))
     writer = pd.ExcelWriter(outfile)
     df1.to_excel(writer, 'Benchmarking')
