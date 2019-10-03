@@ -162,6 +162,7 @@ for dir in data.keys():
     df['%_FP']=round(df.FP*100/df.total_cat2,2)
 
     df1=df.sort_index()
+    df1=df1.loc[:,['TP','%_TP','FN','%_FN','FP','%_FP','total_cat1','total_cat2']]
 
     print(tabulate(df1, headers='keys', tablefmt='psql'))
 
