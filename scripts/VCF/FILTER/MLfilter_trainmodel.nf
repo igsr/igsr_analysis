@@ -35,6 +35,7 @@ if (params.help) {
     log.info '	%CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.' 
     log.info '  --rfe BOOL If true, then do Recursive Feature Elimination in order to select the annotations that are more relevant for prediction.'
     log.info '             If false, then train the ML model and skip RFE.'
+    log.info '             If true, then provide the total set of annotations using the --annotations param and the relevant annotations will be selected.'
     log.info '  --no_features INT Number of features that will be selected if params.rfe is true.'
     log.info '  --tmpdir FOLDER What folder to use as tmpdir for bcftools sort.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
