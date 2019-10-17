@@ -386,7 +386,10 @@ process reannotate_vcf {
 	output_cutoff_tabix="filt.${cutoff}".replace('.', '_')+".vcf.gz.tbi"
 
 	"""
-	bcftools annotate -a ${predictions_table} ${out_decomp1} -c CHROM,POS,FILTER,prob_TP -o reannotated.vcf.gz --threads ${params.threads} -Oz
+	bcftools view -v snps ${out_decomp1} -o out.snps.vcf.gz -Oz
+	bcftools view -v indels ${out_decomp1} -o out.indels.vcf.gz -Oz
+	bcftools annotate -a ${predictions_table} out.$params.vt.vcf.gz -c CHROM,POS,FILTER,prob_TP -o reannotated.vcf.gz --threads ${params.threads} -Oz
+	mkdir -p ${params.tmpdir}
 	bcftools sort -T ${params.tmpdir} reannotated.vcf.gz -o ${output_cutoff} -Oz
 	tabix ${output_cutoff}
 	"""
