@@ -399,8 +399,9 @@ process reannotate_vcf {
 
 	"""
         mkdir -p ${params.tmpdir}
-        bcftools view -v snps ${out_decomp1} -o out.snps.vcf.gz -Oz
-        bcftools view -v indels ${out_decomp1} -o out.indels.vcf.gz -Oz
+	bcftools sort -T ${params.tmpdir} ${out_decomp1} -o out_decomp.sort.vcf.gz -Oz
+        bcftools view -v snps out_decomp.sort.vcf.gz -o out.snps.vcf.gz -Oz
+        bcftools view -v indels out_decomp.sort.vcf.gz -o out.indels.vcf.gz -Oz
         bcftools annotate -a ${predictions_table} out.${selected}.vcf.gz -c CHROM,POS,FILTER,prob_TP -o reannotated.vcf.gz --threads ${params.threads} -Oz
         bcftools concat reannotated.vcf.gz out.${non_selected}.vcf.gz -o out.merged.vcf.gz -Oz
         bcftools sort -T ${params.tmpdir} out.merged.vcf.gz -o ${output_cutoff} -Oz
