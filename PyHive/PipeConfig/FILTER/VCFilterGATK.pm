@@ -71,17 +71,16 @@ sub default_options {
 	'store_attributes' => 'False',
 	'newlayout' => undef, # new layout used for the generated files. i.e. [ 'dataset','caller']
 	'filelayout' => undef, # layout of file that is analyzed by the pipeline. i.e. [ 'dataset','caller','date','extension','compression']
-	'bcftools_folder' => '~/bin/bcftools-1.6/',
-	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
-	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/bin/',
-	'exclude_bed' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/exclude_nonvalid.bed',
+	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.9/',
+	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/envs/ehive/bin/',
+	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/envs/ehive/bin/',
 	'faix' => undef, # faix file with chros that will be analyzed by the pipeline
 	'bcftools_stats_region' => undef, # Define what chro will be analyzed by bcftools stats
 	'picard_folder' => '/homes/ernesto/bin', # CollectVariantCallingMetrics
-	'truth_vcf' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/dbsnp_146.hg38.vcf.gz', # CollectVariantCallingMetrics
+	'truth_vcf' => '/nfs/production/reseq-info/work/reference/GRCh38/other_mapping_resources/dbsnp_146.hg38.vcf.gz', # CollectVariantCallingMetrics
 	'intervals_f' => undef, # CollectVariantCallingMetrics
 	'caller' => 'UG', # VariantRecalibrator
-	'gatk_folder' => '/homes/ernesto/bin/GATK/', # VariantRecalibrator
+	'gatk_folder' => '/nfs/production/reseq-info/work/bin/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef/', # VariantRecalibrator
 	'java_tmpdir' => '/gpfs/nobackup/resequencing_informatics/ernesto/tmp', # necessary for GATK ApplyRecalibration not to crash 
 	'tranches' => '[100.0,99.9,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]',
 	'reference' => '/nfs/production/reseq-info/work/reference/GRCh38/GRCh38_full_analysis_set_plus_decoy_hla.fa', # VariantRecalibrator
@@ -89,7 +88,7 @@ sub default_options {
 	'resources_indels' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_indels.json', # VariantRecalibrator
 	'indels_annotations' => ['QD','DP','FS','SOR','ReadPosRankSum','MQRankSum','InbreedingCoeff'], #annotations for recalibrating indels
 	'vt_folder' => '/homes/ernesto/bin/vt/',
-        'lsf_queue'   => 'production-rh7'
+        'lsf_queue'   => 'production-rh74'
     };
 }
 
@@ -338,31 +337,9 @@ sub pipeline_analyses {
                 'compress' => 1,
                 'reference' => $self->o('reference'),
             },
-
-            -flow_into => {
-                1 => {'run_exclude_regions' => {
-		    'filepath' => '#vcf_file#',
-		    'ix' => '#ix#'
-		      }
-		},
-            },
-            -analysis_capacity => 400,
-            -rc_name => '2Gb'
-        },
-
-        {   -logic_name => 'run_exclude_regions',
-            -module        => 'PyHive.VcfFilter.SubsetVcfWithBed',
-            -language   => 'python3',
-            -parameters    => {
-                'filepath' => '#filepath#',
-                'bcftools_folder' => $self->o('bcftools_folder'),
-                'threads' => 1,
-		'verbose' => 'True',
-                'action' => 'exclude',
-                'bed' => $self->o('exclude_bed'),
-            },
-            -flow_into => {
-                1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=subset_file', '?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
+	    -flow_into => {
+                1 => [ '?accu_name=allchunks_files&accu_address=[]&accu_input_variable=vcf_file', 
+		       '?accu_name=allixs&accu_address=[]&accu_input_variable=ix']
             },
             -analysis_capacity => 400,
             -rc_name => '2Gb'
