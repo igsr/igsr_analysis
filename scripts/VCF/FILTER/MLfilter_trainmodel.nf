@@ -37,7 +37,6 @@ if (params.help) {
     log.info '             If false, then train the ML model and skip RFE.'
     log.info '             If true, then provide the total set of annotations using the --annotations param and the relevant annotations will be selected.'
     log.info '  --no_features INT Number of features that will be selected if params.rfe is true.'
-    log.info '  --tmpdir FOLDER What folder to use as tmpdir for bcftools sort.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info '  --outprefix OUTPREFIX Prefix for output files.'
     log.info ''
@@ -159,7 +158,8 @@ process run_bcftools_sort {
         !params.region
 
         """
-	bcftools sort -T ${params.tmpdir} ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
+	mkdir tmpdir
+	bcftools sort -T tmpdir/ ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
         """
 }
 
@@ -495,7 +495,8 @@ process run_bcftools_sort_chr {
 	params.region
 
         """
-	bcftools sort -T ${params.tmpdir} ${out_vts_chr} -o ${params.outprefix}.sort.vcf.gz -Oz
+	mkdir tmpdir
+	bcftools sort -T tmpdir/ ${out_vts_chr} -o ${params.outprefix}.sort.vcf.gz -Oz
         """
 }
 

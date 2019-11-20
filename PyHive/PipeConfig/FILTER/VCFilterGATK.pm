@@ -72,8 +72,8 @@ sub default_options {
 	'newlayout' => undef, # new layout used for the generated files. i.e. [ 'dataset','caller']
 	'filelayout' => undef, # layout of file that is analyzed by the pipeline. i.e. [ 'dataset','caller','date','extension','compression']
 	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.9/',
-	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/envs/ehive/bin/',
-	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/envs/ehive/bin/',
+	'bgzip_folder' => '/nfs/production/reseq-info/work/bin/tabix/',
+	'tabix_folder' => '/nfs/production/reseq-info/work/bin/tabix/',
 	'faix' => undef, # faix file with chros that will be analyzed by the pipeline
 	'bcftools_stats_region' => undef, # Define what chro will be analyzed by bcftools stats
 	'picard_folder' => '/homes/ernesto/bin', # CollectVariantCallingMetrics
