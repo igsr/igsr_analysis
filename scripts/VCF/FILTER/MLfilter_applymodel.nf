@@ -31,7 +31,6 @@ if (params.help) {
     log.info '  --annotations ANNOTATION_STRING String containing the annotations to filter, for example:'
     log.info '    %CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.'
     log.info '  --chr chr1   Chromosome to be analyzed'
-    log.info '  --tmpdir FOLDER What folder to use as tmpdir for bcftools sort.'
     log.info '  --vt  VARIANT_TYPE   Type of variant to filter. Poss1ible values are 'snps'/'indels'.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info ''
@@ -222,8 +221,8 @@ process run_bcftools_sort {
         file "out.sort.vcf.gz" into out_sort
 
         """
-	mkdir -p ${params.tmpdir}
-	bcftools sort -T ${params.tmpdir} ${out_vts} -o out.sort.vcf.gz -Oz
+	mkdir -p tmpdir/
+	bcftools sort -T tmpdir/ ${out_vts} -o out.sort.vcf.gz -Oz
         """
 }
 
@@ -398,13 +397,13 @@ process reannotate_vcf {
         output_cutoff_tabix="filt.${cutoff}".replace('.', '_')+".vcf.gz.tbi"
 
 	"""
-        mkdir -p ${params.tmpdir}
-	bcftools sort -T ${params.tmpdir} ${out_decomp1} -o out_decomp.sort.vcf.gz -Oz
+        mkdir -p tmpdir
+	bcftools sort -T tmpdir/ ${out_decomp1} -o out_decomp.sort.vcf.gz -Oz
         bcftools view -v snps out_decomp.sort.vcf.gz -o out.snps.vcf.gz -Oz
         bcftools view -v indels out_decomp.sort.vcf.gz -o out.indels.vcf.gz -Oz
         bcftools annotate -a ${predictions_table} out.${selected}.vcf.gz -c CHROM,POS,FILTER,prob_TP -o reannotated.vcf.gz --threads ${params.threads} -Oz
         bcftools concat reannotated.vcf.gz out.${non_selected}.vcf.gz -o out.merged.vcf.gz -Oz
-        bcftools sort -T ${params.tmpdir} out.merged.vcf.gz -o ${output_cutoff} -Oz
+        bcftools sort -T tmpdir/ out.merged.vcf.gz -o ${output_cutoff} -Oz
         tabix ${output_cutoff}
         """
 }
