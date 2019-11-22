@@ -113,7 +113,7 @@ process replace_header {
         */
 
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -140,7 +140,7 @@ process split_multiallelic {
         */
 
         memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -164,7 +164,7 @@ process allelic_primitives {
         */
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -186,7 +186,7 @@ process select_variants {
         */
 
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -210,7 +210,7 @@ process run_bcftools_sort {
         */
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -235,7 +235,7 @@ process run_vt_uniq {
         */
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -260,7 +260,7 @@ process excludeNonVariants {
         */
 
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -283,7 +283,7 @@ process get_variant_annotations {
 	*/
 	
 	memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -312,10 +312,13 @@ process apply_model {
 	*/
 	tag "Apply model with $cutoff"
 
-	memory '5 GB'
-        executor 'local'
+	memory { 5.GB * task.attempt }
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
+
+	errorStrategy 'retry'
+        maxRetries 5
 
 	input:
 	file unfilt_annotations
@@ -342,8 +345,8 @@ process compress_predictions {
 	*/
 	tag "Compress predictions with $cutoff"
 
-	memory '500 MB'
-        executor 'local'
+	memory '1.GB'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -368,9 +371,13 @@ process reannotate_vcf {
 	*/
 	tag "reannotate_vcf with $cutoff"
 
-	memory '500 MB'
-	executor 'local'
+	memory { 8.GB * task.attempt }
+        executor 'lsf'
+        queue "${params.queue}"
         cpus "${params.threads}"
+
+        errorStrategy 'retry'
+        maxRetries 5
 
 	publishDir "results_${params.chr}", mode: 'copy', overwrite: true
 
