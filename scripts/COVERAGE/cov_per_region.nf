@@ -43,7 +43,7 @@ process make_windows {
         */
  
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         cpus 1
 
         output:
@@ -63,11 +63,11 @@ process get_cov {
         */
 	tag "Depth for ival: $ival"
 	
-	memory { 100.GB * task.attempt }
+	memory { 20.GB * task.attempt }
 	executor 'lsf'
         queue "${params.queue}"
         cpus 1
-	maxForks 500
+	maxForks 1000
 
 	errorStrategy 'retry' 
     	maxRetries 5
@@ -138,7 +138,7 @@ process aggregate_depth {
 	file("out.cov.gz") into agg_file
 
 	"""
-	python /hps/nobackup/production/reseq-info/ernesto/HIGHCOV/CALC_COVERAGE/PARSE_OUT/sum_covs.py --ifile ${merged_file} --prefix out
+	sum_covs.py --ifile ${merged_file} --prefix out
 	"""
 }
 
