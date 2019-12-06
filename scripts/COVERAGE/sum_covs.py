@@ -38,9 +38,15 @@ with gzip.open(args.ifile, 'rt') as f:
             else:
                 maxpos=pos
             
+        sumcov=None
         cpos=pos
-        covs=[int(x) for x in elms[2:-1]]
-        sumcov=sum(covs)
+        if len(elms)>3 :
+            covs=[int(x) for x in elms[2:-1]]
+            sumcov=sum(covs)
+        else:
+            #this basically means that the aggretation of coverage is already done in --ifile
+            sumcov=int(elms[2])
+
         nline="{0}\t{1}\t{2}\n".format(chrom,pos,sumcov)
         gzipf.write(nline.encode('utf-8'))
         if args.threshold is not None and sumcov>=int(args.threshold):
