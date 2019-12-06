@@ -55,6 +55,7 @@ process selectSAMPLE {
 
 	output:
 	file "${params.prefix}.${params.sample}.vcf.gz" into chr_vcf
+	file "${params.prefix}.${params.sample}.vcf.gz.tbi" into chr_vcf_tbi
 
 	"""
 	bcftools view -s ${params.sample} ${params.vcf} -o ${params.prefix}.${params.sample}.vcf.gz -O z

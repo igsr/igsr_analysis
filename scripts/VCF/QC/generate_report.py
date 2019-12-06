@@ -119,7 +119,7 @@ with open(args.dirf) as f:
         if m:
             chr=m.group(1)
             numbers=dict()
-            res=None
+            res=None # this will be a list with stats for each results_chr*
             # append 'highconf' or 'all' files to res
             if args.subset=="highconf":
                 res = [f for f in glob.glob(dir+"/*.stats") if "highconf" in f]
@@ -140,7 +140,7 @@ with open(args.dirf) as f:
                      numbers[type] = sum_dict['number of indels:']
                     
                  chr_stripped=None
-                 if m.group(1)=='X':
+                 if m.group(1)=='X' or m.group(1)=='chrX':
                     continue
                  else:
                     chr_stripped=int(chr.replace("chr",""))
