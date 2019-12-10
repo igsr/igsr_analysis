@@ -21,7 +21,7 @@ to your needs:
 -work_dir: folder that will be used to put the intermediate files
 -final_dir: folder that will be used to put the final pipeline files
 
--faix: This file is in the .faix format and controls the chromosomes in the initial VCF that will be analyzed
+-chunk_ixs: This parameter is relevant for 'coord_factory' and will control the genomic regions to analyse
 -variant_type: Possible values are 'snps'/'indels'. Controls what variant type will be produced in the final
 consensus call set
 -filelist: List composed of one or more text files containing the path to the alignment files in the BAM format
@@ -33,6 +33,7 @@ used for generating the different call sets
               chr2    242193529
               This file is used by PyHive.Factories.CoordFactory in order to generate the genomic chunks created
               used for parallelizing the pipeline
+
 
 -filelayout: this is used by the pipeline in order to know how to construct the final filename. It will label
  each bit in the initial filename with a certain name that will be used by the 'newlayout' parameter in order
@@ -86,17 +87,17 @@ sub default_options {
 	'filelist' => undef,
 	'bedtools_folder' => '/homes/ernesto/bin/bedtools-2.25.0/bin/',
 	'bcftools_folder' => '/nfs/production/reseq-info/work/bin/bcftools-1.9/',
-	'bgzip_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/envs/ehive/bin/',
+	'bgzip_folder' => '/nfs/production/reseq-info/work/bin/tabix/',
 	'caller' => 'UG', # UnifiedGenotyper
 	'glm' => undef, # UnifiedGenotyper options
 	'dcov' => 250, # UnifiedGenotyper options
 	'max_deletion_fraction' => 1.5, # UnifiedGenotyper options
-	'gatk_folder' => '~/bin/GATK/',
+	'gatk_folder' => '/nfs/production/reseq-info/work/bin/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef/',
 	'java_tmpdir' => '/gpfs/nobackup/resequencing_informatics/ernesto/tmp', # necessary for GATK ApplyRecalibration not to crash 
 	'ginterval' => undef, # if defined, then do the integration for a certain genomic region
 	'vcflib_folder' => '~/bin/vcflib/bin/', # folder containing the vcfallelicprimitives binary
-	'samtools_folder' => '/homes/ernesto/bin/samtools-1.6/bin/',
-	'tabix_folder' => '/nfs/production/reseq-info/work/ernesto/bin/anaconda3/envs/ehive/bin/',
+	'samtools_folder' => '/nfs/production/reseq-info/work/bin/samtools-1.9/bin/',
+	'tabix_folder' => '/nfs/production/reseq-info/work/bin/tabix/',
 	'transposebam_folder' => '/homes/ernesto/lib/reseqtrack//c_code/transpose_bam/',
 	'tranches' => '[100.0,99.9,99.5,99.2,99.0,98.0,97.0,96.0,95.0,92.0,90.0,85.0,80.0,75.0,70.0,65.0,60.0,55.0,50.0]', #VariantRecalibrator
 	'resources' => '/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GATK_BUNDLE/resources_snps.json', # VariantRecalibrator
@@ -660,7 +661,7 @@ sub pipeline_analyses {
             -language   => 'python3',
             -parameters => {
                 'filename'     => '#filename#',
-                'filelayout' => $self->o('filelayout')+".ext6",
+                'filelayout' => $self->o('filelayout'),
             },
             -flow_into => {
                 1 => {
