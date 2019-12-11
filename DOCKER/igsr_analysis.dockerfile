@@ -10,5 +10,5 @@ RUN apk add --no-cache git
 WORKDIR /lib
 RUN git clone https://github.com/igsr/igsr_analysis.git
 ENV PYTHONPATH=/lib/igsr_analysis
-ENV PATH=/bin/:/lib/igsr_analysis/scripts/VCF/QC/:${PATH}
+ENV PATH=/bin/:/lib/igsr_analysis/scripts/VCF/QC/BENCHMARKING_TRUESET:${PATH}
 				   
