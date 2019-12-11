@@ -1,7 +1,9 @@
 #parent image
 FROM ubuntu:latest
 
-MAINTAINER Ernesto Lowy <ernesto@ebi.ac.uk>
+LABEL maintainer="ernestolowy@gmail.com"
+LABEL description="Dockerfile used to build an image used in genomic variant filtering.
+      	           The filtering used is based on a supervised logistic regression classifier" 
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -qq install git \

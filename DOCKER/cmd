@@ -1,1 +1,2 @@
 docker build - -t variant_filtering < classifier_filtering.dockerfile
+docker build - -t igsr_analysis < igsr_analysis.dockerfile
