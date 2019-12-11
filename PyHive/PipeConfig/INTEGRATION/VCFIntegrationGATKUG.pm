@@ -289,7 +289,8 @@ sub pipeline_analyses {
 		'bcftools_folder' => $self->o('bcftools_folder'),
 		'gatk_folder' => $self->o('gatk_folder'),
 		'outprefix' => $self->o('outprefix'),
-		'work_dir' => $self->o('work_dir')
+		'work_dir' => $self->o('work_dir'),
+		'tmp_dir' => $self->o('java_tmpdir')
             },
 	    -rc_name => '12Gb4cpus',
 	    -flow_into => {

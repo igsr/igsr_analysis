@@ -18,7 +18,7 @@ class VcfUtils(object):
     '''
 
 
-    def __init__(self, vcf=None, vcflist=None, bcftools_folder=None, bgzip_folder=None, gatk_folder=None, java_folder=None):
+    def __init__(self, vcf=None, vcflist=None, bcftools_folder=None, bgzip_folder=None, gatk_folder=None, java_folder=None, tmp_dir=None):
         '''
         Constructor
 
@@ -36,6 +36,10 @@ class VcfUtils(object):
                       Path to folder containing the jar file
         java_folder : str, optional
                       Path to folder containing the java binary
+        tmp_dir : str, optional
+                  Path to java temporary directory. This needs to be
+                  set for GATK modules that 
+                  fail because there is not enough space in the default java tmp dir
 
         Imp: Either 'vcf' or 'vcflist' variables should be initialized
         '''
@@ -54,6 +58,7 @@ class VcfUtils(object):
         self.bgzip_folder = bgzip_folder
         self.gatk_folder = gatk_folder
         self.java_folder = java_folder
+        self.tmp_dir = tmp_dir
 
     def reheader(self, newheader, outprefix, samplefile=None, verbose=False):
         '''
@@ -219,7 +224,13 @@ class VcfUtils(object):
         else:
             args.append(Arg('-o', outfile))
 
-        runner=RunProgram(path=self.java_folder, program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, parameters=params, downpipe=pipelist)
+        program_str=None
+        if self.tmp_dir is not None:
+            program_str="java -Djava.io.tmpdir={0} -jar {1}/GenomeAnalysisTK.jar".format(self.tmp_dir, self.gatk_folder)
+        else:
+            program_str="java -jar {0}/GenomeAnalysisTK.jar".format(self.gatk_folder)
+
+        runner=RunProgram(path=self.java_folder, program=program_str, args=args, parameters=params, downpipe=pipelist)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
