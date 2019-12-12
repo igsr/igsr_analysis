@@ -93,7 +93,7 @@ sub default_options {
 	'dcov' => 250, # UnifiedGenotyper options
 	'max_deletion_fraction' => 1.5, # UnifiedGenotyper options
 	'gatk_folder' => '/nfs/production/reseq-info/work/bin/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef/',
-	'java_tmpdir' => '/gpfs/nobackup/resequencing_informatics/ernesto/tmp', # necessary for GATK ApplyRecalibration not to crash 
+	'java_tmpdir' => undef, # necessary for GATK not to crash 
 	'ginterval' => undef, # if defined, then do the integration for a certain genomic region
 	'vcflib_folder' => '~/bin/vcflib/bin/', # folder containing the vcfallelicprimitives binary
 	'samtools_folder' => '/nfs/production/reseq-info/work/bin/samtools-1.9/bin/',
@@ -335,7 +335,7 @@ sub pipeline_analyses {
                 'genome_file' => $self->o('genome_file'),
 		'rextend' => '-1',
 		'log_dir' => $self->o('log_dir'),
-		'chunk_ixs' => '[223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260]',
+#		'chunk_ixs' => '[223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,259,260]',
                 'window' => $self->o('window_coordfactory_4transposebam'),
                 'verbose' => 1
             },
