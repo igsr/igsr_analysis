@@ -285,14 +285,14 @@ sub pipeline_analyses {
             -parameters => {
 		'reference' => $self->o('reference'),
 		'ginterval' => $self->o('ginterval'),
-		'threads' => 4,
+		'threads' => 1,
 		'bcftools_folder' => $self->o('bcftools_folder'),
 		'gatk_folder' => $self->o('gatk_folder'),
 		'outprefix' => $self->o('outprefix'),
 		'work_dir' => $self->o('work_dir'),
 		'tmp_dir' => $self->o('java_tmpdir')
             },
-	    -rc_name => '12Gb4cpus',
+	    -rc_name => '12Gb',
 	    -flow_into => {
 		1 => ['index_vcf3']
 	    }
