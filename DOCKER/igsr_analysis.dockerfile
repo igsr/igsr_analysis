@@ -1,10 +1,12 @@
 #parent image
-FROM alpine:3.7
+FROM python:3.7
 
 LABEL maintainer="ernestolowy@gmail.com"
 LABEL description="Dockerfile used to build the image used in the different IGSR tasks" 
 
-RUN apk add --no-cache git
+WORKDIR /tmp
+RUN pip install --upgrade pip && \
+    pip install pandas 
 
 # cloning igsr-analysis
 WORKDIR /lib
