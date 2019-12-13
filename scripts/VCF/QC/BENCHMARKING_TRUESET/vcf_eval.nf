@@ -28,6 +28,8 @@ if (params.help) {
     log.info '	--vcf VCF    Path to the VCF file that will be assessed.'
     log.info '  --true VCF   Path to the high-confidence VCF that will be used as the TRUE call set.'
     log.info '  --vt  VARIANT_TYPE   Type of variant to benchmark. Possible values are 'snps'/'indels'.'
+    log.info '  --filt_str FILTERING_STR   String used by BCFTools view to filter variants from --vcf.'
+    log.info '                             Example: ".,PASS".'
     log.info '  --chros CHROSTR	  Chromosomes that will be analyzed: chr20 or chr1,chr2.'
     log.info '  --high_conf_regions BED  BED file with high-confidence regions.'
     log.info '  --calc_gtps BOOL  If true, then calculte the genotype concordance between params.vcf'
@@ -60,7 +62,7 @@ process excludeNonVariants {
         !params.non_valid_regions
 
         """
-        bcftools view -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.vcf.gz -Oz
+        bcftools view -m2 -M2 -c1 ${params.vcf} -f ${params.filt_str} -r ${params.chros} -o out.sites.vcf.gz -Oz
         tabix out.sites.vcf.gz
         """
 }
