@@ -89,8 +89,7 @@ sub default_options {
 	'prepareGenFromBeagle4_folder' => undef,
 	'ligateHAPLOTYPES_folder' => undef,
 	'shapeit_folder' => undef,
-	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/OMNI/PHASING/ALL.chip.omni_broad_sanger_combined.20140818.refcorr.biallelic.snps', 
-				    '/nfs/production/reseq-info/work/ernesto/isgr/VARIANT_CALLING/VARCALL_ALLGENOME_13022017/COMBINING/PRODUCTION/HD_GENOTYPES/AFFY/PHASING/ALL.wgs.nhgri_coriell_affy_6.20140825.genotypes_has_ped.ucsc.hg38.refcorr.biallelic.snps'],
+	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GGVP/GENOTYPING_ARRAYS/SHAPEIT_PHASING/PHASING/FINAL_DIR/GGVP.b38_remapped.samplesA.reheader.sorted.biallelic.nounderscores.'],
 	'inputthr' => 1.0,
 	'window' => 0.1,
 	'states' => 400,
@@ -108,7 +107,7 @@ sub default_options {
 	'store_attributes' => 'False',
         'filelayout' => undef,
 	'newlayout' =>  undef,
-	'lsf_queue'   => 'production-rh7'
+	'lsf_queue'   => 'production-rh74'
     };
 }
 
