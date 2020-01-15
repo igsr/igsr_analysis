@@ -19,4 +19,4 @@ build:
 python:
   version: 3.5
   install:
-	- requirements: docs/requirements.txt
+	-requirements: docs/requirements.txt
