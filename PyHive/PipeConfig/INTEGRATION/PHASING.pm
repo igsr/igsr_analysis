@@ -89,7 +89,7 @@ sub default_options {
 	'prepareGenFromBeagle4_folder' => undef,
 	'ligateHAPLOTYPES_folder' => undef,
 	'shapeit_folder' => undef,
-	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GGVP/GENOTYPING_ARRAYS/SHAPEIT_PHASING/PHASING/FINAL_DIR/GGVP.b38_remapped.samplesA.reheader.sorted.biallelic.nounderscores.'],
+	'input_scaffold_prefix' => ['/nfs/production/reseq-info/work/ernesto/isgr/SUPPORTING/REFERENCE/GGVP/GENOTYPING_ARRAYS/SHAPEIT_PHASING/PHASING/GGVP.b38_remapped.samplesA.reheader.sorted.biallelic.nounderscores'],
 	'inputthr' => 1.0,
 	'window' => 0.1,
 	'states' => 400,
