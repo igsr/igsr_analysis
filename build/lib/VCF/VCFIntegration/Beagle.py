@@ -20,18 +20,18 @@ class Beagle(object):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        vcf : str, Required
-             Path to vcf file
-        beagle_folder : str, Optional
+        Parameters
+        ----------
+        vcf : filename
+              Path to vcf file
+        beagle_folder : str, optional
                         Path to folder containing Beagle's jar file
-        beagle_jar : str, Optional
+        beagle_jar : str, optional
                      Name of Beagle jar file. i.e. beagle.08Jun17.d8b.jar 
-        makeBGLCHUNKS_folder : str, Optional
+        makeBGLCHUNKS_folder : str, optional
                                Path to folder containing makeBGLCHUNKS binary
                                (see https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#gettingstarted)
-        prepareGenFromBeagle4_folder : str, Optional
+        prepareGenFromBeagle4_folder : str, optional
                                        Path to folder containing makeBGLCHUNKS binary
         '''
 
@@ -51,8 +51,8 @@ class Beagle(object):
 
         Parameters
         ----------
-        outprefix: str, required
-              Prefix used for output file
+        outprefix: str
+                   Prefix used for output file
         outdir : str, optional
                  outdir for output files
         region : str, optional
@@ -63,22 +63,23 @@ class Beagle(object):
                   Note: that it seems there is an incompatibility between zlib libraries used in Beagle4 and in BOOST on some platforms.
                   This involves either the last line of the file being skipped or a segfault. If correct=True, then this function will fix this issue
                   by recompressing the Beagle4 output files. Default=False
-        window: int, optional
-                number of markers to include in each sliding
-                window. Default: 50000
-        overlap: int, optional
-                 specifies the number of markers of overlap between sliding
-                 windows. Default: 3000
-        niterations: unt, optional
-                     specifies the number of phasing iterations. Default:
-                     niterations=5
+        window : int, optional
+                 number of markers to include in each sliding
+                 window. Default: 50000
+        overlap : int, optional
+                  specifies the number of markers of overlap between sliding
+                  windows. Default: 3000
+        niterations : unt, optional
+                      specifies the number of phasing iterations. Default:
+                      niterations=5
         nthreads : int, optional
                    number of threads. If not specified then the nthreads parameter 
                    will be set equal to the number of CPU cores on the host machine
 
         Returns
         -------
-        Compressed VCF file with the genotype calls
+        filename
+                Compressed VCF file with the genotype calls
         '''
 
         if self.beagle_folder is None or self.beagle_jar is None:
@@ -138,23 +139,24 @@ class Beagle(object):
 
     def make_beagle_chunks(self,window,overlap,outfile,verbose=True):
         '''
-        Method to define chromosome chunks for Beagle
+        Method to generate the chromosome chunks for Beagle
         see https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#gettingstarted
 
         Parameters
         ----------
-        window: int, required
-                The chunk size (--window) in number of variant sites
-        overlap: int, required
-                 The overlap size (--overlap) in number of variant sites
-        outfile: str, required
-                 Name of output file. i.e. 'chunk.coordinates'
+        window : int
+                 The chunk size (--window) in number of variant sites
+        overlap : int
+                  The overlap size (--overlap) in number of variant sites
+        outfile : filename
+                  Output file name. i.e. 'chunk.coordinates'
         verbose : bool, optional
-                  if true, then print the command line used for running this tool.Default=True
+                  If true, then print the command line used for running this tool.Default=True
 
         Returns
         -------
-        Path to file with the coordinates of the chunk
+        filename
+                Path to file with the coordinates of the chunk
 
         '''
 
@@ -184,25 +186,25 @@ class Beagle(object):
 
         Parameters
         ----------
-        prefix_in: str, required
-                   prefix used in the output of the different Beagle chunks after running  method 'self.run_beagle'.
-                   i.e. output.beagle4.22.*.
-        outprefix: str, required
-                   Prefix used for output files. i.e. If prefix 'input.shapeit.chr22' is used. Then it will generate the following files:
-                   input.shapeit.chr22.gen.gz
-                   input.shapeit.chr22.gen.sample
-                   input.shapeit.chr22.hap.gz
-                   input.shapeit.chr22.hap.sample
-        threshold: float, optional
-                   Threshold meaning that all genotypes with a posterior above 0.995 are directly fixed and will only need phasing in the SHAPEIT step.
-                   Default: 0.995
+        prefix_in : str
+                    prefix used in the output of the different Beagle chunks after running  method 'self.run_beagle'.
+                    i.e. output.beagle4.22.*.
+        outprefix : str
+                    Prefix used for output files. i.e. If prefix 'input.shapeit.chr22' is used. Then it will generate the following files:
+                    input.shapeit.chr22.gen.gz
+                    input.shapeit.chr22.gen.sample
+                    input.shapeit.chr22.hap.gz
+                    input.shapeit.chr22.hap.sample
+        threshold : float, optional
+                    Threshold meaning that all genotypes with a posterior above 0.995 are directly fixed and will only need phasing in the SHAPEIT step.
+                    Default: 0.995
         verbose : bool, optional
                   if true, then print the command line used for running this tool.Default=False
 
         Returns
         -------
-        A dict with the path to the 4 output files (*.gen.* and *.hap.*) that can be used with SHAPEIT
-        
+        dict
+            A dict with the path to the 4 output files (*.gen.* and *.hap.*) that can be used with SHAPEIT
         '''
 
         if self.prepareGenFromBeagle4_folder is None:

@@ -1,8 +1,9 @@
-'''
-Created on 13 Feb 2017
+"""VcfQC module.
 
-@author: ernesto
-'''
+This module is used to do a series of VCF QC tasks on a VCF file.
+
+@author: Ernesto Lowy
+"""
 
 import os
 import subprocess
@@ -24,25 +25,25 @@ class VcfQC(object):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        vcf : str, Required
-             Path to gzipped vcf file
-        bgzip_folder : str, Optional
-                      Path to folder containing the bgzip binary
-        bcftools_folder : str, Optional
-                          Path to folder containing the bcftools binary
-        bedtools_folder : str, Optional
-                          Path to the folder containing the bedtools binary
-        picard_folder : str, Optional
-                        Path to folder containing the picard binary
-        r_folder : str, Optional
-                   Path to folder containing the R binary
-        r_scripts : str, Optional
+        Parameters
+        ----------
+        vcf : str
+              Path to gzipped vcf file.
+        bgzip_folder : str, optional
+                       Path to folder containing the bgzip binary.
+        bcftools_folder : str, optional
+                          Path to folder containing the bcftools binary.
+        bedtools_folder : str, optional
+                          Path to the folder containing the bedtools binary.
+        picard_folder : str, optional
+                        Path to folder containing the picard binary.
+        r_folder : str, optional
+                   Path to folder containing the R binary.
+        r_scripts : str, optional
                     Path to folder containing the R scripts required for
-                    constructing some of the plots used by this class (i.e. plot_variants.R)
-        tabix_folder : str, Optional
-                        Path to folder containing the tabix binary
+                    constructing some of the plots used by this class (i.e. plot_variants.R).
+        tabix_folder : str, optional
+                        Path to folder containing the tabix binary.
         '''
 
         if os.path.isfile(vcf) is False:
@@ -65,26 +66,25 @@ class VcfQC(object):
 
         Parameters
         ----------
-        truth_vcf : str, Required
-                    The VCF containing the truth sample
-        truth_sample : str, Required
-                       The name of the truth sample within the truth VCF
-        call_sample : str, Required
-                      The name of the call sample within the call VCF
-        outprefix :str, Required
-                   String used as the prefix in the output file
+        truth_vcf : str
+                    The VCF containing the truth sample.
+        truth_sample : str
+                       The name of the truth sample within the truth VCF.
+        call_sample : str
+                      The name of the call sample within the call VCF.
+        outprefix : str
+                    String used as the prefix in the output file.
         outdir : str, optional
-                 If provided, then put output files in this folder
-        intervals : str, Required
+                 If provided, then put output files in this folder.
+        intervals : str
                     One or more interval list files that will be used to limit the
-                    genotype concordance
+                    genotype concordance.
         verbose : bool, optional
-                  if true, then print the command line used for running this program
+                  Ff true, then print the command line used for running this program.
 
         Returns
         -------
-        It returns a GTPconcordance object
-
+        GTPconcordance object
         '''
 
         if self.picard_folder is None:
@@ -119,24 +119,25 @@ class VcfQC(object):
 
         Parameters
         ----------
-        filter_str : str, Optional
+        filter_str : str, optional
                      If defined, apply this filter string so bcftools view
                      apply it before fetching the chros.
-        chr_f : str, Optional
-                      Path to file with a list of chromosomes (one per line).
-                      If provided, the chros in the file will be compared with the
-                      chromosomes in self.vcf
-        verbose : boolean, optional
-                  Increase verbosity
+        chr_f : str, optional
+                Path to file with a list of chromosomes (one per line).
+                If provided, the chros in the file will be compared with the
+                chromosomes in self.vcf.
+        verbose : bool, optional
+                  Increase verbosity.
 
         Returns
         -------
-        A dict with a key named 'in_vcf' and whose values are the chros that are present in self.vcf
+        dict
+            Dict with a key named 'in_vcf' and whose values are the chros that are present in self.vcf.
 
-        If list_of_chros is defined, then it will also add 3 keys to the dict:
-            'both' whose values will be the chros present in self.vcf and in 'chr_f'
-            'in_A' whose values will be the chros PRESENT in self.vcf and NOT in 'chr_f'
-            'in_B' whose values will be the chros NOT present in self.vcf and PRESENT in 'chr_f'
+            If list_of_chros is defined, then it will also add 3 keys to the dict:
+                 'both' whose values will be the chros present in self.vcf and in 'chr_f'
+                 'in_A' whose values will be the chros PRESENT in self.vcf and NOT in 'chr_f'
+                 'in_B' whose values will be the chros NOT present in self.vcf and PRESENT in 'chr_f'.
         '''
 
         params=['--no-header',self.vcf, "|cut -f1 |uniq"]
@@ -184,17 +185,18 @@ class VcfQC(object):
 
         Parameters
         ----------
-        region : string, Required
+        region : str
                  String with path to the BED file containing the regions for
-                 which the number will be calculated
-        outprefix : str, Required
-                   Prefix for outfile
-        verbose : boolean, optional
-                  Increase verbosity
+                 which the number will be calculated.
+        outprefix : str
+                    Prefix for outfile.
+        verbose : bool, optional
+                  Increase verbosity.
 
         Returns
         -------
-        File with the number of variants for each particular region
+        filename
+                File with the number of variants for each particular region.
         '''
 
         outprefix = outprefix+".counts"
@@ -221,19 +223,19 @@ class VcfQC(object):
 
         Parameters
         ----------
-        outprefix : str, Required
-                   Prefix for outfiles: prefix.variant_calling_detail_metrics
-                   and prefix.variant_calling_summary_metrics
-        truth_vcf : str, Required
-                   Reference VCF file
-        intervals : str, Optional
-                    Target intervals to restrict analysis to
-        verbose : boolean, optional
-                  Increase verbosity
+        outprefix : str
+                    Prefix for outfiles: prefix.variant_calling_detail_metrics
+                    and prefix.variant_calling_summary_metrics.
+        truth_vcf : str
+                    Reference VCF file.
+        intervals : str, optional
+                    Target intervals to restrict analysis to.
+        verbose : bool, optional
+                  Increase verbosity.
 
         Returns
         -------
-        This function returns a CollectVCallingMetrics object
+        CollectVCallingMetrics object
         '''
 
         if self.picard_folder is None:
@@ -272,24 +274,24 @@ class VcfQC(object):
 
         Parameters
         ----------
-        length : int, Required
-                      Length in bp of the genomic windows for which the number
-                      of variants will be calculated
-        genome : str, Required
-                      File with genome sizes
-        outprefix : str, Required
-                      Prefix for output file (png file with variant density plot)
-        plot_params : dict, Required
+        length : int
+                 Length in bp of the genomic windows for which the number
+                 of variants will be calculated.
+        genome : str
+                 File with genome sizes.
+        outprefix : str
+                    Prefix for output file (png file with variant density plot).
+        plot_params : dict
                       Dictionary containing the graphical parameters used for plot_variants.R:
                       {
                        'height': int,
                        'chromName_cex': double
-                       }
+                       }.
 
         Returns
         -------
-        Returns png file with the density plot
-
+        filename
+                Returns png file with the density plot
         '''
 
         #run bedtools makewindows to slice the genome
@@ -354,19 +356,21 @@ class VcfQC(object):
 
         Parameters
         ----------
-        outpath : str, required
-              output path
-        filter_str : str, optional. Example:  PASS,.
-                  Apply filters when calculating the stats
-        region : str, optional. Example: chr20
-                 Region used for calculating the stats
-        region_file : BED file, optional
-                      BED file with the regions that will be analyzed
-        verbose : boolean, optional
+        outpath : str
+                  output path
+        filter_str : str, optional. 
+                     Example:  PASS,.
+                     Apply filters when calculating the stats.
+        region : str, optional
+                 Example: chr20
+                 Region used for calculating the stats.
+        region_file : filename, optional
+                      BED file with the regions that will be analyzed.
+        verbose : bool, optional
 
         Returns
         -------
-        A BcftoolsStats object
+        BcftoolsStats object
         '''
 
         Arg = namedtuple('Argument', 'option value')
@@ -428,20 +432,20 @@ class BcftoolsStats(object):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        filename : str, Required
+        Parameters
+        ----------
+        filename : str
                    Filename of the VCF that was used to run bcftools stats
-        summary_numbers : dict, Required
+        summary_numbers : dict
                           Dictionary containing the basic stats. i.e.:
                               number of samples:      1
                               number of records:      1867316
                               .....
-        ts_tv : float, Required
+        ts_tv : float
                 ts/tv ratio
-        ts_tv_1stalt : float, Required
-                ts/tv (1st ALT)
-        no_singleton_snps : int, Required
+        ts_tv_1stalt : float
+                       ts/tv (1st ALT)
+        no_singleton_snps : int
         '''
 
         self.filename = filename
@@ -449,6 +453,28 @@ class BcftoolsStats(object):
         self.ts_tv = ts_tv
         self.ts_tv_1stalt = ts_tv_1stalt
         self.no_singleton_snps = no_singleton_snps
+
+    def summary2tsv(self):
+        '''
+        Function to write summary_numbers in tsv format
+
+        Returns
+        -------
+        tsv file with summary numbers 
+        '''
+        outfile="{0}.summary.tsv".format(self.filename)
+
+        summary_numbers=self.summary_numbers
+        header="#filename\t"
+        header+="\t".join(summary_numbers.keys()).replace(":","").replace(" ","_")
+        
+        values=self.filename+"\t"
+        values+="\t".join([str(n) for n in summary_numbers.values()])
+
+        f=open(outfile,'w');
+        f.write(header+"\n")
+        f.write(values+"\n")
+        f.close
 
     def __str__(self):
         sb = []
@@ -470,17 +496,17 @@ class GTPconcordance(object):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        summary_metrics_file : str, Required
+        Parameters
+        ----------
+        summary_metrics_file : str
                                Filepath to *.genotype_concordance_summary_metrics generated by
                                Picard's GenotypeConcordance
-        summary_metrics_snps : dict, Optional
+        summary_metrics_snps : dict, optional
                                Dict with the summary metrics found in the
                                *.genotype_concordance_summary_metrics file (only for SNPs)
-        summary_metrics_indels : dict, Optional
-                               Dict with the summary metrics found in the
-                               *.genotype_concordance_summary_metrics file (only for Indels)
+        summary_metrics_indels : dict, optional
+                                 Dict with the summary metrics found in the
+                                 *.genotype_concordance_summary_metrics file (only for Indels)
         '''
 
         sm_snps = {}
@@ -522,7 +548,8 @@ class CollectVCallingMetrics(object):
 
         Returns
         -------
-        A dictionary with the information in the file
+        dict
+            A dictionary with the information in the file
         '''
         out_dict = {}
         with open(file) as f:
@@ -546,20 +573,20 @@ class CollectVCallingMetrics(object):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        vc_detail_metrics_file : str, Required
-                                Filepath to *.variant_calling_detail_metrics
-                                generated by Picard's CollectVariantCallingMetrics
-        vc_summary_metrics_file : str, Required
-                                Filepath to *.variant_calling_summary_metrics
-                                generated by Picard's CollectVariantCallingMetrics
-        vc_detail_metrics : dict, Optional
+        Parameters
+        ----------
+        vc_detail_metrics_file : str
+                                 Filepath to *.variant_calling_detail_metrics
+                                 generated by Picard's CollectVariantCallingMetrics
+        vc_summary_metrics_file : str
+                                  Filepath to *.variant_calling_summary_metrics
+                                  generated by Picard's CollectVariantCallingMetrics
+        vc_detail_metrics : dict, optional
                             Dictionary with information in file
                             *.variant_calling_detail_metrics
-        vc_summary_metrics : dict, Optional
-                            Dictionary with information in file
-                            *.variant_calling_summary_metrics
+        vc_summary_metrics : dict, optional
+                             Dictionary with information in file
+                             *.variant_calling_summary_metrics
 
         '''
 

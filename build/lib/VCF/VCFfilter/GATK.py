@@ -24,24 +24,25 @@ class GATK(object):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        vcf : str, Required
-             Path to gzipped vcf file
-        caller : str, Optional
-             Caller used to generate the VCF: UG, bcftools
-             Default= 'UG'
-        reference : str, Required
-             Path to fasta file containing the reference
-        bgzip_folder : str, Optional
-                      Path to folder containing the bgzip binary
-        tabix_folder : str, Optional
-                        Path to folder containing the tabix binary
-        gatk_folder : str, Optional
-                       Path to folder containing GATK's jar file
-        tmp_dir : str, Optional
-                     Path to java temporary directory. This needs to be
-                     set for GATK modules such as ApplyRecalibrator that fails because there is not enough space in the default java tmp dir
+        Parameters
+        ----------
+        vcf : str
+              Path to gzipped vcf file
+        caller : str, optional
+                 Caller used to generate the VCF: UG, bcftools
+                 Default= 'UG'
+        reference : filename
+                    Path to fasta file containing the reference
+        bgzip_folder : str, optional
+                       Path to folder containing the bgzip binary
+        tabix_folder : str, optional
+                       Path to folder containing the tabix binary
+        gatk_folder : str, optional
+                      Path to folder containing GATK's jar file
+        tmp_dir : str, optional
+                  Path to java temporary directory. This needs to be
+                  set for GATK modules such as ApplyRecalibrator that 
+                  fails because there is not enough space in the default java tmp dir
         '''
 
         if os.path.isfile(vcf) is False:
@@ -64,32 +65,33 @@ class GATK(object):
 
         Parameters
         ----------
-        resources : JSON file with resources to add using the -resources option, Required
-        mode : str, Required
-                    Recalibration mode to employ (SNP|INDEL)
-        intervals :  chr1:1-1000, Optional
-                    One or more genomic intervals over which to operate
-        max_gaussians : int, Optional
+        resources : filename 
+                    JSON file with resources to add using the -resources option, Required
+        mode : {'SNP','INDEL'}
+               Recalibration mode to employ
+        intervals :  chr1:1-1000, optional
+                     One or more genomic intervals over which to operate
+        max_gaussians : int, optional
                         Max number of Gaussians for the positive model
-        annotations : list, Optional
+        annotations : list, optional
                       List of annotations to be used. Default=['DP', 'QD', 'FS', 'SOR',
                       'MQ', 'MQRankSum', 'ReadPosRankSum', 'InbreedingCoeff']
-        tranches : list, Optional
+        tranches : list, optional
                    Each element in the list will correspond to the  levels of truth
                    sensitivity at which to slice the data. (in percent, that is 1.0
                    for 1 percent). Default=[100.0,99.9,99.0,90.0]
-        outprefix : str, Optional
+        outprefix : str, optional
                     out prefix used for -recalFile, -tranchesFile, -rscriptFile.
                     Default= recalibrate
-        verbose : bool, Optional
+        verbose : bool, optional
                   Increase verbosity
-        log_file : str, Optional
+        log_file : filename, optional
                    Path to file that will used for logging the GATK stderr and stdout
 
         Returns
         -------
-        Dictionary with location of tranches and recal files
-
+        dict
+            Dictionary with location of tranches and recal files
         '''
 
         if annotations is None:
@@ -168,24 +170,29 @@ class GATK(object):
 
         Parameters
         ----------
-        mode : str, Required
-                    Recalibration mode to employ (SNP|INDEL)
-        recal_file : str, Required
+        mode : {'SNP','INDEL'}
+               Recalibration mode to employ
+        recal_file : filename
                      The input recal file used by ApplyRecalibration
-        tranches_file : str, Required
+        tranches_file : filename
                         The input tranches file describing where to cut the data
-        outprefix : str, Required
+        outprefix : str
                     Prefix used for the output
-        ts_filter_level : float, Optional
+        ts_filter_level : float, optional
                           The truth sensitivity level at which to start filtering. Default=99.0
-        num_threads : int, Optional
-                   Number of data threads to allocate to this analysis. Default=1
-        compress : boolean, Default= True
-                   Compress the recalibrated VCF
-        verbose : bool, Optional
+        num_threads : int, optional
+                      Number of data threads to allocate to this analysis. Default=1
+        compress : bool
+                   Compress the recalibrated VCF. Default= True
+        verbose : bool, optional
                   Increase verbosity
-        log_file : str, Optional
+        log_file : filename, optional
                    Path to file that will used for logging the GATK stderr and stdout
+
+        Returns
+        -------
+        filename
+                 Path to filtered VCF file
         '''
 
         if self.caller != 'UG':

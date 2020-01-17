@@ -10,16 +10,16 @@ import tempfile
 
 class BEDTools(object):
     '''
-    Class to represent different operations performed with BEDTools
+    Class used to perform different operations with the BEDTools package.
     '''
 
     def __init__(self, bedtools_folder):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        bedtools_folder : str, Optional
+        Parameters
+        ----------
+        bedtools_folder : str, optional
                           Path to folder with bedtools binary
         '''
 
@@ -31,12 +31,12 @@ class BEDTools(object):
 
         Parameters
         ----------
-        w : int , Required
+        w : int
             width of windows in bp
-        g : str, Required
+        g : filename
             Path to genome file
-        s : int , Optional
-           overlap in bp. i.e. if -w 100 -s 80 will generate:
+        s : int , optional
+            overlap in bp. i.e. if -w 100 -s 80 will generate:
 
            chr1    0       100
            chr1    80      180
@@ -50,13 +50,13 @@ class BEDTools(object):
            chr1    200     1200
            chr1    400     1400
            chr1    600     1600
-        lextend : int, Optional
+        lextend : int, optional
                   Extend each interval to the left by int bases 
 
-        rextend : int, Optional
+        rextend : int, optional
                   Extend each interval to the right by int bases
         
-        subtract : str, Optional
+        subtract : filename, optional
                    BED file containing the features that will be removed from the generated windows.
                    For example, if we have the following window:
                    
@@ -68,14 +68,14 @@ class BEDTools(object):
                    chr20 1000 1100
                    chr20 1200 2000
         
-        verbose : boolean, optional.
+        verbose : bool, optional
                   Default=False
 
         Returns
         ------
-        A list of lists. Each sublist is composed of ['chr','start','end']
-        
-        It will return an empty list if not elements for a certain chr are defined
+        list
+            A list of lists. Each sublist is composed of ['chr','start','end']
+            It will return an empty list if not elements for a certain chr are defined
         '''
 
         command = ""

@@ -19,7 +19,7 @@ import pdb
 
 class BamQC(object):
     '''
-    Class to do quality assessment on a BAM file
+    Class to do the quality assessment on a BAM format file
     '''
 
     def __init__(self, bam, samtools_folder=None, java_folder=None,
@@ -28,21 +28,21 @@ class BamQC(object):
         '''
         Constructor
 
-         Class variables
-        ---------------
-        bam : str
-            Path to BAM file
+        Parameters
+        ----------
+        bam : filename
+              Path to BAM file
 
         samtools_folder : str
-            Path to folder containing the samtools binary
+                          Path to folder containing the samtools binary
         java_folder : str, optional
-            Path to folder containing the java binary
+                      Path to folder containing the java binary
         picard_folder : str, optional
-            Path to folder containing the Picard jar file
+                        Path to folder containing the Picard jar file
         chk_indel_folder : str, optional
-            Path to folder containing Heng Li's chk_indel_rg binary
+                           Path to folder containing Heng Li's chk_indel_rg binary
         verifybamid_folder : str, optional
-            Path to folder containing VerifyBAMID
+                             Path to folder containing VerifyBAMID
         '''
 
         if os.path.isfile(bam) is False:
@@ -64,9 +64,10 @@ class BamQC(object):
 
         Returns
         -------
-        A dictionary containing the following information:
+        dict
+             A dictionary containing the following information:
         
-            {'contig Name': length (in bp)}
+                {'contig Name': length (in bp)}
         '''
         header, err = subprocess.Popen(["samtools", "view", "-H", self.bam],
                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -94,7 +95,8 @@ class BamQC(object):
 
         Returns
         -------
-        List with the sample names
+        list
+            List with the sample names
         '''
         header, err = subprocess.Popen(["samtools", "view", "-H", self.bam], stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
@@ -121,7 +123,8 @@ class BamQC(object):
 
         Returns
         -------
-        List composed of the read groups
+        list
+            List composed of the read groups
         '''
         readgroups = []
 
@@ -151,8 +154,9 @@ class BamQC(object):
 
         Returns
         -------
-        A dictionary containing the following information:
-             {
+        dict
+            A dictionary containing the following information:
+            {
              "total_no_reads": int
              "no_duplicates": int
              "total_no_mapped": int
@@ -195,7 +199,7 @@ class BamQC(object):
         Parameters
         ----------
         chros : list or string
-            List of contigs or just a single contig used for calculating the coverage
+                List of contigs or just a single contig used for calculating the coverage
 
         Returns
         ------
@@ -251,12 +255,11 @@ class BamQC(object):
         Parameters
         ----------
         cov_list : list
-            List containing the SDepth objects for which the stats will be aggregated.
+                   List containing the SDepth objects for which the stats will be aggregated.
 
         Returns
         --------
         A SDepth object
-
         '''
 
         assert type(cov_list) is list, "cov_list is not a list: %r" % cov_list
@@ -281,19 +284,18 @@ class BamQC(object):
 
         Parameters
         ----------
-        baits_file : str, required
-            Str consisting on the path to the file containing the Exome baits.
-        outfile : str, optional
-            If provided, then create a file with the output of this program
+        baits_file : filename
+                     Path to the file containing the Exome baits.
+        outfile : filename, optional
+                  If provided, then create a file with the output of this program
         cov_cap : int, optional
-            Picard's Coverage Cap parameter. Treat positions with coverage
-            exceeding this value as if they had coverage at this value.
-            Default value: 250.
+                  Picard's Coverage Cap parameter. Treat positions with coverage
+                  exceeding this value as if they had coverage at this value.
+                  Default value: 250.
 
         Returns
         ------
         A CMetrics object
-
         '''
 
         # Check to see if file exists
@@ -347,19 +349,18 @@ class BamQC(object):
 
         Parameters
         ----------
-        reference : str, required
-            Str with Fasta file used as the reference.
-        outfile : str, optional
-            If provided, then create a file with the output of this program
+        reference : filename
+                    Fasta file used as the genome reference
+        outfile : filename, optional
+                  If provided, then create a file with the output of this program
         cov_cap : int, optional
-            Picard's Coverage Cap parameter. Treat positions with coverage
-            exceeding this value as if they had coverage at this value.
-            Default value: 250.
+                  Picard's Coverage Cap parameter. Treat positions with coverage
+                  exceeding this value as if they had coverage at this value.
+                  Default value: 250.
 
         Returns
         ------
         A CMetrics object
-
         '''
         if os.path.isfile(self.bam) is False:
             raise Exception("Bam file does not exist")
@@ -414,13 +415,13 @@ class BamQC(object):
 
         Parameters
         ----------
-        outfile : str, optional
-            If provided, then create a file with the output of this program
+        outfile : filename, optional
+                  If provided, then create a file with the output of this program
 
         Returns
-        ------
-        A list of Chk_indel objects
-
+        -------
+        list
+             A list of Chk_indel objects
         '''
         if os.path.isfile(self.bam) == False:
             raise Exception("Bam file does not exist")
@@ -462,16 +463,17 @@ class BamQC(object):
 
         Parameters
         ----------
-        genotype_file : str, required
-            vcf file with chip genotypes to use
-        outprefix : str, required
-            prefix for outputfiles
+        genotype_file : filename
+                        vcf file with chip genotypes to use
+        outprefix : str
+                    prefix for outputfiles
         outdir : str, optional
-            If provided, then put output files in this folder
+                 If provided, then put output files in this folder
 
         Returns
-        ------
-        A list with the paths to the output files generated by VerifyBAMID
+        -------
+        list
+             A list with the paths to the output files generated by VerifyBAMID
 
         '''
 
@@ -544,8 +546,8 @@ class SDepth(object):
 
         Parameters
         ----------
-        filename : str, optional
-            Filename to write the report. The default is STDOUT.
+        filename : filename, optional
+                   Filename used to write the report. The default is STDOUT.
         '''
 
         with self.__smart_open(filename) as fh:
@@ -566,14 +568,14 @@ class CMetrics(object):
         '''
         Create an CMetrics object
 
-        Class variables
-        ---------------
+        Parameters
+        ----------
         metrics : dict
-            Dictionary with all the metrics generated by running Picard's
-            CollectHsMetrics or CollectWgsMetrics
-        cov_data : Panda's DataFrame containing data used to generate
+                  Dictionary with all the metrics generated by running Picard's
+                  CollectHsMetrics or CollectWgsMetrics
+        cov_data : dataframe
+                   Panda's DataFrame containing data used to generate
                    a bar plot with the coverage counts
-
         '''
         self.metrics = metrics
         self.cov_data = cov_data
@@ -597,8 +599,8 @@ class CMetrics(object):
 
         Parameters
         ----------
-        filename : str, optional
-            Filename to write the report. The default is STDOUT.
+        filename : filename, optional
+                   Filename to write the report. The default is STDOUT.
         '''
 
         with self.__smart_open(filename) as fh:
@@ -615,12 +617,12 @@ class CMetrics(object):
 
         Parameters
         ----------
-        filename : str, required
-            PDF file to write the plot.
-            xlim : tuple, optional
-            Set the X-axis limit
-            ylim : tuple, optional
-            Set the Y-axis limit
+        filename : filename
+                   PDF file to write the plot.
+        xlim : tuple, optional
+               Set the X-axis limit
+        ylim : tuple, optional
+               Set the Y-axis limit
         '''
 
         #getting basename from filename
@@ -684,19 +686,19 @@ class Chk_indel(object):
         '''
         Create a Chk_indel object
 
-        Class variables
-        ---------------
-        RG : readgroup that will be analyssed
-        ins_in_short_homopolymer : float, required
+        Parameters
+        ----------
+        RG : str
+             readgroup that will be analyssed
+        ins_in_short_homopolymer : float
                                    ins_in_short_homopolymer
-        del_in_short : float, required
+        del_in_short : float
                        del_in_short
-        ins_in_long : float, required 
+        ins_in_long : float 
                       ins_in_long
-        del_in_long : float, required
+        del_in_long : float
                       del_in_long
-        outcome : PASS/FAILED, optional
-
+        outcome : {'PASS','FAILED'}, optional
         '''
         self.RG = RG
         self.ins_in_short_homopolymer = ins_in_short_homopolymer
@@ -711,7 +713,8 @@ class Chk_indel(object):
 
         Returns
         -------
-        It returns PASS/FAILED depending on the outcome of the test
+        str
+           It returns PASS/FAILED depending on the outcome of the test
         '''
 
         inser=self.ins_in_short_homopolymer
