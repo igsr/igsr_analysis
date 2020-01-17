@@ -46,9 +46,15 @@ class BeagleChunkFactory(eHive.BaseRunnable):
         with open(outfile) as f:
             for line in f:
                 line=line.rstrip('\n')
-                coords="{0}:{1}-{2}".format(line.split('\t')[0],
-                                            line.split('\t')[1],
-                                            line.split('\t')[2])
+                # makeBGLCHUNKS does not work for chromosome X and will write coordinates with an incorrect chromosome name ('0' in this case)
+                if line.split('\t')[0]=='0':
+                    coords="{0}:{1}-{2}".format('X',
+                                                line.split('\t')[1],
+                                                line.split('\t')[2])
+                else:
+                    coords="{0}:{1}-{2}".format(line.split('\t')[0],
+                                                line.split('\t')[1],
+                                                line.split('\t')[2])
                 chunks.append(coords)
 
         self.param('chunks', chunks)

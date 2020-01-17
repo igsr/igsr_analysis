@@ -1,61 +1,22 @@
-from setuptools import setup
+import setuptools
 
-setup(
+# read the contents of your README file
+from os import path
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README4pypi.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
+
+setuptools.setup(
     name='igsr_analysis',
-    version='0.91dev',
+    version='1.1.1',
     description='Code that is relevant for the analysis (Mapping, BAM qc, Variant Calling, Filtering etc...) of IGSR data',
     license="Apache License 2.0",
     author='Ernesto Lowy',
     author_email='ernestolowy@gmail.com',
-    long_description=open('README.md').read(),
-    packages=['BamQC','BEDTools','p3','PyHive','PyHive/Attribute','PyHive/Bam','PyHive/BamQC','PyHive/Factories','PyHive/File','PyHive/Seed','PyHive/VariantCalling','PyHive/Vcf',
-              'PyHive/VcfFilter','PyHive/VcfIntegration','PyHive/VcfQC','ReseqTrackDB','SequenceIndex','Utils','VariantCalling','VCF','VCF/VCFfilter','VCF/VCFIntegration/','tests'],
-    scripts=[
-        'scripts/3way_listcomp.py',
-        'scripts/BamQC/run_all_qctests.py',
-        'scripts/BamQC/run_chk_indel_rg.py',
-        'scripts/BamQC/run_picard_on_WGSfile.py',
-        'scripts/BamQC/run_picard_on_exomefile.py',
-        'scripts/BamQC/run_verifybamid.py',
-        'scripts/BamQC/runsamtoolsdepth_on_WGS_BAM.py',
-        'scripts/BamQC/runsamtoolsdepth_on_reseqtrack_BAM.py',
-        'scripts/README',
-        'scripts/ReseqTrackDB/analyze_coverage.py',
-        'scripts/ReseqTrackDB/change_type.py',
-        'scripts/ReseqTrackDB/check_readgroups.py',
-        'scripts/ReseqTrackDB/create_collection_to_transpose.py',
-        'scripts/ReseqTrackDB/get_failing_vfbamid.py',
-        'scripts/ReseqTrackDB/move_file.py',
-        'scripts/ReseqTrackDB/store_files_from_filemetadata.py',
-        'scripts/VCF/FILTER/run_applyrecalibration.py',
-        'scripts/VCF/FILTER/run_bcftools_filter.py',
-        'scripts/VCF/FILTER/run_variantrecalibrator.py',
-        'scripts/VCF/FILTER/subset_vcf.py',
-        'scripts/VCF/NORMALIZATION/run_variantsToAllelicPrimitives.py',
-        'scripts/VCF/NORMALIZATION/run_vcfallelicprim.py',
-        'scripts/VCF/NORMALIZATION/run_vtnormalize.py',
-        'scripts/VCF/NORMALIZATION/test_call.py',
-        'scripts/VCF/QC/analyze_concordance.py',
-        'scripts/VCF/QC/analyze_concordance_metrics.py',
-        'scripts/VCF/QC/cmp_list_of_chros.py',
-        'scripts/VCF/QC/compare_bcftoolstats_perchr.py',
-        'scripts/VCF/QC/get_chros4variants.py',
-        'scripts/VCF/QC/get_number_variants_in_region.py',
-        'scripts/VCF/QC/plot_variants_density.py',
-        'scripts/VCF/QC/run_CollectVariantCallingMetrics.py',
-        'scripts/VCF/QC/run_bcftools_stats.py',
-        'scripts/VCF/QC/run_bcftools_stats_on_dbfile.py',
-        'scripts/VCF/R/plot_variants.R',
-        'scripts/VCF/UTILS/main.py',
-        'scripts/VCF/UTILS/select_variants.py',
-        'scripts/comparison_with_giab.sh',
-        'scripts/comparison_with_giab_b37.sh',
-        'scripts/comparison_with_giab_inhighconf.sh',
-        'scripts/correct_ambiguous_bases.py',
-        'scripts/correct_ambiguous_biopython.py',
-        'scripts/get_prefixes.py',
-        'scripts/p3/analyze_p3_stats.py',
-        'scripts/replace_chros_names.py'
-    ],
-    install_requires=['pandas','PyMySQL','scipy','numpy','matplotlib','matplotlib-venn','pysam'], #external packages as dependencies
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url="https://github.com/igsr/igsr_analysis",
+    packages=setuptools.find_packages(),
+    install_requires=['pandas','PyMySQL','scipy','numpy','matplotlib','matplotlib-venn'], #external packages as dependencies
 )

@@ -27,7 +27,7 @@ class VcfCombine(eHive.BaseRunnable):
         labels = self.param_required('alldatasets2combine')
         
         vcf_utils=VcfUtils(vcflist=vcf_paths,bcftools_folder=self.param_required('bcftools_folder'),
-                           gatk_folder=self.param_required('gatk_folder'))
+                           gatk_folder=self.param_required('gatk_folder'), tmp_dir=self.param('tmp_dir'))
 
         ginterval=None
         if self.param_is_defined('ginterval'):
