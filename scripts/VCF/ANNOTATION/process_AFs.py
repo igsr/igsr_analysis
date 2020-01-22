@@ -1,5 +1,7 @@
 import pandas as pd
 import argparse
+import pdb
+import re
 
 parser = argparse.ArgumentParser(description='Script to process the allele frequency matrix')
 
@@ -26,11 +28,20 @@ def process_AFs(AF_f,depth_f):
     -------
     Nothing
     '''
+    # parse first row in order to get the populations in the file
+    p=re.compile('.*_FRQ')
+    pops=[]
+    with open(AF_f) as f:
+        header = f.readline().split('\t')
+        for i in header:
+            i=i.rstrip('\n')
+            if p.match(i):
+                if i!='ALL_FRQ': pops.append(i)
 
     #Process the AFs
-    cols=['#CHROM','POS','REF','ALT','ALL_TOTAL_CNT','ALL_ALT_CNT','ALL_FRQ','EAS_FRQ','EUR_FRQ','AFR_FRQ','AMR_FRQ','SAS_FRQ']
-    names=['#CHR','POS', 'REF','ALT','AN','AC','AF','EAS_AF','EUR_AF','AFR_AF','AMR_AF','SAS_AF']
-    final=['#CHR','FROM','TO','REF','ALT','DP','AN','AC','AF','EAS_AF','EUR_AF','AFR_AF','AMR_AF','SAS_AF']
+    cols=['#CHROM','POS','REF','ALT','ALL_TOTAL_CNT','ALL_ALT_CNT','ALL_FRQ']+pops
+    names=['#CHR','POS', 'REF','ALT','AN','AC','AF']+[re.sub('FRQ','AF',i) for i in pops]
+    final=['#CHR','FROM','TO','REF','ALT','DP','AN','AC','AF']+[re.sub('FRQ','AF',i) for i in pops]
     AFs_df=pd.read_csv(AF_f, sep="\t", usecols=cols, index_col=False)[cols]
     AFs_df.columns =names
     AFs_df=AFs_df.round(decimals=2).astype(object)
