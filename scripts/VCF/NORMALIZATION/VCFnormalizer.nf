@@ -22,13 +22,12 @@ if (params.help) {
     log.info '---------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow VCFnormalizer.nf --vcf VCF --vt snps --threads 5 --outprefix out --tmpdir tmp/'
+    log.info '    nextflow VCFnormalizer.nf --vcf VCF --vt snps --threads 5 --outprefix out'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
     log.info '	--vcf VCF    Path to the VCF file that will be normalized.'
     log.info '  --vt  VARIANT_TYPE   Type of variant that will be selected and normalized. Poss1ible values are 'snps'/'indels'.'
-    log.info '  --tmpdir FOLDER What folder to use as tmpdir for bcftools sort.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info '  --outprefix OUTPREFIX Prefix for output files.'
     log.info ''
@@ -116,7 +115,7 @@ process run_bcftools_sort {
         Path to sorted VCF
         */
 
-        memory '9 GB'
+        memory '15 GB'
         executor 'local'
         queue "${params.queue}"
         cpus 1
@@ -128,7 +127,8 @@ process run_bcftools_sort {
         file "${params.outprefix}.sort.vcf.gz" into out_sort
 
         """
-	bcftools sort -T ${params.tmpdir} ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
+	mkdir tmpdir
+	bcftools sort -T tmpdir/ ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
         """
 }
 
