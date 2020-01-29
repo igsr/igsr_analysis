@@ -1,0 +1,15 @@
+awk '{print $1"\t"$2"\t"$10"\t"$13}' ../ALL_GGVP_illuminaHiSeq_b37_curated_20190710.samples.tsv >ggvp_samples_metadata.txt
+
+python parse_metadata.py > ggvp_samples_metadata.f.txt
+
+wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/20130606_g1k.ped
+
+cut -f2,8 20130606_g1k.ped > relationships.txt
+
+grep -f samples_GWD_1KG.txt relationships.txt |cut -f2
+
+awk '{print $1"\tGWD\tUNRELATED"}' samples_GWD_1KG.txt > samples_GWD_1KG.f.txt
+
+cat ggvp_samples_metadata.f.txt samples_GWD_1KG.f.txt > ggvp_samples_metadata.f2.txt
+
+python parse_metadata2.py > ../ggvp_samples.20200121.superpopulations.panel
