@@ -138,15 +138,13 @@ with open(args.dirf) as f:
                      numbers[type]=sum_dict['number of SNPs:']
                  elif args.vt=='indels':
                      numbers[type] = sum_dict['number of indels:']
-                    
+            
                  chr_stripped=None
                  if m.group(1)=='X' or m.group(1)=='chrX':
-                    continue
-                 else:
-                    chr_stripped=int(chr.replace("chr",""))
-                    
-                    chr_stripped=int(chr_stripped)
-                    data[dirpath][chr_stripped]=numbers
+                     chr=chr.replace("chrX","chr23")
+                 chr_stripped=int(chr.replace("chr",""))
+                 chr_stripped=int(chr_stripped)
+                 data[dirpath][chr_stripped]=numbers
         else:
             raise Exception('No chromosome was fetched from dir name')
 
