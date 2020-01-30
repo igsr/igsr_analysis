@@ -60,6 +60,7 @@ process select_vt {
   	
 	output:
 	file "${vcf.baseName}.${params.vt}.vcf.gz" into out_ch
+	file "${vcf.baseName}.${params.vt}.vcf.gz.tbi" into out_ch_tbi
   
 	script:
   	"""
