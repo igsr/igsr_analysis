@@ -17,8 +17,8 @@ Contents:
    freebayes_filtering_pipeline
    gatk_vc_filtering_pipeline
    vcf_decoration
-   MLbased_vcf_filtering
-   compare_with_giab_pipeline
+   MLbased_VCFfiltering
+   compare_with_true_pipeline
    consensus_callset_pipeline
    phasing_pipeline
    cram2bam

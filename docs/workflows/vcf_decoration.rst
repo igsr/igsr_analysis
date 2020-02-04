@@ -20,31 +20,37 @@ Dependencies
 ------------
 
 * Nextflow
+  
  This pipeline uses a workflow management system named Nextflow. This software can be downloaded from:
 
  https://www.nextflow.io/
 
 * Tabix and bgzip
- Tabix and bgzip are part of the HTSlib project, which can be downloaded from:
+
+  Tabix and bgzip are part of the HTSlib project, which can be downloaded from:
 
  https://github.com/samtools/htslib
 
 * BCFTools
+  
  Downloadable from:
 
  http://www.htslib.org/download/
 
 * BEDTools
+  
  Downloadable from:
 
  https://github.com/arq5x/bedtools2/releases/
 
 * vcf-validator
+  
  This tool can be obtained from:
 
  https://github.com/EBIvariation/vcf-validator
 
 * IGSR-analysis code base
+  
  The scripts needed to run this workflow can be downloaded by cloning the IGSR-analysis github repo from:
 
  https://github.com/igsr/igsr_analysis.git
@@ -81,6 +87,7 @@ This worklow will create a folder name ``results/`` with 2 output files:
 * ``chr20.GRCh38.phased.vcf.gz`` 
 
  That will be the final annotated VCF
+ 
 * ``chr20.vcf.validation.txt``
 
  Will contain the output of the ``vcf-validator``
