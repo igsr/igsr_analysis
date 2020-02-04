@@ -5,18 +5,21 @@ Workflow used in IGSR to assess the quality of a certain file in the BAM format 
 This workflow consists on running 3 different types of tests:
 
 * Chkindel_rg
+  
 This test consists on using a simple algorithm to identify runs with unbalanced ratio of short insertion and deletion (greater than 5), which is indicative of low quality data.
 The code to run this test can be found at:
 
 https://github.com/lh3/samtools-legacy/blob/master/examples/chk_indel.c 
 
 * VerifyBAMID
+  
 This test is used to assess sample contamination and sample mix-ups, it uses the VerifyBAMID software.
 More info on this useful piece of software can be found at:
 
 https://genome.sph.umich.edu/wiki/VerifyBamID
 
 * Coverage
+  
 For assessing the coverage we use Picard CollectWgsMetrics. 
 This software generates a complete report on the depth of coverage of the sequencing experiment and the calculated mean coverage value can be used to decide which files to discard.
 More information on this Picard tool can be found at:

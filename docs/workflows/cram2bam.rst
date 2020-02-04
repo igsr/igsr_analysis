@@ -14,16 +14,19 @@ Dependencies
 ------------
 
 * Nextflow
+  
  This pipeline uses a workflow management system named Nextflow. This software can be downloaded from:
 
  https://www.nextflow.io/
 
 * SAMTools
+  
  Downloadable from:
 
  http://www.htslib.org/download/
 
 * Aspera connect software:
+  
  This ascp client can be obtained from:
 
  http://asperasoft.com/software/transfer-clients/connect-web-browser-plug-in/
@@ -62,9 +65,10 @@ Pipeline output
 
 This worklow will create a folder name ``converted/`` with 2 output files:
 
-* ``prefix.bam`` 
+* ``prefix.bam``
 
  BAM file resulting after converting the downloaded CRAM file
+ 
 * ``prefix.bam.bai``
 
  The index created after running ``samtools index prefix.bam``
