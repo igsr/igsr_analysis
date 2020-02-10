@@ -3,21 +3,19 @@ Created on 12 Oct 2016
 
 @author: ernesto
 '''
-from types import *
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import re
-import os
-import sys
 import numpy as np
 import pandas as pd
-import subprocess
-from collections import defaultdict, OrderedDict
+import matplotlib.pyplot as plt
 import contextlib
-import pdb
+from collections import defaultdict, OrderedDict
+import subprocess
+import sys
+import os
+import re
+import matplotlib
+matplotlib.use('Agg')
 
-class BamQC(object):
+class BamQC:
     '''
     Class to do the quality assessment on a BAM format file
     '''
@@ -66,7 +64,7 @@ class BamQC(object):
         -------
         dict
              A dictionary containing the following information:
-        
+
                 {'contig Name': length (in bp)}
         '''
         header, err = subprocess.Popen(["samtools", "view", "-H", self.bam],
@@ -108,7 +106,7 @@ class BamQC(object):
 
         if err != "":
             raise Exception(err)
-        
+
         samples = re.findall("SM:([\w.]+)\s", header)
         samples = list(set(samples))
         return samples
@@ -207,7 +205,8 @@ class BamQC(object):
 
         This method runs samtools depth on a BAM file and will calculate the following metrics:
             * Number of Bases mapped: This is the number of bases having at least one read mapped
-            * Sum of depths of coverage: This is the sum of all the depths in each of the Bases mapped
+            * Sum of depths of coverage: This is the sum of all the depths in each of the
+              Bases mapped
             * Breadth of coverage: This is the result of dividing bases_mapped/length(contig)
               (i.e. what portion of the contig has reads mapped)
             * Depth of coverage: This is the result of dividing sum_of_depths/length(contig)
@@ -228,12 +227,14 @@ class BamQC(object):
             command = "%s/samtools depth -r %s %s | awk 'BEGIN {max = 0}"\
             "{if ($3>max) max=$3;sum+=$3;cnt++}END{print cnt \"\t\" sum \"\t\" max}'" \
             % (self.samtools_folder, c, self.bam)
-            
+
             bases_mapped, sum_of_depths, max = map(int, subprocess.Popen(command,
                                                                          stdout=subprocess.PIPE,
-                                                                         shell=True).\
-                                                   communicate()[0].decode("utf-8").strip().split("\t"))
-            
+                                                                         shell=True).
+                                                   communicate()[0].
+                                                   decode("utf-8").
+                                                   strip().split("\t"))
+
             #create Coverage object to hold coverage info
             covO = SDepth()
             covO.contig = c
@@ -336,7 +337,6 @@ class BamQC(object):
         sd = OrderedDict(sorted(d.items()))
 
         #process coverage data to create bar plot
-        cov_counts = part[2].split('\n')[1:len(part[2].split('\n'))]
         data = np.array([l.split('\t') for l in part[2].split('\n')[1:len(part[2].split('\n'))]])
         df = pd.DataFrame(data=data[1:, 0:], columns=data[0, 0:])
 
@@ -423,7 +423,7 @@ class BamQC(object):
         list
              A list of Chk_indel objects
         '''
-        if os.path.isfile(self.bam) == False:
+        if os.path.isfile(self.bam) is False:
             raise Exception("Bam file does not exist")
 
         command = ""
@@ -477,16 +477,17 @@ class BamQC(object):
 
         '''
 
-        if os.path.isfile(self.bam) == False:
+        if os.path.isfile(self.bam) is False:
             raise Exception("Bam file does not exist")
 
-        if outdir: outprefix = "%s/%s" % (outdir, outprefix)
+        if outdir:
+            outprefix = "%s/%s" % (outdir, outprefix)
 
         list_of_outfiles = [outprefix+x for x in ['.depthRG', '.depthSM', '.selfRG', '.selfSM']]
 
         # check if all output files already exist before running verifybamid
         for s in list_of_outfiles:
-            if os.path.isfile(s) == True:
+            if os.path.isfile(s) is True:
                 raise Exception("%s already exists!. It will not overwrite!" % s)
 
         command = ""
@@ -503,12 +504,12 @@ class BamQC(object):
 
         # check if all output files exist
         for s in list_of_outfiles:
-            if os.path.isfile(s) == False:
+            if os.path.isfile(s) is False:
                 raise Exception("%s was not created!. Check VerifyBAMID run!" % s)
 
         return list_of_outfiles
 
-class SDepth(object):
+class SDepth:
     '''
     Class to store coverage metrics on a Whole Genome Sequencing BAM file
     calculated using SAMtools depth
@@ -558,7 +559,7 @@ class SDepth(object):
             print >>fh, '\tBreadth of coverage: %.3f' % self.breadth
             print >>fh, '\tMaximum coverage %d' % self.max
 
-class CMetrics(object):
+class CMetrics:
     '''
     Class to store coverage information on the metrics calculated by Picard's
     CollectHsMetrics/CollectWgsMetrics on an Exome or WGS BAM file
@@ -629,17 +630,17 @@ class CMetrics(object):
         basename = os.path.basename(filename).split('.')[0]
 
         #check if dataframe has the right columns
-        y_columnname=None
-        if (list(self.cov_data.columns[1]))== 'high_quality_coverage_count':
-            y_columnname='high_quality_coverage_count'
-        elif (list(self.cov_data.columns[1]))=='count':
-            y_columnname='count'
+        y_columnname = None
+        if (list(self.cov_data.columns[1])) == 'high_quality_coverage_count':
+            y_columnname = 'high_quality_coverage_count'
+        elif (list(self.cov_data.columns[1])) == 'count':
+            y_columnname = 'count'
 
-        x_columnname=None
-        if (list(self.cov_data.columns[0]))== 'coverage':
-            x_columnname='coverage'
-        elif (list(self.cov_data.columns[0]))=='coverage_or_base_quality':
-            x_columnname='coverage_or_base_quality'
+        x_columnname = None
+        if (list(self.cov_data.columns[0])) == 'coverage':
+            x_columnname = 'coverage'
+        elif (list(self.cov_data.columns[0])) == 'coverage_or_base_quality':
+            x_columnname = 'coverage_or_base_quality'
 
         ax = None
         if xlim:
@@ -667,22 +668,23 @@ class CMetrics(object):
         fig.savefig(filename, format='pdf')
 
     def __str__(self):
-        sb = []
+        sob = []
         for key in self.__dict__:
-            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+            sob.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
 
-        return ', '.join(sb)
+        return ', '.join(sob)
 
     def __repr__(self):
         return self.__str__()
 
-class Chk_indel(object):
+class Chk_indel:
     '''
     Class to store information on the ratio of short insertion and deletion
     calculated by runnint Heng Li's chk_indel_rg
     '''
 
-    def __init__(self, RG, ins_in_short_homopolymer, del_in_short, ins_in_long, del_in_long, outcome=None):
+    def __init__(self, RG, ins_in_short_homopolymer, del_in_short, ins_in_long,
+                 del_in_long, outcome=None):
         '''
         Create a Chk_indel object
 
@@ -694,7 +696,7 @@ class Chk_indel(object):
                                    ins_in_short_homopolymer
         del_in_short : float
                        del_in_short
-        ins_in_long : float 
+        ins_in_long : float
                       ins_in_long
         del_in_long : float
                       del_in_long
@@ -717,25 +719,26 @@ class Chk_indel(object):
            It returns PASS/FAILED depending on the outcome of the test
         '''
 
-        inser=self.ins_in_short_homopolymer
-        delet=self.del_in_short
+        inser = self.ins_in_short_homopolymer
+        delet = self.del_in_short
 
         #increment inser and delet counts by 1 to avoid divisions by 0
-        if delet==0:
-            delet+=1
-            inser+=1
-        #calculating ratio: ins-in-short-homopolymer/del-in-short and checking if it is greater than 5
-        outcome="FAILED" if (float(inser)/float(delet))>5 else "PASS"
+        if delet == 0:
+            delet += 1
+            inser += 1
+        #calculating ratio: ins-in-short-homopolymer/del-in-short and checking
+        # if it is greater than 5
+        outcome = "FAILED" if (float(inser)/float(delet)) > 5 else "PASS"
 
-        self.outcome=outcome        
+        self.outcome = outcome
         return outcome
 
     def __str__(self):
-        sb = []
+        sob = []
         for key in self.__dict__:
-            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+            sob.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
 
-        return ', '.join(sb)
+        return ', '.join(sob)
 
     def __repr__(self):
         return self.__str__()
