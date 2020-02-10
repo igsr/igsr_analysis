@@ -25,7 +25,7 @@ if (params.help) {
     log.info '---------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow split_into_chros.nf --vcf callset.vcf.gz --chros chr1,chr2'
+    log.info '    nextflow split_into_chros.nf --vcf callset.vcf.gz --chros chr1,chr2 --prefix callset'
     log.info ''
     log.info 'Options:'
     log.info '  --help  Show this message and exit.'
