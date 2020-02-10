@@ -3,12 +3,10 @@ Created on 24 Apr 2017
 
 @author: ernesto
 '''
-import pdb
-import re
 import subprocess
 import tempfile
 
-class BEDTools(object):
+class BEDTools:
     '''
     Class used to perform different operations with the BEDTools package.
     '''
@@ -51,7 +49,7 @@ class BEDTools(object):
            chr1    400     1400
            chr1    600     1600
         lextend : int, optional
-                  Extend each interval to the left by int bases 
+	          Extend each interval to the left by int bases 
 
         rextend : int, optional
                   Extend each interval to the right by int bases
@@ -67,7 +65,7 @@ class BEDTools(object):
                      
                    chr20 1000 1100
                    chr20 1200 2000
-        
+
         verbose : bool, optional
                   Default=False
 
@@ -82,61 +80,63 @@ class BEDTools(object):
         if self.bedtools_folder:
             command += self.bedtools_folder+"/"
 
-        command += "bedtools makewindows -g {0} -w {1}".format(g,w)
+        command += "bedtools makewindows -g {0} -w {1}".format(g, w)
 
         if s is not None:
             command += " -s {0}".format(s)
 
-        coordlist=[]
+        coordlist = []
 
         if verbose is not False:
             print(command)
 
         try:
-            stdout=subprocess.check_output(command, shell=True)
-            coordlist=[l.split("\t") for l in stdout.decode("utf-8").strip().split("\n")]
+            stdout = subprocess.check_output(command, shell=True)
+            coordlist = [l.split("\t") for l in stdout.decode("utf-8").strip().split("\n")]
         except subprocess.CalledProcessError as exc:
             raise Exception(exc.output)
 
         if subtract is not None:
             temp = tempfile.NamedTemporaryFile()
             try:
-                f=open(temp.name,'w');
+                ofile = open(temp.name, 'w')
                 for i in coordlist:
-                    f.write("{0}\t{1}\t{2}\n".format(i[0],i[1],i[2]))
-                f.close()
-                
-                command1= "{0}/bedtools subtract -a {1} -b {2}".format(self.bedtools_folder, 
-                                                                       temp.name, subtract)
-                coordlist=None
+                    ofile.write("{0}\t{1}\t{2}\n".format(i[0], i[1], i[2]))
+                ofile.close()
+
+                command1 = "{0}/bedtools subtract -a {1} -b {2}".format(self.bedtools_folder,
+                                                                        temp.name, subtract)
+                coordlist = None
                 try:
-                    stdout=subprocess.check_output(command1, shell=True)
-                    coordlist=[l.split("\t") for l in stdout.decode("utf-8").strip().split("\n")]
+                    stdout = subprocess.check_output(command1, shell=True)
+                    coordlist = [l.split("\t") for l in stdout.decode("utf-8").strip().split("\n")]
                 except subprocess.CalledProcessError as exc:
                     raise Exception(exc.output)
             finally:
                 temp.close()
 
         if lextend is not None:
-            first_seen=False
-            for k,l in enumerate(coordlist):
-                if first_seen==True: l[1]=str(int(l[1])+lextend)
-                first_seen=True
-                coordlist[k]=l
+            first_seen = False
+            for k, lon in enumerate(coordlist):
+                if first_seen is True:
+                    lon[1] = str(int(lon[1])+lextend)
+                first_seen = True
+                coordlist[k] = lon
 
         if rextend is not None:
-            for k,l in enumerate(coordlist):
-                if k!=len(coordlist)-1: l[2]=str(int(l[2])+rextend)
-                coordlist[k]=l
+            for k, lon in enumerate(coordlist):
+                if k != len(coordlist)-1:
+                    lon[2] = str(int(lon[2])+rextend)
+                coordlist[k] = lon
 
         return coordlist
 
     def __str__(self):
-        sb = []
+        sab = []
         for key in self.__dict__:
-            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+            sab.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
 
-        return ', '.join(sb)
+        return ', '.join(sab)
 
     def __repr__(self):
         return self.__str__()
