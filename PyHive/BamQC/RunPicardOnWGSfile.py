@@ -1,24 +1,20 @@
 import eHive
-import os
-import glob
-import fnmatch
-import re
 from BamQC import BamQC
 from ReseqTrackDB import *
 
 class RunPicardOnWGSfile(eHive.BaseRunnable):
     """run Picard's CollectWgsMetrics on a WGS BAM file"""
-    
+
     def param_defaults(self):
         return {
         }
 
     def fetch_input(self):
-        hostname=self.param('hostname')
-        username=self.param('username')
-        db=self.param('db')
-        port=self.param('port')
-        pwd=self.param('pwd')
+        hostname = self.param('hostname')
+        username = self.param('username')
+        db = self.param('db')
+        port = self.param('port')
+        pwd = self.param('pwd')
 
         reseqdb = ReseqTrackDB(host=hostname,user=username,port=port,pwd=pwd,db=db)
 
@@ -57,4 +53,4 @@ class RunPicardOnWGSfile(eHive.BaseRunnable):
         self.warning('Work is done!')
         self.warning('{0} different Attributes were passed down'.format(len(self.param('picard_list'))))
         for attrb in self.param('picard_list'):
-            self.dataflow( { 'attrb' : attrb }, 1)
+            self.dataflow({ 'attrb' : attrb}, 1)
