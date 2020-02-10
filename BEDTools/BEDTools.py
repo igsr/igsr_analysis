@@ -9,6 +9,9 @@ import tempfile
 class BEDTools:
     '''
     Class used to perform different operations with the BEDTools package.
+
+    This is essentially a wrapper for the BEDTools package. The functionality is quite limited and
+    additional functions will be added as necessary
     '''
 
     def __init__(self, bedtools_folder):
@@ -49,20 +52,20 @@ class BEDTools:
            chr1    400     1400
            chr1    600     1600
         lextend : int, optional
-	          Extend each interval to the left by int bases 
+	          Extend each interval to the left by int bases
 
         rextend : int, optional
                   Extend each interval to the right by int bases
-        
+
         subtract : filename, optional
                    BED file containing the features that will be removed from the generated windows.
                    For example, if we have the following window:
-                   
+
                    chr20 1000 2000
 
                    And we have the following feature in the BED file: chr20 1100 1200
                    Then the resulting windows will be like:
-                     
+
                    chr20 1000 1100
                    chr20 1200 2000
 
