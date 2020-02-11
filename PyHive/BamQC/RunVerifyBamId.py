@@ -1,18 +1,12 @@
-import eHive
-import os
+import sys
 import glob
 import fnmatch
-import pdb
-import re
+import eHive
 from BamQC import BamQC
 from ReseqTrackDB import *
 
 class RunVerifyBamId(eHive.BaseRunnable):
     """run VerifyBAMID on a BAM file"""
-
-    def param_defaults(self):
-        return {
-        }
 
     def fetch_input(self):
         hostname = self.param('hostname')
@@ -44,7 +38,7 @@ class RunVerifyBamId(eHive.BaseRunnable):
 
         if not len(genotype_f) == 1:
             self.warning("No population genotype file for %s" % filename)
-            exit(0)
+            sys.exit()
 
         bam = BamQC(bam=filepath, verifybamid_folder=self.param_required('verifybamid_folder'))
 
@@ -61,7 +55,6 @@ class RunVerifyBamId(eHive.BaseRunnable):
                         line = line.rstrip('\n')
                         if re.match(r"^#", line):
                             bits = line.split('\t')
-                            continue
                         else:
                             columns = line.split('\t')
                             sample = columns[bits.index('#SEQ_ID')]
@@ -82,11 +75,12 @@ class RunVerifyBamId(eHive.BaseRunnable):
                                            name=name2, value=chipmix)
                             vfbamid_list.append(a1.__dict__)
                             vfbamid_list.append(a2.__dict__)
-                            
+
         self.param('vfbamid_list', vfbamid_list)
-        
+
     def write_output(self):
         self.warning('Work is done!')
-        self.warning('{0} different Attributes were passed down'.format(len(self.param('vfbamid_list'))))
+        self.warning('{0} different Attributes were passed down'.
+                     format(len(self.param('vfbamid_list'))))
         for attrb in self.param('vfbamid_list'):
-            self.dataflow( { 'attrb' : attrb }, 1)
+            self.dataflow({'attrb': attrb}, 1)

@@ -1,9 +1,5 @@
 import eHive
-import subprocess
 import os
-import pdb
-import sys
-import glob
 import time
 
 from VariantCalling import GATK
@@ -37,9 +33,9 @@ class GATK_UG(eHive.BaseRunnable):
          Which type of calls we should output.
          Possible values are: EMIT_VARIANTS_ONLY, EMIT_ALL_CONFIDENT_SITES, EMIT_ALL_SITES
     alleles: str, Optional
-         Path to VCF. 
-         When --genotyping_mode is set to 
-         GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples 
+         Path to VCF.
+         When --genotyping_mode is set to
+         GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
          using only the alleles provide in this callset
     genotyping_mode: str, Optional
          Specifies how to determine the alternate alleles to use for genotyping
@@ -63,88 +59,84 @@ class GATK_UG(eHive.BaseRunnable):
 
     Path to VCF file
     '''
-    
+
     def run(self):
 
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
 
-        outprefix=os.path.split(self.param_required('outprefix'))[1]
+        outprefix = os.path.split(self.param_required('outprefix'))[1]
 
-        chrom=self.param_required('chunk')[0]
-        start=None
+        chrom = self.param_required('chunk')[0]
+        start = None
         # increment by 1 if start=0, as GATK does not accept coords <1
-        if self.param_required('chunk')[1]==0:
-            start=1
+        if self.param_required('chunk')[1] == 0:
+            start = 1
         else:
-            start=self.param_required('chunk')[1]
-        end=self.param_required('chunk')[2]
-        
-        outfile="{0}/{1}.ug.{2}_{3}_{4}".format(self.param_required('work_dir'), 
-                                                outprefix, 
-                                                chrom,
-                                                start,
-                                                end)
+            start = self.param_required('chunk')[1]
+        end = self.param_required('chunk')[2]
 
-        gatk_object=GATK(bam=self.param_required('bamlist'), 
-                         reference=self.param_required('reference'), 
-                         gatk_folder=self.param_required('gatk_folder'),
-                         bgzip_folder=self.param_required('bgzip_folder'))
+        outfile = "{0}/{1}.ug.{2}_{3}_{4}".format(self.param_required('work_dir'),
+                                                  outprefix,
+                                                  chrom,
+                                                  start,
+                                                  end)
 
-        intervals=["{0}:{1}-{2}".format(chrom, 
-                                       start,
-                                       end)]
+        gatk_object = GATK(bam=self.param_required('bamlist'),
+                           reference=self.param_required('reference'),
+                           gatk_folder=self.param_required('gatk_folder'),
+                           bgzip_folder=self.param_required('bgzip_folder'))
 
-        interval_set_rule="UNION"
-        alleles=None
+        intervals = ["{0}:{1}-{2}".format(chrom,
+                                          start,
+                                          end)]
+
+        interval_set_rule = "UNION"
+        alleles = None
         if self.param_is_defined('alleles'):
-            alleles=self.param('alleles')
+            alleles = self.param('alleles')
             intervals.append(alleles)
-            interval_set_rule="INTERSECTION"
+            interval_set_rule = "INTERSECTION"
 
-        genotyping_mode='DISCOVERY'
+        genotyping_mode = 'DISCOVERY'
         if self.param_is_defined('genotyping_mode'):
-            genotyping_mode=self.param('genotyping_mode')
+            genotyping_mode = self.param('genotyping_mode')
 
-        nt=1
+        nt = 1
         if self.param_is_defined('threads'):
-            nt=self.param('threads')
+            nt = self.param('threads')
 
-        max_deletion_fraction=0.05
+        max_deletion_fraction = 0.05
         if self.param_is_defined('max_deletion_fraction'):
-            max_deletion_fraction=self.param('max_deletion_fraction')
+            max_deletion_fraction = self.param('max_deletion_fraction')
 
-        dcov=250
+        dcov = 250
         if self.param_is_defined('dcov'):
-            dcov=self.param('dcov')
+            dcov = self.param('dcov')
 
-        log_file=None
+        log_file = None
         if self.param_is_defined('log_file'):
-            log_file="{0}_{1}.log".format(self.param('log_file'),time.strftime("%Y%m%d_%H%M%S"))
+            log_file = "{0}_{1}.log".format(self.param('log_file'), time.strftime("%Y%m%d_%H%M%S"))
 
-        verbose=None
+        verbose = None
         if self.param_is_defined('verbose'):
-            verbose=True
+            verbose = True
         else:
-            verbose=False
+            verbose = False
 
-        outfile=gatk_object.run_ug(outprefix=outfile,
-                                   glm=self.param_required('glm'),
-                                   output_mode=self.param_required('output_mode'),
-                                   downsample_to_coverage=dcov,
-                                   alleles=alleles,
-                                   interval_set_rule=interval_set_rule,
-                                   genotyping_mode=genotyping_mode,
-                                   intervals=intervals, nt=nt, 
-                                   max_deletion_fraction=max_deletion_fraction,
-                                   log_file=log_file, verbose=verbose)
+        outfile = gatk_object.run_ug(outprefix=outfile,
+                                     glm=self.param_required('glm'),
+                                     output_mode=self.param_required('output_mode'),
+                                     downsample_to_coverage=dcov,
+                                     alleles=alleles,
+                                     interval_set_rule=interval_set_rule,
+                                     genotyping_mode=genotyping_mode,
+                                     intervals=intervals, nt=nt,
+                                     max_deletion_fraction=max_deletion_fraction,
+                                     log_file=log_file, verbose=verbose)
 
         self.param('out_vcf', outfile)
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'out_vcf' : self.param('out_vcf') }, 1)
-
-
-
-
+        self.dataflow({'out_vcf': self.param('out_vcf')}, 1)

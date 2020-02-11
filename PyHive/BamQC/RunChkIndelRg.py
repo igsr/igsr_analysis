@@ -1,14 +1,9 @@
 import eHive
-import os
 from BamQC import BamQC
 from ReseqTrackDB import *
 
 class RunChkIndelRg(eHive.BaseRunnable):
     """run chk_indel_rg on a BAM file"""
-
-    def param_defaults(self):
-        return {
-        }
 
     def fetch_input(self):
         hostname = self.param('hostname')
@@ -28,7 +23,7 @@ class RunChkIndelRg(eHive.BaseRunnable):
         file = reseqdb.fetch_file_by_url(filepath)
 
         self.warning('Analysing file: %s'% filepath)
-        
+
         bam = BamQC(bam=filepath, chk_indel_folder=self.param_required('chk_indel_rg_folder'))
 
         outfile = None
@@ -46,9 +41,9 @@ class RunChkIndelRg(eHive.BaseRunnable):
         chkindel_list = []
 
         for obj in listO:
-            outcome = obj.calc_ratio()
             for attr, value in obj.__dict__.items():
-                attrb = Attribute(table_name="file", other_id=file.dbID, name="CHK_INDEL_"+obj.RG+":"+attr, value=value)
+                attrb = Attribute(table_name="file", other_id=file.dbID,
+                                  name="CHK_INDEL_"+obj.RG+":"+attr, value=value)
                 chkindel_list.append(attrb.__dict__)
 
         self.param('chkindel_list', chkindel_list)
@@ -58,4 +53,4 @@ class RunChkIndelRg(eHive.BaseRunnable):
         self.warning('{0} different Attributes were passed down'.
                      format(len(self.param('chkindel_list'))))
         for attrb in self.param('chkindel_list'):
-            self.dataflow({ 'attrb' : attrb}, 1)
+            self.dataflow({'attrb' : attrb}, 1)
