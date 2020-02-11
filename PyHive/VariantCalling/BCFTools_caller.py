@@ -1,8 +1,5 @@
 import eHive
-import subprocess
 import os
-import pdb
-import sys
 
 from VariantCalling import BCFTools
 
@@ -20,7 +17,7 @@ class BCFTools_caller(eHive.BaseRunnable):
          String used as prefix for the output file
     annots : str, Required
              mpileup parameter
-             String representing a comma separated list of 
+             String representing a comma separated list of
              annotations used to decorate the VCF
     chunk: str, Required
          Interval used by BCFTools for the variant calling
@@ -45,16 +42,19 @@ class BCFTools_caller(eHive.BaseRunnable):
         At a position, read maximally INT reads per input file. Default=250
     C : int, Optional
         mpileup parameter
-        Coefficient for downgrading mapping quality for reads containing excessive mismatches. Default=50
+        Coefficient for downgrading mapping quality for reads containing
+        excessive mismatches. Default=50
     P : str, Optional
         mpileup parameter
-        Comma-delimited list of patforms (determined by @RG-PL) from which indel candidates are obtained. Default= ILLUMINA
+        Comma-delimited list of patforms (determined by @RG-PL) from which indel
+        candidates are obtained. Default= ILLUMINA
     m_pileup: int, Optional
               mpileup parameter
               Minimum number gapped reads for indel candidates. Default=1
     m_call : boolean, Optional
              call parameter
-             alternative modelfor multiallelic and rare-variant calling designed to overcome known limitations in -c calling model
+             alternative modelfor multiallelic and rare-variant calling designed
+             to overcome known limitations in -c calling model
     v : bool, Optional
         call parameter
         output variant sites only
@@ -73,98 +73,94 @@ class BCFTools_caller(eHive.BaseRunnable):
 
     Path to VCF file
     '''
-    
+
     def run(self):
 
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
 
-        outprefix=os.path.split(self.param_required('outprefix'))[1]
+        outprefix = os.path.split(self.param_required('outprefix'))[1]
 
-        chrom=self.param_required('chunk')[0]
-        start=self.param_required('chunk')[1]
-        end=self.param_required('chunk')[2]
+        chrom = self.param_required('chunk')[0]
+        start = self.param_required('chunk')[1]
+        end = self.param_required('chunk')[2]
 
-        region="{0}:{1}-{2}".format(chrom,start,end)
-        
-        outfile="{0}/{1}.bcftools".format(self.param_required('work_dir'), 
-                                           outprefix)
+        region = "{0}:{1}-{2}".format(chrom, start, end)
 
-        bcftools_object=BCFTools(bam=self.param_required('bam'), 
-                                 reference=self.param_required('reference'), 
-                                 bcftools_folder=self.param_required('bcftools_folder'))
+        outfile = "{0}/{1}.bcftools".format(self.param_required('work_dir'),
+                                            outprefix)
 
-        nt=1
+        bcftools_object = BCFTools(bam=self.param_required('bam'),
+                                   reference=self.param_required('reference'),
+                                   bcftools_folder=self.param_required('bcftools_folder'))
+
+        nt = 1
         if self.param_is_defined('threads'):
-            nt=self.param('threads')
+            nt = self.param('threads')
 
-        E=False
+        E = False
         if self.param_is_defined('E'):
-            E=True
+            E = True
 
-        p=False
+        p = False
         if self.param_is_defined('p'):
-            p=True
+            p = True
 
-        m_call=False
+        m_call = False
         if self.param_is_defined('m_call'):
-            m_call=True
-            
-        m_pileup=1
+            m_call = True
+
+        m_pileup = 1
         if self.param_is_defined('m_pileup'):
-            m_pileup=self.param('m_pileup')
-      
-        F=0.002
+            m_pileup = self.param('m_pileup')
+
+        F = 0.002
         if self.param_is_defined('F'):
-            F=self.param('F')
+            F = self.param('F')
 
-        d=250
+        d = 250
         if self.param_is_defined('d'):
-            d=self.param('d')
-        
-        C=50
+            d = self.param('d')
+
+        C = 50
         if self.param_is_defined('C'):
-            C=self.param('C')
+            C = self.param('C')
 
-        P="ILLUMINA"
+        P = "ILLUMINA"
         if self.param_is_defined('P'):
-            P=self.param('P')
+            P = self.param('P')
 
-        S=None
+        S = None
         if self.param_is_defined('S'):
-            S=self.param('S')
+            S = self.param('S')
 
-        v=False
+        v = False
         if self.param_is_defined('v'):
-            v=True
+            v = True
 
-        verbose=None
+        verbose = None
         if self.param_is_defined('verbose'):
-            verbose=True
+            verbose = True
         else:
-            verbose=False
+            verbose = False
 
-        outfile=bcftools_object.run_bcftools(outprefix=outfile,
-                                             annots=self.param_required('annots'),
-                                             E=E,
-                                             p=p,
-                                             F=F,
-                                             d=d,
-                                             C=C,
-                                             P=P,
-                                             S=S,
-                                             m_pileup=m_pileup,
-                                             m_call=m_call,
-                                             r=region,
-                                             v=v,
-                                             verbose=verbose)
+        outfile = bcftools_object.run_bcftools(outprefix=outfile,
+                                               annots=self.param_required('annots'),
+                                               E=E,
+                                               p=p,
+                                               F=F,
+                                               d=d,
+                                               C=C,
+                                               P=P,
+                                               S=S,
+                                               m_pileup=m_pileup,
+                                               m_call=m_call,
+                                               r=region,
+                                               v=v,
+                                               verbose=verbose)
 
         self.param('out_vcf', outfile)
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'out_vcf' : self.param('out_vcf') }, 1)
-
-
-
-
+        self.dataflow({'out_vcf': self.param('out_vcf')}, 1)

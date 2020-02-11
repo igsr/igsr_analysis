@@ -1,8 +1,6 @@
 import eHive
 import random
 import os
-import glob
-import pdb
 import string
 import ast
 
@@ -18,9 +16,9 @@ def random_generator(size=6, chars=string.ascii_uppercase + string.digits, outpr
     outprefix : str, Optional
                 Add an outprefix for the returned random string
     '''
-    astr=''.join(random.choice(chars) for x in range(size))
+    astr = ''.join(random.choice(chars) for x in range(size))
     if outprefix is not None:
-        return "{0}_{1}".format(outprefix,astr)
+        return "{0}_{1}".format(outprefix, astr)
     else:
         return astr
 
@@ -42,45 +40,45 @@ class ShortenFilePaths(eHive.BaseRunnable):
     '''
 
     def run(self):
-        
-        input_bams_str=""
+
+        input_bams_str = ""
 
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
-        
-        filelist_str=self.param_required('filelist')
+
+        filelist_str = self.param_required('filelist')
         filelist = ast.literal_eval(filelist_str)
 
         if isinstance(filelist, str):
             raise Exception("{0} is not a list".format(filelist))
 
-        short_files=[]
+        short_files = []
 
         for afile in filelist:
 
-            folder_prefix="{0}short".format(random_generator(size=6))
-            tmp_folder="{0}/{1}".format(self.param_required('work_dir'), folder_prefix)
+            folder_prefix = "{0}short".format(random_generator(size=6))
+            tmp_folder = "{0}/{1}".format(self.param_required('work_dir'), folder_prefix)
 
             if not os.path.isdir(tmp_folder):
                 os.makedirs(tmp_folder)
 
             # changing to tmp_folder dir
-            os.chdir(tmp_folder);
-        
-            filenames="{0}/filenames.txt".format(tmp_folder)
-            fw=open(filenames,'w')
-            
+            os.chdir(tmp_folder)
+
+            filenames = "{0}/filenames.txt".format(tmp_folder)
+            fw = open(filenames, 'w')
+
             with open(afile) as f:
                 for line in f:
-                    old_id=line.rstrip("\n")
-                    old_ix=old_id+".bai"
-                    random_str=random_generator(size=6)
-                    new_fileid="{0}.bam".format(random_str)
+                    old_id = line.rstrip("\n")
+                    old_ix = old_id+".bai"
+                    random_str = random_generator(size=6)
+                    new_fileid = "{0}.bam".format(random_str)
                     fw.write(new_fileid+"\n")
-                    new_fileix="{0}.bam.bai".format(random_str)
+                    new_fileix = "{0}.bam.bai".format(random_str)
                     os.symlink(old_id, new_fileid)
                     os.symlink(old_ix, new_fileix)
-                
+
             fw.close()
             short_files.append(filenames)
 
@@ -90,4 +88,4 @@ class ShortenFilePaths(eHive.BaseRunnable):
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'short_flist' : self.param('short_flist') }, 1)
+        self.dataflow({'short_flist': self.param('short_flist')}, 1)

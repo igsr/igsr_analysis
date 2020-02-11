@@ -5,14 +5,14 @@ import sys
 
 class VcfIxByTabix(eHive.BaseRunnable):
     """Create an index for a VCF file using Tabix"""
-  
+
     def run(self):
 
-        outfile=self.param_required('filepath')+".tbi"
-        command="{0}/tabix {1}".format(self.param_required('tabix_folder'),self.param_required('filepath'))
- 
+        outfile = self.param_required('filepath')+".tbi"
+        command = "{0}/tabix {1}".format(self.param_required('tabix_folder'),
+                                         self.param_required('filepath'))
         try:
-            subprocess.check_output(command,shell=True)
+            subprocess.check_output(command, shell=True)
         except subprocess.CalledProcessError as e:
             self.warning("Something went wrong while creating the index")
             print(e.output)
@@ -22,8 +22,4 @@ class VcfIxByTabix(eHive.BaseRunnable):
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'vcf_ix' : self.param('outfile') }, 1)
-
-
-
-
+        self.dataflow({'vcf_ix': self.param('outfile')}, 1)

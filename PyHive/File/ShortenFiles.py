@@ -2,7 +2,6 @@ import eHive
 import random
 import os
 import glob
-import pdb
 import string
 
 def random_generator(size=6, chars=string.ascii_uppercase + string.digits, outprefix=None):
@@ -17,9 +16,9 @@ def random_generator(size=6, chars=string.ascii_uppercase + string.digits, outpr
     outprefix : str, Optional
                 Add an outprefix for the returned random string
     '''
-    astr=''.join(random.choice(chars) for x in range(size))
+    astr = ''.join(random.choice(chars) for x in range(size))
     if outprefix is not None:
-        return "{0}_{1}".format(outprefix,astr)
+        return "{0}_{1}".format(outprefix, astr)
     else:
         return astr
 
@@ -41,10 +40,8 @@ class ShortenFiles(eHive.BaseRunnable):
     '''
 
     def run(self):
-        
-        input_bams_str=""
 
-        tmp_folder=self.param_required('work_dir')+"/tmp_sh"
+        tmp_folder = self.param_required('work_dir')+"/tmp_sh"
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
         if not os.path.isdir(tmp_folder):
@@ -55,21 +52,21 @@ class ShortenFiles(eHive.BaseRunnable):
             os.unlink(file)
 
         # changing to tmp_folder dir
-        os.chdir(tmp_folder);
-        
-        fw=open(tmp_folder+"/files_to_shorten.txt",'w')
+        os.chdir(tmp_folder)
+
+        fw = open(tmp_folder+"/files_to_shorten.txt", 'w')
 
         with open(self.param_required('filelist')) as f:
             for line in f:
-                old_id=line.rstrip("\n")
-                old_ix=old_id+".bai"
-                random_str=random_generator(size=6)
-                new_fileid="{0}.bam".format(random_str)
+                old_id = line.rstrip("\n")
+                old_ix = old_id+".bai"
+                random_str = random_generator(size=6)
+                new_fileid = "{0}.bam".format(random_str)
                 fw.write(new_fileid+"\n")
-                new_fileix="{0}.bam.bai".format(random_str)
+                new_fileix = "{0}.bam.bai".format(random_str)
                 os.symlink(old_id, new_fileid)
                 os.symlink(old_ix, new_fileix)
-                
+
         fw.close()
 
         os.chdir(self.param_required('work_dir'))
@@ -78,4 +75,4 @@ class ShortenFiles(eHive.BaseRunnable):
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'short_f' : self.param('short_f') }, 1)
+        self.dataflow({'short_f': self.param('short_f')}, 1)
