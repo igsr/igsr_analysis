@@ -70,4 +70,3 @@ class SequenceIndex(object):
                         .add(line.split('\t')[self.columns.index('RUN_ID')])
 
         return data
-
