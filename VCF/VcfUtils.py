@@ -6,11 +6,10 @@ Created on 03 Aug 2017
 
 import os
 import subprocess
-import pdb
 import gzip
 import re
-from Utils.RunProgram import RunProgram
 from collections import namedtuple
+from Utils.RunProgram import RunProgram
 
 class VcfUtils(object):
     '''
@@ -18,7 +17,8 @@ class VcfUtils(object):
     '''
 
 
-    def __init__(self, vcf=None, vcflist=None, bcftools_folder=None, bgzip_folder=None, gatk_folder=None, java_folder=None, tmp_dir=None):
+    def __init__(self, vcf=None, vcflist=None, bcftools_folder=None, bgzip_folder=None,
+                 gatk_folder=None, java_folder=None, tmp_dir=None):
         '''
         Constructor
 
@@ -38,7 +38,7 @@ class VcfUtils(object):
                       Path to folder containing the java binary
         tmp_dir : str, optional
                   Path to java temporary directory. This needs to be
-                  set for GATK modules that 
+                  set for GATK modules that
                   fail because there is not enough space in the default java tmp dir
 
         Imp: Either 'vcf' or 'vcflist' variables should be initialized
@@ -81,22 +81,23 @@ class VcfUtils(object):
         filename
                  Path to the VCF with the modified header
         '''
-    
-        outfile=outprefix+".reheaded.vcf.gz"
+
+        outfile = outprefix+".reheaded.vcf.gz"
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-h', newheader), Arg('-o',outfile)]
+        args = [Arg('-h', newheader), Arg('-o', outfile)]
 
         if samplefile is not None:
-            args.append(Arg('-s',samplefile))
+            args.append(Arg('-s', samplefile))
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools reheader', args=args, parameters=[self.vcf])
+        runner = RunProgram(path=self.bcftools_folder, program='bcftools reheader',
+                            args=args, parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outfile
 
@@ -120,37 +121,36 @@ class VcfUtils(object):
                 after the desired annotation
         '''
 
-        of=open(outfilename,'w')
+        of = open(outfilename, 'w')
 
         # getting the type of line that is being passed
-        p=re.compile("^##(\w+)=")
+        p = re.compile("^##(\w+)=")
 
-        m1=p.match(line_ann)
-        type_ann=m1.group(1)
+        m1 = p.match(line_ann)
+        type_ann = m1.group(1)
 
-        line_seen=False
+        line_seen = False
         with open(header_f) as f:
             for line in f:
-                line=line.rstrip("\n")
-                m2=p.match(line)
+                line = line.rstrip("\n")
+                m2 = p.match(line)
                 if m2 is None:
                     of.write(line+"\n")
                     continue
-                type1_ann=m2.group(1)
-                if type_ann==type1_ann and line_seen is False:
-                    line_seen=True
+                type1_ann = m2.group(1)
+                if type_ann == type1_ann and line_seen is False:
+                    line_seen = True
                     of.write(line+"\n"+line_ann+"\n")
                     continue
                 else:
                     of.write(line+"\n")
         of.close()
-        
+
         return outfilename
 
-
-
-    def combine(self, labels, reference, outprefix, compress=False, outdir=None, ginterval=None, 
-                genotypemergeoption=None, filteredrecordsmergetype=None, threads=1, options=None, verbose=False):
+    def combine(self, labels, reference, outprefix, compress=False, outdir=None,
+                ginterval=None, genotypemergeoption=None, filteredrecordsmergetype=None,
+                threads=1, options=None, verbose=False):
         '''
         Combine VCFs using GATK's CombineVariants into a single VCF
 
@@ -170,40 +170,43 @@ class VcfUtils(object):
         ginterval : str, optional
                     Genomic interval used to restrict the analysis. i.e. chr20:1000-2000
         genotypemergeoption : {'UNIQUIFY', 'PRIORITIZE', 'UNSORTED', 'REQUIRE_UNIQUE'}, optional
-                              Determines how we should merge genotype records for samples shared across the ROD files
-        filteredrecordsmergetype : {'KEEP_IF_ANY_UNFILTERED', 'KEEP_IF_ANY_UNFILTERED', 'KEEP_UNCONDITIONAL'}, optional
-                                   Determines how we should handle records seen at the same site in the VCF, but with different FILTER fields
+                              Determines how we should merge genotype records for samples shared
+                              across the ROD files
+        filteredrecordsmergetype : {'KEEP_IF_ANY_UNFILTERED', 'KEEP_IF_ANY_UNFILTERED',
+        'KEEP_UNCONDITIONAL'}, optional
+                                   Determines how we should handle records seen at the
+                                   same site in the VCF, but with different FILTER fields
         threads : int, optional
                   Number of trades to use. Default=1
         options : list, optional
                   List of options. i.e. ['-env','--filteredAreUncalled']
         verbose : bool, optional
                   increase the verbosity, default=False
-    
+
         Returns
         -------
         filename
                 Path to the merged VCF
         '''
-        
+
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-T','CombineVariants'), Arg('-R',reference), Arg('-nt', threads)]
+        args = [Arg('-T', 'CombineVariants'), Arg('-R', reference), Arg('-nt', threads)]
 
-        variants_str=""
+        variants_str = ""
         for path, label in zip(self.vcflist, labels):
             if os.path.isfile(path) == False:
                 print("Error reading from {0}".format(path))
                 raise Exception("File does not exist")
-            args.append(Arg('-V:{0}'.format(label),path))
+            args.append(Arg('-V:{0}'.format(label), path))
 
-        outfile=""
+        outfile = ""
         if outdir:
-            outfile= "{0}/".format(outdir)
-        outfile+= "{0}.vcf".format(outprefix)
-        
+            outfile = "{0}/".format(outdir)
+        outfile += "{0}.vcf".format(outprefix)
+
         if ginterval is not None:
-            args.append(Arg('-L',ginterval))
+            args.append(Arg('-L', ginterval))
 
         if genotypemergeoption is not None:
             args.append(Arg('--genotypemergeoption', genotypemergeoption))
@@ -211,69 +214,78 @@ class VcfUtils(object):
         if filteredrecordsmergetype is not None:
             args.append(Arg('--filteredrecordsmergetype', filteredrecordsmergetype))
 
-        params=[]
+        params = []
         if options:
             for opt in options:
                 params.append(opt)
 
-        pipelist=None
+        pipelist = None
         if compress is True:
             outfile += ".gz"
-            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outfile])
-            pipelist=[compressRunner]
+            compressRunner = RunProgram(path=self.bgzip_folder,
+                                        program='bgzip',
+                                        parameters=['-c', '>', outfile])
+            pipelist = [compressRunner]
         else:
             args.append(Arg('-o', outfile))
 
-        program_str=None
+        program_str = None
         if self.tmp_dir is not None:
-            program_str="java -Djava.io.tmpdir={0} -jar {1}/GenomeAnalysisTK.jar".format(self.tmp_dir, self.gatk_folder)
+            program_str = "java -Djava.io.tmpdir={0} " \
+                          "-jar {1}/GenomeAnalysisTK.jar".format(self.tmp_dir, self.gatk_folder)
         else:
-            program_str="java -jar {0}/GenomeAnalysisTK.jar".format(self.gatk_folder)
+            program_str = "java -jar {0}/GenomeAnalysisTK.jar".format(self.gatk_folder)
 
-        runner=RunProgram(path=self.java_folder, program=program_str, args=args, parameters=params, downpipe=pipelist)
+        runner = RunProgram(path=self.java_folder, program=program_str,
+                            args=args, parameters=params, downpipe=pipelist)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr,is_exc=runner.run_popen()
+        stdout, stderr, is_exc = runner.run_popen()
 
         return outfile
-
 
     def rename_chros(self, chr_types, outfile, compress=True):
         '''
         Function to modify the chr names in the VCF file
         For example:
-        If file has UCSC-type chr names (i.e. chr1,chr2,...) then this 
-        function will convert the UCSC-type chr names to Ensembl-type 
+        If file has UCSC-type chr names (i.e. chr1,chr2,...) then this
+        function will convert the UCSC-type chr names to Ensembl-type
         chr names (i.e. 1,2,...) or vice-versa
 
         Parameters
         ----------
         chr_types : {'ucsc','ensembl'}
-                    Type of chr names that will be written to the file. 
+                    Type of chr names that will be written to the file.
         outfile : filename
                   File used for the output VCF
         compress : bool, optional
                    Default: True
-        
+
         Returns
         -------
         filename
                  Path to the VCF with the chrosomes renamed
         '''
 
-        command=""
-        if chr_types=='ensembl':
+        command = ""
+        if chr_types == 'ensembl':
             if compress is True:
-                command += "zcat {0} | awk '{{gsub(/^chr/,\"\"); print}}' - | {1}/bgzip -c > {2}".format(self.vcf,self.bgzip_folder, outfile)
+                command += "zcat {0} | awk '{{gsub(/^chr/,\"\"); print}}' - | {1}/bgzip -c > {2}".\
+                    format(self.vcf, self.bgzip_folder, outfile)
             else:
-                command += "zcat {0} | awk '{{gsub(/^chr/,\"\"); print}}' - > {1}".format(self.vcf, outfile)
-        elif chr_types=='ucsc':
+                command += "zcat {0} | awk '{{gsub(/^chr/,\"\"); print}}' - > {1}".\
+                    format(self.vcf, outfile)
+        elif chr_types == 'ucsc':
             if compress is True:
-                command += "zcat {0} | awk '{{if($0 !~ /^#/) print \"chr\"$0; else print $0}}' - | {1}/bgzip -c > {2}".format(self.vcf,self.bgzip_folder, outfile)
+                command += "zcat {0} | awk '{{if($0 !~ /^#/) print \"chr\"$0; " \
+                           "else print $0}}' - | {1}/bgzip -c > {2}".format(self.vcf,
+                                                                            self.bgzip_folder,
+                                                                            outfile)
             else:
-                command += "zcat {0} | awk '{{if($0 !~ /^#/) print \"chr\"$0; else print $0}}' - > {1}".format(self.vcf, outfile)
+                command += "zcat {0} | awk '{{if($0 !~ /^#/) print \"chr\"$0; " \
+                           "else print $0}}' - > {1}".format(self.vcf, outfile)
 
         try:
             subprocess.check_output(command, shell=True)
@@ -282,11 +294,9 @@ class VcfUtils(object):
                   "Command used was: %s" % command)
             raise Exception(exc.output)
 
-
-
         return outfile
 
-    def correct_ambiguity_codes(self,outfile):
+    def correct_ambiguity_codes(self, outfile):
         '''
         Function to correct the ambiguity bases in the VCF. This ambiguity
         may appear in the REF or ALT columns
@@ -301,32 +311,32 @@ class VcfUtils(object):
         filename
                  Path to vcf.gz file compressed with GZIP
         '''
-        
-        ref_count=0
-        alt_count=0
 
-        f=gzip.open(outfile,'wb');
+        ref_count = 0
+        alt_count = 0
 
-        with gzip.open(self.vcf,'r') as fin:
+        f = gzip.open(outfile, 'wb')
+
+        with gzip.open(self.vcf, 'r') as fin:
             for line in fin:
                 if not line.startswith(b"#"):
-                    bits=line.split(b"\t")
-                    ref=bits[3].decode("utf-8")
-                    alt=bits[4].decode("utf-8")
+                    bits = line.split(b"\t")
+                    ref = bits[3].decode("utf-8")
+                    alt = bits[4].decode("utf-8")
                     if re.search(r"[^ATGC.,]", ref):
-                        ref_count+=1
-                        ref=re.sub('[^ACGT.]','N',ref)
+                        ref_count += 1
+                        ref = re.sub('[^ACGT.]', 'N', ref)
                     if re.search(r"[^ATGC.,]", alt):
-                        alt_count+=1
-                        alt=re.sub('[^ACGT.]','N',alt)
-                    bits[3]=ref.encode('utf-8')
-                    bits[4]=alt.encode('utf-8')
-                    nline=b'\t'.join(bits)
+                        alt_count += 1
+                        alt = re.sub('[^ACGT.]', 'N', alt)
+                    bits[3] = ref.encode('utf-8')
+                    bits[4] = alt.encode('utf-8')
+                    nline = b'\t'.join(bits)
                     f.write(nline)
                 else:
                     f.write(line)
         f.close()
-        
+
         print("Sites with ambiguous bases in the REF column is:{0}".format(ref_count))
         print("Sites with ambiguous bases in the ALT column is:{0}".format(alt_count))
 
@@ -349,18 +359,18 @@ class VcfUtils(object):
         filename
                  Path to the vcf.gz file without the GT information
         '''
-        
-        Arg = namedtuple('Argument', 'option value')
-         
-        args=[Arg('-o',outfile), Arg('-O', 'z')]
 
-        runner=RunProgram(path=self.bcftools_folder, 
-                          program='bcftools view -G', args=args, parameters=[self.vcf])
+        Arg = namedtuple('Argument', 'option value')
+
+        args = [Arg('-o', outfile), Arg('-O', 'z')]
+
+        runner = RunProgram(path=self.bcftools_folder,
+                            program='bcftools view -G', args=args, parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outfile
 
@@ -381,18 +391,20 @@ class VcfUtils(object):
         filename
                  Path to the vcf.gz file without the INFO annotation
         '''
-        
+
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-o',outfile), Arg('-O','z')]
+        args = [Arg('-o', outfile), Arg('-O', 'z')]
 
-        runner=RunProgram(path=self.bcftools_folder,
-                          program='bcftools annotate --remove INFO', args=args, parameters=[self.vcf])
+        runner = RunProgram(path=self.bcftools_folder,
+                            program='bcftools annotate --remove INFO',
+                            args=args,
+                            parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outfile
 
@@ -400,7 +412,7 @@ class VcfUtils(object):
         '''
         Function to convert PL fields into GT.
         This function makes use of Bcftools +tag2tag plugin
-        
+
         Parameters
         ----------
         outfile : filename
@@ -414,23 +426,20 @@ class VcfUtils(object):
         -------
         filename
                  Path to the vcf.gz file with the PL fields converted
-        
         '''
 
         Arg = namedtuple('Argument', 'option value')
 
-        params=[self.vcf,'-Oz','--','-r','--pl-to-gl']
+        params = [self.vcf, '-Oz', '--', '-r', '--pl-to-gl']
 
-        runner=RunProgram(path=self.bcftools_folder,
-                          program='bcftools +tag2tag', 
-                          args=[Arg('--threads',threads), Arg('-o',outfile)], 
-                          parameters=params)
+        runner = RunProgram(path=self.bcftools_folder,
+                            program='bcftools +tag2tag',
+                            args=[Arg('--threads', threads), Arg('-o', outfile)],
+                            parameters=params)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outfile
-        
-        

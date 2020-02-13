@@ -5,22 +5,19 @@ Created on 27 Feb 2017
 '''
 
 import os
-import subprocess
-from Utils.RunProgram import RunProgram
-from collections import namedtuple
 import json
 import glob
 import ast
-import pdb
-import re
+from collections import namedtuple
+from Utils.RunProgram import RunProgram
 
 class GATK(object):
     '''
     Class to filter a VCF file using different GATK components
     '''
 
-
-    def __init__(self, vcf, reference, caller='UG',  bgzip_folder=None, tabix_folder=None, gatk_folder=None, tmp_dir=None):
+    def __init__(self, vcf, reference, caller='UG', bgzip_folder=None, tabix_folder=None,
+                 gatk_folder=None, tmp_dir=None):
         '''
         Constructor
 
@@ -41,7 +38,7 @@ class GATK(object):
                       Path to folder containing GATK's jar file
         tmp_dir : str, optional
                   Path to java temporary directory. This needs to be
-                  set for GATK modules such as ApplyRecalibrator that 
+                  set for GATK modules such as ApplyRecalibrator that
                   fails because there is not enough space in the default java tmp dir
         '''
 
@@ -59,13 +56,14 @@ class GATK(object):
     def run_variantrecalibrator(self, resources, mode,
                                 max_gaussians=None, intervals=None,
                                 annotations=None, tranches=None,
-                                outprefix="recalibrate",verbose=None,log_file=None):
+                                outprefix="recalibrate", verbose=None,
+                                log_file=None):
         '''
         Run GATK's VariantRecalibrator on a VcfFilter object
 
         Parameters
         ----------
-        resources : filename 
+        resources : filename
                     JSON file with resources to add using the -resources option, Required
         mode : {'SNP','INDEL'}
                Recalibration mode to employ
@@ -104,7 +102,7 @@ class GATK(object):
         if self.caller != 'UG':
             raise Exception("VCF caller %s is incompatible" % self.caller)
 
-        if mode != 'SNP' and mode != 'INDEL':
+        if mode not in ('SNP', 'INDEL'):
             raise Exception("VariantRecalibrator mode is not valid."
                             "Valid values are 'SNP','INDEL'" % mode)
 
@@ -113,9 +111,11 @@ class GATK(object):
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-T', 'VariantRecalibrator'), Arg('-R', self.reference), Arg('-input', self.vcf), Arg('-mode', mode),
-              Arg('-recalFile', "{0}.recal".format(outprefix)), Arg('-tranchesFile', "{0}.tranches".format(outprefix)),
-              Arg('-rscriptFile', "{0}_plots.R".format(outprefix)) ]
+        args = [Arg('-T', 'VariantRecalibrator'), Arg('-R', self.reference),
+                Arg('-input', self.vcf), Arg('-mode', mode),
+                Arg('-recalFile', "{0}.recal".format(outprefix)),
+                Arg('-tranchesFile', "{0}.tranches".format(outprefix)),
+                Arg('-rscriptFile', "{0}_plots.R".format(outprefix))]
 
         # Read-in the different resources from the resource JSON file
         resources_str = ""
@@ -124,12 +124,16 @@ class GATK(object):
             data = json.load(data_file)
             bits = data['resources']
             for dummy, dic in enumerate(bits):
-                args.extend([Arg("-resource:%s,known=%s,training=%s,truth=%s,prior=%.1f" % (dic['resource'],str(dic['known']).lower(),str(dic['training']).lower(),str(dic['truth']).lower(),dic['prior']), dic['path'])])
-
+                args.extend([Arg("-resource:%s,known=%s,training=%s,"
+                                 "truth=%s,prior=%.1f" % (dic['resource'],
+                                                          str(dic['known']).lower(),
+                                                          str(dic['training']).lower(),
+                                                          str(dic['truth']).lower(),
+                                                          dic['prior']), dic['path'])])
 
         # prepare the -an options
         for elt in annotations:
-            args.append(Arg('-an',elt))
+            args.append(Arg('-an', elt))
 
         # prepare the list of -tranche option
         if type(tranches) == str:
@@ -138,12 +142,14 @@ class GATK(object):
         for elt in tranches:
             args.append(Arg('-tranche', elt))
 
-        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args, log_file=log_file)
+        runner = RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.
+                            format(self.gatk_folder), args=args,
+                            log_file=log_file)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr,is_error=runner.run_popen()
+        stdout, stderr, is_error = runner.run_popen()
 
         recal_f = glob.glob("{0}*.recal".format(outprefix))
         tranches_f = glob.glob("{0}*.tranches".format(outprefix))
@@ -164,7 +170,8 @@ class GATK(object):
             }
 
     def run_applyrecalibration(self, mode, recal_file, tranches_file, outprefix,
-                               ts_filter_level=99.0, num_threads=1, compress=True, verbose=None, log_file=None):
+                               ts_filter_level=99.0, num_threads=1, compress=True,
+                               verbose=None, log_file=None):
         '''
         Run GATK's ApplyRecalibration on a VcfFilter object
 
@@ -208,41 +215,43 @@ class GATK(object):
             outfile += "%s.recalibrated_snps_raw_indels.vcf" % outprefix
         elif mode == 'INDEL':
             outfile += "%s.recalibrated_variants.vcf" % outprefix
-        
+
         Arg = namedtuple('Argument', 'option value')
 
-        args=[]
+        args = []
 
-        args.extend([Arg('-jar', '{0}/GenomeAnalysisTK.jar'.format(self.gatk_folder)), Arg('-T', 'ApplyRecalibration'), 
+        args.extend([Arg('-jar', '{0}/GenomeAnalysisTK.jar'.format(self.gatk_folder)),
+                     Arg('-T', 'ApplyRecalibration'),
                      Arg('-R', self.reference), Arg('-input', self.vcf), Arg('-mode', mode),
-                     Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file), Arg('--num_threads', num_threads),
-                     Arg('-tranchesFile', tranches_file) ])
+                     Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file),
+                     Arg('--num_threads', num_threads),
+                     Arg('-tranchesFile', tranches_file)])
 
-        pipelist=None
+        pipelist = None
         if compress is True:
             outfile += ".gz"
-            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outfile])
-            pipelist=[compressRunner]
+            compressRunner = RunProgram(path=self.bgzip_folder, program='bgzip',
+                                        parameters=['-c', '>', outfile])
+            pipelist = [compressRunner]
         else:
-            args.append(Arg('-o',outfile))
-            
-        program_str=None
-        if self.tmp_dir is not None:
-            program_str="java -Djava.io.tmpdir={0}".format(self.tmp_dir)
-        else:
-            program_str="java"
+            args.append(Arg('-o', outfile))
 
-        runner=RunProgram(program=program_str, args=args, downpipe=pipelist, log_file=log_file)
+        program_str = None
+        if self.tmp_dir is not None:
+            program_str = "java -Djava.io.tmpdir={0}".format(self.tmp_dir)
+        else:
+            program_str = "java"
+
+        runner = RunProgram(program=program_str, args=args, downpipe=pipelist, log_file=log_file)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr,is_error=runner.run_popen()
+        stdout, stderr, is_error = runner.run_popen()
 
         # create an index for the recalibrated file
         if compress is True:
-            tabixRunner=RunProgram(path=self.tabix_folder,program='tabix',parameters=[outfile])
-            stdout=tabixRunner.run_checkoutput()
+            tabixRunner = RunProgram(path=self.tabix_folder, program='tabix', parameters=[outfile])
+            stdout = tabixRunner.run_checkoutput()
 
         return outfile
-
