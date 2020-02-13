@@ -1,23 +1,23 @@
 """VcfNormalize module.
 
-This module is used to normalize a file in the VCF format (see https://samtools.github.io/hts-specs/VCFv4.2.pdf).  
-Normalizing a file is basically used to make different VCFs comparable, and it is highly recommended when you are 
-benchmarcking your call set using a reference call set. Normalization is specially important for INDELs, as the 
-same INDEL could be represented in different ways depending on the caller.
+This module is used to normalize a file in the VCF format
+(see https://samtools.github.io/hts-specs/VCFv4.2.pdf).
+Normalizing a file is basically used to make different VCFs
+comparable, and it is highly recommended when you are
+benchmarcking your call set using a reference call set.
+Normalization is specially important for INDELs, as the
+same INDEL could be represented in different ways depending
+on the caller.
 """
 
-import pdb
 import os
-import subprocess
-import re
-from Utils.RunProgram import RunProgram
 from collections import namedtuple
+from Utils.RunProgram import RunProgram
 
-class VcfNormalize(object):
+class VcfNormalize:
     '''
     Normalize variants in a VCF file
     '''
-
 
     def __init__(self, vcf, vt_folder=None, vcflib_folder=None, bgzip_folder=None,
                  gatk_folder=None, bcftools_folder=None):
@@ -50,7 +50,8 @@ class VcfNormalize(object):
         self.gatk_folder = gatk_folder
         self.bcftools_folder = bcftools_folder
 
-    def run_vtnormalize(self,outprefix,reference,compress=False, verbose=False, outdir=None, n=False):
+    def run_vtnormalize(self, outprefix, reference, compress=False,
+                        verbose=False, outdir=None, n=False):
         '''
         Run vt normalize on a vcf file
 
@@ -86,32 +87,39 @@ class VcfNormalize(object):
 
         outprefix = outprefix+".norm.vcf"
 
-        args=[Arg('-r',reference)]
+        args = [Arg('-r', reference)]
 
-        parameters=[self.vcf]
+        parameters = [self.vcf]
         if n is True:
             parameters.append('-n')
 
-        runner=None
-        pipelist=None
+        runner = None
+        pipelist = None
         if compress is True:
             outprefix += ".gz"
-            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
-            pipelist=[compressRunner]
+            compressRunner = RunProgram(path=self.bgzip_folder,
+                                        program='bgzip',
+                                        parameters=['-c', '>',
+                                                    outprefix])
+            pipelist = [compressRunner]
         elif compress is None or compress is False:
-            args.append(Arg('-o',outprefix))
+            args.append(Arg('-o', outprefix))
 
-        runner=RunProgram(path=self.vt_folder, program='vt normalize', args=args, parameters=parameters, downpipe=pipelist)
-
+        runner = RunProgram(path=self.vt_folder,
+                            program='vt normalize',
+                            args=args,
+                            parameters=parameters,
+                            downpipe=pipelist)
 
         if verbose is True:
-             print("Command line for running vt normalize is: {0}".format(runner.cmd_line))
+            print("Command line for running vt normalize is: {0}".format(runner.cmd_line))
 
         runner.run_checkoutput()
-        
+
         return outprefix
 
-    def run_bcftoolsnorm(self, outprefix, reference, multiallelics=None, type=None, outdir=None,verbose=False):
+    def run_bcftoolsnorm(self, outprefix, reference, multiallelics=None,
+                         type=None, outdir=None, verbose=False):
         '''
         Run bcftools norm on a vcf file
 
@@ -143,24 +151,33 @@ class VcfNormalize(object):
         outprefix = outprefix+".norm.vcf.gz"
 
         Arg = namedtuple('Argument', 'option value')
-        
-        args=[Arg('-f',reference), Arg('-o',outprefix)]
+
+        args = [Arg('-f', reference), Arg('-o', outprefix)]
 
         if multiallelics == "split":
-            if type is None: raise Exception("'multiallelics' option is defined, so please provide a 'type' value")
-            args.append(Arg('-m',"\'-{0}\'".format(type)))
+            if type is None:
+                raise Exception("'multiallelics' option is defined, "
+                                "so please provide a 'type' value")
+            args.append(Arg('-m', "\'-{0}\'".format(type)))
         elif multiallelics == "merge":
-            if type is None: raise Exception("'multiallelics' option is defined, so please provide a 'type' value")
-            args.append(Arg('-m',"\'+{0}\'".format(type)))
+            if type is None:
+                raise Exception("'multiallelics' option is defined,"
+                                " so please provide a 'type' value")
+            args.append(Arg('-m', "\'+{0}\'".format(type)))
         else:
-            if multiallelics is not None: raise Exception("'multiallelics' value is not recognized: {0}".format(multiallelics))
-            
-        parameters=[self.vcf,'-Oz']
+            if multiallelics is not None:
+                raise Exception("'multiallelics' value is not "
+                                "recognized: {0}".format(multiallelics))
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools norm', args=args, parameters=parameters)
+        parameters = [self.vcf, '-Oz']
+
+        runner = RunProgram(path=self.bcftools_folder,
+                            program='bcftools norm',
+                            args=args,
+                            parameters=parameters)
 
         if verbose is True:
-             print("Command line for running bcftools norm is: {0}".format(runner.cmd_line))
+            print("Command line for running bcftools norm is: {0}".format(runner.cmd_line))
 
         runner.run_checkoutput()
 
@@ -191,7 +208,7 @@ class VcfNormalize(object):
                    Maintain genotype-level annotations when decomposing. Similar
                    caution should be used for this as for keep-info. Default=True.
         downstream_pipe : str, optional
-                          If defined, then pipe the output VCF to other tools. 
+                          If defined, then pipe the output VCF to other tools.
                           i.e. "~/bin/vt/vt sort - | ~/bin/vt/vt uniq -".
         verbose : bool, optional
                   if true, then increase verbosity.
@@ -202,12 +219,12 @@ class VcfNormalize(object):
            A string with path to decomposed file
         '''
 
-        if outdir: 
+        if outdir:
             outprefix = "{0}/{1}".format(outdir, outprefix)
 
         outprefix = outprefix+".aprimitives.vcf"
 
-        params=[self.vcf]
+        params = [self.vcf]
 
         if keepinfo is True:
             params.append('--keep-info')
@@ -218,19 +235,24 @@ class VcfNormalize(object):
         if downstream_pipe is not None:
             params.append("| {0}".format(downstream_pipe))
 
-        runner=None
-        pipelist=None
+        runner = None
+        pipelist = None
         if compress is True:
             outprefix += ".gz"
-            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', '>', outprefix])
-            pipelist=[compressRunner]
+            compressRunner = RunProgram(path=self.bgzip_folder,
+                                        program='bgzip',
+                                        parameters=['-c', '>', outprefix])
+            pipelist = [compressRunner]
         elif compress is None or compress is False:
-            params.extend(['>',outprefix])
+            params.extend(['>', outprefix])
 
-        runner=RunProgram(path=self.vcflib_folder, program='vcfallelicprimitives', parameters=params, downpipe=pipelist)
+        runner = RunProgram(path=self.vcflib_folder,
+                            program='vcfallelicprimitives',
+                            parameters=params,
+                            downpipe=pipelist)
 
         if verbose is True:
-             print("Command line for running vcfallelicprimitives is: {0}".format(runner.cmd_line))
+            print("Command line for running vcfallelicprimitives is: {0}".format(runner.cmd_line))
 
         runner.run_checkoutput()
 
@@ -265,25 +287,27 @@ class VcfNormalize(object):
             raise Exception("Error. I need that the folder containing the GATK "
                             "jar file is defined!")
 
-        if outdir: 
+        if outdir:
             outprefix = "{0}/{1}".format(outdir, outprefix)
 
         outprefix = outprefix+".aprimitives.vcf"
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-T','VariantsToAllelicPrimitives'), Arg('-R',reference),
-              Arg('-V',self.vcf), Arg('-o',outprefix) ]
-        
-        runner=RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder), args=args)
+        args = [Arg('-T', 'VariantsToAllelicPrimitives'), Arg('-R', reference),
+                Arg('-V', self.vcf), Arg('-o', outprefix)]
+
+        runner = RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.
+                            format(self.gatk_folder), args=args)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout,stderr,is_error=runner.run_popen()
+        stdout, stderr, is_error = runner.run_popen()
 
         if compress is True:
-            compressRunner=RunProgram(path=self.bgzip_folder,program='bgzip',parameters=[ '-c', outprefix, '>', outprefix+".gz"])
+            compressRunner = RunProgram(path=self.bgzip_folder, program='bgzip',
+                                        parameters=['-c', outprefix, '>', outprefix+".gz"])
             compressRunner.run_checkoutput()
             #delete tmp files
             os.remove(outprefix)
@@ -293,5 +317,5 @@ class VcfNormalize(object):
             return outprefix
         else:
             raise Exception("'compress' parameter is not valid")
-        
+
         return outprefix
