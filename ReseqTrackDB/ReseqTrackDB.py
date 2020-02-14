@@ -5,14 +5,12 @@ Created on 25 Oct 2016
 '''
 
 import os
-import re
 import subprocess
 import warnings
-import pdb
 from datetime import datetime
 import pymysql
 
-class ReseqTrackDB(object):
+class ReseqTrackDB:
     '''
     Class representing a Reseqtrack MySQL DB
     '''
@@ -110,8 +108,8 @@ class ReseqTrackDB(object):
                 raise Exception("No file retrieved"
                                 " from DB using url: %s" % url)
             for row in result_set:
-                return File(dbID=row['file_id'], 
-                            path=row['name'], 
+                return File(dbID=row['file_id'],
+                            path=row['name'],
                             type=row['type'],
                             md5=row['md5'],
                             host_id=row['host_id'],
@@ -353,7 +351,7 @@ class ReseqTrackDB(object):
     def __repr__(self):
         return self.__str__()
 
-class File(object):
+class File:
     '''
     Class to represent a file in the ReseqTrack DB
     '''
@@ -460,14 +458,17 @@ class File(object):
         newname: str, Required
                    prefix for the new name
         extension: str, Required
-                   Extension to be added to the new filenamed derived from the 'newlayout'. For example, in the previous
-                   example, if we use extension='sites.vcf'. Then the new filename will be 'lc.bcftools.sites.vcf'
+                   Extension to be added to the new filenamed derived from the
+                   'newlayout'. For example, in the previous
+                   example, if we use extension='sites.vcf'.
+                   Then the new filename will be 'lc.bcftools.sites.vcf'
         add_date: bool, Optional
                   If True, then the date will be added to the filename:
                   For example, in the previous example, the new filename will be:
                   lc.bcftools.20171010.sites.vcf
         compression: str, Optional
-                     Add an extension to specify the compression type. For example, if compression='gz', then the new file name
+                     Add an extension to specify the compression type.
+                     For example, if compression='gz', then the new file name
                      will be lc.bcftools.20171010.sites.vcf.gz
 
         Returns
@@ -477,18 +478,18 @@ class File(object):
 
         if add_date is True:
             now = datetime.now()
-            newname="{0}.{1}.{2}".format(newname,now.strftime('%Y%m%d'),extension)
+            newname = "{0}.{1}.{2}".format(newname, now.strftime('%Y%m%d'), extension)
 
         if compression is not None:
-            newname=".{0}".format(compression)
+            newname = ".{0}".format(compression)
 
-        (path,oldfilename)=os.path.split(self.path)
+        path = os.path.split(self.path)[0]
 
         #modify 'path' for self to reflect the new name
-        if path=='':
-            path= "."
-        self.path="{0}/{1}".format(path,newname)
-        self.name=newname
+        if path == '':
+            path = "."
+        self.path = "{0}/{1}".format(path, newname)
+        self.name = newname
 
     def store(self, reseqdb, do_md5=False, dry=True):
         '''
@@ -539,11 +540,12 @@ class File(object):
             warnings.warn("File was stored in the DB")
         elif dry is True:
             warnings.warn("Insert statement was: {0}".format(sql_insert_attr))
-            warnings.warn("The file was not stored in the DB. Use dry=False to effectively store it")
+            warnings.warn("The file was not stored in the DB."
+                          "Use dry=False to effectively store it")
 
         return self.path
 
-    def move(self, newpath, do_md5= False):
+    def move(self, newpath, do_md5=False):
         '''
         Move this File. It will move this file to a new location
 
@@ -568,12 +570,12 @@ class File(object):
 
         if self.created is None:
             self.created = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
+
         self.path = newpath
 
         os.rename(oldpath, newpath)
 
-class Collection(object):
+class Collection:
     '''
     Class to represent a Collection of entities in the ReseqTrack DB
     '''
@@ -637,7 +639,7 @@ class Collection(object):
             other_ids = [row[0] for row in cursor.fetchall()]
             self.others_dbIDs = other_ids
             reseqdb.db.commit()
-            cursor.close() 
+            cursor.close()
             return other_ids
         except reseqdb.db.Error as err:
             print("Something went wrong in the select query: {}".format(err))

@@ -1,16 +1,15 @@
 import eHive
 import os
-import pdb
 import re
 from VCF.VCFIntegration.Shapeit import Shapeit
 
 class run_Shapeit(eHive.BaseRunnable):
     """Run SHAPEIT"""
-    
+
     def fetch_input(self):
         if self.param_is_defined('chunk'):
-            if not isinstance(self.param('chunk'),list):
-                bits=re.findall(r"[\w']+", self.param('chunk'))
+            if not isinstance(self.param('chunk'), list):
+                bits = re.findall(r"[\w']+", self.param('chunk'))
                 self.param('chr', "chr"+bits[0])
                 self.param('inputfrom', bits[1])
                 self.param('inputto', bits[2])
@@ -18,109 +17,99 @@ class run_Shapeit(eHive.BaseRunnable):
                 self.param('chr', self.param('chunk')[0])
                 self.param('inputfrom', self.param('chunk')[1])
                 self.param('inputto', self.param('chunk')[2])
-        
-        
 
     def run(self):
         self.warning('Outprefix: {0}'.format(self.param_required('outprefix')))
-    
-        vcf_g=Shapeit(shapeit_folder=self.param_required('shapeit_folder'))
 
-        verbose=None
+        verbose = None
         if self.param_is_defined('verbose'):
-            verbose=True
+            verbose = True
         else:
-            verbose=False
-            
+            verbose = False
+
         if not os.path.isdir(self.param_required('work_dir')):
             os.makedirs(self.param_required('work_dir'))
-            
-        outprefix=os.path.split(self.param_required('outprefix'))[1]
 
-        outprefix="{0}/{1}".format(self.param_required('work_dir'),outprefix)
+        outprefix = os.path.split(self.param_required('outprefix'))[1]
 
-        options_dict={}
-        
+        outprefix = "{0}/{1}".format(self.param_required('work_dir'), outprefix)
+
+        options_dict = {}
+
         if self.param_is_defined('inputthr'):
-            options_dict['input-thr']=self.param('inputthr')
+            options_dict['input-thr'] = self.param('inputthr')
         if self.param_is_defined('thread'):
-            options_dict['thread']=self.param('thread')
+            options_dict['thread'] = self.param('thread')
         if self.param_is_defined('window'):
-            options_dict['window']=self.param('window')
+            options_dict['window'] = self.param('window')
         if self.param_is_defined('states'):
-            options_dict['states']=self.param('states')
+            options_dict['states'] = self.param('states')
         if self.param_is_defined('statesrandom'):
-            options_dict['states-random']=self.param('statesrandom')
+            options_dict['states-random'] = self.param('statesrandom')
         if self.param_is_defined('burn'):
-            options_dict['burn']=self.param('burn')
+            options_dict['burn'] = self.param('burn')
         if self.param_is_defined('run'):
-            options_dict['run']=self.param('run')
+            options_dict['run'] = self.param('run')
         if self.param_is_defined('prune'):
-            options_dict['prune']=self.param('prune')
+            options_dict['prune'] = self.param('prune')
         if self.param_is_defined('main'):
-            options_dict['main']=self.param('main')
+            options_dict['main'] = self.param('main')
         if self.param_is_defined('inputfrom'):
             outprefix += ".{0}".format(self.param('inputfrom'))
-            options_dict['input-from']=self.param('inputfrom')
+            options_dict['input-from'] = self.param('inputfrom')
         if self.param_is_defined('inputto'):
             outprefix += ".{0}".format(self.param('inputto'))
-            options_dict['input-to']=self.param('inputto')
+            options_dict['input-to'] = self.param('inputto')
 
-        duohmm=False
+        duohmm = False
         if self.param_is_defined('duohmm'):
-            duohmm=True
+            duohmm = True
 
-        input_gen= None
+        input_gen = None
         if self.param_is_defined('input_gen'):
-            input_gen= self.param('input_gen')
+            input_gen = self.param('input_gen')
 
-        input_init= None
+        input_init = None
         if self.param_is_defined('input_init'):
-            input_init= self.param('input_init')
+            input_init = self.param('input_init')
 
-        input_scaffold= ""
+        input_scaffold = ""
         if self.param_is_defined('input_scaffold_prefix'):
-            chrom=re.sub('chr','',self.param('chr'))
+            chrom = re.sub('chr', '', self.param('chr'))
             for s in self.param('input_scaffold_prefix'):
                 input_scaffold += "{0}.{1}.phased.haps {0}.{1}.phased.sample ".format(s, chrom)
 
-        input_map= None
+        input_map = None
         if self.param_is_defined('gmap_folder'):
-            gmap_file= "{0}/{1}.gmap.gz".format(self.param('gmap_folder'), self.param('chr'))
-            input_map= gmap_file
+            gmap_file = "{0}/{1}.gmap.gz".format(self.param('gmap_folder'), self.param('chr'))
+            input_map = gmap_file
 
-        shapeit_o=Shapeit(shapeit_folder = self.param_required('shapeit_folder'))
+        shapeit_o = Shapeit(shapeit_folder=self.param_required('shapeit_folder'))
 
-        outdict=None
+        outdict = None
         if self.param_is_defined('input_gen'):
-            outdict=shapeit_o.run_shapeit(input_gen= self.param('input_gen'),
-                                          input_init= input_init,
-                                          input_scaffold= input_scaffold,
-                                          output_prefix= outprefix,
-                                          duohmm= duohmm,
-                                          verbose=verbose,
-                                          input_map=input_map,
-                                          **options_dict)
+            outdict = shapeit_o.run_shapeit(input_gen=self.param('input_gen'),
+                                            input_init=input_init,
+                                            input_scaffold=input_scaffold,
+                                            output_prefix=outprefix,
+                                            duohmm=duohmm,
+                                            verbose=verbose,
+                                            input_map=input_map,
+                                            **options_dict)
 
         if self.param_is_defined('input_bed'):
-            outdict=shapeit_o.run_shapeit(input_bed= self.param('input_bed'),
-                                          duohmm= duohmm,
-                                          output_prefix= outprefix,
-                                          input_map=input_map,
-                                          verbose=verbose,
-                                          **options_dict)
+            outdict = shapeit_o.run_shapeit(input_bed=self.param('input_bed'),
+                                            duohmm=duohmm,
+                                            output_prefix=outprefix,
+                                            input_map=input_map,
+                                            verbose=verbose,
+                                            **options_dict)
         self.param('outdict', outdict)
-       
+
     def write_output(self):
         self.warning('Work is done!')
-        outdict= self.param('outdict')
-        self.dataflow( {
-            'hap_gz' : outdict['hap_gz'],
-            'hap_sample' : outdict['hap_sample'],
+        outdict = self.param('outdict')
+        self.dataflow({
+            'hap_gz': outdict['hap_gz'],
+            'hap_sample': outdict['hap_sample'],
         }, 1)
-
-
-
-
-
-

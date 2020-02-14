@@ -5,7 +5,6 @@ Created on 01 Aug 2019
 '''
 
 import pymysql
-import pdb
 
 class HiveDB(object):
     '''
@@ -40,7 +39,7 @@ class HiveDB(object):
 
         self.db = db
 
-    def fetch_jobs_by_analysis_id(self,id,limit=None):
+    def fetch_jobs_by_analysis_id(self, id, limit=None):
         '''
         Fetch a list of jobs by its analysis_id
 
@@ -54,15 +53,15 @@ class HiveDB(object):
 
         Returns
         -------
-        List of Job objects        
+        List of Job objects
         '''
 
         query = "SELECT * FROM job WHERE analysis_id= %d " % id
 
         if limit is not None:
-            query+= "LIMIT {0}".format(limit)
+            query += "LIMIT {0}".format(limit)
 
-        jobs=[]
+        jobs = []
 
         try:
             cursor = self.db.cursor(pymysql.cursors.DictCursor)
@@ -79,10 +78,10 @@ class HiveDB(object):
             self.db.commit()
         except self.db.Error as err:
             print("Something went wrong when getting the job: {}".format(err))
-        
+
         return jobs
 
-    def fetch_job_byid(self,id):
+    def fetch_job_byid(self, id):
         '''
         Fetch a certain job by ids id
 
@@ -116,7 +115,7 @@ class HiveDB(object):
         except self.db.Error as err:
             print("Something went wrong when getting the job: {}".format(err))
 
-    def fetch_analysisdata_byid(self,id):
+    def fetch_analysisdata_byid(self, id):
         '''
         Fetch a certain analysis_data by its id
 
@@ -141,14 +140,14 @@ class HiveDB(object):
             result_set = cursor.fetchall()
             for row in result_set:
                 return AnalysisData(analysis_data_id=row['analysis_data_id'], md5sum=row['md5sum'],
-                        data=row['data'])
+                                    data=row['data'])
             cursor.close()
             self.db.commit()
         except self.db.Error as err:
             print("Something went wrong when getting the job: {}".format(err))
 
         return jobs
-    
+
 class AnalysisData(object):
     '''
     Class representing an AnalysisData in the Hive DB
@@ -162,7 +161,7 @@ class AnalysisData(object):
         analysis_data_id: int
                           Analysis_data_id
         md5sum: str
-                MD5sum 
+                MD5sum
         data: str
         '''
         self.analysis_data_id = analysis_data_id

@@ -4,7 +4,6 @@ Created on 21 Jul 2017
 @author: ernesto
 '''
 import os
-import pdb
 import subprocess
 
 class SNPTools(object):
@@ -54,7 +53,7 @@ class SNPTools(object):
         '''
         # parse bamfiles
         bamf = open(bamfiles, 'r')
-        bams= list(set(bamf.read().splitlines()))
+        bams = list(set(bamf.read().splitlines()))
         # remove empty elements
         bams = list(filter(None, bams))
 
@@ -62,19 +61,19 @@ class SNPTools(object):
         if self.snptools_folder:
             program_folder += self.snptools_folder + "/"
 
-        outfile=""
+        outfile = ""
         if outdir is not None:
-            outfile="{0}/{1}".format(outdir,sample)
+            outfile = "{0}/{1}".format(outdir, sample)
         else:
-            outfile="{0}".format(sample)
+            outfile = "{0}".format(sample)
 
-        bam_str=" ".join(list(filter(lambda x:sample in x, bams)))
+        bam_str = " ".join(list(filter(lambda x: sample in x, bams)))
 
         command = "{0}/bamodel {1} {2} {3}".format(program_folder,
                                                    outfile, self.vcf,
                                                    bam_str)
 
-        if verbose==True:
+        if verbose == True:
             print("Command used was: %s" % command)
 
         try:
@@ -90,7 +89,7 @@ class SNPTools(object):
 
         return outfile+".raw"
 
-    def run_poprob(self, outprefix, rawlist, outdir=None, verbose=False): 
+    def run_poprob(self, outprefix, rawlist, outdir=None, verbose=False):
         '''
         Method that wraps SNPTools' poprob on a VCF containing only Biallelic SNPs
         See https://www.hgsc.bcm.edu/software/snptools
@@ -117,20 +116,20 @@ class SNPTools(object):
         if self.snptools_folder:
             program_folder += self.snptools_folder + "/"
 
-        outfile=""
+        outfile = ""
         if outdir is not None:
-            outfile="{0}/{1}.prob".format(outdir,outprefix)
+            outfile = "{0}/{1}.prob".format(outdir, outprefix)
         else:
-            outfile="{0}.prob".format(outprefix)
+            outfile = "{0}.prob".format(outprefix)
 
         command = "{0}/poprob {1} {2} {3}".format(program_folder,
                                                   self.vcf,
                                                   rawlist,
                                                   outfile)
-        
-        if verbose==True:
+
+        if verbose == True:
             print("Command used was: %s" % command)
-        
+
         try:
             subprocess.check_output(command, shell=True)
         except subprocess.CalledProcessError as exc:
@@ -143,7 +142,6 @@ class SNPTools(object):
                             "{0} could not be created".format(outfile))
 
         return outfile
-
 
     def run_prob2vcf(self, probf, outprefix, chro, outdir=None, verbose=False):
         '''
@@ -174,18 +172,18 @@ class SNPTools(object):
         if self.snptools_folder:
             program_folder += self.snptools_folder + "/"
 
-        outfile=""
+        outfile = ""
         if outdir is not None:
-            outfile="{0}/{1}.vcf.gz".format(outdir, outprefix)
+            outfile = "{0}/{1}.vcf.gz".format(outdir, outprefix)
         else:
-            outfile="{0}.vcf.gz".format(outprefix)
+            outfile = "{0}.vcf.gz".format(outprefix)
 
         command = "{0}/prob2vcf {1} {2} {3}".format(program_folder,
                                                     probf,
                                                     outfile,
                                                     chro)
 
-        if verbose==True:
+        if verbose == True:
             print("Command used was: %s" % command)
 
         try:

@@ -5,13 +5,11 @@ Created on 27 Feb 2017
 '''
 
 import os
-import subprocess
-import json
-from Utils.RunProgram import RunProgram
-from collections import namedtuple
 import glob
 import ast
 import pdb
+from Utils.RunProgram import RunProgram
+from collections import namedtuple
 
 class BCFTools(object):
     '''
@@ -40,7 +38,8 @@ class BCFTools(object):
         self.tabix_folder = tabix_folder
 
     def subset_vcf(self, outprefix, bed=None, region=None, outdir=None,
-                   create_index=False, verbose=None, action='exclude', apply_filters=None, threads=1):
+                   create_index=False, verbose=None, action='exclude',
+                   apply_filters=None, threads=1):
         '''
         Subset the vcf file using a BED file/region having the coordinates of the
         variants to exclude/include
@@ -80,7 +79,7 @@ class BCFTools(object):
             bits = outprefix.split(".")
             vcf_ix = bits.index("vcf")
 
-            new=""
+            new = ""
             if apply_filters is not None:
                 new = bits[vcf_ix - 1] + "_" + region+".filt"
             else:
@@ -93,29 +92,30 @@ class BCFTools(object):
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[]
+        args = []
         if bed:
             if action == 'exclude':
-                args.append(Arg('-T','^{0}'.format(bed)))
+                args.append(Arg('-T', '^{0}'.format(bed)))
             elif action == 'include':
-                args.append(Arg('-T','{0}'.format(bed)))
+                args.append(Arg('-T', '{0}'.format(bed)))
         elif region:
             if action == 'exclude':
-                args.append(Arg('-t','^{0}'.format(region)))
+                args.append(Arg('-t', '^{0}'.format(region)))
             elif action == 'include':
-                args.append(Arg('-r','{0}'.format(region)))
+                args.append(Arg('-r', '{0}'.format(region)))
 
-        args.extend([Arg('-o',outprefix), Arg('-O','z'), Arg('--threads',threads)])
+        args.extend([Arg('-o', outprefix), Arg('-O', 'z'), Arg('--threads', threads)])
 
         if apply_filters is not None:
-            args.append(Arg('-f','\"{0}\"'.format(apply_filters)))
+            args.append(Arg('-f', '\"{0}\"'.format(apply_filters)))
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=[self.vcf])
+        runner = RunProgram(path=self.bcftools_folder, program='bcftools view',
+                            args=args, parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outprefix
 
@@ -142,34 +142,38 @@ class BCFTools(object):
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-s',name),Arg('-e','\'{0}\''.format(expression)),Arg('-o',outfile),Arg('-O','z')]
+        args = [Arg('-s', name), Arg('-e', '\'{0}\''.format(expression)), Arg('-o', outfile),
+                Arg('-O', 'z')]
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools filter', args=args, parameters=[self.vcf])
+        runner = RunProgram(path=self.bcftools_folder, program='bcftools filter',
+                            args=args, parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outfile
 
-    def filter_by_variant_type(self, outprefix, v_type="snps", compress=True, biallelic=False, action="select", verbose=None):
+    def filter_by_variant_type(self, outprefix, v_type="snps", compress=True, biallelic=False,
+                               action="select", verbose=None):
         '''
-        Method to filter a VCF file by variant type. For example, to extract only the SNPs
-        
-       Parameters
-       ----------
+        Method to filter a VCF file by variant type. For example, to extract
+        only the SNPs
+
+        Parameters
+        ----------
         v_type : {'snps','indels','mnps','other','both'}
                  Default=snps
                  Extract/Filter (depending on the value of the 'action'
                  argument) a certain variant type
         compress : bool, optional
-                   If True then generate a vcf.gz file. Default=True 
+                   If True then generate a vcf.gz file. Default=True
         biallelic : bool, optional
                     Select only biallelic variants. Default=False
-        action : {'select', 'exclude'} 
+        action : {'select', 'exclude'}
                  Default=select
-        outprefix : str 
+        outprefix : str
                     Prefix used for the output files
         verbose : bool, optional
                   Increase verbosity
@@ -180,46 +184,49 @@ class BCFTools(object):
                  Path to the filtered VCF
         '''
 
-        if v_type != "snps" and v_type != "indels" and v_type != "mnps" and v_type != "other" and v_type != "both":
+        if v_type not in ('snps', 'indels', 'mnps', 'other', 'both'):
             raise Exception("type value is not valid. Valid values are 'snps'/"
                             "'indels'/'mnps'/'other'/'both'")
-        if action != "select" and action != "exclude":
+        if action not in ('select', 'exclude'):
             raise Exception("action value is not valid. Valid values are 'select' or 'exclude'")
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[]
-        params=[]
+        args = []
+        params = []
 
         if action == "select":
             if v_type != 'both':
                 outprefix = outprefix + ".{0}.".format(v_type)
-                args.append(Arg('-v',v_type))
+                args.append(Arg('-v', v_type))
         elif action == "exclude":
             if v_type != 'both':
                 outprefix = outprefix + ".no{0}.".format(v_type)
-                args.append(Arg('-V',v_type))
+                args.append(Arg('-V', v_type))
         if biallelic is True:
             outprefix += "biallelic."
-            params.extend(['-m2','-M2'])
-        
+            params.extend(['-m2', '-M2'])
+
         if compress is True:
             outprefix += "vcf.gz"
-            args.extend([Arg('-o', outprefix),Arg('-O','z')])
+            args.extend([Arg('-o', outprefix), Arg('-O', 'z')])
             params.append(self.vcf)
         elif compress is False:
             outprefix += "vcf"
-            args.extend([Arg('-o', outprefix),Arg('-O','v')])
+            args.extend([Arg('-o', outprefix), Arg('-O', 'v')])
             params.append(self.vcf)
         elif compress is None:
             raise Exception("'compress' parameter can't be None")
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=params)
-        
+        runner = RunProgram(path=self.bcftools_folder,
+                            program='bcftools view',
+                            args=args,
+                            parameters=params)
+
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outprefix
 
@@ -231,7 +238,7 @@ class BCFTools(object):
         ----------
         outprefix : str
                     Prefix used for the output file
-        uncalled : {'exclude','include'}, optional. 
+        uncalled : {'exclude','include'}, optional.
                    Select/Exclude sites with an uncalled genotype
         threads: int, optional
                  Number of output compression threads to use in addition to main thread. Default=0
@@ -247,21 +254,24 @@ class BCFTools(object):
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-o',outfile),Arg('-O','z'),Arg('--threads',threads)]
+        args = [Arg('-o', outfile), Arg('-O', 'z'), Arg('--threads', threads)]
 
-        params=[]
-        if uncalled=='exclude':
+        params = []
+        if uncalled == 'exclude':
             params.append('-U')
-        elif uncalled=='include':
+        elif uncalled == 'include':
             params.append('-u')
 
         params.append(self.vcf)
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=params)
+        runner = RunProgram(path=self.bcftools_folder,
+                            program='bcftools view',
+                            args=args,
+                            parameters=params)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outfile

@@ -1,7 +1,5 @@
-import os
-import pytest
 import unittest
-import pdb
+import pytest
 
 from Utils import RunProgram
 
@@ -51,7 +49,8 @@ def test_run_inapipe():
 
 class TestRunProgramInit(unittest.TestCase):
     def test_error_on_no_cmdline_or_program(self):
-        with self.assertRaisesRegex(ValueError, "Parameter 'cmd_line' or 'program' must be provided."):
+        with self.assertRaisesRegex(ValueError, "Parameter 'cmd_line'"
+                                                " or 'program' must be provided."):
             RunProgram(program=None, cmd_line=None)
 
 
@@ -106,4 +105,3 @@ class TestRunProgramCreateCommandLine(unittest.TestCase):
         rp = RunProgram(**kwargs)
         cmd_result = rp.create_command_line()
         self.assertEqual(cmd_result, f"{kwargs['program']} | {a} | {b}")
-
