@@ -6,15 +6,17 @@ Created on 16 Aug 2018
 
 import os
 import re
+import pdb
 from Utils.RunProgram import RunProgram
 from collections import namedtuple
+from configparser import ConfigParser
 
 class BCFTools(object):
     '''
     Class to run the BCFTools variant caller
     '''
 
-    def __init__(self, bam, reference, bcftools_folder):
+    def __init__(self, bam, reference, settings):
         '''
         Constructor
 
@@ -23,9 +25,9 @@ class BCFTools(object):
         bam : str, Required
              Path to BAM file used for the variant calling process
         reference : str, Required
-             Path to fasta file containing the reference
-        bcftools_folder : str, Required
-                          Path to folder containing the BCFTools binary
+             Path to Fasta file containing the reference
+        settings : str, Required
+                   Path to .ini file with settings
         '''
 
         if os.path.isfile(bam) is False:
@@ -33,9 +35,13 @@ class BCFTools(object):
 
         self.bam = bam
         self.reference = reference
-        self.bcftools_folder = bcftools_folder
 
-    def run_bcftools(self, outprefix, E=False, p=False, annots=['DP', 'SP', 'AD'],
+        # parse settings file (in .ini file)
+        parser = ConfigParser()
+        parser.read(settings)
+        self.settings=parser
+
+    def run_bcftools(self, outprefix, p=False, annots=['DP', 'SP', 'AD'],
                      P="ILLUMINA", F=0.002, C=50, m_pileup=1, m_call=False,
                      d=250, v=False, O='z', ploidy="GRCh38", threads=1,
                      S=None, r=None, verbose=True):
@@ -47,9 +53,6 @@ class BCFTools(object):
 
         outprefix : str, Required
                     Prefix for output VCF file. i.e. /path/to/file/test
-        E : bool, Optional
-            mpileup parameter
-            Recalculate BAQ on the fly, ignore existing BQ tags. Default=False
         p : bool, Optional
             mpileup parameter
             Apply -m and -F thresholds per sample to increase sensitivity of calling.
@@ -125,13 +128,14 @@ class BCFTools(object):
             outprefix += ".{0}".format(region_str)
             arguments_mpileup.append(Arg('-r', r))
 
+        pdb.set_trace()
         params_mpileup = []
-        if E is True:
+        if self.settings.has_option('bcftools','E'):
             params_mpileup.append('-E')
         if p is True:
             params_mpileup.append('-p')
 
-        params_mpileup.append(self.bam)dfadf
+        params_mpileup.append(self.bam)
         params_call = []
         if m_call is True:
             params_call.append('-m')
@@ -153,7 +157,7 @@ class BCFTools(object):
                                          parameters=params_call)
         pipelist = [bcftools_callRunner]
 
-        runner = RunProgram(program='{0}/bcftools mpileup'.format(self.bcftools_folder),
+        runner = RunProgram(program='bcftools mpileup',
                             args=arguments_mpileup,
                             parameters=params_mpileup,
                             downpipe=pipelist)
