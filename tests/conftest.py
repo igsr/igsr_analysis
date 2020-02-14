@@ -1,5 +1,26 @@
 import pytest
 
+@pytest.fixture
+def supply_bam_file():
+    '''
+    Path to BAM file for testing
+    '''
+    return "data/exampleBAM.bam"
+
+@pytest.fixture
+def supply_reference_file():
+    '''
+    Path to Fasta file with reference
+    '''
+    return "data/exampleFASTA.fasta"
+@pytest.fixture
+def supply_settings_file():
+    '''
+    Path to .ini file with settings
+    '''
+    return "data/settings.ini"
+
+'''
 def pytest_addoption(parser):
     parser.addoption('--bam', default='data/exampleBAM.bam' ,action='store_true', help='Path to test BAM file')
     parser.addoption('--faix', default='data/canonical_chros.fa.fai' ,action='store_true', help='Path to faix file')
@@ -16,7 +37,6 @@ def pytest_addoption(parser):
     parser.addoption('--picard_folder', default='~/bin/',action='store_true', help='Folder with Picard jar file')
     parser.addoption('--bedtools_folder', default='/homes/ernesto/bin/bedtools-2.25.0/bin/', action='store_true', help='Folder with bedtools binary')
     parser.addoption('--makeBGLCHUNKS_folder', default='~/bin/shapeit2_v2_12/bin/makeBGLCHUNKS/bin/' ,action='store_true', help='Folder with makeBGLCHUNKS binary')
-    parser.addoption('--bcftools_folder', default='~/bin/bcftools-1.6/' ,action='store_true', help='Folder containing bcftools binaries')
     parser.addoption('--beagle_jar', default='beagle.08Jun17.d8b.jar' ,action='store_true', help='Name of Beagle jar file')
     parser.addoption('--beagle_folder', default='~/bin/beagle/' ,action='store_true', help='Folder with Beagle jar file')
     parser.addoption('--prepareGenFromBeagle4_folder', default='/homes/ernesto/bin/shapeit2_v2_12/bin/prepareGenFromBeagle4/bin/', action='store_true', help='Folder with prepareGenFromBeagle4 binary')
@@ -43,4 +63,4 @@ def pytest_addoption(parser):
     parser.addoption('--fp_annotations_snps_gz', default='data/FP_annotations_snps.chr20.tsv.gz', action='store_true', help='--Gunzipped file with the variant annotations from the False positive SNP call set')
     parser.addoption('--tp_annotations_indels', default='data/TP_annotations_indels.chr20.tsv', action='store_true', help='--File with the variant annotations from the True positive INDEL call set')
     parser.addoption('--fp_annotations_indels', default='data/FP_annotations_indels.chr20.tsv', action='store_true', help='--File with the variant annotations from the False positive INDEL call set')
-    
+'''
