@@ -13,4 +13,25 @@ The problem arises when you need to filter a callset obtained from a non-GATK ca
 
 If you find yourself in this situation you might find this pipeline useful.
 
+Foundation of the filtering
+---------------------------
+This pipeline implements a supervised Machine Learning (ML) model in order to solve a binary classification problem. It is supervised because it trains the model with a gold-standard call set for which we already know what variant sites are real
+ and it is a binary classification problem where we have multiple numerical independent variables (annotation values for each of the variant sites) to predict or classify a binary outcome (is a certain site a real variant?). This particular type
+of problem can be modelled using a Logistic regression binary classifier and more specifically our pipeline uses the implementation from the `Scikit-learn Python library <https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.
+LogisticRegression.html?highlight=logistic%20regression#sklearn.linear_model.LogisticRegression>`_
+
+This pipeline needs to be run in different stages
+
+1) Recursive Feature Elimination (RFE) stage (optional).
+   This pipeline uses the `Scikit-learn RFE implementation <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html?highlight=rfe#sklearn.feature_selection.RFE>`_ and it works by recursively removing features (annotations),
+   building a logistic regression model using the remaining attributes and calculating the model accuracy. RFE is able to work out the combination of n attributes that contribute most to the prediction
+2) Training the ML model for the SNPs and INDELs independently
+3) Applying the fitted model generated in step 2 trained model on the VCF that you want to filter
+
+* Recursive Feature Elimination
+This step will 
+
+USAGE
+-----
+
 **This page is under construcion**
