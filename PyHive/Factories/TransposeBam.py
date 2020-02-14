@@ -1,7 +1,6 @@
 import eHive
 import os
-import pdb
-import re
+import sys
 import subprocess
 
 
@@ -24,16 +23,16 @@ class TransposeBam(eHive.BaseRunnable):
     '''
 
     def run(self):
-        
-        filenames=self.param_required('short_flist')
 
-        bamlist=[]
+        filenames = self.param_required('short_flist')
+
+        bamlist = []
 
         for afile in filenames:
-        
-            afile_dir=os.path.dirname(os.path.abspath(afile))
 
-            bam_dir="{0}/tposed_bams".format(afile_dir)
+            afile_dir = os.path.dirname(os.path.abspath(afile))
+
+            bam_dir = "{0}/tposed_bams".format(afile_dir)
 
             if not os.path.isdir(bam_dir):
                 os.makedirs(bam_dir)
@@ -41,11 +40,15 @@ class TransposeBam(eHive.BaseRunnable):
             #change to folder containing shortened BAMs
             os.chdir(afile_dir)
 
-            region="{0}:{1}-{2}".format(self.param_required('region')[0], self.param_required('region')[1], self.param_required('region')[2])
-            region_str='_'.join(map(str,self.param_required('region')))
-            output_file="{0}/{1}.{2}.tranposed.bam".format(bam_dir, self.param_required('outprefix'), region_str)
+            region = "{0}:{1}-{2}".format(self.param_required('region')[0],
+                                          self.param_required('region')[1],
+                                          self.param_required('region')[2])
+            region_str = '_'.join(map(str, self.param_required('region')))
+            output_file = "{0}/{1}.{2}.tranposed.bam".format(bam_dir,
+                                                             self.param_required('outprefix'),
+                                                             region_str)
 
-            cmd="cat {0} | xargs -s 2000000 {1}/transpose_bam -r {2} -i -o {3}".format(
+            cmd = "cat {0} | xargs -s 2000000 {1}/transpose_bam -r {2} -i -o {3}".format(
                 afile,
                 self.param_required('transposebam_folder'),
                 region,
@@ -66,6 +69,4 @@ class TransposeBam(eHive.BaseRunnable):
 
     def write_output(self):
         self.warning('Work is done!')
-        self.dataflow( { 'out_bamlist' : self.param('out_bamlist') }, 1)
-
-        
+        self.dataflow({'out_bamlist': self.param('out_bamlist')}, 1)

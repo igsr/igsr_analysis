@@ -131,7 +131,7 @@ class TestSingularity_DirectoryProperties(unittest.TestCase):
     def test_working_directory(self):
         output_dir = '/a/root/outptut/dir/for/sample'
         prefix = 'a.prefix'
-        expected = os.path.join( output_dir, "{}_{}".format(prefix, self.properties['session_suffix']))
+        expected = os.path.join(output_dir, "{}_{}".format(prefix, self.properties['session_suffix']))
         with mock.patch.object(Singularity, 'output_directory', output_dir),\
                 mock.patch.object(Singularity, 'prefix', prefix):
             s = Singularity(None, None)

@@ -8,10 +8,8 @@ This module is used to do a series of VCF QC tasks on a VCF file.
 import os
 import subprocess
 import tempfile
-import pdb
-
-from Utils.RunProgram import RunProgram
 from collections import namedtuple
+from Utils.RunProgram import RunProgram
 
 class VcfQC(object):
     '''
@@ -95,19 +93,22 @@ class VcfQC(object):
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('TRUTH_VCF',truth_vcf), Arg('CALL_VCF',self.vcf), Arg('TRUTH_SAMPLE',truth_sample), 
-              Arg('CALL_SAMPLE',call_sample), Arg('O',outprefix)] 
+        args = [Arg('TRUTH_VCF', truth_vcf), Arg('CALL_VCF', self.vcf),
+                Arg('TRUTH_SAMPLE', truth_sample),
+                Arg('CALL_SAMPLE', call_sample),
+                Arg('O', outprefix)]
 
         if intervals:
-            args.append(Arg('INTERVALS',intervals))
+            args.append(Arg('INTERVALS', intervals))
 
-        runner=RunProgram(program='java -jar {0}/picard.jar GenotypeConcordance'.format(self.picard_folder), args=args, arg_sep='=')
+        runner = RunProgram(program='java -jar {0}/picard.jar GenotypeConcordance'.
+                            format(self.picard_folder), args=args, arg_sep='=')
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
-        
+        stdout = runner.run_checkoutput()
+
         gtp_con = GTPconcordance(summary_metrics_file=outprefix+\
                                  ".genotype_concordance_summary_metrics")
 
@@ -132,31 +133,38 @@ class VcfQC(object):
         Returns
         -------
         dict
-            Dict with a key named 'in_vcf' and whose values are the chros that are present in self.vcf.
+            Dict with a key named 'in_vcf' and whose values are the chros
+            that are present in self.vcf.
 
             If list_of_chros is defined, then it will also add 3 keys to the dict:
-                 'both' whose values will be the chros present in self.vcf and in 'chr_f'
-                 'in_A' whose values will be the chros PRESENT in self.vcf and NOT in 'chr_f'
-                 'in_B' whose values will be the chros NOT present in self.vcf and PRESENT in 'chr_f'.
+                 'both' whose values will be the chros present in
+                 self.vcf and in 'chr_f'
+                 'in_A' whose values will be the chros PRESENT in
+                  self.vcf and NOT in 'chr_f'
+                 'in_B' whose values will be the chros NOT present in
+                  self.vcf and PRESENT in 'chr_f'.
         '''
 
-        params=['--no-header',self.vcf, "|cut -f1 |uniq"]
-        
+        params = ['--no-header', self.vcf, "|cut -f1 |uniq"]
+
         Arg = namedtuple('Argument', 'option value')
 
-        args=[]
+        args = []
 
         if filter_str != None:
             args.append(Arg('-f', filter_str))
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools view', args=args, parameters=params)
+        runner = RunProgram(path=self.bcftools_folder,
+                            program='bcftools view',
+                            args=args,
+                            parameters=params)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
         out_str = ""
 
-        out=runner.run_checkoutput()
+        out = runner.run_checkoutput()
         out_str = out.decode("utf-8")
         out_str = out_str.rstrip('\n')
 
@@ -173,10 +181,10 @@ class VcfQC(object):
         in_b = set(chr_list_f) - set(list_of_chros)
 
         return {
-            'in_vcf' : list_of_chros,
-            'both' : list(both),
-            'in_A' : list(in_a),
-            'in_B' : list(in_b)
+            'in_vcf': list_of_chros,
+            'both': list(both),
+            'in_A': list(in_a),
+            'in_B': list(in_b)
             }
 
     def number_variants_in_region(self, region, outprefix, verbose=None):
@@ -200,19 +208,22 @@ class VcfQC(object):
         '''
 
         outprefix = outprefix+".counts"
-        
-        params=['-counts','>',outprefix]
+
+        params = ['-counts', '>', outprefix]
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('-a',region), Arg('-b', self.vcf)]
+        args = [Arg('-a', region), Arg('-b', self.vcf)]
 
-        runner=RunProgram(path=self.bedtools_folder, program='bedtools coverage', args=args, parameters=params)
+        runner = RunProgram(path=self.bedtools_folder,
+                            program='bedtools coverage',
+                            args=args,
+                            parameters=params)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         return outprefix
 
@@ -239,22 +250,23 @@ class VcfQC(object):
         '''
 
         if self.picard_folder is None:
-            raise Exception("Provide a picard folder") 
-
+            raise Exception("Provide a picard folder")
 
         Arg = namedtuple('Argument', 'option value')
 
-        args=[Arg('I',self.vcf), Arg('O',outprefix), Arg('DBSNP',truth_vcf)]
+        args = [Arg('I', self.vcf), Arg('O', outprefix), Arg('DBSNP', truth_vcf)]
 
         if intervals:
             args.append(Arg('TI', intervals))
 
-        runner=RunProgram(program='java -jar {0}/picard.jar CollectVariantCallingMetrics'.format(self.picard_folder), args=args, arg_sep="=")
-            
+        runner = RunProgram(program='java -jar {0}/picard.jar'
+                                    ' CollectVariantCallingMetrics'.format(self.picard_folder),
+                            args=args, arg_sep="=")
+
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
-        stdout=runner.run_checkoutput()
+        stdout = runner.run_checkoutput()
 
         #create CollectVCallingMetrics object with the output files
         cvcmetrics = CollectVCallingMetrics(vc_detail_metrics_file=outprefix\
@@ -263,8 +275,8 @@ class VcfQC(object):
                                             +".variant_calling_summary_metrics")
 
         return cvcmetrics
-    
-    def plot_variant_density(self,length,genome,outprefix,plot_params):
+
+    def plot_variant_density(self, length, genome, outprefix, plot_params):
         '''
         Method used to plot the variant density along the genome for this VCF file
 
@@ -335,10 +347,11 @@ class VcfQC(object):
 
         if self.r_scripts is None:
             raise Exception("Error! I need that the r_scripts arg is defined.")
-        
-        command3 +="R --slave < {0}/plot_variants.R --args {1} {2} {3} {4} {5}".format(self.r_scripts, cov_tmp.name,
-                                                                                       length, outprefix,plot_params['height'],
-                                                                                       plot_params['chromName_cex'])
+
+        command3 += "R --slave < {0}/plot_variants.R --args " \
+                    "{1} {2} {3} {4} {5}".format(self.r_scripts, cov_tmp.name,
+                                                 length, outprefix, plot_params['height'],
+                                                 plot_params['chromName_cex'])
         try:
             subprocess.check_output(command3, shell=True)
         except subprocess.CalledProcessError as exc:
@@ -358,7 +371,7 @@ class VcfQC(object):
         ----------
         outpath : str
                   output path
-        filter_str : str, optional. 
+        filter_str : str, optional.
                      Example:  PASS,.
                      Apply filters when calculating the stats.
         region : str, optional
@@ -374,25 +387,28 @@ class VcfQC(object):
         '''
 
         Arg = namedtuple('Argument', 'option value')
-          
-        args=[]
+
+        args = []
 
         if region != None:
             outpath = "{0}.{1}".format(outpath, region)
-            args.append(Arg('-r',region))
+            args.append(Arg('-r', region))
 
         if region_file != None:
-            args.append(Arg('-R',region_file))
+            args.append(Arg('-R', region_file))
 
         if filter_str != None:
             outpath = outpath+".filter_str"
-            args.append(Arg('-f',filter_str))
+            args.append(Arg('-f', filter_str))
 
         outpath = outpath+".stats"
-        
-        params=[self.vcf,'>',outpath]
 
-        runner=RunProgram(path=self.bcftools_folder, program='bcftools stats', args=args, parameters=params)
+        params = [self.vcf, '>', outpath]
+
+        runner = RunProgram(path=self.bcftools_folder,
+                            program='bcftools stats',
+                            args=args,
+                            parameters=params)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
@@ -417,7 +433,7 @@ class VcfQC(object):
                 elif line.startswith('SiS\t'):
                     no_singleton_snps = line.split('\t')[3]
                     stats.no_singleton_snps = no_singleton_snps
-                    
+
             stats.summary_numbers = d
         return stats
 
@@ -460,18 +476,18 @@ class BcftoolsStats(object):
 
         Returns
         -------
-        tsv file with summary numbers 
+        tsv file with summary numbers
         '''
-        outfile="{0}.summary.tsv".format(self.filename)
+        outfile = "{0}.summary.tsv".format(self.filename)
 
-        summary_numbers=self.summary_numbers
-        header="#filename\t"
-        header+="\t".join(summary_numbers.keys()).replace(":","").replace(" ","_")
-        
-        values=self.filename+"\t"
-        values+="\t".join([str(n) for n in summary_numbers.values()])
+        summary_numbers = self.summary_numbers
+        header = "#filename\t"
+        header += "\t".join(summary_numbers.keys()).replace(":", "").replace(" ", "_")
 
-        f=open(outfile,'w');
+        values = self.filename+"\t"
+        values += "\t".join([str(n) for n in summary_numbers.values()])
+
+        f = open(outfile, 'w')
         f.write(header+"\n")
         f.write(values+"\n")
         f.close
