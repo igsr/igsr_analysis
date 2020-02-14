@@ -131,8 +131,7 @@ class BCFTools(object):
         if p is True:
             params_mpileup.append('-p')
 
-        params_mpileup.append(self.bam)
-
+        params_mpileup.append(self.bam)dfadf
         params_call = []
         if m_call is True:
             params_call.append('-m')
