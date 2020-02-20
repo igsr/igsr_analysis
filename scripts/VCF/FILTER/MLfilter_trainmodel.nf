@@ -64,7 +64,7 @@ process split_multiallelic {
         Path to splitted VCF
         */
 
-        memory '2 GB'
+        memory '10 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
@@ -305,7 +305,7 @@ process train_model {
         Regression binary classifier
         */
 
-        memory '5 GB'
+        memory '15 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
@@ -342,7 +342,7 @@ process rfe {
         select the annotations that are more relevant for prediction'
         */
 
-        memory '5 GB'
+        memory '15 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
@@ -384,7 +384,7 @@ process split_multiallelic_chr {
 
 	tag {"Processing: "+chr}
 
-        memory '2 GB'
+        memory '10 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
@@ -661,7 +661,7 @@ process train_model_chr {
 
 	tag {"Processing: "+chr}
 
-        memory '5 GB'
+        memory '15 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
@@ -701,7 +701,7 @@ process rfe_chr {
 
 	tag {"Processing: "+chr}
 
-        memory '5 GB'
+        memory '15 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
