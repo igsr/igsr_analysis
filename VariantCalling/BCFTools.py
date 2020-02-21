@@ -37,13 +37,14 @@ class BCFTools(object):
         self.reference = reference
 
         # parse settings file (in .ini file)
-        parser = ConfigParser()
-        parser.read(settings)
-        self.settings=parser
+        parser = ConfigParser(strict=False)
+        parser.optionxform = str
 
-    def run_bcftools(self, outprefix, p=False, annots=['DP', 'SP', 'AD'],
-                     P="ILLUMINA", F=0.002, C=50, m_pileup=1, m_call=False,
-                     d=250, v=False, O='z', ploidy="GRCh38", threads=1,
+        parser.read(settings)
+        self.settings = parser
+
+    def run_bcftools(self, outprefix, annots=['DP', 'SP', 'AD'], m_pileup=1, m_call=False,
+                     v=False, O='z', ploidy="GRCh38", threads=1,
                      S=None, r=None, verbose=True):
         '''
         Run BCFTools mpileup and then pipe to BCTools call in order to do the variant calling
@@ -53,27 +54,9 @@ class BCFTools(object):
 
         outprefix : str, Required
                     Prefix for output VCF file. i.e. /path/to/file/test
-        p : bool, Optional
-            mpileup parameter
-            Apply -m and -F thresholds per sample to increase sensitivity of calling.
-            By default both options are applied to reads pooled from all samples.
         annots : list, Optional
                  mpileup parameter
                  Comma separated list of annotations used to decorate the VCF
-        P : str, Optional
-            mpileup parameter
-            Comma-delimited list of patforms (determined by @RG-PL) from which indel
-            candidates are obtained. Default= ILLUMINA
-        F : float, Optional
-            mpileup parameter
-            Minimum fraction of gapped reads. Default=0.002
-        C : int, Optional
-            mpileup parameter
-            Coefficient for downgrading mapping quality for reads containing excessive
-            mismatches. Default=50
-        d : int, Optional
-            mpileup parameter
-            At a position, read maximally INT reads per input file. Default=250
         m_mpileup : int, Optional
                     mpileup parameter
                     Minimum number gapped reads for indel candidates. Default=1
@@ -110,18 +93,21 @@ class BCFTools(object):
 
         Arg = namedtuple('Argument', 'option value')
 
-
         arguments_mpileup = [Arg('-f', self.reference)]
+
+        settings_mpileup = self.settings.items("bcftools")
+
+        pdb.set_trace()
+        for key, v in settings_mpileup:
+            arguments_mpileup.append(Arg(key, v))
+
+        arguments_mpileup.append(Arg('-d', d))
+        arguments_mpileup.append(Arg('-m', m_pileup))
+        arguments_mpileup.append(Arg('--threads', threads))
 
         for a in annots:
             arguments_mpileup.append(Arg('-a', a))
 
-        arguments_mpileup.append(Arg('-P', P))
-        arguments_mpileup.append(Arg('-F', F))
-        arguments_mpileup.append(Arg('-C', C))
-        arguments_mpileup.append(Arg('-d', d))
-        arguments_mpileup.append(Arg('-m', m_pileup))
-        arguments_mpileup.append(Arg('--threads', threads))
 
         if r is not None:
             region_str = re.sub(':|-', '_', r)
@@ -130,8 +116,13 @@ class BCFTools(object):
 
         pdb.set_trace()
         params_mpileup = []
-        if self.settings.has_option('bcftools','E'):
-            params_mpileup.append('-E')
+        if self.settings.has_option('bcftools', 'E'):
+            if self.settings.getboolean('bcftools', 'E') is True:
+                params_mpileup.append('-E')
+
+        if self.settings.has_option('bcftools', 'p'):
+            if self.settings.getboolean('bcftools', 'E') is True:
+                params_mpileup.append('-E')
         if p is True:
             params_mpileup.append('-p')
 

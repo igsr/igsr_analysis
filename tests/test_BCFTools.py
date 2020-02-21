@@ -33,7 +33,6 @@ def test_run_bcftools(bcftools_object, clean_tmp):
 
     outfile = bcftools_object.run_bcftools(outprefix='data/outdir/test',
                                            annots=annots,
-                                           p=True,
                                            m_pileup=3,
                                            m_call=True,
                                            v=True)
