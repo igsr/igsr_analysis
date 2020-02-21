@@ -94,7 +94,7 @@ process splitVCF {
         This process will select a single chromosome from the VCF
         */
 
-        memory '500 MB'
+        memory '5 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
@@ -139,10 +139,13 @@ process split_multiallelic {
         Path to splitted VCF
         */
 
-        memory '2 GB'
+        memory { 5.GB * task.attempt }
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
+
+	errorStrategy 'retry'
+        maxRetries 5
 
 	input:
 	file unfilt_vcf_chr_reheaded from unfilt_vcf_chr_reheaded
