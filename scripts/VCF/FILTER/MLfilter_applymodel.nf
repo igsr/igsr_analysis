@@ -11,7 +11,7 @@
 params.help = false
 params.split_multiallelics = false
 params.threads = 1
-params.queue = 'production-rh7'
+params.queue = 'production-rh74'
 params.executor = 'local'
 
 //print usage
@@ -91,10 +91,11 @@ process modify_header {
 
 process splitVCF {
         /*
-        This process will select a single chromosome from the VCF
+        This process will select a single chromosome from the VCF.
+	It will also drop the genotypes from the splitted VCF
         */
 
-        memory '5 GB'
+        memory '1 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
@@ -200,8 +201,8 @@ process select_variants {
         file "out.${params.vt}.vcf.gz" into out_vts
 
         """
-        bcftools view -v ${params.vt} ${out_decomp} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
-        """
+        bcftools view -G -v ${params.vt} ${out_decomp} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
+        """	 
 }
 
 process run_bcftools_sort {
@@ -409,10 +410,10 @@ process reannotate_vcf {
 	"""
         mkdir -p tmpdir
 	bcftools sort -T tmpdir/ ${out_decomp1} -o out_decomp.sort.vcf.gz -Oz
-        bcftools view -v snps out_decomp.sort.vcf.gz -o out.snps.vcf.gz -Oz
-        bcftools view -v indels out_decomp.sort.vcf.gz -o out.indels.vcf.gz -Oz
+        bcftools view -v snps out_decomp.sort.vcf.gz -o out.snps.vcf.gz --threads ${params.threads} -Oz
+        bcftools view -v indels out_decomp.sort.vcf.gz -o out.indels.vcf.gz --threads ${params.threads} -Oz
         bcftools annotate -a ${predictions_table} out.${selected}.vcf.gz -c CHROM,POS,FILTER,prob_TP -o reannotated.vcf.gz --threads ${params.threads} -Oz
-        bcftools concat reannotated.vcf.gz out.${non_selected}.vcf.gz -o out.merged.vcf.gz -Oz
+        bcftools concat reannotated.vcf.gz out.${non_selected}.vcf.gz -o out.merged.vcf.gz --threads ${params.threads} -Oz
         bcftools sort -T tmpdir/ out.merged.vcf.gz -o ${output_cutoff} -Oz
         tabix ${output_cutoff}
         """
