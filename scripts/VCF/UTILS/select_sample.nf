@@ -92,7 +92,7 @@ if (params.samplel) {
 
 		script:
 		"""
-		bcftools view -s ${s} ${params.vcf} -o ${params.prefix}.${s}.vcf.gz -O z
+		bcftools view -c1 -s ${s} ${params.vcf} -o ${params.prefix}.${s}.vcf.gz -O z
 		tabix ${params.prefix}.${s}.vcf.gz
 		"""
 	}		
