@@ -95,7 +95,7 @@ process splitVCF {
 	It will also drop the genotypes from the splitted VCF
         */
 
-        memory '1 GB'
+        memory '5 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
@@ -162,6 +162,7 @@ process split_multiallelic {
 process allelic_primitives {
         /*
         Process to run vcflib vcfallelicprimitives to decompose of MNPs
+
         Returns
         -------
         Path to decomposed VCF
@@ -176,12 +177,34 @@ process allelic_primitives {
 	file out_splitted from out_splitted
 
         output:
-        file "out.splitted.decomp.vcf.gz" into out_decomp, out_decomp1
+        file "out.splitted.decomp.vcf.gz" into out_decomp
 
         """
         tabix -f ${out_splitted}
         vcfallelicprimitives -k -g ${out_splitted} |bgzip -c > out.splitted.decomp.vcf.gz
         """
+}
+
+process sort_out_decomp {
+	/*
+	Process to bcftools sort the 'out_decomp'
+	*/
+
+	memory '9 GB'
+        executor 'lsf'
+        queue "${params.queue}"
+        cpus 1
+
+	input:
+	file out_decomp
+
+	output:
+	file "out.splitted.decomp.sorted.vcf.gz" into out_decomp_sorted
+	
+	"""
+	mkdir -p tmpdir
+        bcftools sort -T tmpdir/ ${out_decomp} -o out.splitted.decomp.sorted.vcf.gz -Oz
+	"""
 }
 
 process select_variants {
@@ -195,39 +218,17 @@ process select_variants {
         cpus "${params.threads}"
 
         input:
-        file out_decomp
+        file out_decomp_sorted
 
         output:
-        file "out.${params.vt}.vcf.gz" into out_vts
+	set file("out.snps.gtps.vcf.gz"), file("out.indels.gtps.vcf.gz") into gtps_vts
+        file "out.${params.vt}.vcf.gz" into no_gtps_vts
 
         """
-        bcftools view -G -v ${params.vt} ${out_decomp} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
+	bcftools view -v snps ${out_decomp_sorted} -o out.snps.gtps.vcf.gz --threads ${params.threads} -Oz
+        bcftools view -v indels ${out_decomp_sorted} -o out.indels.gtps.vcf.gz --threads ${params.threads} -Oz
+	bcftools view -G -v ${params.vt} ${out_decomp_sorted} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
         """	 
-}
-
-process run_bcftools_sort {
-        /*
-        Process to run bcftools sort
-        Returns
-        -------
-        Path to sorted VCF
-        */
-
-        memory '9 GB'
-        executor 'lsf'
-        queue "${params.queue}"
-        cpus 1
-
-        input:
-        file out_vts
-
-        output:
-        file "out.sort.vcf.gz" into out_sort
-
-        """
-	mkdir -p tmpdir/
-	bcftools sort -T tmpdir/ ${out_vts} -o out.sort.vcf.gz -Oz
-        """
 }
 
 process run_vt_uniq {
@@ -244,13 +245,13 @@ process run_vt_uniq {
         cpus 1
 
         input:
-        file out_sort
+        file no_gtps_vts
 
         output:
         file "out.normalized.vcf.gz" into out_uniq
 
         """
-        vt uniq ${out_sort} | bgzip -c > out.normalized.vcf.gz
+        vt uniq ${no_gtps_vts} | bgzip -c > out.normalized.vcf.gz
         """
 }
 
@@ -367,7 +368,7 @@ process compress_predictions {
 	"""
 }
 
-reannotate_parameters = out_decomp1.combine(predictions_table)
+reannotate_parameters = gtps_vts.combine(predictions_table)
 
 process reannotate_vcf {
 	/*
@@ -398,7 +399,7 @@ process reannotate_vcf {
         }
 
 	input:
-        set file(out_decomp1), file(predictions_table), file(predictions_table_tabix), val(cutoff) from reannotate_parameters
+        set file("out.snps.gtps.vcf.gz"), file("out.indels.gtps.vcf.gz"), file(predictions_table), file(predictions_table_tabix), val(cutoff) from reannotate_parameters
 
         output:
         file(output_cutoff)
@@ -408,12 +409,8 @@ process reannotate_vcf {
         output_cutoff_tabix="filt.${cutoff}".replace('.', '_')+".vcf.gz.tbi"
 
 	"""
-        mkdir -p tmpdir
-	bcftools sort -T tmpdir/ ${out_decomp1} -o out_decomp.sort.vcf.gz -Oz
-        bcftools view -v snps out_decomp.sort.vcf.gz -o out.snps.vcf.gz --threads ${params.threads} -Oz
-        bcftools view -v indels out_decomp.sort.vcf.gz -o out.indels.vcf.gz --threads ${params.threads} -Oz
-        bcftools annotate -a ${predictions_table} out.${selected}.vcf.gz -c CHROM,POS,FILTER,prob_TP -o reannotated.vcf.gz --threads ${params.threads} -Oz
-        bcftools concat reannotated.vcf.gz out.${non_selected}.vcf.gz -o out.merged.vcf.gz --threads ${params.threads} -Oz
+        bcftools annotate -a ${predictions_table} out.${selected}.gtps.vcf.gz -c CHROM,POS,FILTER,prob_TP -o reannotated.vcf.gz --threads ${params.threads} -Oz
+        bcftools concat reannotated.vcf.gz out.${non_selected}.gtps.vcf.gz -o out.merged.vcf.gz --threads ${params.threads} -Oz
         bcftools sort -T tmpdir/ out.merged.vcf.gz -o ${output_cutoff} -Oz
         tabix ${output_cutoff}
         """
