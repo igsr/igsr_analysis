@@ -37,15 +37,13 @@ class BCFTools(object):
         self.reference = reference
 
         # parse settings file (in .ini file)
-        parser = ConfigParser(strict=False)
+        parser = ConfigParser(allow_no_value=True)
         parser.optionxform = str
 
         parser.read(settings)
         self.settings = parser
 
-    def run_bcftools(self, outprefix, annots=['DP', 'SP', 'AD'], m_pileup=1, m_call=False,
-                     v=False, O='z', ploidy="GRCh38", threads=1,
-                     S=None, r=None, verbose=True):
+    def run_bcftools(self, outprefix, r=None, verbose=True):
         '''
         Run BCFTools mpileup and then pipe to BCTools call in order to do the variant calling
 
@@ -54,34 +52,9 @@ class BCFTools(object):
 
         outprefix : str, Required
                     Prefix for output VCF file. i.e. /path/to/file/test
-        annots : list, Optional
-                 mpileup parameter
-                 Comma separated list of annotations used to decorate the VCF
-        m_mpileup : int, Optional
-                    mpileup parameter
-                    Minimum number gapped reads for indel candidates. Default=1
-        m_call : boolean, Optional
-                 call parameter
-                 alternative modelfor multiallelic and rare-variant calling
-                 designed to overcome known limitations in -c calling model
-        v : bool, Optional
-            call parameter
-            output variant sites only
-        O : str, Optional
-            call parameter
-            output type. Default= 'z'
-            Possible values are: BCF (b), uncompressed BCF (u), compressed VCF (z),
-            uncompressed VCF (v)
-        ploidy : str, Optional
-                 predefined ploidy. Default: GRCh38
-        threads : int, Optional
-                  Number of extra output compression threads.Default=1
-        S : str, Optional
-            call parameter
-            File of sample names to include or exclude if prefixed with "^"
+
         r: str, Optional
            Region used for doing the variant calling in the format chr20:10000-20000
-
         verbose : bool, Optional
                   Increase verbosity. Default= True
 
@@ -91,66 +64,54 @@ class BCFTools(object):
 
         '''
 
+        pdb.set_trace()
+
         Arg = namedtuple('Argument', 'option value')
 
-        arguments_mpileup = [Arg('-f', self.reference)]
+        # mpileup
+        mpileup_args_l = [Arg('-f', self.reference)]
 
-        settings_mpileup = self.settings.items("bcftools")
+        for a in self.settings.get('mpileup_opts', 'annots'):
+            pdb.set_trace()
 
-        pdb.set_trace()
-        for key, v in settings_mpileup:
-            arguments_mpileup.append(Arg(key, v))
-
-        arguments_mpileup.append(Arg('-d', d))
-        arguments_mpileup.append(Arg('-m', m_pileup))
-        arguments_mpileup.append(Arg('--threads', threads))
-
-        for a in annots:
-            arguments_mpileup.append(Arg('-a', a))
-
+        for k, v in self.settings.items("mpileup_opts"):
+            mpileup_args_l.append(Arg(k, v))
 
         if r is not None:
             region_str = re.sub(':|-', '_', r)
             outprefix += ".{0}".format(region_str)
-            arguments_mpileup.append(Arg('-r', r))
+            mpileup_args_l.append(Arg('-r', r))
 
-        pdb.set_trace()
-        params_mpileup = []
-        if self.settings.has_option('bcftools', 'E'):
-            if self.settings.getboolean('bcftools', 'E') is True:
-                params_mpileup.append('-E')
+        mpileup_params_l = []
+        for i in self.settings['mpileup_flags'].keys():
+            if self.settings['mpileup_flags'][i] is None:
+                mpileup_params_l.append(i)
 
-        if self.settings.has_option('bcftools', 'p'):
-            if self.settings.getboolean('bcftools', 'E') is True:
-                params_mpileup.append('-E')
-        if p is True:
-            params_mpileup.append('-p')
+        # add also the BAM file
+        mpileup_params_l.append(self.bam)
 
-        params_mpileup.append(self.bam)
-        params_call = []
-        if m_call is True:
-            params_call.append('-m')
-        if v is True:
-            params_call.append('-v')
-
-        arguments_call = []
-        arguments_call.append(Arg('-O', O))
-        arguments_call.append(Arg('--ploidy', ploidy))
-        if S is not None:
-            arguments_call.append(Arg('-S', S))
+        # call
+        call_args_l = []
+        for k, v in self.settings.items("call_opts"):
+            call_args_l.append(Arg(k, v))
 
         outprefix += ".vcf.gz"
-        arguments_call.append(Arg('-o', outprefix))
+        call_args_l.append(Arg('-o', outprefix))
+
+        call_params_l = []
+        for i in self.settings['call_flags'].keys():
+            if self.settings['call_flags'][i] is None:
+                call_params_l.append(i)
 
         pipelist = None
         bcftools_callRunner = RunProgram(program='bcftools call',
-                                         args=arguments_call,
-                                         parameters=params_call)
+                                         args=call_args_l,
+                                         parameters=call_params_l)
         pipelist = [bcftools_callRunner]
 
         runner = RunProgram(program='bcftools mpileup',
-                            args=arguments_mpileup,
-                            parameters=params_mpileup,
+                            args=mpileup_args_l,
+                            parameters=mpileup_params_l,
                             downpipe=pipelist)
 
         if verbose is True:

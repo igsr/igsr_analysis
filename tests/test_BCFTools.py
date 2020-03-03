@@ -1,6 +1,7 @@
 import os
 import glob
 import pytest
+import pdb
 
 from VariantCalling import BCFTools
 
@@ -9,7 +10,6 @@ from VariantCalling import BCFTools
 @pytest.fixture
 def bcftools_object(supply_bam_file, supply_reference_file, supply_settings_file):
     '''Returns a BCFTools object'''
-
     bcftools_object = BCFTools(bam=supply_bam_file,
                                reference=supply_reference_file,
                                settings=supply_settings_file)
@@ -29,13 +29,7 @@ def test_run_bcftools(bcftools_object, clean_tmp):
     Test function to run BCFTools on a BAM file in order to call variants
     '''
 
-    annots = ['DP', 'SP', 'AD']
-
-    outfile = bcftools_object.run_bcftools(outprefix='data/outdir/test',
-                                           annots=annots,
-                                           m_pileup=3,
-                                           m_call=True,
-                                           v=True)
+    outfile = bcftools_object.run_bcftools(outprefix='data/outdir/test')
 
     assert os.path.isfile(outfile) is True
 """
