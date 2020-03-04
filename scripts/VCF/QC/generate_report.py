@@ -69,8 +69,6 @@ class BcftoolsStats(object):
     def __repr__(self):
         return self.__str__()
 
-
-
 def parse_stats_file(f):
     '''
     Function to parse a stats file
@@ -117,7 +115,7 @@ with open(args.dirf) as f:
         print("Processing: {0}".format(dir))
         m = p.match(dir)
         if m:
-            chr=m.group(1)
+            chrom=m.group(1)
             numbers=dict()
             res=None # this will be a list with stats for each results_chr*
             # append 'highconf' or 'all' files to res
@@ -129,22 +127,25 @@ with open(args.dirf) as f:
                 raise Exception("Value not recognised for subset argument: {0}".format(args.subset))
 
             for f in res:
-                 type=os.path.basename(f).split(".")[0] # what type of file is this? TP or FP or FN
-                 bcfobj=parse_stats_file(f) # parse this stats file
-                 sum_dict=bcfobj.summary_numbers
-                 # numbers dict will have the number of variants
-                 # for a certain type (TP, FP)
-                 if args.vt=='snps':
-                     numbers[type]=sum_dict['number of SNPs:']
-                 elif args.vt=='indels':
-                     numbers[type] = sum_dict['number of indels:']
-            
-                 chr_stripped=None
-                 if m.group(1)=='X' or m.group(1)=='chrX':
-                     chr=chr.replace("chrX","chr23")
-                 chr_stripped=int(chr.replace("chr",""))
-                 chr_stripped=int(chr_stripped)
-                 data[dirpath][chr_stripped]=numbers
+                type = os.path.basename(f).split(".")[0] # what type of file is this? TP or FP or FN
+                bcfobj = parse_stats_file(f) # parse this stats file
+                sum_dict = bcfobj.summary_numbers
+                # numbers dict will have the number of variants
+                # for a certain type (TP, FP)
+                if args.vt == 'snps':
+                    numbers[type] = sum_dict['number of SNPs:']
+                elif args.vt == 'indels':
+                    numbers[type] = sum_dict['number of indels:']
+                chr_stripped1 = None
+                chr_stripped2 = None
+                if m.group(1) == 'X' or m.group(1) == 'chrX':
+                    chrom = chrom.replace("chrX","chr23")
+                chr_stripped1 = chrom.replace("chr","")
+                if chr_stripped1 != 'All':
+                    chr_stripped2 = int(chr_stripped1)
+                else:
+                    chr_stripped2 = chr_stripped1
+                data[dirpath][chr_stripped2] = numbers
         else:
             raise Exception('No chromosome was fetched from dir name')
 
