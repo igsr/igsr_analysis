@@ -64,15 +64,10 @@ class BCFTools(object):
 
         '''
 
-        pdb.set_trace()
-
         Arg = namedtuple('Argument', 'option value')
 
         # mpileup
         mpileup_args_l = [Arg('-f', self.reference)]
-
-        for a in self.settings.get('mpileup_opts', 'annots'):
-            pdb.set_trace()
 
         for k, v in self.settings.items("mpileup_opts"):
             mpileup_args_l.append(Arg(k, v))
@@ -113,7 +108,7 @@ class BCFTools(object):
                             args=mpileup_args_l,
                             parameters=mpileup_params_l,
                             downpipe=pipelist)
-
+        pdb.set_trace()
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
 
