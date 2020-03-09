@@ -64,7 +64,6 @@ class RunProgram(object):
 
     def create_command_line(self):
         """
-
         :return:
         """
         if self.path is not None:
