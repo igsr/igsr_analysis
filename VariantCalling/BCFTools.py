@@ -14,19 +14,27 @@ from configparser import ConfigParser
 class BCFTools(object):
     '''
     Class to run the BCFTools variant caller
+
+    Class Variables
+    ---------------
+    settings : ConfigParser, Required
+               Object with configuration settings
+               relevant for this class
+    reference : Fasta file containing the reference
+                used for alignment
     '''
 
-    def __init__(self, bam, reference, settings):
+    def __init__(self, bam, reference_f, settingf):
         '''
         Constructor
 
-        Class variables
-        ---------------
+        Instance variables
+        ------------------
         bam : str, Required
              Path to BAM file used for the variant calling process
-        reference : str, Required
+        reference_f : str, Required
              Path to Fasta file containing the reference
-        settings : str, Required
+        settingf : str, Required
                    Path to .ini file with settings
         '''
 
@@ -34,13 +42,13 @@ class BCFTools(object):
             raise Exception("BAM file does not exist")
 
         self.bam = bam
-        self.reference = reference
+        self.reference = reference_f
 
         # parse settings file (in .ini file)
         parser = ConfigParser(allow_no_value=True)
         parser.optionxform = str
 
-        parser.read(settings)
+        parser.read(settingf)
         self.settings = parser
 
     def run_bcftools(self, outprefix, r=None, verbose=True):

@@ -7,22 +7,33 @@ Created on 03 May 2018
 import subprocess
 import re
 import os
+from configparser import ConfigParser
 
 
 class RunProgram(object):
     """
     SuperClass used to run an external program within a Python script
+
+    Class Variables
+    ---------------
+    settings : ConfigParser, Required
+               Object with configuration settings
+               relevant for this class
     """
 
-    def __init__(self, program=None, path=None, args=None, arg_sep=None, parameters=None,
-                 cmd_line=None, downpipe=None, log_name=None, log_file=None):
+    def __init__(self, program, settingf, use_docker=False, path=None, args=None,
+                 arg_sep=None, parameters=None, cmd_line=None, downpipe=None):
         """
         Constructor
 
-        Parameters
-        ----------
-        program : str
+        Instance Variables
+        ------------------
+        program : str, Required
                   Program to be run
+        settingf : str, Required
+                   Path to .ini file with settings
+        use_docker : Bool, Optional
+                     Use docker containter for running this command. Default: False
         path : str, optional
                Folder containing the 'program'
         args : list, optional
@@ -39,14 +50,11 @@ class RunProgram(object):
         downpipe: list, optional
                   List of RunProgram objects that will be executed in a pipe after
                   self.program has been executed
-        log_name: str, optional
-                  Name of the logger
-        log_file: filename, optional
-                  Path to the file that will be used by the logging library
         """
-
+        pdb.set_trace()
         self.cmd_line = cmd_line
         self.program = program
+        self.use_docker = use_docker
         if self.program is None and self.cmd_line is None:
             raise ValueError("Parameter 'cmd_line' or 'program' must be provided.")
 
@@ -55,8 +63,13 @@ class RunProgram(object):
         self.arg_sep = arg_sep if arg_sep is not None else ' '
         self.parameters = parameters
         self.downpipe = downpipe
-        self.log_name = log_name
-        self.log_file = log_file
+
+        # parse settings file (in .ini file)
+        parser = ConfigParser(allow_no_value=True)
+        parser.optionxform = str
+
+        parser.read(settingf)
+        self.settings = parser
 
         # create the command line if is None
         if self.cmd_line is None:
@@ -64,8 +77,12 @@ class RunProgram(object):
 
     def create_command_line(self):
         """
-        :return:
+        :returns
+        str, cmd line
         """
+        assert self.path is not None and self.use_docker is True, "Conflicting instructions, " \
+                                                                  "do not know if use local" \
+                                                                  " dependency or container"
         if self.path is not None:
             cmd_line = [os.path.join(self.path, self.program)]
         else:
@@ -100,8 +117,9 @@ class RunProgram(object):
         tuple
              A tuple containing the STDOUT and STDERR from this program
         """
-
-        log_f = open(self.log_file, 'w') if self.log_file is not None else None
+        log_f = None
+        if self.settings.has_option('run_program', 'log_file'):
+            log_f = open(self.settings.get('run_program', 'log_file'), 'w')
 
         # execute cmd_line
         p = subprocess.Popen(self.cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, bufsize=256,

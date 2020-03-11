@@ -1,5 +1,6 @@
 import unittest
 import pytest
+import pdb
 
 from Utils import RunProgram
 
@@ -44,8 +45,16 @@ def test_run_inapipe():
 
     stdout = runner.run_checkoutput()
 
-    assert stdout.decode("utf-8") == '67\n'
+    assert stdout.decode("utf-8").replace(' ', '') == '67\n'
 
+def test_raises_Excp1():
+    """
+    This test returns exception because of conflicting instructions on how to use
+    the dependency. self.path and self.use_docker=True are mutually conflict
+    """
+ #   with pytest.raises(Exception) as e_info:
+    pdb.set_trace()
+    runner = RunProgram(program='cat', path='~/bin', use_docker=True)
 
 class TestRunProgramInit(unittest.TestCase):
     def test_error_on_no_cmdline_or_program(self):
