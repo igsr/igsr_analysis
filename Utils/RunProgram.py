@@ -7,6 +7,7 @@ Created on 03 May 2018
 import subprocess
 import re
 import os
+import pdb
 from configparser import ConfigParser
 
 
@@ -51,7 +52,6 @@ class RunProgram(object):
                   List of RunProgram objects that will be executed in a pipe after
                   self.program has been executed
         """
-        pdb.set_trace()
         self.cmd_line = cmd_line
         self.program = program
         self.use_docker = use_docker
@@ -80,13 +80,20 @@ class RunProgram(object):
         :returns
         str, cmd line
         """
-        assert self.path is not None and self.use_docker is True, "Conflicting instructions, " \
-                                                                  "do not know if use local" \
-                                                                  " dependency or container"
+
+        if self.path is not None and self.use_docker is True:
+            raise Exception("Conflicting instructions do not know if use local "
+                            "dependency or container")
+
         if self.path is not None:
             cmd_line = [os.path.join(self.path, self.program)]
         else:
-            cmd_line = [self.program]
+            if self.use_docker is True:
+                cmd_line = "{0} {1} {2}".format(self.settings.get('docker', 'prefix'),
+                                                self.settings.get('docker', 'img'),
+                                                self.program)
+            else:
+                cmd_line = [self.program]
 
         # construct the command line
         if self.args is not None:

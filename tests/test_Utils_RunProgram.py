@@ -52,9 +52,9 @@ def test_raises_Excp1():
     This test returns exception because of conflicting instructions on how to use
     the dependency. self.path and self.use_docker=True are mutually conflict
     """
- #   with pytest.raises(Exception) as e_info:
-    pdb.set_trace()
-    runner = RunProgram(program='cat', path='~/bin', use_docker=True)
+    with pytest.raises(Exception) as e_info:
+        runner = RunProgram(program='cat', settingf='./data/settings.ini',
+                            use_docker=True, path='~/bin')
 
 class TestRunProgramInit(unittest.TestCase):
     def test_error_on_no_cmdline_or_program(self):
