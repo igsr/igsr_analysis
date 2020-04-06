@@ -50,6 +50,7 @@ class BCFTools(object):
 
         parser.read(settingf)
         self.settings = parser
+        self.settingf = settingf
 
     def run_bcftools(self, outprefix, r=None, verbose=True):
         '''
@@ -109,12 +110,18 @@ class BCFTools(object):
         pipelist = None
         bcftools_callRunner = RunProgram(program='bcftools call',
                                          args=call_args_l,
-                                         parameters=call_params_l)
+                                         parameters=call_params_l,
+                                         settingf=self.settingf,
+                                         use_docker=self.settings.getboolean('run_program',
+                                                                             'use_docker'))
         pipelist = [bcftools_callRunner]
 
         runner = RunProgram(program='bcftools mpileup',
                             args=mpileup_args_l,
                             parameters=mpileup_params_l,
+                            settingf=self.settingf,
+                            use_docker=self.settings.getboolean('run_program',
+                                                                'use_docker'),
                             downpipe=pipelist)
         pdb.set_trace()
         if verbose is True:

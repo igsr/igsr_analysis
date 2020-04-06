@@ -11,8 +11,8 @@ from VariantCalling import BCFTools
 def bcftools_object(supply_bam_file, supply_reference_file, supply_settings_file):
     '''Returns a BCFTools object'''
     bcftools_object = BCFTools(bam=supply_bam_file,
-                               reference=supply_reference_file,
-                               settings=supply_settings_file)
+                               reference_f=supply_reference_file,
+                               settingf=supply_settings_file)
 
     return bcftools_object
 

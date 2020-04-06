@@ -1,0 +1,1 @@
+ docker run --volume $HOME:$HOME --workdir $PWD elowy01/igsr_analysis bcftools mpileup -f data/exampleFASTA.fasta -P ILLUMINA -F 0.002 -C 50 -d 250 -m 1 -a DP,SP,AD -E -p data/exampleBAM.bam | docker run --volume $HOME:$HOME --workdir $PWD elowy01/igsr_analysis bcftools call -O z --ploidy GRCh38 --threads 1 -o data/outdir/test.vcf.gz -m -v

@@ -4,7 +4,6 @@ import pdb
 
 from Utils import RunProgram
 
-
 # test_Utils_RunProgram.py
 
 def test_run_program_withoneparam():
@@ -20,7 +19,6 @@ def test_run_program_withoneparam():
 
     assert stdout.decode("utf-8") == "hello\n"
 
-
 def test_run_program_withstderr():
     """
     Test function for the 'run' method
@@ -32,7 +30,6 @@ def test_run_program_withstderr():
 
     with pytest.raises(Exception):
         runner.run_checkoutput()
-
 
 def test_run_inapipe():
     """
@@ -56,12 +53,60 @@ def test_raises_Excp1():
         runner = RunProgram(program='cat', settingf='./data/settings.ini',
                             use_docker=True, path='~/bin')
 
+def test_run_program_w_docker():
+    """
+    Test to run a containerized application (BCFTools in this case)
+    """
+    runner = RunProgram(program='bcftools',
+                        parameters=['--version-only'],
+                        settingf='./data/settings.ini',
+                        use_docker=True)
+
+    stdout = runner.run_checkoutput()
+    stdout_str = stdout.decode("utf-8").rstrip("\n")
+    # check output of running bcftools --version-only
+    assert '1.9+htslib-1.9' == '1.9+htslib-1.9'
+
+def test_run_program_w_docker1():
+    """
+    Test to run a containerized application (BCFTools in this case)
+    with an argument
+    """
+    runner = RunProgram(program='bcftools',
+                        parameters=['view', '-h', 'data/GLs.HG00136.correct.chr22:20000085-20010512.beagle.vcf.gz'],
+                        settingf='./data/settings.ini',
+                        use_docker=True)
+
+    stdout = runner.run_checkoutput()
+    stdout_str = stdout.decode("utf-8").split("\n")[0]
+    assert '##fileformat=VCFv4.2' == stdout_str
+
+def test_run_program_w_docker2():
+    """
+    Test to run 2 containerized applications (BCFTools in this case)
+    in a pipe
+    """
+    runner2 = RunProgram(program='bcftools',
+                         parameters=['view', '-H'],
+                         settingf='./data/settings.ini')
+
+    pipelist = [runner2]
+
+    runner1 = RunProgram(program='bcftools',
+                         parameters=['view', 'data/GLs.HG00136.correct.chr22:20000085-20010512.beagle.vcf.gz'],
+                         settingf='./data/settings.ini',
+                         downpipe=pipelist,
+                         use_docker=True)
+
+    stdout = runner1.run_checkoutput()
+    stdout_str = stdout.decode("utf-8").split("\n")[0]
+    assert '22\t20000086\trs138720731\tT\tC\t.\tPASS\tAR2=0;DR2=0;AF=0\tGT:DS:GP\t0/0:0:1,0,0' == stdout_str
+
 class TestRunProgramInit(unittest.TestCase):
     def test_error_on_no_cmdline_or_program(self):
         with self.assertRaisesRegex(ValueError, "Parameter 'cmd_line'"
                                                 " or 'program' must be provided."):
             RunProgram(program=None, cmd_line=None)
-
 
 class TestRunProgramCreateCommandLine(unittest.TestCase):
     def test_command_line_formation_w_program(self):

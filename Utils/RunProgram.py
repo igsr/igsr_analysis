@@ -77,7 +77,11 @@ class RunProgram(object):
 
     def create_command_line(self):
         """
-        :returns
+        Function to create the command line
+        that will be executed
+
+        Returns
+        -------
         str, cmd line
         """
 
@@ -88,12 +92,7 @@ class RunProgram(object):
         if self.path is not None:
             cmd_line = [os.path.join(self.path, self.program)]
         else:
-            if self.use_docker is True:
-                cmd_line = "{0} {1} {2}".format(self.settings.get('docker', 'prefix'),
-                                                self.settings.get('docker', 'img'),
-                                                self.program)
-            else:
-                cmd_line = [self.program]
+            cmd_line = [self.program]
 
         # construct the command line
         if self.args is not None:
@@ -106,7 +105,12 @@ class RunProgram(object):
         if self.downpipe is not None:
             cmd_line.append(' '.join(["| {0}".format(runO.cmd_line) for runO in self.downpipe]))
 
-        return ' '.join(cmd_line)
+        cmd_line = ' '.join(cmd_line)
+        if self.use_docker is True:
+            cmd_line = "{0} {1} /bin/bash -c \"{2}\"".format(self.settings.get('docker', 'prefix'),
+                                                             self.settings.get('docker', 'img'),
+                                                             cmd_line)
+        return cmd_line
 
 
     def run_popen(self, raise_exc=True):
@@ -175,3 +179,14 @@ class RunProgram(object):
             raise
 
         return stdout
+
+    def __str__(self):
+        sb = []
+        for key in self.__dict__:
+            sb.append("{key}='{value}'".format(key=key,
+                                               value=self.__dict__[key]))
+
+        return ', '.join(sb)
+
+    def __repr__(self):
+        return self.__str__()
