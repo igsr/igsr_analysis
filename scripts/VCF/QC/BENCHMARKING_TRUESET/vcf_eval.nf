@@ -12,7 +12,6 @@
 // params defaults
 params.help = false
 params.calc_gtps = false
-params.queue = 'production-rh74'
 
 //print usage
 if (params.help) {
@@ -52,14 +51,10 @@ process excludeNonVariants {
         */
 
         memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
         cpus 1
 
         output:
         file 'out.sites.vcf.gz' into out_sites_vcf
-        when:
-        !params.non_valid_regions
 
         """
         bcftools view -m2 -M2 -c1 ${params.vcf} -f ${params.filt_str} -r ${params.chros} -o out.sites.vcf.gz -Oz
@@ -73,9 +68,10 @@ process excludeNonValid {
         */
 
         memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
         cpus 1
+
+	input:
+	file out_sites_vcf
 
         output:
         file 'out.sites.nonvalid.vcf.gz' into out_sites_nonvalid_vcf
@@ -83,7 +79,7 @@ process excludeNonValid {
         params.non_valid_regions
 
         """
-        bcftools view -T ^${params.non_valid_regions} -m2 -M2 -c1 ${params.vcf} -f.,PASS -r ${params.chros} -o out.sites.nonvalid.vcf.gz -Oz
+        bcftools view -T ^${params.non_valid_regions} ${out_sites_vcf} -o out.sites.nonvalid.vcf.gz -Oz
         tabix out.sites.nonvalid.vcf.gz
         """
 }
@@ -94,8 +90,6 @@ process selectVariants {
 	*/
 
 	memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
         cpus 1
 
 	input:
@@ -115,8 +109,6 @@ process intersecionCallSets {
 	*/
 
 	memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
         cpus 1
 
 	input:
@@ -127,7 +119,7 @@ process intersecionCallSets {
 
 	"""
 	tabix ${out_sites_vt}
-	bcftools isec -c ${params.vt} -p 'dir/' ${out_sites_vt} ${params.true}
+	bcftools isec -c ${params.vt} -r ${params.chros} -p 'dir/' ${out_sites_vt} ${params.true}
 	"""
 }
 
@@ -139,8 +131,6 @@ process compressIntersected {
 	publishDir 'results_'+params.chros, mode: 'copy', overwrite: true
 
 	memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
         cpus 1
 
 	input:
@@ -177,8 +167,6 @@ process selectInHighConf {
 	publishDir 'results_'+params.chros, mode: 'copy', overwrite: true
 	
 	memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
         cpus 1
 
 	input:
@@ -229,8 +217,6 @@ if (params.calc_gtps==true) {
 	   publishDir 'results_'+params.chros, mode: 'copy', overwrite: true
 
 	   memory '500 MB'
-           executor 'lsf'
-           queue "${params.queue}"
            cpus 1
 
 	   input:

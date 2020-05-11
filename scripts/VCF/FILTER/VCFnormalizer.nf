@@ -48,7 +48,7 @@ process split_multiallelic {
         */
 
         memory '2 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -70,7 +70,7 @@ process allelic_primitives {
         */
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -92,7 +92,7 @@ process select_variants {
         */
 
         memory '500 MB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
 
@@ -117,7 +117,7 @@ process run_bcftools_sort {
         */
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 
@@ -128,7 +128,8 @@ process run_bcftools_sort {
         file "${params.outprefix}.sort.vcf.gz" into out_sort
 
         """
-	bcftools sort -T ${params.tmpdir} ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
+	mkdir tmpdir
+	bcftools sort -T tmpdir ${out_vts} -o ${params.outprefix}.sort.vcf.gz -Oz
         """
 }
 
@@ -142,7 +143,7 @@ process run_vt_uniq {
         */
 
         memory '9 GB'
-        executor 'local'
+        executor 'lsf'
         queue "${params.queue}"
         cpus 1
 

@@ -30,7 +30,7 @@ if (params.help) {
     log.info 'Options:'
     log.info '  --help  Show this message and exit.'
     log.info '  --dir DIR  VCF files in a folder.'
-    log.info '  --outdir DIR   o put *.tbi files.'
+    log.info '  --outdir DIR   Where to put the *.tbi files.'
     log.info '  -with-singularity FILE Name of the Singularity image (i.e. variant_filtering.simg).'
     log.info ''
     exit 1

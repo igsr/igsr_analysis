@@ -25,12 +25,13 @@ if (params.help) {
     log.info '---------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow split_into_chros.nf --vcf callset.vcf.gz --chros chr1,chr2 --prefix callset'
+    log.info '    nextflow split_into_chros.nf --vcf callset.vcf.gz --chros chr1,chr2 --prefix callset --outdir dirname'
     log.info ''
     log.info 'Options:'
     log.info '  --help  Show this message and exit.'
     log.info '  --vcf VCF	VCF that will be splited.'
     log.info '	--prefix PREFIX		  String used for output files.'
+    log.info '  --outdir DIRNAME          Namd of output dir.'
     log.info '  --chros LIST_OF_CHROS	  List of chromosome-VCFs to generate.'
     log.info ''
     exit 1
@@ -50,7 +51,7 @@ process splitVCF {
 		1) A VCF format file for each splitted chromosome
 		2) A tabix index for that VCF
 	*/
-	publishDir 'final_dir', mode: 'move'
+	publishDir "${params.outdir}", mode: 'move'
 
 	memory '1 GB'
         executor 'lsf'

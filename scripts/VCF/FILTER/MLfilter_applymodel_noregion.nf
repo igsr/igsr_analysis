@@ -21,7 +21,7 @@ if (params.help) {
     log.info '-----------------------------------------------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow MLfilter_applymodel.nf --vcf VCF --model MODEL.sav --cutoff 0.95 --threads 5 --vt snps'
+    log.info '    nextflow MLfilter_applymodel.nf --vcf VCF --model MODEL.sav --cutoff 0.95 --threads 5 --vt snps --prefix achr'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
@@ -30,6 +30,7 @@ if (params.help) {
     log.info '  --cutoff FLOAT/FLOATs Cutoff value used in the filtering. It also accepts comma-separated list of floats: 0.95,0.96'
     log.info '  --annotations ANNOTATION_STRING String containing the annotations to filter, for example:'
     log.info '    %CHROM\t%POS\t%INFO/DP\t%INFO/RPB\t%INFO/MQB\t%INFO/BQB\t%INFO/MQSB\t%INFO/SGB\t%INFO/MQ0F\t%INFO/ICB\t%INFO/HOB\t%INFO/MQ\n.'
+    log.info '  --prefix STR  results${params.prefix} used to put the VCFs in\n.'
     log.info '  --vt  VARIANT_TYPE   Type of variant to filter. Poss1ible values are 'snps'/'indels'.'
     log.info '  --threads INT Number of threads used in the different BCFTools processes. Default=1.'
     log.info ''
@@ -119,13 +120,10 @@ process split_multiallelic {
         Path to splitted VCF
         */
 
-        memory { 5.GB * task.attempt }
+        memory '50 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
-
-	errorStrategy 'retry'
-        maxRetries 5
 
 	input:
 	file unfilt_vcf_reheaded
@@ -147,10 +145,13 @@ process allelic_primitives {
         Path to decomposed VCF
         */
 
-        memory '9 GB'
+       	memory { 50.GB * task.attempt }
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+
+	errorStrategy 'retry'
+        maxRetries 5
 
         input:
 	file out_splitted from out_splitted
@@ -169,7 +170,7 @@ process sort_out_decomp {
 	Process to bcftools sort the 'out_decomp'
 	*/
 
-	memory '9 GB'
+	memory '15 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
@@ -266,7 +267,7 @@ process get_variant_annotations {
 	Process to get the variant annotations for the selected ${params.vt} from the unfiltered VCF file
 	*/
 	
-	memory '2 GB'
+	memory '8 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
@@ -363,7 +364,7 @@ process reannotate_vcf {
         errorStrategy 'retry'
         maxRetries 5
 
-	publishDir "results_filtered", mode: 'copy', overwrite: true
+	publishDir "results_${params.prefix}", mode: 'copy', overwrite: true
 
 	exec:
 	def selected
