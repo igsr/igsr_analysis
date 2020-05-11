@@ -109,7 +109,8 @@ data = dict()
 
 with open(args.dirf) as f:
  for dirpath in f:
-     dirpath=dirpath.rstrip("\n")
+     dirpath = dirpath.rstrip("\n")
+     assert os.path.isdir(dirpath), "Dir '{0}' does not exist".format(dirpath)
      data[dirpath]={}
      for dir in glob.glob(dirpath+"/results_*"):
         print("Processing: {0}".format(dir))
@@ -140,6 +141,7 @@ with open(args.dirf) as f:
                 chr_stripped2 = None
                 if m.group(1) == 'X' or m.group(1) == 'chrX':
                     chrom = chrom.replace("chrX","chr23")
+                    chrom = chrom.replace("X","chr23")
                 chr_stripped1 = chrom.replace("chr","")
                 if chr_stripped1 != 'All':
                     chr_stripped2 = int(chr_stripped1)

@@ -168,10 +168,13 @@ process allelic_primitives {
         Path to decomposed VCF
         */
 
-        memory '9 GB'
+	memory { 8.GB * task.attempt }
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
+
+        errorStrategy 'retry'
+        maxRetries 5
 
         input:
 	file out_splitted from out_splitted

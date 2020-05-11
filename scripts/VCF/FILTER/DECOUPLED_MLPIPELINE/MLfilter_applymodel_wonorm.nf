@@ -21,7 +21,7 @@ if (params.help) {
     log.info '-----------------------------------------------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow MLfilter_applymodel.nf --vcf VCF --model MODEL.sav --cutoff 0.95 --threads 5 --vt snps --prefix achr'
+    log.info '    nextflow MLfilter_applymodel_wonorm.nf --vcf VCF --model MODEL.sav --cutoff 0.95 --threads 5 --vt snps --prefix achr'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
@@ -41,151 +41,6 @@ log.info 'Starting the analysis.....'
 
 //Apply a fitted model obtained after running MLfilter_trainmodel.nf
 
-process get_header {
-        /*
-        Process to get the header of the unfiltered VCF
-        */
-
-        memory '500 MB'
-        executor 'local'
-        queue "${params.queue}"
-        cpus 1
-
-        output:
-        file 'header.txt' into header
-
-        """
-        bcftools view -h ${params.vcf} > header.txt
-        """
-}
-
-process modify_header {
-        /*
-        Process to modify the header of the unfiltered VCF
-        */
-
-        memory '500 MB'
-        executor 'local'
-        queue "${params.queue}"
-        cpus 1
-
-        input:
-        file header
-
-        output:
-        file 'newheader.txt' into newheader
-
-        """
-        #!/usr/bin/env python
-
-        from VCF.VcfUtils import VcfUtils
-
-        vcf_object=VcfUtils(vcf='${params.vcf}')
-
-        vcf_object.add_to_header(header_f='${header}', outfilename='newheader1.txt',
-                                 line_ann='##FILTER=<ID=MLFILT,Description="Binary classifier filter">')
-        vcf_object.add_to_header(header_f='newheader1.txt', outfilename='newheader.txt',
-                                 line_ann='##INFO=<ID=prob_TP,Number=1,Type=Float,Description="Probability of being a True positive">')
-        """
-}
-
-process replace_header {
-        /*
-        Process to replace header in the unfiltered VCF
-        */
-
-        memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
-        cpus 1
-
-        input:
-        file newheader
-
-        output:
-        file 'unfilt_reheaded.vcf.gz' into unfilt_vcf_reheaded
-
-        """
-        bcftools reheader -h ${newheader} -o 'unfilt_reheaded.vcf.gz' ${params.vcf}
-        """
-}
-
-// normalize vcf
-
-process split_multiallelic {
-        /*
-        This process will split the multiallelic variants by using BCFTools
-        Returns
-        -------
-        Path to splitted VCF
-        */
-
-        memory '50 GB'
-        executor 'lsf'
-        queue "${params.queue}"
-        cpus "${params.threads}"
-
-	input:
-	file unfilt_vcf_reheaded
-
-        output:
-        file "out.splitted.vcf.gz" into out_splitted
-
-        """
-        bcftools norm -m -any ${unfilt_vcf_reheaded} -o out.splitted.vcf.gz -Oz --threads ${params.threads}
-        """
-}
-
-process allelic_primitives {
-        /*
-        Process to run vcflib vcfallelicprimitives to decompose of MNPs
-
-        Returns
-        -------
-        Path to decomposed VCF
-        */
-
-       	memory { 50.GB * task.attempt }
-        executor 'lsf'
-        queue "${params.queue}"
-        cpus 1
-
-	errorStrategy 'retry'
-        maxRetries 5
-
-        input:
-	file out_splitted from out_splitted
-
-        output:
-        file "out.splitted.decomp.vcf.gz" into out_decomp
-
-        """
-        tabix -f ${out_splitted}
-        vcfallelicprimitives -k -g ${out_splitted} |bgzip -c > out.splitted.decomp.vcf.gz
-        """
-}
-
-process sort_out_decomp {
-	/*
-	Process to bcftools sort the 'out_decomp'
-	*/
-
-	memory '15 GB'
-        executor 'lsf'
-        queue "${params.queue}"
-        cpus 1
-
-	input:
-	file out_decomp
-
-	output:
-	file "out.splitted.decomp.sorted.vcf.gz" into out_decomp_sorted
-	
-	"""
-	mkdir -p tmpdir
-        bcftools sort -T tmpdir/ ${out_decomp} -o out.splitted.decomp.sorted.vcf.gz -Oz
-	"""
-}
 
 process select_variants {
         /*
@@ -197,17 +52,14 @@ process select_variants {
         queue "${params.queue}"
         cpus "${params.threads}"
 
-        input:
-        file out_decomp_sorted
-
         output:
 	set file("out.snps.gtps.vcf.gz"), file("out.indels.gtps.vcf.gz") into gtps_vts
         file "out.${params.vt}.vcf.gz" into no_gtps_vts
 
         """
-	bcftools view -v snps ${out_decomp_sorted} -o out.snps.gtps.vcf.gz --threads ${params.threads} -Oz
-        bcftools view -v indels ${out_decomp_sorted} -o out.indels.gtps.vcf.gz --threads ${params.threads} -Oz
-	bcftools view -G -v ${params.vt} ${out_decomp_sorted} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
+	bcftools view -v snps ${params.vcf} -o out.snps.gtps.vcf.gz --threads ${params.threads} -Oz
+        bcftools view -v indels ${params.vcf} -o out.indels.gtps.vcf.gz --threads ${params.threads} -Oz
+	bcftools view -G -v ${params.vt} ${params.vcf} -o out.${params.vt}.vcf.gz -O z --threads ${params.threads}
         """	 
 }
 
@@ -219,7 +71,7 @@ process run_vt_uniq {
         Path to final normalized file
         */
 
-        memory '9 GB'
+        memory '20 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus 1
@@ -244,7 +96,7 @@ process excludeNonVariants {
         Path to a site-VCF file containing just the variants on a particular chromosome
         */
 
-        memory '500 MB'
+        memory '2 GB'
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
@@ -356,7 +208,7 @@ process reannotate_vcf {
 	*/
 	tag "reannotate_vcf with $cutoff"
 
-	memory { 8.GB * task.attempt }
+	memory { 20.GB * task.attempt }
         executor 'lsf'
         queue "${params.queue}"
         cpus "${params.threads}"
@@ -364,7 +216,7 @@ process reannotate_vcf {
         errorStrategy 'retry'
         maxRetries 5
 
-	publishDir "results_${params.prefix}", mode: 'copy', overwrite: true
+	publishDir "results_${params.prefix}"
 
 	exec:
 	def selected

@@ -1,0 +1,75 @@
+Apr-07 16:42:15.733 [main] DEBUG nextflow.cli.Launcher - $> nextflow run MLfilter_normalize.nf --vcf /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/data/filt_0_1.NA12878.onlyvts.vcf.gz --prefix chr1_out -with-singularity /hps/nobackup/production/reseq-info/ernesto/GGVP/FILTERING/BCFTOOLS/variant_filtering.simg
+Apr-07 16:42:16.325 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 19.10.0
+Apr-07 16:42:16.426 [main] INFO  nextflow.cli.CmdRun - Launching `MLfilter_normalize.nf` [condescending_albattani] - revision: dcc1d5e225
+Apr-07 16:42:16.823 [main] DEBUG nextflow.config.ConfigBuilder - Enabling execution in Singularity container as requested by cli option `-with-singularity null`
+Apr-07 16:42:17.214 [main] DEBUG nextflow.extension.OperatorEx - Dataflow extension methods: branch,buffer,chain,choice,collate,collect,collectFile,combine,concat,count,countBy,countFasta,countFastq,countLines,countText,cross,distinct,filter,first,flatMap,flatten,fork,groupBy,groupTuple,ifEmpty,into,join,last,map,max,mean,merge,min,mix,phase,print,println,randomSample,reduce,separate,set,splitCsv,splitFasta,splitFastq,splitText,spread,subscribe,sum,take,tap,toDouble,toFloat,toInteger,toList,toLong,toSortedList,transpose,unique,until,view
+Apr-07 16:42:17.315 [main] DEBUG nextflow.Session - Session uuid: 86c2c3fe-82aa-4bb8-acc6-28c729a9bf8a
+Apr-07 16:42:17.315 [main] DEBUG nextflow.Session - Run name: condescending_albattani
+Apr-07 16:42:17.317 [main] DEBUG nextflow.Session - Executor pool size: 80
+Apr-07 16:42:17.418 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 19.10.0 build 5170
+  Created: 21-10-2019 15:07 UTC (16:07 BST)
+  System: Linux 3.10.0-693.5.2.el7.x86_64
+  Runtime: Groovy 2.5.8 on OpenJDK 64-Bit Server VM 1.8.0_161-b14
+  Encoding: UTF-8 (UTF-8)
+  Process: 357991@noah-login-01.ebi.ac.uk [10.7.95.60]
+  CPUs: 80 - Mem: 250.2 GB (10.1 GB) - Swap: 7.8 GB (7.3 GB)
+Apr-07 16:42:17.726 [main] DEBUG nextflow.Session - Work-dir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work [nfs]
+Apr-07 16:42:17.727 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/bin
+Apr-07 16:42:17.820 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Apr-07 16:42:17.822 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Apr-07 16:42:21.115 [main] DEBUG nextflow.Session - Session start invoked
+Apr-07 16:42:22.916 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Apr-07 16:42:22.929 [main] INFO  nextflow.Nextflow - Starting the analysis.....
+Apr-07 16:42:23.516 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Apr-07 16:42:23.517 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Apr-07 16:42:23.614 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Apr-07 16:42:23.619 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=80; memory=250.2 GB; capacity=80; pollInterval=100ms; dumpInterval=5m
+Apr-07 16:42:24.419 [main] DEBUG nextflow.processor.TaskProcessor - Creating operator > get_header -- maxForks: 80
+Apr-07 16:42:24.914 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: local
+Apr-07 16:42:24.914 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Apr-07 16:42:24.917 [main] DEBUG nextflow.processor.TaskProcessor - Creating operator > modify_header -- maxForks: 80
+Apr-07 16:42:25.117 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: lsf
+Apr-07 16:42:25.117 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'lsf'
+Apr-07 16:42:25.216 [main] DEBUG nextflow.executor.Executor - [warm up] executor > lsf
+Apr-07 16:42:25.218 [main] DEBUG n.processor.TaskPollingMonitor - Creating task monitor for executor 'lsf' > capacity: 100; pollInterval: 5s; dumpInterval: 5m 
+Apr-07 16:42:25.313 [main] DEBUG n.executor.AbstractGridExecutor - Creating executor 'lsf' > queue-stat-interval: 1m
+Apr-07 16:42:25.415 [main] DEBUG nextflow.executor.LsfExecutor - [LSF] Detected lsf.conf LSF_UNIT_FOR_LIMITS=MB
+Apr-07 16:42:25.415 [main] DEBUG nextflow.executor.LsfExecutor - [LSF] Detected lsf.conf LSB_JOB_MEMLIMIT=Y (true)
+Apr-07 16:42:25.416 [main] DEBUG nextflow.processor.TaskProcessor - Creating operator > replace_header -- maxForks: 80
+Apr-07 16:42:25.419 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: lsf
+Apr-07 16:42:25.419 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'lsf'
+Apr-07 16:42:25.513 [main] DEBUG nextflow.processor.TaskProcessor - Creating operator > split_multiallelic -- maxForks: 80
+Apr-07 16:42:25.616 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: lsf
+Apr-07 16:42:25.616 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'lsf'
+Apr-07 16:42:25.617 [main] DEBUG nextflow.processor.TaskProcessor - Creating operator > allelic_primitives -- maxForks: 80
+Apr-07 16:42:25.715 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: lsf
+Apr-07 16:42:25.715 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'lsf'
+Apr-07 16:42:25.716 [main] DEBUG nextflow.processor.TaskProcessor - Creating operator > sort_out_decomp -- maxForks: 80
+Apr-07 16:42:25.718 [main] DEBUG nextflow.script.BaseScript - No entry workflow defined
+Apr-07 16:42:25.812 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Apr-07 16:42:25.813 [main] DEBUG nextflow.Session - Session await
+Apr-07 16:42:26.747 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Apr-07 16:42:26.816 [Task submitter] INFO  nextflow.Session - [dd/1dd8cc] Submitted process > get_header
+Apr-07 16:42:28.631 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: get_header; status: COMPLETED; exit: 0; error: -; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/dd/1dd8cc9a1748d7d51e31023cc36888]
+Apr-07 16:42:29.018 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Apr-07 16:42:29.019 [Task submitter] INFO  nextflow.Session - [d0/e88f02] Submitted process > modify_header
+Apr-07 16:42:30.041 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 2; name: modify_header; status: COMPLETED; exit: 0; error: -; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/d0/e88f02832cd425e529141b15b2ebd3]
+Apr-07 16:42:30.233 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [LSF] submitted process replace_header > jobId: 113501; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/09/d896bf8955a46b79cac22927aecb06
+Apr-07 16:42:30.234 [Task submitter] INFO  nextflow.Session - [09/d896bf] Submitted process > replace_header
+Apr-07 16:43:00.329 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 113501; id: 3; name: replace_header; status: COMPLETED; exit: 0; error: -; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/09/d896bf8955a46b79cac22927aecb06 started: 1586274180323; exited: 2020-04-07T15:42:34.539071Z; ]
+Apr-07 16:43:00.448 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [LSF] submitted process split_multiallelic > jobId: 113548; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/db/4b7d6d2f9741662884b73903d9538a
+Apr-07 16:43:00.449 [Task submitter] INFO  nextflow.Session - [db/4b7d6d] Submitted process > split_multiallelic
+Apr-07 16:43:35.319 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 113548; id: 4; name: split_multiallelic; status: COMPLETED; exit: 0; error: -; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/db/4b7d6d2f9741662884b73903d9538a started: 1586274185316; exited: 2020-04-07T15:43:07.53004Z; ]
+Apr-07 16:43:35.582 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [LSF] submitted process allelic_primitives > jobId: 113607; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/47/9d83bd451fdd6055966ebf52cde8a5
+Apr-07 16:43:35.582 [Task submitter] INFO  nextflow.Session - [47/9d83bd] Submitted process > allelic_primitives
+Apr-07 16:44:10.321 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 113607; id: 5; name: allelic_primitives; status: COMPLETED; exit: 0; error: -; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/47/9d83bd451fdd6055966ebf52cde8a5 started: 1586274220318; exited: 2020-04-07T15:43:50.753063Z; ]
+Apr-07 16:44:10.418 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [LSF] submitted process sort_out_decomp > jobId: 113735; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/fb/a51c6a8e624837ef19f4bdc52cebab
+Apr-07 16:44:10.419 [Task submitter] INFO  nextflow.Session - [fb/a51c6a] Submitted process > sort_out_decomp
+Apr-07 16:44:45.325 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 113735; id: 6; name: sort_out_decomp; status: COMPLETED; exit: 0; error: -; workDir: /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/work/fb/a51c6a8e624837ef19f4bdc52cebab started: 1586274255321; exited: 2020-04-07T15:44:20.844087Z; ]
+Apr-07 16:44:45.339 [Task monitor] DEBUG n.util.BlockingThreadExecutorFactory - Thread pool name=FileTransfer; maxThreads=240; maxQueueSize=720; keepAlive=1m
+Apr-07 16:44:45.345 [main] DEBUG nextflow.Session - Session await > all process finished
+Apr-07 16:44:45.363 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Apr-07 16:44:45.493 [main] DEBUG nextflow.trace.StatsObserver - Workflow completed > WorkflowStats[succeedCount=6; failedCount=0; ignoredCount=0; cachedCount=0; succeedDuration=1m 33s; failedDuration=0ms; cachedDuration=0ms]
+Apr-07 16:44:45.737 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Apr-07 16:44:45.754 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

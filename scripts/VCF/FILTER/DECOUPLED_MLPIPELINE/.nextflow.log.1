@@ -1,0 +1,11 @@
+Apr-07 16:59:52.725 [main] DEBUG nextflow.cli.Launcher - $> nextflow run MLfilter_applymodel_noregion.nf --vcf /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/scripts/VCF/FILTER/DECOUPLED_MLPIPELINE/res_norm_chr1_out/out_norm.vcf.gz --model /hps/nobackup/production/reseq-info/ernesto/HIGHCOV/VARCALL_FREEBAYES/MANUAL_MERGE/FILTERING/SNPS/TRAIN/trained_model_chr21/fitted_logreg_vts.sav --annotations '%CHROM\t%POS\t%QUAL\t%INFO/AB\t%INFO/ABP\t%INFO/DP\t%INFO/DPB\t%INFO/DPRA\t%INFO/GTI\t%INFO/MQM\t%INFO/MQMR\t%INFO/NUMALT\t%INFO/ODDS\t%INFO/PAIRED\t%INFO/PAO\t%INFO/PQA\t%INFO/PQR\t%INFO/PRO\t%INFO/QA\t%INFO/RO\t%INFO/RPL\t%INFO/RPP\t%INFO/RPR\t%INFO/SAF\t%INFO/SAP\t%INFO/SAR\t%INFO/SRP\n' --vt snps --threads 10 -with-singularity /hps/nobackup/production/reseq-info/ernesto/GGVP/FILTERING/BCFTOOLS/variant_filtering.simg --cutoff 0.1,0.2 --prefix chr21
+Apr-07 16:59:53.320 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 19.10.0
+Apr-07 16:59:53.525 [main] DEBUG nextflow.cli.Launcher - Operation aborted
+nextflow.exception.AbortOperationException: Not a valid project name: MLfilter_applymodel_noregion.nf
+	at nextflow.scm.AssetManager.resolveName(AssetManager.groovy:246)
+	at nextflow.scm.AssetManager.build(AssetManager.groovy:121)
+	at nextflow.scm.AssetManager.<init>(AssetManager.groovy:105)
+	at nextflow.cli.CmdRun.getScriptFile(CmdRun.groovy:313)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:229)
+	at nextflow.cli.Launcher.run(Launcher.groovy:457)
+	at nextflow.cli.Launcher.main(Launcher.groovy:639)
