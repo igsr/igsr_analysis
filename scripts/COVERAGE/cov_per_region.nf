@@ -25,9 +25,9 @@ if (params.help) {
     log.info 'Options:'
     log.info '    --help	Show this message and exit.'
     log.info '    --file	File containing the paths to the alignment files. The format of the file will be:'
-    log.info '                  url'
-    log.info '			path/to/file.bam'
-    log.info '			The header is necessary.'
+    log.info '              url'
+    log.info '				path/to/file.bam'
+    log.info '				The header is necessary.'
     log.info '    --genome      File with genome as required by BEDTools.'
     log.info '    --window      Number of bases for each of the BEDTools generated windows.'
     log.info '    --outprefix   Prefix for output file.'
@@ -38,45 +38,45 @@ if (params.help) {
 log.info 'Starting the analysis.....'
 
 process make_windows {
-        /*
-        Process to create genomic windows of a certain width (in bases)
-        */
+    /*
+    Process to create genomic windows of a certain width (in bases)
+    */
  
-        memory '500 MB'
-        executor 'lsf'
-        cpus 1
+    memory '500 MB'
+    executor 'lsf'
+    cpus 1
 
-        output:
-        stdout ivals_ch
+    output:
+    stdout ivals_ch
  
-        """
-        /nfs/production/reseq-info/work/bin/bedtools-2.25.0/bin/bedtools makewindows -g ${params.genome} -w ${params.window} |awk -F'\t' '{print \$1":"\$2"-"\$3}' -
-        """
+    """
+    bedtools makewindows -g ${params.genome} -w ${params.window} |awk -F'\t' '{print \$1":"\$2"-"\$3}' -
+    """
 }
 
 ivals_ch.splitText().map{it -> it.trim()}.set{monoival_ch}
 
 process get_cov {
 	/*
-        Process to run SAMTools depth on params.pos_file and get a
+    Process to run SAMTools depth on params.pos_file and get a
 	pos file that will be used later
-        */
+    */
 	tag "Depth for ival: $ival"
 	
 	memory { 20.GB * task.attempt }
 	executor 'lsf'
-        queue "${params.queue}"
-        cpus 1
+    queue "${params.queue}"
+    cpus 1
 	maxForks 1000
 
 	errorStrategy 'retry' 
-    	maxRetries 5
+    maxRetries 5
 
 	input:
-	val ival from monoival_ch
+		val ival from monoival_ch
 
 	output:
-	file("*.cov.gz") into cov_chunks
+		file("*.cov.gz") into cov_chunks
 
 	exec:
 	def match = (ival =~ /(chr.*):(\d+)-(\d+)/)
@@ -84,12 +84,12 @@ process get_cov {
 	def chrom = match.group(1)
 	def start = match.group(2)
 	def toadd=10-start.length()
-      	def nstart='0'*toadd+start
+    def nstart='0'*toadd+start
 	
 	script:
 	"""
-        samtools depth -a -d 0 -r ${ival} -f ${params.file} |bgzip -c > ${chrom}.${nstart}.cov.gz
-        """
+    samtools depth -a -d 0 -r ${ival} -f ${params.file} |bgzip -c > ${chrom}.${nstart}.cov.gz
+    """
 }
 
 sorted_covchunks = cov_chunks.collect().sort { a,b ->
@@ -103,15 +103,15 @@ process merge_chunks {
 	*/
 
 	memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
-        cpus 1
+    executor 'lsf'
+    queue "${params.queue}"
+    cpus 1
 
 	input:
-	file(cov_f) from sorted_covchunks
+		file(cov_f) from sorted_covchunks
 
 	output:
-	file("merged.cov.gz") into merged_file
+		file("merged.cov.gz") into merged_file
 
 	script:
 	"""
@@ -127,15 +127,15 @@ process aggregate_depth {
 	publishDir "results", mode: 'copy', overwrite: true
 
 	memory '500 MB'
-        executor 'lsf'
-        queue "${params.queue}"
-        cpus 1
+    executor 'lsf'
+    queue "${params.queue}"
+    cpus 1
 
 	input:
         file(merged_file) from merged_file
 
 	output:
-	file("out.cov.gz") into agg_file
+		file("out.cov.gz") into agg_file
 
 	"""
 	sum_covs.py --ifile ${merged_file} --prefix out
