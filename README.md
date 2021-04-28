@@ -22,7 +22,8 @@ Modify your $PATH to include the location of the eHive scripts:
 
 1) Clone repo by doing ```git clone https://github.com/igsr/igsr_analysis.git``` in the desired folder
 2) ```pip install ${igsr_analysis_dir}/dist/igsr_analysis-0.91.dev0.tar.gz```
-3) Modify $PYTHONPATH to add the folder where your pip installs the Python packages
+Note: igsr_analysis-0.91.dev0.tar.gz no longer exist. replace this with igsr_analysis-1.1.1-py3-none-any.whl
+4) Modify $PYTHONPATH to add the folder where your pip installs the Python packages
 
 And you are ready to go! 
 
