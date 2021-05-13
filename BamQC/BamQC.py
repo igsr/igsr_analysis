@@ -16,22 +16,21 @@ import matplotlib
 matplotlib.use('Agg')
 
 class BamQC:
-    '''
+    """
     Class to do the quality assessment on a BAM format file
-    '''
+    """
 
     def __init__(self, bam, samtools_folder=None, java_folder=None,
                  picard_folder=None, chk_indel_folder=None,
                  verifybamid_folder=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
-        bam : filename
+        bam : str
               Path to BAM file
-
-        samtools_folder : str
+        samtools_folder : str, optional
                           Path to folder containing the samtools binary
         java_folder : str, optional
                       Path to folder containing the java binary
@@ -41,8 +40,7 @@ class BamQC:
                            Path to folder containing Heng Li's chk_indel_rg binary
         verifybamid_folder : str, optional
                              Path to folder containing VerifyBAMID
-        '''
-
+        """
         if os.path.isfile(bam) is False:
             raise Exception("File does not exist")
         self.bam = bam
@@ -53,20 +51,15 @@ class BamQC:
         self.verifybamid_folder = verifybamid_folder
 
     def get_contigs(self):
-        '''
+        """
         Get all contigs from this BAM
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        dict
-             A dictionary containing the following information:
-
-                {'contig Name': length (in bp)}
-        '''
+        contigs : dict
+                  A dictionary containing the following information:
+                  {'contig Name': length (in bp)}
+        """
         header, err = subprocess.Popen(["samtools", "view", "-H", self.bam],
                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                        env=dict(os.environ, PATH="%s" % self.samtools_folder))\
@@ -81,21 +74,18 @@ class BamQC:
         contigs = {}
         for x in re.findall("@SQ\\WSN:(?P<chrom>[A-Za-z0-9_]*)\\WLN:(?P<length>[0-9]+)", header):
             contigs[x[0]] = int(x[1])
+
         return contigs
 
     def list_of_samples(self):
-        '''
+        """
         Get the samples names from the header of the BAM file
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        list
-            List with the sample names
-        '''
+        samples : list
+                  List with the sample names
+        """
         header, err = subprocess.Popen(["samtools", "view", "-H", self.bam], stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE,
                                        env=dict(os.environ, PATH="%s" % self.samtools_folder))\
@@ -109,21 +99,18 @@ class BamQC:
 
         samples = re.findall("SM:([\w.]+)\s", header)
         samples = list(set(samples))
+
         return samples
 
     def list_of_readgroups(self):
-        '''
+        """
         Get the Read Groups extracted from the header of the BAM file
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
         list
             List composed of the read groups
-        '''
+        """
         readgroups = []
 
         header, err = subprocess.Popen(["samtools", "view", "-H", self.bam],
@@ -143,24 +130,20 @@ class BamQC:
         return list(set(readgroups))
 
     def get_simple_stats(self):
-        '''
+        """
         Get a dict with stats on the BAM file as calculated by samtools flagstat
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        dict
-            A dictionary containing the following information:
-            {
-             "total_no_reads": int
-             "no_duplicates": int
-             "total_no_mapped": int
-             "no_properly_paired":  int
-             }
-        '''
+        stats : dict
+                A dictionary containing the following information:
+                {
+                "total_no_reads": int
+                "no_duplicates": int
+                "total_no_mapped": int
+                "no_properly_paired":  int
+                }
+        """
 
         stats, err = subprocess.Popen(["samtools", "flagstat", self.bam],
                                       stdout=subprocess.PIPE,
@@ -190,27 +173,29 @@ class BamQC:
         return defaultdict(self.__rec_dd)
 
     def run_samtools_depth(self, chros):
-        '''
+        """
         Calculate several coverage metrics on a whole genome sequencing BAM
-        file using 'samtools depth'
-
-        Parameters
-        ----------
-        chros : list or string
-                List of contigs or just a single contig used for calculating the coverage
-
-        Returns
-        ------
-        List of SDepth objects
+        file using 'samtools depth'.
 
         This method runs samtools depth on a BAM file and will calculate the following metrics:
+            
             * Number of Bases mapped: This is the number of bases having at least one read mapped
             * Sum of depths of coverage: This is the sum of all the depths in each of the
               Bases mapped
             * Breadth of coverage: This is the result of dividing bases_mapped/length(contig)
               (i.e. what portion of the contig has reads mapped)
             * Depth of coverage: This is the result of dividing sum_of_depths/length(contig)
-        '''
+
+        Parameters
+        ----------
+        chros : list or str
+                List of contigs or just a single contig used for calculating the coverage
+
+        Returns
+        ------
+        list_of_cvgs : list 
+                       list of SDepth objects
+        """
 
         # Check to see if file exists
         if os.path.isfile(self.bam) is False:
@@ -250,18 +235,18 @@ class BamQC:
         return list_of_cvgs
 
     def aggregate_stats(self, cov_list):
-        '''
+        """
         Used to calculate aggregated stats on a list of SDepth objects
 
         Parameters
         ----------
         cov_list : list
-                   List containing the SDepth objects for which the stats will be aggregated.
+                   Containing the SDepth objects for which the stats will be aggregated.
 
         Returns
         --------
-        A SDepth object
-        '''
+        covO : SDepth object
+        """
 
         assert type(cov_list) is list, "cov_list is not a list: %r" % cov_list
 
@@ -279,25 +264,24 @@ class BamQC:
 
         return covO
 
-    def run_CollectHsMetrics(self, baits_file, outfile=None, cov_cap=None):
-        '''
+    def run_CollectHsMetrics(self, baits_file, outfile=None, cov_cap=250):
+        """
         Run Picard's CollectHsMetrics on a Exome sequencing BAM file
 
         Parameters
         ----------
-        baits_file : filename
+        baits_file : str
                      Path to the file containing the Exome baits.
-        outfile : filename, optional
-                  If provided, then create a file with the output of this program
-        cov_cap : int, optional
+        outfile : str, optional
+                  File path. If provided, then create a file with the output of this program
+        cov_cap : int, default=250
                   Picard's Coverage Cap parameter. Treat positions with coverage
                   exceeding this value as if they had coverage at this value.
-                  Default value: 250.
 
         Returns
         ------
-        A CMetrics object
-        '''
+        CMetrics object
+        """
 
         # Check to see if file exists
         if os.path.isfile(self.bam) is False:
@@ -318,7 +302,6 @@ class BamQC:
 
         if not stdout:
             raise Exception(stderr)
-
 
         if outfile:
             f = open(outfile, 'w')
@@ -341,27 +324,27 @@ class BamQC:
         df = pd.DataFrame(data=data[1:, 0:], columns=data[0, 0:])
 
         df = df.astype(int)
+
         return CMetrics(metrics=sd, cov_data=df)
 
-    def run_CollectWgsMetrics(self, reference, outfile=None, cov_cap=None):
-        '''
+    def run_CollectWgsMetrics(self, reference, outfile=None, cov_cap=250):
+        """
         Run Picard's CollectWgsMetrics on a WGS BAM file
 
         Parameters
         ----------
-        reference : filename
+        reference : str
                     Fasta file used as the genome reference
-        outfile : filename, optional
-                  If provided, then create a file with the output of this program
-        cov_cap : int, optional
+        outfile : str, optional
+                  File path, if provided, then create a file with the output of this program
+        cov_cap : int, default=250
                   Picard's Coverage Cap parameter. Treat positions with coverage
                   exceeding this value as if they had coverage at this value.
-                  Default value: 250.
 
         Returns
         ------
-        A CMetrics object
-        '''
+        CMetrics object
+        """
         if os.path.isfile(self.bam) is False:
             raise Exception("Bam file does not exist")
 
@@ -410,19 +393,19 @@ class BamQC:
         return CMetrics(metrics=sd, cov_data=df)
 
     def run_chk_indel_rg(self, outfile=None):
-        '''
+        """
         Run Heng Li's chk_indel_rg on a BAM file
 
         Parameters
         ----------
-        outfile : filename, optional
-                  If provided, then create a file with the output of this program
+        outfile : str, optional
+                  File path, if provided, then create a file with the output of this program.
 
         Returns
         -------
-        list
-             A list of Chk_indel objects
-        '''
+        data : list
+               List of Chk_indel objects
+        """
         if os.path.isfile(self.bam) is False:
             raise Exception("Bam file does not exist")
 
@@ -458,24 +441,23 @@ class BamQC:
         return data
 
     def run_verifybamid(self, genotype_file, outprefix, outdir=None):
-        '''
+        """
         Run VerifyBAMID to check for sample swap or contamination issues
 
         Parameters
         ----------
-        genotype_file : filename
-                        vcf file with chip genotypes to use
+        genotype_file : str
+                        vcf file with the chip genotypes to use.
         outprefix : str
-                    prefix for outputfiles
+                    prefix for outputfiles.
         outdir : str, optional
-                 If provided, then put output files in this folder
+                 If provided, then put output files in this folder.
 
         Returns
         -------
-        list
-             A list with the paths to the output files generated by VerifyBAMID
-
-        '''
+        list_of_outfiles : list
+                           list with the paths to the output files generated by VerifyBAMID
+        """
 
         if os.path.isfile(self.bam) is False:
             raise Exception("Bam file does not exist")
@@ -510,16 +492,16 @@ class BamQC:
         return list_of_outfiles
 
 class SDepth:
-    '''
-    Class to store coverage metrics on a Whole Genome Sequencing BAM file
+    """
+    Class to store the coverage metrics from a Whole Genome Sequencing BAM file
     calculated using SAMtools depth
-    '''
+    """
 
     def __init__(self, contig=None, mapped=None, breadth=None, depth=None,
                  length=None, sum_of_depths=None, max=None):
-        '''
-        Create a SDepth object
-        '''
+        """
+        Constructor
+        """
         self.contig = contig
         self.bases_mapped = mapped
         self.breadth = breadth
@@ -542,14 +524,14 @@ class SDepth:
                 fh.close()
 
     def print_report(self, filename=None):
-        '''
+        """
         Used to print a text report of data in the object
 
         Parameters
         ----------
-        filename : filename, optional
+        filename : str, optional
                    Filename used to write the report. The default is STDOUT.
-        '''
+        """
 
         with self.__smart_open(filename) as fh:
             print >>fh, 'Stats for %s (length=%d bp):' % (self.contig, self.length)
@@ -560,24 +542,24 @@ class SDepth:
             print >>fh, '\tMaximum coverage %d' % self.max
 
 class CMetrics:
-    '''
+    """
     Class to store coverage information on the metrics calculated by Picard's
     CollectHsMetrics/CollectWgsMetrics on an Exome or WGS BAM file
-    '''
+    """
 
     def __init__(self, metrics, cov_data):
-        '''
-        Create an CMetrics object
+        """
+        Constructor
 
         Parameters
         ----------
         metrics : dict
                   Dictionary with all the metrics generated by running Picard's
-                  CollectHsMetrics or CollectWgsMetrics
+                  CollectHsMetrics or CollectWgsMetrics.
         cov_data : dataframe
                    Panda's DataFrame containing data used to generate
-                   a bar plot with the coverage counts
-        '''
+                   a bar plot with the coverage counts.
+        """
         self.metrics = metrics
         self.cov_data = cov_data
 
@@ -595,14 +577,14 @@ class CMetrics:
                 fh.close()
 
     def print_report(self, filename=None):
-        '''
+        """
         Used to print a text report of data in the object
 
         Parameters
         ----------
-        filename : filename, optional
+        filename : str, optional
                    Filename to write the report. The default is STDOUT.
-        '''
+        """
 
         with self.__smart_open(filename) as fh:
             keylist = self.metrics.keys()
@@ -611,20 +593,23 @@ class CMetrics:
                 print >>fh, key, self.metrics.get(key)
 
     def create_cov_barplot(self, filename, xlim=None, ylim=None):
-        '''
+        """
         This method will create a Barplot using the different coverage
-        values counts calculated by Picard's
-        CollectHsMetrics or CollectWgsMetrics
+        values counts calculated by Picard's CollectHsMetrics or CollectWgsMetrics
 
         Parameters
         ----------
-        filename : filename
+        filename : str
                    PDF file to write the plot.
         xlim : tuple, optional
-               Set the X-axis limit
+               Set the X-axis limit.
         ylim : tuple, optional
-               Set the Y-axis limit
-        '''
+               Set the Y-axis limit.
+        
+        Returns
+        -------
+        None
+        """
 
         #getting basename from filename
         basename = os.path.basename(filename).split('.')[0]
@@ -678,30 +663,30 @@ class CMetrics:
         return self.__str__()
 
 class Chk_indel:
-    '''
+    """
     Class to store information on the ratio of short insertion and deletion
     calculated by runnint Heng Li's chk_indel_rg
-    '''
+    """
 
     def __init__(self, RG, ins_in_short_homopolymer, del_in_short, ins_in_long,
                  del_in_long, outcome=None):
-        '''
-        Create a Chk_indel object
+        """
+        Constructor
 
         Parameters
         ----------
         RG : str
-             readgroup that will be analyssed
+             readgroup that will be analyssed.
         ins_in_short_homopolymer : float
-                                   ins_in_short_homopolymer
+                                   ins_in_short_homopolymer.
         del_in_short : float
-                       del_in_short
+                       del_in_short.
         ins_in_long : float
-                      ins_in_long
+                      ins_in_long.
         del_in_long : float
-                      del_in_long
+                      del_in_long.
         outcome : {'PASS','FAILED'}, optional
-        '''
+        """
         self.RG = RG
         self.ins_in_short_homopolymer = ins_in_short_homopolymer
         self.del_in_short = del_in_short
@@ -710,14 +695,14 @@ class Chk_indel:
         self.outcome = outcome
 
     def calc_ratio(self):
-        '''
+        """
         Method to calc ratio ins-in-short-homopolymer/del-in-short and check if it is > 5
 
         Returns
         -------
-        str
-           It returns PASS/FAILED depending on the outcome of the test
-        '''
+        outcome : str
+                  It returns PASS/FAILED depending on the outcome of the test.
+        """
 
         inser = self.ins_in_short_homopolymer
         delet = self.del_in_short
@@ -731,6 +716,7 @@ class Chk_indel:
         outcome = "FAILED" if (float(inser)/float(delet)) > 5 else "PASS"
 
         self.outcome = outcome
+
         return outcome
 
     def __str__(self):
