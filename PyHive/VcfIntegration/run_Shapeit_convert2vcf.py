@@ -4,7 +4,7 @@ import re
 from VCF.VCFIntegration.Shapeit import Shapeit
 
 class run_Shapeit_convert2vcf(eHive.BaseRunnable):
-    '''Run SHAPEIT's -convert to generate a VCF file'''
+    """Run SHAPEIT's -convert to generate a VCF file"""
 
     def fetch_input(self):
 

@@ -14,50 +14,51 @@ class BEDTools:
     additional functions will be added as necessary
     '''
 
-    def __init__(self, bedtools_folder):
-        '''
+    def __init__(self, bedtools_folder=None):
+        """
         Constructor
 
         Parameters
         ----------
         bedtools_folder : str, optional
-                          Path to folder with bedtools binary
-        '''
+                          Path to folder with bedtools binary.
+        """
 
         self.bedtools_folder = bedtools_folder
 
     def make_windows(self, w, g, s=None, subtract=None, lextend=None, rextend=None, verbose=False):
-        '''
+        """
         This method will make windows from a genome file by using 'bedtools makewindows'
 
         Parameters
         ----------
         w : int
-            width of windows in bp
-        g : filename
-            Path to genome file
-        s : int , optional
+            width of windows in bp.
+        g : str
+            Path to genome file.
+        s : int, optional
             overlap in bp. i.e. if -w 100 -s 80 will generate:
+            
+            chr1    0       100
+            chr1    80      180
+            chr1    160     260
+            ...
+            So, -s defines the offset in bp
 
-           chr1    0       100
-           chr1    80      180
-           chr1    160     260
-           ...
-           So, -s defines the offset in bp
+            Another example -w 1000 -s 200
 
-           Another example -w 1000 -s 200
-
-           chr1    0       1000
-           chr1    200     1200
-           chr1    400     1400
-           chr1    600     1600
+            chr1    0       1000
+            chr1    200     1200
+            chr1    400     1400
+            chr1    600     1600
+        
         lextend : int, optional
-	          Extend each interval to the left by int bases
+	              Extend each interval to the left by int bases.
 
         rextend : int, optional
-                  Extend each interval to the right by int bases
+                  Extend each interval to the right by int bases.
 
-        subtract : filename, optional
+        subtract : str, optional
                    BED file containing the features that will be removed from the generated windows.
                    For example, if we have the following window:
 
@@ -69,15 +70,18 @@ class BEDTools:
                    chr20 1000 1100
                    chr20 1200 2000
 
-        verbose : bool, optional
-                  Default=False
+        verbose : bool, default = False
 
         Returns
+        -------
+        coordlist : list
+                    A list of lists. Each sublist is composed of ['chr','start','end']
+                    It will return an empty list if not elements for a certain chr are defined.
+        
+        Raises
         ------
-        list
-            A list of lists. Each sublist is composed of ['chr','start','end']
-            It will return an empty list if not elements for a certain chr are defined
-        '''
+        Exception
+        """
 
         command = ""
         if self.bedtools_folder:

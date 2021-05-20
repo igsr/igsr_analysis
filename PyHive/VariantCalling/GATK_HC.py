@@ -5,48 +5,45 @@ import time
 from VariantCalling import GATK
 
 class GATK_HC(eHive.BaseRunnable):
-    '''
+    """
     Run GATK HaplotypeCaller on a BAM file/s
 
     eHive runnable for GATK HC caller
 
     Parameters
     ----------
-    work_dir : str, Required
-         Path to the working directory
-    outprefix : str, Required
-         String used as prefix for the output file
-    chunk: str, Required
-         Interval used by GATK HC for the variant calling
-    bamlist: str, Required
-         Path to BAM file used for the variant calling
-    reference: str, Required
-         Path to the Fasta file used to generate the BAM alignment file
-    gatk_folder: str, Required
-         Path to folder containing the GATK jar file
-    bgzip_folder: str, Required
-         Path to folder containing the Bgzip binary
-    alleles: str, Optional
+    work_dir : str
+         Path to the working directory.
+    outprefix : str
+         String used as prefix for the output file.
+    chunk: str
+         Interval used by GATK HC for the variant calling.
+    bamlist: str
+         Path to BAM file used for the variant calling.
+    reference: str
+         Path to the Fasta file used to generate the BAM alignment file.
+    gatk_folder: str
+         Path to folder containing the GATK jar file.
+    bgzip_folder: str
+         Path to folder containing the Bgzip binary.
+    alleles: str, optional
          Path to VCF.
          When --genotyping_mode is set to
          GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
-         using only the alleles provide in this callset
-    genotyping_mode: str, Optional
-         Specifies how to determine the alternate alleles to use for genotyping
-         Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
-    threads: int, Optional
-         Number of CPUs used by the caller
-         Default=1
-    log_file: str, Optional
-            Path to log file used to log the GATK HC stderr
-    verbose : str, Optional
-              Print command line. Possible values are 'True' or 'False'
+         using only the alleles provide in this callset.
+    genotyping_mode: {'DISCOVERY', 'GENOTYPE_GIVEN_ALLELES'}
+         Specifies how to determine the alternate alleles to use for genotyping.
+    threads: int, default=1
+         Number of CPUs used by the caller.
+    log_file: str, optional
+            Path to log file used to log the GATK HC stderr.
+    verbose : {'True', 'False'}
 
     Returns
     -------
-
-    Path to VCF file
-    '''
+    str:
+        Path to VCF file
+    """
 
     def run(self):
 

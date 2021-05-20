@@ -5,17 +5,22 @@ import glob
 import string
 
 def random_generator(size=6, chars=string.ascii_uppercase + string.digits, outprefix=None):
-    '''
+    """
     Creates a random string having a size determined by the 'size' arg. If outprefix is not None
-       then use a prefix with the random string
+    then use a prefix with the random string
 
     Parameters
     ----------
-    size : int, Required
-           Size for the random string
-    outprefix : str, Optional
-                Add an outprefix for the returned random string
-    '''
+    size : int, default=6
+           Size for the random string.
+    outprefix : str, optional
+                Add an outprefix for the returned random string.
+    
+    Returns
+    -------
+    astr : str
+           random string.
+    """
     astr = ''.join(random.choice(chars) for x in range(size))
     if outprefix is not None:
         return "{0}_{1}".format(outprefix, astr)
@@ -23,22 +28,20 @@ def random_generator(size=6, chars=string.ascii_uppercase + string.digits, outpr
         return astr
 
 class ShortenFiles(eHive.BaseRunnable):
-    '''
+    """
     Takes a list of files and shorten their paths by creating symbolic links
 
     Parameters
     ----------
-    filelist : str, Required
-               Path to files that will be shortened
-    work_dir : str, Required
-               String to folder that will be used to put the files in
+    filelist : str
+               Path to files that will be shortened.
+    work_dir : str
+               String to folder that will be used to put the files in.
 
     Returns
     -------
-
     File with list of new shortened files
-    '''
-
+    """
     def run(self):
 
         tmp_folder = self.param_required('work_dir')+"/tmp_sh"

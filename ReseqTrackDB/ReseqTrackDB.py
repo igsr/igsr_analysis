@@ -11,29 +11,26 @@ from datetime import datetime
 import pymysql
 
 class ReseqTrackDB:
-    '''
+    """
     Class representing a Reseqtrack MySQL DB
-    '''
-
+    """
     def __init__(self, host=None, user=None, port=0, pwd=None, db=None):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        host : str
-            DB hostname
-        user : str
-            DB username
-        port : str
-            DB port
-        pwd : str
-            DB password
-        db : str
-            database to connect
-
+        Parameters
+        ----------
+        host : str, optional
+               DB hostname.
+        user : str, optional
+               DB username.
+        port : str, optional
+               DB port.
+        pwd : str, optional
+              DB password.
+        db : str, optional
+             Database to connect.
         '''
-
         self.host = host
         self.user = user
         self.port = port
@@ -46,20 +43,18 @@ class ReseqTrackDB:
         self.db = db
 
     def fetch_file_by_filename(self, name):
-        '''
+        """
         Fetch a file by its basename
 
         Parameters
         ----------
         name : str
-            Basename (without the path) in the DB
+               Basename (without the path) in the DB.
 
         Returns
         -------
-        A File object
-
-        '''
-
+        File object
+        """
         query = "SELECT * FROM file WHERE name like %s"
 
         try:
@@ -80,20 +75,18 @@ class ReseqTrackDB:
             print("Something went wrong when getting the file: {}".format(err))
 
     def fetch_file_by_url(self, url):
-        '''
+        """
         Fetch a file by its url (absolute path)
 
         Parameters
         ----------
         url : str
-            Absolute url (absolute path) in the DB
+              Absolute url (absolute path) in the DB.
 
         Returns
         -------
         A File object
-
-        '''
-
+        """
         query = "SELECT * FROM file WHERE name = '{0}'".format(url)
         print(query)
 
@@ -121,19 +114,18 @@ class ReseqTrackDB:
             print("Something went wrong when getting the file: {}".format(err))
 
     def fetch_file_by_id(self, id):
-        '''
+        """
         Fetch a file by its internal dbID
 
         Parameters
         ----------
         id : int
-            internal dbID for a file
+             internal dbID for a file.
 
         Returns
         -------
         A File object
-
-        '''
+        """
 
         query = "SELECT * FROM file WHERE file_id= %d" % id
 
@@ -155,19 +147,18 @@ class ReseqTrackDB:
             print("Something went wrong when getting the file: {}".format(err))
 
     def fetch_files_by_type(self, type):
-        '''
+        """
         Fetch files by their type
 
         Parameters
         ----------
         type : str
-            File type
+               Type of the file.
 
         Returns
         -------
         A list of File objects
-
-        '''
+        """
 
         query = "SELECT * FROM file WHERE type= '%s'" % type
 
@@ -190,19 +181,18 @@ class ReseqTrackDB:
         return list_of_files
 
     def fetch_collection_by_name(self, name):
-        '''
+        """
         Fetch a collection by its name
 
         Parameters
         ----------
         name : str
-            Collection name
+               Collection name.
 
         Returns
         -------
-        A Collection object
-
-        '''
+        Collection object
+        """
 
         query = "SELECT * FROM collection WHERE name= '%s'" % name
 
@@ -225,12 +215,11 @@ class ReseqTrackDB:
             print("Something went wrong when getting the collection: {}".format(err))
 
     def fetch_attribute_by_params(self, table_name, other_id, attribute_name):
-        '''
+        """
         Fetch an Attribute objects using the following params:
 
         Parameters
         ----------
-
         table_name : str
         other_id : int
         attribute_name : str
@@ -240,10 +229,8 @@ class ReseqTrackDB:
 
         Returns
         -------
-        An Attribute object
-
-        '''
-
+        Attribute object
+        """
         query = "SELECT * FROM attribute WHERE table_name= '%s' and other_id = "\
         "%d and attribute_name = '%s'" % (table_name, other_id, attribute_name)
 
@@ -266,7 +253,7 @@ class ReseqTrackDB:
             print("Something went wrong when getting the attributes: {}".format(err))
 
     def fetch_attributes_by_other_id(self, other_id):
-        '''
+        """
         Fetch a list of Attribute objects using their 'other_id'
 
         Parameters
@@ -275,10 +262,9 @@ class ReseqTrackDB:
 
         Returns
         -------
-        A list of Attributes objects
-
-        '''
-
+        list
+            list of Attributes objects
+        """
         attributes_list = []
 
         query = "SELECT * FROM attribute WHERE other_id= '%d'" % other_id
@@ -305,7 +291,7 @@ class ReseqTrackDB:
         return attributes_list
 
     def fetch_attributes_by_name(self, name):
-        '''
+        """
         Fetch a list of Attribute objects using their 'attribute_name'
 
         Parameters
@@ -314,9 +300,9 @@ class ReseqTrackDB:
 
         Returns
         -------
-        A list of Attributes objects
-
-        '''
+        list 
+            list of Attributes objects
+        """
 
         attributes_list = []
 
@@ -352,35 +338,34 @@ class ReseqTrackDB:
         return self.__str__()
 
 class File:
-    '''
+    """
     Class to represent a file in the ReseqTrack DB
-    '''
+    """
 
     def __init__(self, path, type, dbID=None, md5=None,
                  size=None, host_id=1, withdrawn=0, created=None):
-        '''
+        """
         Create a File object
 
-        Class members
-        -------------
-        path : str, Required
-               Path to the file
-        type : str, Required
-               Type of the file
-        dbID : int, Optional
-               Internal db identifier
-        name : str, Optional
-               File name (without the path)
-        md5 : str, Optional
-              md5 of the file
-        host_id : int, Optional
-                  id of the host of this file. Default=1
-        withdrawn : int (0 or 1), Optional
-                    is the file withdrawn?. Default=0
-        created : str representing the date, Optional
-                  Date of creation of this file
-
-        '''
+        Parameters
+        ----------
+        path : str
+               Path to the file.
+        type : str
+               Type of the file.
+        dbID : int, optional
+               Internal db identifier.
+        name : str, optional
+               File name (without the path).
+        md5 : str, optional
+              md5 of the file.
+        host_id : int, default = 1
+                  id of the host of this file.
+        withdrawn : {0, 1}, default = 0
+                    is the file withdrawn?
+        created : str, optional 
+                  representing the date of creation of this file.
+        """
         self.path = path
         self.type = type
         self.dbID = dbID
@@ -405,16 +390,16 @@ class File:
         return self.__str__()
 
     def change_file_type(self, reseqdb, new_type):
-        '''
+        """
         Update file type of this object in the DB.
 
         Parameters
         ----------
-        reseqdb : MySQL db connection object  pointing to a reseqtrack db
-        new_type : Str, required
-                   New file type
-        '''
-
+        reseqdb : MySQL db connection 
+                  Object pointing to a reseqtrack db.
+        new_type : str
+                   New file type.
+        """
         update_sql = "update file set type=\"%s\" where file_id=%d" % (new_type, self.dbID)
 
         try:
@@ -429,13 +414,14 @@ class File:
             reseqdb.rollback()
 
     def calc_md5(self):
-        '''
+        """
         Calculate the md5 sum of a file
 
         Returns
         -------
-        The md5sum string
-        '''
+        md5sum : str
+                 The md5sum string.
+        """
         command = "md5sum %s"% self.path
 
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -450,32 +436,30 @@ class File:
         return md5sum
 
     def rename(self, newname, extension, add_date=False, compression=None):
-        '''
+        """
         Change the name of this File object
 
         Parameters
         ----------
-        newname: str, Required
-                   prefix for the new name
-        extension: str, Required
+        newname: str
+                 Prefix for the new name.
+        extension: str
                    Extension to be added to the new filenamed derived from the
-                   'newlayout'. For example, in the previous
-                   example, if we use extension='sites.vcf'.
-                   Then the new filename will be 'lc.bcftools.sites.vcf'
-        add_date: bool, Optional
+                   'newlayout'. For example, in the previous example, if we use extension='sites.vcf'.
+                   Then the new filename will be 'lc.bcftools.sites.vcf'.
+        add_date: bool, default = False
                   If True, then the date will be added to the filename:
                   For example, in the previous example, the new filename will be:
-                  lc.bcftools.20171010.sites.vcf
-        compression: str, Optional
+                  lc.bcftools.20171010.sites.vcf.
+        compression: str, optional
                      Add an extension to specify the compression type.
                      For example, if compression='gz', then the new file name
-                     will be lc.bcftools.20171010.sites.vcf.gz
+                     will be lc.bcftools.20171010.sites.vcf.gz.
 
         Returns
         -------
-        Nothing
-        '''
-
+        None
+        """
         if add_date is True:
             now = datetime.now()
             newname = "{0}.{1}.{2}".format(newname, now.strftime('%Y%m%d'), extension)
@@ -492,22 +476,23 @@ class File:
         self.name = newname
 
     def store(self, reseqdb, do_md5=False, dry=True):
-        '''
+        """
         Store this File in the DB.
 
         Parameters
         ----------
-        reseqdb : MySQL db connection object  pointing to a reseqtrack db
-        do_md5 : Optional, Default=False
-                 Calculate the md5 on the file
-        dry : Bool, Optional
-              If dry=True then it will not store the file in the DB. Default True
+        reseqdb : MySQL db connection object
+                  Object pointing to a reseqtrack db.
+        do_md5 : default = False
+                 Calculate the md5 on the file.
+        dry : bool, default = True
+              If dry=True then it will not store the file in the DB.
 
         Returns
         -------
-        This function returns the path to the stored file
-        '''
-
+        str
+            This function returns the path to the stored file
+        """
         if do_md5 is True:
             md5sum = self.calc_md5()
             self.md5 = md5sum
@@ -546,18 +531,22 @@ class File:
         return self.path
 
     def move(self, newpath, do_md5=False):
-        '''
+        """
         Move this File. It will move this file to a new location
 
         Parameters
         ----------
-        reseqdb : MySQL db connection object  pointing to a reseqtrack db, Required
-        newpath : str, Required
-                  new location for file
-        do_md5 : Optional, Default=False
-                 Calculate the md5 on the file
-        '''
-
+        reseqdb : MySQL db connection object
+                  Object pointing to a reseqtrack db.
+        newpath : str
+                  new location for file.
+        do_md5 : optional, default = False
+                 Calculate the md5 on the file.
+        
+        Returns
+        -------
+        None
+        """
         oldpath = self.path
 
         if do_md5 is True:
@@ -576,30 +565,29 @@ class File:
         os.rename(oldpath, newpath)
 
 class Collection:
-    '''
+    """
     Class to represent a Collection of entities in the ReseqTrack DB
-    '''
-
+    """
     def __init__(self, name, type, table_name, others_dbIDs=None, dbID=None):
-        '''
-        Create a Collection object
+        """
+        Constructor
 
-        Class variables
-        ---------------
-        name : str, Required
-               Name of the collection
-        type : str, Required
-               Type of the collection
+        Parameters
+        ----------
+        name : str
+               Name of the collection.
+        type : str
+               Type of the collection.
         others : list
-            List of objects that will be part of the collection
-        others_dbIDs : list
-            List of dbIDs corresponding to the objects that will be part of the collection
+                 List of objects that will be part of the collection.
         table_name : str
-            This param controls to what table the objects in 'others'
-            point to (i.e. Collection, File, Run)
+                    This param controls to what table the objects in 'others'
+                    point to (i.e. Collection, File, Run).
+        others_dbIDs : list, optional
+                       List of dbIDs corresponding to the objects that will be part of the collection.
         dbID : int, optional
-            Internal dbID for this collection
-        '''
+               Internal dbID for this collection.
+        """
         self.dbID = dbID
         self.name = name
         self.type = type
@@ -617,14 +605,14 @@ class Collection:
                          "Valid table_names are file,sample")) % table_name
 
     def fetch_others_dbIDs(self, reseqdb):
-        '''
+        """
         Fetch the dbIDs of the objects referenced by this collection.
 
         Parameters
         ----------
-        reseqdb : MySQL db connection object  pointing to a reseqtrack db
-        '''
-
+        reseqdb : MySQL db connection object
+                  Object pointing to a reseqtrack db.
+        """
         select_sql_query = "select other_id from collection_group where "\
         "collection_id = %d" % (self.dbID)
 
@@ -645,15 +633,14 @@ class Collection:
             print("Something went wrong in the select query: {}".format(err))
 
     def store(self, reseqdb):
-        '''
+        """
         Store a collection in the DB. It will also update the 'collection_group' table accordingly
 
         Parameters
         ----------
-        reseqdb : MySQL db connection object  pointing to a reseqtrack db
-
-        '''
-
+        reseqdb : MySQL db connection object
+                  Object pointing to a reseqtrack db.
+        """
         # insert new Collection in the 'collection' table
         sql_insert_collection = "INSERT INTO collection (collection_id, name, type, table_name) "\
         "VALUES (NULL, '%s', '%s', '%s')" % (self.name, self.type, self.table_name)
@@ -697,26 +684,26 @@ class Collection:
         return self.__str__()
 
 class Attribute(object):
-    '''
+    """
     Class to represent an Attribute in the ReseqTrack DB
-    '''
+    """
 
     def __init__(self, table_name, other_id, name, value, units=None):
-        '''
-        Create an Attribute object
+        """
+        Constructor
 
-        Class members
-        ---------------
+        Parameters
+        ----------
         table_name : str
-            Attribute object points to this table_name
+                     Attribute object points to this table_name.
         other_id : int
-            id number in table_name
+                   id number in table_name.
         name : str
             Attribute name
         value : str or float
             Value assigned to this attribute name
         units : str, optional
-        '''
+        """
         self.table_name = table_name
         self.other_id = other_id
         self.name = name
@@ -735,11 +722,20 @@ class Attribute(object):
                              "table_names are file,collection") % table_name)
 
     def __numeric_type(self, x):
-        '''
-        Check if the given value is either a str or number. If it is a number
+        """
+        Function to check if the given value is either a str or number. If it is a number
         then check if it is float or int
-        '''
 
+        Parameter
+        ---------
+        x : variable of type either (str, int, float)
+            variable for which the type will be guessed.
+
+        Returns
+        -------
+        type: str
+              Type of `x`
+        """
         type = ""
         try:
             a = float(x)
@@ -749,18 +745,22 @@ class Attribute(object):
                 type = "float"
         except ValueError:
             type = "str"
+
         return type
 
     def store(self, reseqdb):
-        '''
+        """
         Store this object in the DB.
 
         Parameters
         ----------
-        reseqdb : MySQL db connection object  pointing to a reseqtrack db
+        reseqdb : MySQL db connection 
+                  object pointing to a reseqtrack db.
 
-        '''
-
+        Returns
+        -------
+        None
+        """
         #check if object referenced by self.other_id exists in self.table_name
         select_sql_query = "select * from %s where %s_id = %d" % (self.table_name,
                                                                   self.table_name,

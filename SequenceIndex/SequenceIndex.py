@@ -8,21 +8,21 @@ import re
 from collections import defaultdict
 
 class SequenceIndex(object):
-    '''
+    """
     Class representing an index file as it is represented in the IGSR project
-    '''
+    """
 
     def __init__(self, filepath):
-        '''
+        """
         Constructor
 
-         Class variables
+        Class variables
         ---------------
-        filepath : str, required
-                Path to index file
+        filepath : str
+                Path to index file.
         columns : list
-                List with column names in the file
-        '''
+                List with column names in the file.
+        """
 
         self.filepath = filepath
 
@@ -35,7 +35,7 @@ class SequenceIndex(object):
                     break
 
     def runs_per_sample(self, analysis_group=None):
-        '''
+        """
         This function will return a dictionary for which each key will be a different
         sample and the values will be a set with run ids for that sample.
 
@@ -46,9 +46,12 @@ class SequenceIndex(object):
         ----------
         analysis_group : str, optional
                          Only retrieve the run_ids for this particular
-                         analysis_group (i.e. 'low coverage')
-
-        '''
+                         analysis_group (i.e. 'low coverage').
+        
+        Returns
+        -------
+        data : dict
+        """
 
         data = defaultdict(set)
 

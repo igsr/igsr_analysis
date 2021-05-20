@@ -3,7 +3,6 @@ import eHive
 from ReseqTrackDB import File
 from ReseqTrackDB import ReseqTrackDB
 
-
 class StoreFile(eHive.BaseRunnable):
     """Store the file in the DB"""
 

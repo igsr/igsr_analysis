@@ -2,13 +2,14 @@ import eHive
 
 
 class ChrFactory(eHive.BaseRunnable):
-    '''
+    """
     Factory that creates 1 job per chromosome found in a Fasta index file.
 
     Returns
     -------
-    This factory returns a list of dictionaries, one dict per chromosome
-    '''
+    list
+         This factory returns a list of dictionaries, one dict per chromosome
+    """
 
     def fetch_input(self):
         faix = self.param_required('faix')

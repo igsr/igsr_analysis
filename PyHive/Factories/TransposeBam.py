@@ -5,22 +5,22 @@ import subprocess
 
 
 class TransposeBam(eHive.BaseRunnable):
-    '''
+    """
     Takes BAM files from a list and creates transposed BAMs for a certain genomic region
 
     Parameters
     ----------
-    filelist : str, Required
-               Path to list of shortened bam files generated with ShortenFiles
-    transposebam_folder : str, Required
-                          Path to folder containing the transpose_bam binary
-    region : str, Required
-             Genomic region that will be transposed. i.e. chr1:1000-2000
-    outprefix : str, Required
-                Prefix used for output transposed bam file
-    work_dir : str, Required
-               String to folder that will be used to put the files in
-    '''
+    filelist : str
+               Path to list of shortened bam files generated with ShortenFiles.
+    transposebam_folder : str
+                          Path to folder containing the transpose_bam binary.
+    region : str
+             Genomic region that will be transposed. i.e. chr1:1000-2000.
+    outprefix : str
+                Prefix used for output transposed bam file.
+    work_dir : str
+               Path to folder that will be used to put the files in.
+    """
 
     def run(self):
 

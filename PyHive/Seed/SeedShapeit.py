@@ -1,14 +1,13 @@
 import eHive
 
 class SeedShapeit(eHive.BaseRunnable):
-    '''
+    """
     Class for seeding the PyHive::PipeConfig::INTEGRATION::Shapeit pipeline
 
     This pipeline requires a file with the following format:
 
     <input_bed.prefix>\t<chr>
-    '''
-
+    """
     def run(self):
 
         self.warning('Analysing file: %s'% self.param_required('filepath'))

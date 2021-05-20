@@ -7,22 +7,19 @@ import pandas as pd
 
 
 class p3BAMQC:
-    '''
-    Class representing a spreadsheet located at
-    ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/
-    20130606_sample_info.xlsx
-    containing information on the BAM QC done for the p3
-    '''
+    """
+    Class representing a spreadsheet located at ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130606_sample_info/
+    20130606_sample_info.xlsx containing information on the BAM QC done for the p3
+    """
 
     def __init__(self, filepath):
         '''
         Constructor
-
-         Class variables
-        ---------------
-
+ 
+        Parameters
+        ----------
         filepath: str
-             Path to the spreadsheet
+                  Path to the spreadsheet.
         book: ExcelFile object
         '''
 
@@ -32,18 +29,18 @@ class p3BAMQC:
         self.book = xls_file
 
     def get_final_qc_results(self, group):
-        '''
+        """
         Method to get the sheet corresponding to 'Final QC Results'
 
         Parameters
         ----------
-        group: str, 'low coverage' or 'exome'
-                    Get the data for the low coverage or exome worksheet
+        group:  {'low coverage', 'exome'}
+                Get the data for the low coverage or exome worksheet.
 
         Returns
         -------
-        A data.frame object
-        '''
+        df : data.frame object
+        """
 
         sheet = self.book.parse('Final QC Results', skiprows=1, index_col=[0, 1])
 
@@ -58,4 +55,5 @@ class p3BAMQC:
             df = sheet.iloc[:, 0:6]
 
         df.columns = new_column_names
+        
         return df

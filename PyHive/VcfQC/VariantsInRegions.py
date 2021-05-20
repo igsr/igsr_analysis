@@ -6,13 +6,13 @@ from ReseqTrackDB import ReseqTrackDB
 from ReseqTrackDB import Attribute
 
 class VariantsInRegions(eHive.BaseRunnable):
-    '''
+    """
     This runnable will get the number of variants in certain regions passed in a BED file
 
     Returns
     -------
     A param with the path to the file containing the coverage for the regions in the BED file
-    '''
+    """
     
     def run(self):
 

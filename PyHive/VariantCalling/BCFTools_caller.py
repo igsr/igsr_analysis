@@ -4,76 +4,73 @@ import os
 from VariantCalling import BCFTools
 
 class BCFTools_caller(eHive.BaseRunnable):
-    '''
+    """
     Run BCFTools mpileup/call on a BAM file
 
     eHive runnable for BCFTools mpileup/call
 
     Parameters
     ----------
-    work_dir : str, Required
-         Path to the working directory
-    outprefix : str, Required
-         String used as prefix for the output file
-    annots : str, Required
+    work_dir : str
+               Path to the working directory.
+    outprefix : str
+                String used as prefix for the output file.
+    annots : ste
              mpileup parameter
              String representing a comma separated list of
-             annotations used to decorate the VCF
-    chunk: str, Required
-         Interval used by BCFTools for the variant calling
-    bamlist: str, Required
-         Path to BAM file used for the variant calling
-    reference: str, Required
-         Path to the Fasta file used to generate the BAM alignment file
-    bcftools_folder: str, Required
-                     Path to folder containing the BCFTools binary
-    E: Boolean, Optional
+             annotations used to decorate the VCF.
+    chunk: str
+           Interval used by BCFTools for the variant calling.
+    bamlist: str
+             Path to BAM file used for the variant calling.
+    reference: str
+               Path to the Fasta file used to generate the BAM alignment file.
+    bcftools_folder: str
+                     Path to folder containing the BCFTools binary.
+    E: bool, default=False
        mpileup parameter
-       Recalculate BAQ on the fly, ignore existing BQ tags. Default=False
-    F : float, Optional
+       Recalculate BAQ on the fly, ignore existing BQ tags.
+    F : float, default=0.002
         mpileup parameter
-        Minimum fraction of gapped reads. Default=0.002
-    p: Boolean, Optional
+        Minimum fraction of gapped reads.
+    p: bool, optional
        mpileup parameter
        Apply -m and -F thresholds per sample to increase sensitivity of calling.
-       By default both options are applied to reads pooled from all samples
-    d : int, Optional
+       By default both options are applied to reads pooled from all samples.
+    d : int, default=250
         mpileup parameter
-        At a position, read maximally INT reads per input file. Default=250
-    C : int, Optional
+        At a position, read maximally INT reads per input file.
+    C : int, default=50
         mpileup parameter
         Coefficient for downgrading mapping quality for reads containing
-        excessive mismatches. Default=50
-    P : str, Optional
+        excessive mismatches.
+    P : str, default=ILLUMINA
         mpileup parameter
         Comma-delimited list of patforms (determined by @RG-PL) from which indel
-        candidates are obtained. Default= ILLUMINA
-    m_pileup: int, Optional
+        candidates are obtained.
+    m_pileup: int, default=1
               mpileup parameter
-              Minimum number gapped reads for indel candidates. Default=1
-    m_call : boolean, Optional
+              Minimum number gapped reads for indel candidates.
+    m_call : bool, optional
              call parameter
              alternative modelfor multiallelic and rare-variant calling designed
-             to overcome known limitations in -c calling model
-    v : bool, Optional
+             to overcome known limitations in -c calling model.
+    v : bool, default=False
         call parameter
         output variant sites only
-        Default: False
-    S : str, Optional
+    S : str, optional
         call parameter
-        File of sample names to include or exclude if prefixed with "^"
-    threads: int, Optional
-         Number of CPUs used by the caller
-         Default=1
-    verbose : str, Optional
-              Print command line. Possible values are 'True' or 'False'
+        File of sample names to include or exclude if prefixed with "^".
+    threads: int, default=1
+         Number of CPUs used by the caller.
+    verbose : {'True', 'False'}
+              Print command line.
 
     Returns
     -------
-
-    Path to VCF file
-    '''
-
+    str:
+        Path to VCF file
+    """
     def run(self):
 
         if not os.path.isdir(self.param_required('work_dir')):
