@@ -16,8 +16,8 @@ class p3BAMQC(object):
         '''
         Constructor
 
-         Class variables
-        ---------------
+        Parameters
+        ----------
         
         filepath: str
              Path to the spreadsheet

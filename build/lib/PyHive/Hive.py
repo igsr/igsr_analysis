@@ -15,8 +15,9 @@ class HiveDB(object):
     def __init__(self, host=None, user=None, port=0, pwd=None, db=None):
         '''
         Constructor
-        Class variables
-        ---------------
+
+        Parameters
+        ----------
         host : str
             DB hostname
         user : str

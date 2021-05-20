@@ -10,23 +10,23 @@ from Utils.RunProgram import RunProgram
 from collections import namedtuple
 
 class BCFTools(object):
-    '''
+    """
     Class to run the BCFTools variant caller
-    '''
+    """
 
     def __init__(self, bam, reference, bcftools_folder):
-        '''
+        """
         Constructor
 
-        Class variables
-        ---------------
-        bam : str, Required
-             Path to BAM file used for the variant calling process
-        reference : str, Required
-             Path to fasta file containing the reference
-        bcftools_folder : str, Required
-                          Path to folder containing the BCFTools binary
-        '''
+        Parameters
+        ----------
+        bam : str
+             Path to BAM file used for the variant calling process.
+        reference : str
+             Path to fasta file containing the reference.
+        bcftools_folder : str
+                          Path to folder containing the BCFTools binary.
+        """
 
         if os.path.isfile(bam) is False:
             raise Exception("BAM file does not exist")
@@ -39,71 +39,69 @@ class BCFTools(object):
                      P="ILLUMINA", F=0.002, C=50, m_pileup=1, m_call=False,
                      d=250, v=False, O='z', ploidy="GRCh38", threads=1,
                      S=None, r=None, verbose=True):
-        '''
+        """
         Run BCFTools mpileup and then pipe to BCTools call in order to do the variant calling
 
         Parameters
         ----------
-
-        outprefix : str, Required
-                    Prefix for output VCF file. i.e. /path/to/file/test
-        E : bool, Optional
+        outprefix : str
+                    Prefix for output VCF file. i.e. /path/to/file/test.
+        E : bool, default=False
             mpileup parameter
-            Recalculate BAQ on the fly, ignore existing BQ tags. Default=False
-        p : bool, Optional
+            Recalculate BAQ on the fly, ignore existing BQ tags.
+        p : bool, optional
             mpileup parameter
             Apply -m and -F thresholds per sample to increase sensitivity of calling.
             By default both options are applied to reads pooled from all samples.
-        annots : list, Optional
+        annots : list, optional
                  mpileup parameter
-                 Comma separated list of annotations used to decorate the VCF
-        P : str, Optional
+                 Comma separated list of annotations used to decorate the VCF.
+        P : str, default=ILLUMINA
             mpileup parameter
             Comma-delimited list of patforms (determined by @RG-PL) from which indel
-            candidates are obtained. Default= ILLUMINA
-        F : float, Optional
+            candidates are obtained.
+        F : float, default=0.002
             mpileup parameter
-            Minimum fraction of gapped reads. Default=0.002
-        C : int, Optional
+            Minimum fraction of gapped reads.
+        C : int, default=50
             mpileup parameter
             Coefficient for downgrading mapping quality for reads containing excessive
-            mismatches. Default=50
-        d : int, Optional
+            mismatches.
+        d : int, default=250
             mpileup parameter
-            At a position, read maximally INT reads per input file. Default=250
-        m_mpileup : int, Optional
+            At a position, read maximally INT reads per input file.
+        m_mpileup : int, default=1
                     mpileup parameter
-                    Minimum number gapped reads for indel candidates. Default=1
-        m_call : boolean, Optional
+                    Minimum number gapped reads for indel candidates.
+        m_call : bool, optional
                  call parameter
                  alternative modelfor multiallelic and rare-variant calling
-                 designed to overcome known limitations in -c calling model
-        v : bool, Optional
+                 designed to overcome known limitations in -c calling model.
+        v : bool, optional
             call parameter
-            output variant sites only
-        O : str, Optional
+            output variant sites only.
+        O : str, default='z'
             call parameter
-            output type. Default= 'z'
+            output type.
             Possible values are: BCF (b), uncompressed BCF (u), compressed VCF (z),
-            uncompressed VCF (v)
-        ploidy : str, Optional
-                 predefined ploidy. Default: GRCh38
-        threads : int, Optional
-                  Number of extra output compression threads.Default=1
-        S : str, Optional
+            uncompressed VCF (v).
+        ploidy : str, default=GRCh38
+                 predefined ploidy.
+        threads : int, default=1
+                  Number of extra output compression threads.
+        S : str, optional
             call parameter
-            File of sample names to include or exclude if prefixed with "^"
-        r: str, Optional
-           Region used for doing the variant calling in the format chr20:10000-20000
-
-        verbose : bool, Optional
-                  Increase verbosity. Default= True
+            File of sample names to include or exclude if prefixed with "^".
+        r: str, optional
+           Region used for doing the variant calling in the format chr20:10000-20000.
+        verbose : bool, default=True
+                  Increase verbosity.
 
         Returns
         -------
-        A VCF file with variants
-
-        '''
+        outprefix : str
+            A VCF file with variants.
+        """
 
         Arg = namedtuple('Argument', 'option value')
 

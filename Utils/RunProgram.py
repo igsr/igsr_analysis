@@ -21,28 +21,28 @@ class RunProgram(object):
 
         Parameters
         ----------
-        program : str
-                  Program to be run
+        program : str, default
+                  Program to be run.
         path : str, optional
-               Folder containing the 'program'
+               Folder containing the 'program'.
         args : list, optional
                List of named tuples tuples formed by an argument (or option) and
-               its respective value: i.e. arg=namedtuple('Argument', 'option value')
+               its respective value: i.e. arg=namedtuple('Argument', 'option value').
         parameters : list, optional
-                     List of parameters ['c','d']
-        arg_sep : char, optional
+                     List of parameters ['c','d'].
+        arg_sep : char, default=' '
                   char used as a separator between argument and value.
                   i.e. if '=' then we will get 'a'=1
-                  Default is a single whitespace (i.e. ' ')
+                  Default is a single whitespace (i.e. ' ').
         cmd_line : str, optional
-                   String with command line to run
+                   String with command line to run.
         downpipe: list, optional
                   List of RunProgram objects that will be executed in a pipe after
-                  self.program has been executed
+                  self.program has been executed.
         log_name: str, optional
-                  Name of the logger
+                  Name of the logger.
         log_file: filename, optional
-                  Path to the file that will be used by the logging library
+                  Path to the file that will be used by the logging library.
         """
 
         self.cmd_line = cmd_line
@@ -93,8 +93,8 @@ class RunProgram(object):
 
         Parameters
         ----------
-        raise_exc: bool, optional
-                   If true, then raise an Exception when error is found. Default= True
+        raise_exc: bool, default=True
+                   If true, then raise an Exception when error is found.
 
         Returns
         -------

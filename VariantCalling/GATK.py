@@ -10,24 +10,24 @@ from Utils.RunProgram import RunProgram
 from collections import namedtuple
 
 class GATK(object):
-    '''
+    """
     Class to run the different GATK variant callers
-    '''
+    """
 
     def __init__(self, bam, reference, gatk_folder, bgzip_folder=None):
         '''
         Constructor
 
-        Class variables
-        ---------------
-        bam : str, Required
-             Path to BAM file used for the variant calling process
-        reference : str, Required
-             Path to fasta file containing the reference
-        gatk_folder : str, Required
-                       Path to folder containing GATK's jar file
-        bgzip_folder : str, Optional
-                       Path to folder containing the bgzip binary
+        Parameters
+        ----------
+        bam : str
+             Path to BAM file used for the variant calling process.
+        reference : str
+             Path to fasta file containing the reference.
+        gatk_folder : str
+                       Path to folder containing GATK's jar file.
+        bgzip_folder : str, optional
+                       Path to folder containing the bgzip binary.
         '''
 
         if os.path.isfile(bam) is False:
