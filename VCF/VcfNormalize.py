@@ -15,19 +15,19 @@ from collections import namedtuple
 from Utils.RunProgram import RunProgram
 
 class VcfNormalize:
-    '''
+    """
     Normalize variants in a VCF file
-    '''
+    """
 
     def __init__(self, vcf, vt_folder=None, vcflib_folder=None, bgzip_folder=None,
                  gatk_folder=None, bcftools_folder=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
         vcf : str
-              Path to gzipped vcf file
+              Path to gzipped vcf file.
         vt_folder : str, optional
                     Path to folder containing the vt binary.
         vcflib_folder : str, optional
@@ -38,7 +38,7 @@ class VcfNormalize:
                       Path to folder containing the GATK jar file.
         bcftools_folder : str, optional
                           Path to folder containing the bcftools binary.
-        '''
+        """
 
         if os.path.isfile(vcf) is False:
             raise Exception("File does not exist")
@@ -52,7 +52,7 @@ class VcfNormalize:
 
     def run_vtnormalize(self, outprefix, reference, compress=False,
                         verbose=False, outdir=None, n=False):
-        '''
+        """
         Run vt normalize on a vcf file
 
         Parameters
@@ -65,17 +65,17 @@ class VcfNormalize:
                    bgzip compress the normalized VCF.
         outdir : str, optional
                  If provided, then put output files in this folder.
-        n : bool, optional
+        n : bool, default=False
             warns but does not exit when REF is inconsistent
-            with reference sequence for non SNPs. Default=False.
+            with reference sequence for non SNPs.
         verbose : bool, optional
                   if true, then increase verbosity.
 
         Returns
         -------
-        str
+        outprefix : str
            A string with path to normalized file.
-        '''
+        """
 
         if self.vt_folder is None:
             raise Exception("Provide a vt_folder containing the vt binary")
@@ -120,7 +120,7 @@ class VcfNormalize:
 
     def run_bcftoolsnorm(self, outprefix, reference, multiallelics=None,
                          type=None, outdir=None, verbose=False):
-        '''
+        """
         Run bcftools norm on a vcf file
 
         Parameters
@@ -129,9 +129,8 @@ class VcfNormalize:
                     Prefix for outputfile.
         reference : str
                     Path to Fasta file with reference.
-        multiallelic : str, optional
+        multiallelic : {'split','merge'}, optional
                        Operate on multiallelic variants and either split or merge them.
-                       Possible values are: 'split'/'merge'
         type: : {'snps', 'indels', 'both', 'any'}, optional
                 If 'multiallelic' is defined then operate on this type of variant.
         outdir : str, optional
@@ -141,9 +140,9 @@ class VcfNormalize:
 
         Returns
         -------
-        str
+        outprefix : str
            A string with path to normalized file.
-        '''
+        """
 
         if outdir:
             outprefix = "{0}/{1}".format(outdir, outprefix)
@@ -185,7 +184,7 @@ class VcfNormalize:
 
     def run_vcfallelicprimitives(self, outprefix, compress=True, outdir=None,
                                  keepinfo=True, keepgeno=True, downstream_pipe=None, verbose=None):
-        '''
+        """
         Run vcfallelicprimitives on a vcf file
 
         This program is used to decompose complex variants into a canonical SNP and
@@ -199,14 +198,14 @@ class VcfNormalize:
                    Bgzip compress the normalized VCF.
         outdir : str, optional
                  If provided, then put output files in this folder.
-        keepinfo : bool, optional
+        keepinfo : bool, default=True
                    Maintain site and allele-level annotations when decomposing.
                    Note that in many cases, such as multisample VCFs, these won't
                    be valid post-decomposition.  For biallelic loci in single-sample
-                   VCFs, they should be usable with caution. Default=True.
-        keepgeno : bool, optional
+                   VCFs, they should be usable with caution.
+        keepgeno : bool, default=True
                    Maintain genotype-level annotations when decomposing. Similar
-                   caution should be used for this as for keep-info. Default=True.
+                   caution should be used for this as for keep-info.
         downstream_pipe : str, optional
                           If defined, then pipe the output VCF to other tools.
                           i.e. "~/bin/vt/vt sort - | ~/bin/vt/vt uniq -".
@@ -215,9 +214,9 @@ class VcfNormalize:
 
         Returns
         -------
-        str
-           A string with path to decomposed file
-        '''
+        outprefix: str
+           A string with path to decomposed file.
+        """
 
         if outdir:
             outprefix = "{0}/{1}".format(outdir, outprefix)
@@ -260,7 +259,7 @@ class VcfNormalize:
 
     def run_gatk_VariantsToAllelicPrimitives(self, outprefix, reference,
                                              outdir=None, compress=None, verbose=None):
-        '''
+        """
         Run GATK VariantsToAllelicPrimitives in order to decompose MNPs
         into more basic/primitive alleles
 
@@ -279,9 +278,9 @@ class VcfNormalize:
 
         Returns
         -------
-        str
+        outprefix : str
            A string with path to decomposed file.
-        '''
+        """
 
         if self.gatk_folder is None:
             raise Exception("Error. I need that the folder containing the GATK "

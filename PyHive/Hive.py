@@ -14,13 +14,14 @@ class HiveDB(object):
     def __init__(self, host=None, user=None, port=0, pwd=None, db=None):
         """
         Constructor
-        Class variables
-        ---------------
+
+        Parameters
+        ----------
         host : str, optional
             DB hostname.
         user : str, optional
             DB username.
-        port : str, optional
+        port : str, default=0
             DB port.
         pwd : str, optional
             DB password.
@@ -156,8 +157,8 @@ class AnalysisData(object):
         """
         Constructor
 
-        Class variables
-        ---------------
+        Parameters
+        ----------
         analysis_data_id: int
                           Analysis_data_id.
         md5sum: str
@@ -176,8 +177,8 @@ class Job(object):
         """
         Constructor
 
-        Class variables
-        ---------------
+        Parameters
+        ----------
         job_id: int
                 Job id.
         analysis_id: int

@@ -12,37 +12,35 @@ from collections import namedtuple
 from Utils.RunProgram import RunProgram
 
 class VcfUtils(object):
-    '''
+    """
     Class to represent a misc of actions that can be done on a single or multiple VCF files
-    '''
-
-
+    """
     def __init__(self, vcf=None, vcflist=None, bcftools_folder=None, bgzip_folder=None,
                  gatk_folder=None, java_folder=None, tmp_dir=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
         vcf : str, optional
-              Path to gzipped vcf file
+              Path to gzipped vcf file.
         vcflist : list, optional
-                  List of dicts containing setname:vcf_paths (keys:values) pairs
+                  List of dicts containing setname:vcf_paths (keys:values) pairs.
         bcftools_folder : str, optional
-                          Path to folder containing the bcftools binary
+                          Path to folder containing the bcftools binary.
         bgzip_folder : str, optional
-                       Path to folder containing the bgzip binary
+                       Path to folder containing the bgzip binary.
         gatk_folder : str, optional
-                      Path to folder containing the jar file
+                      Path to folder containing the jar file.
         java_folder : str, optional
-                      Path to folder containing the java binary
+                      Path to folder containing the java binary.
         tmp_dir : str, optional
                   Path to java temporary directory. This needs to be
                   set for GATK modules that
-                  fail because there is not enough space in the default java tmp dir
+                  fail because there is not enough space in the default java tmp dir.
 
         Imp: Either 'vcf' or 'vcflist' variables should be initialized
-        '''
+        """
 
         if not vcf and not vcflist:
             raise Exception("Either a vcf file or a list of vcf files should be used\
@@ -61,27 +59,26 @@ class VcfUtils(object):
         self.tmp_dir = tmp_dir
 
     def reheader(self, newheader, outprefix, samplefile=None, verbose=False):
-        '''
+        """
         Modifiy the VCF's header with the newheader
 
         Parameters
         ----------
-        newheader : string
-                    Path to the file containing the new header
+        newheader : str
+                    Path to the file containing the new header.
         outprefix : string
                     Prefix for output files
-        samplefile : string, optional
+        samplefile : str, optional
                      Path to the file with the sample names that will included
-                     in the new header
-        verbose : bool, optional
-                  increase the verbosity, default=False
+                     in the new header.
+        verbose : bool, default=False
+                  increase the verbosity.
 
         Returns
         -------
-        filename
-                 Path to the VCF with the modified header
-        '''
-
+        outfile : str
+                 Path to the VCF with the modified header.
+        """
         outfile = outprefix+".reheaded.vcf.gz"
 
         Arg = namedtuple('Argument', 'option value')
@@ -102,24 +99,24 @@ class VcfUtils(object):
         return outfile
 
     def add_to_header(self, header_f, outfilename, line_ann):
-        '''
+        """
         Function to add to the header of a VCF the string passed with 'line_ann'
 
         Parameters
         ----------
         header_f : str
-                   Path to file containing the header file that will be modified
+                   Path to file containing the header file that will be modified.
         outfilename : str
-                      Path to the new header file that is modified
+                      Path to the new header file that is modified.
         line_ann : str
-               Str with line that will be used to add to the header
+                   Str with line that will be used to add to the header.
 
         Returns
         -------
-        filename
+        outfilename : str
                 Path to modified header file. The new annotation will be added in the following line
-                after the desired annotation
-        '''
+                after the desired annotation.
+        """
 
         of = open(outfilename, 'w')
 
@@ -151,43 +148,43 @@ class VcfUtils(object):
     def combine(self, labels, reference, outprefix, compress=False, outdir=None,
                 ginterval=None, genotypemergeoption=None, filteredrecordsmergetype=None,
                 threads=1, options=None, verbose=False):
-        '''
+        """
         Combine VCFs using GATK's CombineVariants into a single VCF
 
         Parameters
         ----------
         labels : list
                  List of labels used for each of the VCFs in self.vcflist. The order of the labels
-                 should be the same that the VCFs in the list
+                 should be the same that the VCFs in the list.
         reference : str
-                    Path to Fasta file with reference
+                    Path to Fasta file with reference.
         outprefix : str
-                    Prefix used for output file
-        compress : bool, optional
-                   Compress the output VCF with bgzip. Default=False
+                    Prefix used for output file.
+        compress : bool, default=False
+                   Compress the output VCF with bgzip.
         outdir : str, optional
-                 Path to folder used to write the results to
+                 Path to folder used to write the results to.
         ginterval : str, optional
-                    Genomic interval used to restrict the analysis. i.e. chr20:1000-2000
+                    Genomic interval used to restrict the analysis. i.e. chr20:1000-2000.
         genotypemergeoption : {'UNIQUIFY', 'PRIORITIZE', 'UNSORTED', 'REQUIRE_UNIQUE'}, optional
                               Determines how we should merge genotype records for samples shared
-                              across the ROD files
+                              across the ROD files.
         filteredrecordsmergetype : {'KEEP_IF_ANY_UNFILTERED', 'KEEP_IF_ANY_UNFILTERED',
         'KEEP_UNCONDITIONAL'}, optional
                                    Determines how we should handle records seen at the
-                                   same site in the VCF, but with different FILTER fields
-        threads : int, optional
-                  Number of trades to use. Default=1
+                                   same site in the VCF, but with different FILTER fields.
+        threads : int, default=1
+                  Number of trades to use.
         options : list, optional
-                  List of options. i.e. ['-env','--filteredAreUncalled']
-        verbose : bool, optional
-                  increase the verbosity, default=False
+                  List of options. i.e. ['-env','--filteredAreUncalled'].
+        verbose : bool, default=False
+                  increase the verbosity.
 
         Returns
         -------
-        filename
-                Path to the merged VCF
-        '''
+        outfile : str
+                Path to the merged VCF.
+        """
 
         Arg = namedtuple('Argument', 'option value')
 
@@ -247,7 +244,7 @@ class VcfUtils(object):
         return outfile
 
     def rename_chros(self, chr_types, outfile, compress=True):
-        '''
+        """
         Function to modify the chr names in the VCF file
         For example:
         If file has UCSC-type chr names (i.e. chr1,chr2,...) then this
@@ -258,16 +255,15 @@ class VcfUtils(object):
         ----------
         chr_types : {'ucsc','ensembl'}
                     Type of chr names that will be written to the file.
-        outfile : filename
-                  File used for the output VCF
-        compress : bool, optional
-                   Default: True
+        outfile : str
+                  File used for the output VCF.
+        compress : bool, default=True
 
         Returns
         -------
-        filename
-                 Path to the VCF with the chrosomes renamed
-        '''
+        outfile : str
+                 Path to the VCF with the chrosomes renamed.
+        """
 
         command = ""
         if chr_types == 'ensembl':
@@ -297,21 +293,20 @@ class VcfUtils(object):
         return outfile
 
     def correct_ambiguity_codes(self, outfile):
-        '''
+        """
         Function to correct the ambiguity bases in the VCF. This ambiguity
         may appear in the REF or ALT columns
 
         Parameters
         ----------
-        outfile : filename
-                  File where the output VCF will be written
+        outfile : str
+                  File where the output VCF will be written.
 
         Returns
         -------
-        filename
-                 Path to vcf.gz file compressed with GZIP
-        '''
-
+        outfile : str
+                 Path to vcf.gz file compressed with GZIP.
+        """
         ref_count = 0
         alt_count = 0
 
@@ -343,23 +338,22 @@ class VcfUtils(object):
         return outfile
 
     def drop_genotypes(self, outfile, verbose=False):
-        '''
+        """
         Function to drop the Genotype information from a VCF.
         This function uses bcftools -G to perform this operation
 
         Parameters
         ----------
-        outfile : filename
-                  File where the output VCF will be written
-        verbose : bool, optional
-                  increase the verbosity, default=False
+        outfile : str
+                  File where the output VCF will be written.
+        verbose : bool, default=False
+                  increase the verbosity.
 
         Returns
         -------
-        filename
-                 Path to the vcf.gz file without the GT information
-        '''
-
+        outfile : str
+                 Path to the vcf.gz file without the GT information.
+        """
         Arg = namedtuple('Argument', 'option value')
 
         args = [Arg('-o', outfile), Arg('-O', 'z')]
@@ -375,23 +369,22 @@ class VcfUtils(object):
         return outfile
 
     def drop_info(self, outfile, verbose=False):
-        '''
+        """
         Function to remove the INFO annotation from a VCF.
         This function uses bcftools annotate  to perform this operation
 
         Parameters
         ----------
-        outfile : filename
-                  File where the output VCF will be written
-        verbose : bool, optional
-                  increase the verbosity, default=False
+        outfile : str
+                  File where the output VCF will be written.
+        verbose : bool, default=False
+                  increase the verbosity.
 
         Returns
         -------
-        filename
-                 Path to the vcf.gz file without the INFO annotation
-        '''
-
+        outfile : str
+                 Path to the vcf.gz file without the INFO annotation.
+        """
         Arg = namedtuple('Argument', 'option value')
 
         args = [Arg('-o', outfile), Arg('-O', 'z')]
@@ -409,25 +402,24 @@ class VcfUtils(object):
         return outfile
 
     def convert_PL2GL(self, outfile, threads=1, verbose=False):
-        '''
+        """
         Function to convert PL fields into GT.
         This function makes use of Bcftools +tag2tag plugin
 
         Parameters
         ----------
-        outfile : filename
-                  File where the output VCF will be written
-        threads : int, optional
-                  Number of trades to use. Default=1
-        verbose : bool, optional
-                  increase the verbosity, default=False
+        outfile : str
+                  File where the output VCF will be written.
+        threads : int, default=1
+                  Number of trades to use.
+        verbose : bool, default=False
+                  increase the verbosity.
 
         Returns
         -------
-        filename
-                 Path to the vcf.gz file with the PL fields converted
-        '''
-
+        outfile : str
+                 Path to the vcf.gz file with the PL fields converted.
+        """
         Arg = namedtuple('Argument', 'option value')
 
         params = [self.vcf, '-Oz', '--', '-r', '--pl-to-gl']

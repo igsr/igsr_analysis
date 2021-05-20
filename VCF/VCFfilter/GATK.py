@@ -12,35 +12,34 @@ from collections import namedtuple
 from Utils.RunProgram import RunProgram
 
 class GATK(object):
-    '''
+    """
     Class to filter a VCF file using different GATK components
-    '''
+    """
 
     def __init__(self, vcf, reference, caller='UG', bgzip_folder=None, tabix_folder=None,
                  gatk_folder=None, tmp_dir=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
         vcf : str
-              Path to gzipped vcf file
-        caller : str, optional
-                 Caller used to generate the VCF: UG, bcftools
-                 Default= 'UG'
-        reference : filename
-                    Path to fasta file containing the reference
+              Path to gzipped vcf file.
+        caller : str, default='UG'
+                 Caller used to generate the VCF: UG, bcftools.
+        reference : str
+                    Path to fasta file containing the reference.
         bgzip_folder : str, optional
-                       Path to folder containing the bgzip binary
+                       Path to folder containing the bgzip binary.
         tabix_folder : str, optional
-                       Path to folder containing the tabix binary
+                       Path to folder containing the tabix binary.
         gatk_folder : str, optional
-                      Path to folder containing GATK's jar file
+                      Path to folder containing GATK's jar file.
         tmp_dir : str, optional
                   Path to java temporary directory. This needs to be
                   set for GATK modules such as ApplyRecalibrator that
-                  fails because there is not enough space in the default java tmp dir
-        '''
+                  fails because there is not enough space in the default java tmp dir.
+        """
 
         if os.path.isfile(vcf) is False:
             raise Exception("File does not exist")
@@ -58,39 +57,38 @@ class GATK(object):
                                 annotations=None, tranches=None,
                                 outprefix="recalibrate", verbose=None,
                                 log_file=None):
-        '''
+        """
         Run GATK's VariantRecalibrator on a VcfFilter object
 
         Parameters
         ----------
-        resources : filename
-                    JSON file with resources to add using the -resources option, Required
+        resources : str
+                    JSON file with resources to add using the -resources option.
         mode : {'SNP','INDEL'}
-               Recalibration mode to employ
+               Recalibration mode to employ.
         intervals :  chr1:1-1000, optional
-                     One or more genomic intervals over which to operate
+                     One or more genomic intervals over which to operate.
         max_gaussians : int, optional
-                        Max number of Gaussians for the positive model
+                        Max number of Gaussians for the positive model.
         annotations : list, optional
                       List of annotations to be used. Default=['DP', 'QD', 'FS', 'SOR',
-                      'MQ', 'MQRankSum', 'ReadPosRankSum', 'InbreedingCoeff']
-        tranches : list, optional
+                      'MQ', 'MQRankSum', 'ReadPosRankSum', 'InbreedingCoeff'].
+        tranches : list, default=[100.0,99.9,99.0,90.0]
                    Each element in the list will correspond to the  levels of truth
                    sensitivity at which to slice the data. (in percent, that is 1.0
-                   for 1 percent). Default=[100.0,99.9,99.0,90.0]
-        outprefix : str, optional
+                   for 1 percent).
+        outprefix : str, default='recalibrate'
                     out prefix used for -recalFile, -tranchesFile, -rscriptFile.
-                    Default= recalibrate
         verbose : bool, optional
                   Increase verbosity
-        log_file : filename, optional
-                   Path to file that will used for logging the GATK stderr and stdout
+        log_file : str, optional
+                   Path to file that will used for logging the GATK stderr and stdout.
 
         Returns
         -------
         dict
             Dictionary with location of tranches and recal files
-        '''
+        """
 
         if annotations is None:
             annotations = ['DP', 'QD', 'FS', 'SOR', 'MQ', 'MQRankSum',
@@ -172,35 +170,35 @@ class GATK(object):
     def run_applyrecalibration(self, mode, recal_file, tranches_file, outprefix,
                                ts_filter_level=99.0, num_threads=1, compress=True,
                                verbose=None, log_file=None):
-        '''
+        """
         Run GATK's ApplyRecalibration on a VcfFilter object
 
         Parameters
         ----------
         mode : {'SNP','INDEL'}
-               Recalibration mode to employ
-        recal_file : filename
-                     The input recal file used by ApplyRecalibration
-        tranches_file : filename
-                        The input tranches file describing where to cut the data
+               Recalibration mode to employ.
+        recal_file : str
+                     The input recal file used by ApplyRecalibration.
+        tranches_file : str
+                        The input tranches file describing where to cut the data.
         outprefix : str
-                    Prefix used for the output
-        ts_filter_level : float, optional
-                          The truth sensitivity level at which to start filtering. Default=99.0
-        num_threads : int, optional
-                      Number of data threads to allocate to this analysis. Default=1
-        compress : bool
-                   Compress the recalibrated VCF. Default= True
+                    Prefix used for the output.
+        ts_filter_level : float, default=99.0
+                          The truth sensitivity level at which to start filtering.
+        num_threads : int, default=1
+                      Number of data threads to allocate to this analysis.
+        compress : bool, default=True
+                   Compress the recalibrated VCF.
         verbose : bool, optional
-                  Increase verbosity
-        log_file : filename, optional
-                   Path to file that will used for logging the GATK stderr and stdout
+                  Increase verbosity.
+        log_file : str, optional
+                   Path to file that will used for logging the GATK stderr and stdout.
 
         Returns
         -------
-        filename
-                 Path to filtered VCF file
-        '''
+        outfile : str
+                 Path to filtered VCF file.
+        """
 
         if self.caller != 'UG':
             raise Exception("VCF type %s is incompatible" % self.caller)

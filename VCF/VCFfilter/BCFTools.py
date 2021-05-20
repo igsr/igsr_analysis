@@ -12,23 +12,23 @@ from Utils.RunProgram import RunProgram
 from collections import namedtuple
 
 class BCFTools(object):
-    '''
+    """
     Class to perform different filtering/selecting operations using BCFTools
     https://samtools.github.io/bcftools/bcftools.html
-    '''
+    """
     def __init__(self, vcf, bcftools_folder=None, tabix_folder=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
-        vcf : filename
-              Path to gzipped vcf file
-        bcftools_folder : str
-                          Path to folder containing the bcftools binary
+        vcf : str
+              Path to gzipped vcf file.
+        bcftools_folder : str, optional
+                          Path to folder containing the bcftools binary.
         tabix_folder : str, optional
-                       Path to folder containing the tabix binary
-        '''
+                       Path to folder containing the tabix binary.
+        """
 
         if os.path.isfile(vcf) is False:
             raise Exception("File does not exist")
@@ -40,27 +40,27 @@ class BCFTools(object):
     def subset_vcf(self, outprefix, bed=None, region=None, outdir=None,
                    create_index=False, verbose=None, action='exclude',
                    apply_filters=None, threads=1):
-        '''
+        """
         Subset the vcf file using a BED file/region having the coordinates of the
         variants to exclude/include
 
         Parameters
         ----------
         bed : str, optional
-              BED file with coordinates to exclude/include
+              BED file with coordinates to exclude/include.
         region : str, optional
                  String with region to consider: chr1, chr1:1000-1500, etc...
         outprefix : str
-                    Prefix for outputfiles
+                    Prefix for outputfiles.
         outdir : str, optional
-                 If provided, then put output files in this folder
-        create_index : bool, optional
-                       Generate a tabix index. Default=False
+                 If provided, then put output files in this folder.
+        create_index : bool, default=False
+                       Generate a tabix index. 
         verbose : bool, optional
-                  verbose
-        action : str, optional
+                  verbose.
+        action : str, default=exclude
                 Exclude or include variants from the bed file passed through the
-                bed option. Default= exclude
+                bed option.
         apply_filters : str, optional
                        Apply a filter string: i.e. "PASS,."
         threads : int, optional
@@ -68,9 +68,9 @@ class BCFTools(object):
 
         Returns
         -------
-        filename
-                 Path to gzipped VCF file that will have the desired variants excluded/included
-        '''
+        outprefix : str
+                 Path to gzipped VCF file that will have the desired variants excluded/included.
+        """
 
         if action != 'include' and action != 'exclude':
             raise Exception("action argument should be either include or exclude")
@@ -120,23 +120,23 @@ class BCFTools(object):
         return outprefix
 
     def filter(self, name, expression, verbose=None):
-        '''
+        """
         Run bcftools filter on a VCF file
 
         Parameters
         ----------
         name : str
-                 annotate FILTER column with <str>
+                 annotate FILTER column with <str>.
         expression : str
-                   exclude sites for which expression is true. i.e. 'INFO/DP>24304 | MQ<34'
+                   exclude sites for which expression is true. i.e. 'INFO/DP>24304 | MQ<34'.
         verbose : bool, optional
-                  Increase verbosity
+                  Increase verbosity.
 
         Returns
         -------
-        filename
-                Path to the filtered VCF file
-        '''
+        outfile : str
+                Path to the filtered VCF file.
+        """
 
         outfile = self.vcf + ".filtered.vcf.gz"
 
@@ -157,32 +157,30 @@ class BCFTools(object):
 
     def filter_by_variant_type(self, outprefix, v_type="snps", compress=True, biallelic=False,
                                action="select", verbose=None):
-        '''
+        """
         Method to filter a VCF file by variant type. For example, to extract
         only the SNPs
 
         Parameters
         ----------
-        v_type : {'snps','indels','mnps','other','both'}
-                 Default=snps
+        v_type : {'snps','indels','mnps','other','both'}, default=snps
                  Extract/Filter (depending on the value of the 'action'
-                 argument) a certain variant type
-        compress : bool, optional
-                   If True then generate a vcf.gz file. Default=True
-        biallelic : bool, optional
-                    Select only biallelic variants. Default=False
-        action : {'select', 'exclude'}
-                 Default=select
+                 argument) a certain variant type.
+        compress : bool, default=True
+                   If True then generate a vcf.gz file.
+        biallelic : bool, default=False
+                    Select only biallelic variants.
+        action : {'select', 'exclude'}, default='select'
         outprefix : str
-                    Prefix used for the output files
+                    Prefix used for the output files.
         verbose : bool, optional
-                  Increase verbosity
+                  Increase verbosity.
 
         Returns
         -------
-        filename
-                 Path to the filtered VCF
-        '''
+        outprefix : str
+                 Path to the filtered VCF.
+        """
 
         if v_type not in ('snps', 'indels', 'mnps', 'other', 'both'):
             raise Exception("type value is not valid. Valid values are 'snps'/"
@@ -231,25 +229,25 @@ class BCFTools(object):
         return outprefix
 
     def select_variants(self, outprefix, uncalled=None, threads=1, verbose=None):
-        '''
+        """
         Run bcftools view to select only the variants (exclude the 0|0 genotypes)
 
         Parameters
         ----------
         outprefix : str
-                    Prefix used for the output file
+                    Prefix used for the output file.
         uncalled : {'exclude','include'}, optional.
-                   Select/Exclude sites with an uncalled genotype
-        threads: int, optional
-                 Number of output compression threads to use in addition to main thread. Default=0
-        verbose : Boolean, optional
-                  Increase verbosity
+                   Select/Exclude sites with an uncalled genotype.
+        threads: int, default=0
+                 Number of output compression threads to use in addition to main thread.
+        verbose : bool, optional
+                  Increase verbosity.
 
         Returns
         -------
-        filename
-                Returns the path for the VCF with the selected variants
-        '''
+        outfile : str
+                Returns the path for the VCF with the selected variants.
+        """
         outfile = outprefix + ".onlyvariants.vcf.gz"
 
         Arg = namedtuple('Argument', 'option value')

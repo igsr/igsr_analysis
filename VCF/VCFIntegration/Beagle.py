@@ -10,30 +10,30 @@ import tempfile
 import re
 
 class Beagle(object):
-    '''
+    """
     Class to operate on a VCF file and run Beagle and other Beagle-related operations on it
-    '''
+    """
 
     def __init__(self, vcf, beagle_folder=None, beagle_jar=None, makeBGLCHUNKS_folder=None,
                  prepareGenFromBeagle4_folder=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
-        vcf : filename
-              Path to vcf file
+        vcf : str
+              Path to vcf file.
         beagle_folder : str, optional
-                        Path to folder containing Beagle's jar file
+                        Path to folder containing Beagle's jar file.
         beagle_jar : str, optional
-                     Name of Beagle jar file. i.e. beagle.08Jun17.d8b.jar
+                     Name of Beagle jar file. i.e. beagle.08Jun17.d8b.jar.
         makeBGLCHUNKS_folder : str, optional
                                Path to folder containing makeBGLCHUNKS binary
                                (see https://mathgen.stats.ox.ac.uk/genetics_software/
-                               shapeit/shapeit.html#gettingstarted)
+                               shapeit/shapeit.html#gettingstarted).
         prepareGenFromBeagle4_folder : str, optional
-                                       Path to folder containing makeBGLCHUNKS binary
-        '''
+                                       Path to folder containing makeBGLCHUNKS binary.
+        """
 
         if os.path.isfile(vcf) is False:
             raise Exception("File does not exist")
@@ -46,44 +46,43 @@ class Beagle(object):
 
     def run_beagle(self, outprefix, outdir=None, region=None, verbose=False,
                    correct=False, **kwargs):
-        '''
+        """
         Method that wraps Beagle (see https://faculty.washington.edu/browning/beagle/beagle.html)
         and will be used to call genotypes on a VCF file containing GT likelihoods
 
         Parameters
         ----------
         outprefix: str
-                   Prefix used for output file
+                   Prefix used for output file.
         outdir : str, optional
-                 outdir for output files
+                 outdir for output files.
         region : str, optional
-                 chr or chr interval that will be analyzed. i.e. chr20 or chr20:10000000-11000000
+                 chr or chr interval that will be analyzed. i.e. chr20 or chr20:10000000-11000000.
         verbose : bool, optional
-                  if true, then print the command line used for running Beagle
-        correct : bool, optional
+                  if true, then print the command line used for running Beagle.
+        correct : bool, default=False
                   Note: that it seems there is an incompatibility between zlib libraries used in
                   Beagle4 and in BOOST on some platforms. This involves either the last
                   line of the file being skipped or a segfault. If correct=True,
                   then this function will fix this issue by recompressing the
-                  Beagle4 output files. Default=False
-        window : int, optional
+                  Beagle4 output files.
+        window : int, default=5000
                  number of markers to include in each sliding
-                 window. Default: 50000
-        overlap : int, optional
+                 window.
+        overlap : int, default=3000
                   specifies the number of markers of overlap between sliding
-                  windows. Default: 3000
-        niterations : unt, optional
-                      specifies the number of phasing iterations. Default:
-                      niterations=5
+                  windows.
+        niterations : int, default=5
+                      specifies the number of phasing iterations.
         nthreads : int, optional
                    number of threads. If not specified then the nthreads parameter
-                   will be set equal to the number of CPU cores on the host machine
+                   will be set equal to the number of CPU cores on the host machine.
 
         Returns
         -------
-        filename
-                Compressed VCF file with the genotype calls
-        '''
+        outfile : str
+                Compressed VCF file with the genotype calls.
+        """
 
         if self.beagle_folder is None or self.beagle_jar is None:
             raise Exception("Provide the folder containing the Beagle jar "
@@ -145,27 +144,26 @@ class Beagle(object):
         return outfile
 
     def make_beagle_chunks(self, window, overlap, outfile, verbose=True):
-        '''
+        """
         Method to generate the chromosome chunks for Beagle
         see https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#gettingstarted
 
         Parameters
         ----------
         window : int
-                 The chunk size (--window) in number of variant sites
+                 The chunk size (--window) in number of variant sites.
         overlap : int
-                  The overlap size (--overlap) in number of variant sites
-        outfile : filename
-                  Output file name. i.e. 'chunk.coordinates'
-        verbose : bool, optional
-                  If true, then print the command line used for running this tool.Default=True
+                  The overlap size (--overlap) in number of variant sites.
+        outfile : str
+                  Output file name. i.e. 'chunk.coordinates'.
+        verbose : bool, default=True
+                  If true, then print the command line used for running this tool.
 
         Returns
         -------
-        filename
-                Path to file with the coordinates of the chunk
-
-        '''
+        outfile : str
+                Path to file with the coordinates of the chunk.
+        """
 
         if self.makeBGLCHUNKS_folder is None:
             raise Exception("Provide the folder for the makeBGLCHUNKS binary")
@@ -187,7 +185,7 @@ class Beagle(object):
         return outfile
 
     def prepare_Gen_From_Beagle4(self, prefix_in, outprefix, threshold=0.995, verbose=False):
-        '''
+        """
         Method that uses prepareGenFromBeagle4 in order to convert the different Beagle chunks
         generated by 'self.make_beagle_chunks' into a single concatenated output that can be used
         with SHAPEIT.
@@ -205,19 +203,18 @@ class Beagle(object):
                     input.shapeit.chr22.gen.sample
                     input.shapeit.chr22.hap.gz
                     input.shapeit.chr22.hap.sample
-        threshold : float, optional
+        threshold : float, default=0.995
                     Threshold meaning that all genotypes with a posterior above 0.995 are directly
                     fixed and will only need phasing in the SHAPEIT step.
-                    Default: 0.995
-        verbose : bool, optional
-                  if true, then print the command line used for running this tool.Default=False
+        verbose : bool, default=False
+                  if true, then print the command line used for running this tool.
 
         Returns
         -------
-        dict
+        outdict : dict
             A dict with the path to the 4 output files (*.gen.* and *.hap.*)
-            that can be used with SHAPEIT
-        '''
+            that can be used with SHAPEIT.
+        """
 
         if self.prepareGenFromBeagle4_folder is None:
             raise Exception("Provide the folder for the prepareGenFromBeagle4 binary")

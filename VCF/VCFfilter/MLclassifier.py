@@ -16,27 +16,27 @@ from sklearn.preprocessing import Imputer
 from sklearn.feature_selection import RFE
 
 class MLclassifier:
-    '''
+    """
     Class to filter a VCF using a supervised machine learning binary classifier. This class
     relies on a truth set (for example the GIAB consensus call set) that can be used to train
     the model
-    '''
+    """
     def __init__(self, fitted_model=None, bcftools_folder=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
-        fitted_model : filename, optional
-                       Path to file containing the serialized fitted model
+        fitted_model : str, optional
+                       Path to file containing the serialized fitted model.
         bcftools_folder : str, optional
-                          Path to folder containing the bcftools binary
-        '''
+                          Path to folder containing the bcftools binary.
+        """
         self.fitted_model = fitted_model
         self.bcftools_folder = bcftools_folder
 
     def __process_df(self, tp_annotations, fp_annotations):
-        '''
+        """
         Private function that performs three types of operations on the tp_annotations
         and fp_annotations:
 
@@ -46,17 +46,17 @@ class MLclassifier:
 
         Parameters
         ----------
-        tp_annotations : filename
+        tp_annotations : str
                          Path to file with the variant annotations derived from the call
-                         set with the True positives
-        fp_annotations : filename
+                         set with the True positives.
+        fp_annotations : str
                          Path to file with the variant annotations derived from the call
-                         set with the False positives
+                         set with the False positives.
 
         Return
         ------
-        A normalized dataframe
-        '''
+        aDF_std :A normalized dataframe
+        """
 
         #
         ## Read-in the data
@@ -110,29 +110,28 @@ class MLclassifier:
         return aDF_std
 
     def train(self, tp_annotations, fp_annotations, outprefix, test_size=0.25):
-        '''
+        """
         Function to train the binary classifier using a gold standart call set
 
         Parameters
         ----------
-        tp_annotations : filename
+        tp_annotations : str
                          Path to file with the variant annotations derived from the
-                         call set with the True positives
-        fp_annotations : filename
+                         call set with the True positives.
+        fp_annotations : str
                          Path to file with the variant annotations derived from the
-                         call set with the False positives
+                         call set with the False positives.
         outprefix : str
-                    String used as the prefix for the fitted model
-        test_size : float
+                    String used as the prefix for the fitted model.
+        test_size : float, default=0.25
                     Fraction of the initial call set that will be
-                    used for assessing the model
-                    Default: 0.25
+                    used for assessing the model.
 
         Returns
         -------
-        filename
-                 Path to serialized fitted model
-        '''
+        outfile : str
+                 Path to serialized fitted model.
+        """
 
         aDF_std = self.__process_df(tp_annotations, fp_annotations)
 
@@ -174,7 +173,7 @@ class MLclassifier:
         return outfile
 
     def predict(self, outprefix, annotation_f, filter_label='MLFILT', cutoff=0.8):
-        '''
+        """
         Function to apply a serialized logistic regression model on a file
         containing the annotations for each site and to predict if the variant is real
 
@@ -183,24 +182,23 @@ class MLclassifier:
         Parameters
         ----------
         outprefix: str
-                   String used as the prefix for the fitted model
+                   String used as the prefix for the fitted model.
         annotation_f: filename
                       Path to file with the sites and annotations that will be classified
-        filter_label: str, Optional
+        filter_label: str, default='MLFILT'
                       String with the label used for FILTER that can be used with
                       'bcftools annotate' in order to annotate the VCF file.
-                      Default='MLFILT'
-        cutoff : float, Optional
+        cutoff : float, default=0.8
                  Cutoff value used for deciding if a variant is a TP.
                  Sites with a prob_1<cutoff will be considered as FP and
                  the FILTER column will be the string in the 'filter_label' option.
-                 If prob_1>=cutoff then the FILTER column will be PASS. Default=0.8
+                 If prob_1>=cutoff then the FILTER column will be PASS.
 
         Returns
         -------
-        filename
-                 Path to table file with predictions
-        '''
+        outfile : str
+                 Path to table file with predictions.
+        """
         imputer = Imputer(strategy="median")
 
         # load the serialized model
@@ -247,7 +245,7 @@ class MLclassifier:
         return outfile
 
     def rfe(self, tp_annotations, fp_annotations, n_features, outreport):
-        '''
+        """
         Function to select the variant annotations that are more relevant for
         predicting if a variant is real. This is achieved by running sklearn.feature_selection.RFE
         method to perform Recursive Feature Elimination, which works by recursively considering
@@ -255,21 +253,22 @@ class MLclassifier:
 
         Parameters
         ----------
-        tp_annotations : filename
+        tp_annotations : str
                          Path to file with the variant annotations derived from the call set with
-                         the True positives
-        fp_annotations : filename
+                         the True positives.
+        fp_annotations : str
                          Path to file with the variant annotations derived from the call set with
-                         the False positives
+                         the False positives.
         n_features : int
-                     Number of features to select by RFE
-        outreport : filename
-                    Filename used to write the report to
+                     Number of features to select by RFE.
+        outreport : str
+                    Filename used to write the report to.
 
         Returns
         -------
-        filename  Containing report on selected features
-        '''
+        outreport : str
+            Containing report on selected features.
+        """
 
         aDF_std = self.__process_df(tp_annotations, fp_annotations)
         feature_names = aDF_std.columns.drop(['is_valid'])

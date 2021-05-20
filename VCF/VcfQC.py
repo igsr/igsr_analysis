@@ -12,15 +12,14 @@ from collections import namedtuple
 from Utils.RunProgram import RunProgram
 
 class VcfQC(object):
-    '''
+    """
     Class to do quality assessment on a VCF file
-    '''
-
+    """
 
     def __init__(self, vcf, bgzip_folder=None, bcftools_folder=None,
                  bedtools_folder=None, picard_folder=None, r_folder=None,
                  r_scripts=None, tabix_folder=None):
-        '''
+        """
         Constructor
 
         Parameters
@@ -41,8 +40,8 @@ class VcfQC(object):
                     Path to folder containing the R scripts required for
                     constructing some of the plots used by this class (i.e. plot_variants.R).
         tabix_folder : str, optional
-                        Path to folder containing the tabix binary.
-        '''
+                       Path to folder containing the tabix binary.
+        """
 
         if os.path.isfile(vcf) is False:
             raise IOError("File does not exist")
@@ -58,7 +57,7 @@ class VcfQC(object):
 
     def calc_concordance(self, truth_vcf, truth_sample, call_sample, outprefix,
                          outdir=None, intervals=None, verbose=None):
-        '''
+        """
         Method to calculate the genotype concordance between VcfQC.vcf and Truth VCF.
         It will run Picard's GenotypeConcordance
 
@@ -82,8 +81,8 @@ class VcfQC(object):
 
         Returns
         -------
-        GTPconcordance object
-        '''
+        gtp_con : GTPconcordance object
+        """
 
         if self.picard_folder is None:
             raise Exception("Folder containing Picard jar file is required")
@@ -115,7 +114,7 @@ class VcfQC(object):
         return gtp_con
 
     def get_chros(self, filter_str=None, chr_f=None, verbose=None):
-        '''
+        """
         Method to get a list of chromosomes present in a file
 
         Parameters
@@ -143,7 +142,7 @@ class VcfQC(object):
                   self.vcf and NOT in 'chr_f'
                  'in_B' whose values will be the chros NOT present in
                   self.vcf and PRESENT in 'chr_f'.
-        '''
+        """
 
         params = ['--no-header', self.vcf, "|cut -f1 |uniq"]
 
@@ -188,7 +187,7 @@ class VcfQC(object):
             }
 
     def number_variants_in_region(self, region, outprefix, verbose=None):
-        '''
+        """
         Method to get the number of variants in a particular region/s
 
         Parameters
@@ -203,9 +202,9 @@ class VcfQC(object):
 
         Returns
         -------
-        filename
+        outprefix : str
                 File with the number of variants for each particular region.
-        '''
+        """
 
         outprefix = outprefix+".counts"
 
@@ -228,8 +227,7 @@ class VcfQC(object):
         return outprefix
 
     def run_CollectVariantCallingMetrics(self, outprefix, truth_vcf, intervals=None, verbose=None):
-
-        '''
+        """
         Method to run Picard's CollectVariantCallingMetrics on a VcfQC object.
 
         Parameters
@@ -246,8 +244,8 @@ class VcfQC(object):
 
         Returns
         -------
-        CollectVCallingMetrics object
-        '''
+        cvcmetrics : CollectVCallingMetrics object
+        """
 
         if self.picard_folder is None:
             raise Exception("Provide a picard folder")
@@ -277,7 +275,7 @@ class VcfQC(object):
         return cvcmetrics
 
     def plot_variant_density(self, length, genome, outprefix, plot_params):
-        '''
+        """
         Method used to plot the variant density along the genome for this VCF file
 
         This method will calculate the variant density (SNPs, INDELs or both)
@@ -302,9 +300,9 @@ class VcfQC(object):
 
         Returns
         -------
-        filename
-                Returns png file with the density plot
-        '''
+        str
+                Returns .png file with the density plot.
+        """
 
         #run bedtools makewindows to slice the genome
         windows_tmp = tempfile.NamedTemporaryFile()
@@ -364,27 +362,27 @@ class VcfQC(object):
         return outprefix+".png"
 
     def stats(self, outpath, filter_str=None, region=None, region_file=None, verbose=None):
-        '''
+        """
         Run bcftools stats on the VCF file
 
         Parameters
         ----------
         outpath : str
-                  output path
+                  output path.
         filter_str : str, optional.
                      Example:  PASS,.
                      Apply filters when calculating the stats.
         region : str, optional
                  Example: chr20
                  Region used for calculating the stats.
-        region_file : filename, optional
+        region_file : str, optional
                       BED file with the regions that will be analyzed.
         verbose : bool, optional
 
         Returns
         -------
-        BcftoolsStats object
-        '''
+        stats : BcftoolsStats object
+        """
 
         Arg = namedtuple('Argument', 'option value')
 
@@ -439,31 +437,30 @@ class VcfQC(object):
 
 
 class BcftoolsStats(object):
-    '''
+    """
     Class to store the results of running BCFtools stats on a VCF file
-    '''
+    """
 
     def __init__(self, filename=None, summary_numbers=None, ts_tv=None,
                  ts_tv_1stalt=None, no_singleton_snps=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
         filename : str
-                   Filename of the VCF that was used to run bcftools stats
+                   Filename of the VCF that was used to run bcftools stats.
         summary_numbers : dict
                           Dictionary containing the basic stats. i.e.:
                               number of samples:      1
                               number of records:      1867316
                               .....
         ts_tv : float
-                ts/tv ratio
+                ts/tv ratio.
         ts_tv_1stalt : float
-                       ts/tv (1st ALT)
+                       ts/tv (1st ALT).
         no_singleton_snps : int
-        '''
-
+        """
         self.filename = filename
         self.summary_numbers = summary_numbers
         self.ts_tv = ts_tv
@@ -471,13 +468,14 @@ class BcftoolsStats(object):
         self.no_singleton_snps = no_singleton_snps
 
     def summary2tsv(self):
-        '''
+        """
         Function to write summary_numbers in tsv format
 
         Returns
         -------
-        tsv file with summary numbers
-        '''
+        str
+            tsv file with summary numbers.
+        """
         outfile = "{0}.summary.tsv".format(self.filename)
 
         summary_numbers = self.summary_numbers
@@ -503,28 +501,27 @@ class BcftoolsStats(object):
         return self.__str__()
 
 class GTPconcordance(object):
-    '''
+    """
     Class to store the results of running picard's GenotypeConcordance on a VCF file
-    '''
+    """
 
     def __init__(self, summary_metrics_file, summary_metrics_snps=None,
                  summary_metrics_indels=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
         summary_metrics_file : str
                                Filepath to *.genotype_concordance_summary_metrics generated by
-                               Picard's GenotypeConcordance
+                               Picard's GenotypeConcordance.
         summary_metrics_snps : dict, optional
                                Dict with the summary metrics found in the
-                               *.genotype_concordance_summary_metrics file (only for SNPs)
+                               *.genotype_concordance_summary_metrics file (only for SNPs).
         summary_metrics_indels : dict, optional
                                  Dict with the summary metrics found in the
-                                 *.genotype_concordance_summary_metrics file (only for Indels)
-        '''
-
+                                 *.genotype_concordance_summary_metrics file (only for Indels).
+        """
         sm_snps = {}
         sm_indels = {}
         with open(summary_metrics_file) as f:
@@ -554,19 +551,19 @@ class GTPconcordance(object):
         return self.__str__()
 
 class CollectVCallingMetrics(object):
-    '''
+    """
     Class to store the results of running picard's CollectVariantCallingMetrics on a VCF file
-    '''
+    """
 
     def __parse_CollectVariantCallingMetrics_file(self, file):
-        '''
+        """
         Private function to parse output of CollectVariantCallingMetrics
 
         Returns
         -------
         dict
             A dictionary with the information in the file
-        '''
+        """
         out_dict = {}
         with open(file) as f:
             keys = []
@@ -586,25 +583,24 @@ class CollectVCallingMetrics(object):
 
     def __init__(self, vc_detail_metrics_file, vc_summary_metrics_file,
                  vc_detail_metrics=None, vc_summary_metrics=None):
-        '''
+        """
         Constructor
 
         Parameters
         ----------
         vc_detail_metrics_file : str
                                  Filepath to *.variant_calling_detail_metrics
-                                 generated by Picard's CollectVariantCallingMetrics
+                                 generated by Picard's CollectVariantCallingMetrics.
         vc_summary_metrics_file : str
                                   Filepath to *.variant_calling_summary_metrics
-                                  generated by Picard's CollectVariantCallingMetrics
+                                  generated by Picard's CollectVariantCallingMetrics.
         vc_detail_metrics : dict, optional
                             Dictionary with information in file
-                            *.variant_calling_detail_metrics
+                            *.variant_calling_detail_metrics.
         vc_summary_metrics : dict, optional
                              Dictionary with information in file
-                             *.variant_calling_summary_metrics
-
-        '''
+                             *.variant_calling_summary_metrics.
+        """
 
         if os.path.isfile(vc_detail_metrics_file) is False:
             raise Exception("File *.variant_calling_detail_metrics does not exist")

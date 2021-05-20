@@ -16,8 +16,8 @@ class SequenceIndex(object):
         """
         Constructor
 
-        Class variables
-        ---------------
+        Parameters
+        ----------
         filepath : str
                 Path to index file.
         columns : list

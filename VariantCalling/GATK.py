@@ -15,7 +15,7 @@ class GATK(object):
     """
 
     def __init__(self, bam, reference, gatk_folder, bgzip_folder=None):
-        '''
+        """
         Constructor
 
         Parameters
@@ -28,7 +28,7 @@ class GATK(object):
                        Path to folder containing GATK's jar file.
         bgzip_folder : str, optional
                        Path to folder containing the bgzip binary.
-        '''
+        """
 
         if os.path.isfile(bam) is False:
             raise Exception("BAM file does not exist")
@@ -40,49 +40,46 @@ class GATK(object):
 
     def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, verbose=None,
                intervals=None, log_file=None, **kwargs):
-        '''
+        """
         Run GATK UnifiedGenotyper
 
         Parameters
         ----------
-        outprefix : str, Required
-                    Prefix for output VCF file. i.e. /path/to/file/test
-        glm : str, Required
+        outprefix : str
+                    Prefix for output VCF file. i.e. /path/to/file/test.
+        glm : str, default=SNP
               Genotype likelihoods calculation model to employ -- SNP is the default option,
               while INDEL is also available for calling indels and BOTH is available for
-              calling both together. Default= SNP
-        compress : boolean, Default= True
-                   Compress the output VCF
-        nt : int, Optional
-             Number of data threads to allocate to UG
-        intervals : : list, Optional
+              calling both together.
+        compress : bool, default=True
+                   Compress the output VCF.
+        nt : int, optional
+             Number of data threads to allocate to UG.
+        intervals : : list, optional
                       List in which each of the elements is a path to file with genomic intervals
                       to operate with. Also coordinates can be set directly on the command line.
                       For example: ['chr1:100-200', 'chr2:200-300']. If the list contains
                       more than one interval, then it is useful to set the
-                      --interval_set_rule option
+                      --interval_set_rule option.
         verbose : bool, optional
                   if true, then print the command line used for running this program
-        alleles: str, Optional
+        alleles: str, optional
                  Path to VCF.
                  When --genotyping_mode is set to
                  GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
-                 using only the alleles provide in this callset
-        genotyping_mode: str, Optional
-                         Specifies how to determine the alternate alleles to use for genotyping
-                         Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
-        output_mode: str, Optional
+                 using only the alleles provide in this callset.
+        genotyping_mode: {'DISCOVERY','GENOTYPE_GIVEN_ALLELES'}, optional
+                         Specifies how to determine the alternate alleles to use for genotyping.
+        output_mode: {'EMIT_VARIANTS_ONLY','EMIT_ALL_CONFIDENT_SITES','EMIT_ALL_SITES'}, default=EMIT_VARIANTS_ONLY
                      Which type of calls we should output.
-                     Possible values are: EMIT_VARIANTS_ONLY,
-                     EMIT_ALL_CONFIDENT_SITES, EMIT_ALL_SITES
-                     Default: EMIT_VARIANTS_ONLY
-        log_file : str, Optional
-                   Path to file that will used for logging the GATK stderr and stdout
+        log_file : str, optional
+                   Path to file that will used for logging the GATK stderr and stdout.
 
         Returns
         -------
-        A VCF file
-        '''
+        outprefix : str
+            A VCF file.
+        """
 
         Arg = namedtuple('Argument', 'option value')
 
@@ -116,13 +113,13 @@ class GATK(object):
         stdout, stderr, is_error = runner.run_popen(raise_exc=False)
 
         if is_error is True:
-            '''
+            """
             This piece of code is necessary as GATK crashes when the intersection between
             the genomic chunk and the alleles passed in the VCF
             are calculated and there are no sites.
 
             If that's the case then GATK  will be run without the interval intersection
-            '''
+            """
             patt = re.compile('##### ERROR MESSAGE: Bad input: '
                               'The INTERSECTION of your -L options produced no intervals.')
             lines = stderr.split('\n')
@@ -150,47 +147,44 @@ class GATK(object):
         return outprefix
 
     def run_hc(self, outprefix, compress=True, verbose=None, log_file=None, intervals=None, **kwargs):
-        '''
+        """
         Run GATK HaplotypeCaller
 
         Parameters
         ----------
-        outprefix : str, Required
-                    Prefix for output VCF file. i.e. /path/to/file/test
-        compress : boolean, Default= True
-                   Compress the output VCF
-        num_cpu_threads_per_data_thread : int, Optional
-                   controls the number of CPU threads allocated to each data thread
-        intervals : list, Optional
+        outprefix : str
+                    Prefix for output VCF file. i.e. /path/to/file/test.
+        compress : bool, default= True
+                   Compress the output VCF.
+        num_cpu_threads_per_data_thread : int, optional
+                   controls the number of CPU threads allocated to each data thread.
+        intervals : list, optional
                     List in which each of the elements is a path to file with genomic intervals to
                     operate with. Also coordinates can be set directly on the command line.
                     For example: ['chr1:100-200', 'chr2:200-300']. If the list contains
-                    more than one interval, then it is useful to set the --interval_set_rule option
-        standard_min_confidence_threshold_for_calling : int, Optional
+                    more than one interval, then it is useful to set the --interval_set_rule option.
+        standard_min_confidence_threshold_for_calling : int, default=10
                                                         The minimum phred-scaled confidence threshold
-                                                        at which variants should be called
-                                                        Default: 10
-        genotyping_mode: str, Optional
-                         Specifies how to determine the alternate alleles to use for genotyping
-                         Possible values are: DISCOVERY, GENOTYPE_GIVEN_ALLELES
-        alleles: str, Optional
+                                                        at which variants should be called.
+        genotyping_mode: {'DISCOVERY','GENOTYPE_GIVEN_ALLELES}, optional
+                         Specifies how to determine the alternate alleles to use for genotyping.
+        alleles: str, optional
                  Path to VCF.
                  When --genotyping_mode is set to
                  GENOTYPE_GIVEN_ALLELES mode, the caller will genotype the samples
-                 using only the alleles provide in this callset
-        emitRefConfidence: str, Optional
-                           Mode for emitting reference confidence scores
-                           Possible values are: NONE, BP_RESOLUTION, GVCF
+                 using only the alleles provide in this callset.
+        emitRefConfidence: {'NONE','BP_RESOLUTION','GVCF'}, optional
+                           Mode for emitting reference confidence scores.
         verbose : bool, optional
-                  if true, then print the command line used for running this program
-        log_file : str, Optional
-                   Path to file that will used for logging the GATK stderr and stdout
+                  if True, then print the command line used for running this program.
+        log_file : str, optional
+                   Path to file that will used for logging the GATK stderr and stdout.
 
         Returns
         -------
-        A VCF file
-
-        '''
+        outprefix : str
+            A VCF file
+        """
         Arg = namedtuple('Argument', 'option value')
 
         arguments = [Arg('-T', 'HaplotypeCaller'), Arg('-R', self.reference), Arg('-I', self.bam)]
@@ -221,13 +215,13 @@ class GATK(object):
         stdout, stderr, is_error = runner.run_popen(raise_exc=False)
 
         if is_error is True:
-            '''
+            """
             This piece of code is necessary as GATK crashes when the intersection between
             the genomic chunk and the alleles passed in the VCF are calculated and
             there are no sites.
 
             If that's the case then GATK  will be run without the interval intersection
-            '''
+            """
             patt = re.compile('##### ERROR MESSAGE: Bad input: The INTERSECTION of your'
                               ' -L options produced no intervals.')
             lines = stderr.split('\n')
