@@ -1,1 +1,0 @@
-from PyHive.Attribute import *
