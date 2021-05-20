@@ -11,6 +11,9 @@ local.properties
 .loadpath
 .recommenders
 
+# Mac/OSX
+.DS_Store
+
 # External tool builders
 .externalToolBuilders/
 
@@ -22,6 +25,9 @@ local.properties
 
 # CDT-specific (C/C++ Development Tooling)
 .cproject
+
+# Unit test / coverage reports
+.cache
 
 # Java annotation processor (APT)
 .factorypath
