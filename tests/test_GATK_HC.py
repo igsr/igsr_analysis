@@ -1,64 +1,42 @@
 import os
-import glob
 import time
 import pytest
+import pdb
 
 from VariantCalling import GATK
 
 # test_GATK_HC.py
 
-@pytest.fixture
-def gatk_object():
-    '''Returns an  object'''
-    bam_file = pytest.config.getoption("--bam")
-    reference = pytest.config.getoption("--reference")
-    gatk_folder = pytest.config.getoption("--gatk_folder")
-    bgzip_folder = pytest.config.getoption("--bgzip_folder")
-
-    gatk_object = GATK(bam=bam_file, reference=reference,
-                       gatk_folder=gatk_folder, bgzip_folder=bgzip_folder)
-
-    return gatk_object
-
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob('data/outdir/*')
-    for f in files:
-        os.remove(f)
-
-def test_run_hc(gatk_object):
-    '''
+def test_run_hc(gatk_object, datadir, clean_tmp):
+    """
     Test function to run GATK HC on a BAM file using a log file
-    '''
-
+    """
     #create timestamp for log file:
     timestr = time.strftime("%Y%m%d_%H%M%S")
 
-    outfile = gatk_object.run_hc(outprefix='data/outdir/test_hc1',
+    outfile = gatk_object.run_hc(outprefix="{0}/outdir/test_hc1".format(datadir),
                                  verbose=True,
-                                 log_file='data/outdir/gatk_hc_{0}.log'.format(timestr))
+                                 log_file="{0}/outdir/gatk_hc_{1}.log".format(datadir, timestr))
 
     assert os.path.isfile(outfile) is True
 
-def test_run_hc_nocompress(gatk_object):
-    '''
+def test_run_hc_nocompress(gatk_object, datadir, clean_tmp):
+    """
     Test function to run GATK HC on a BAM file generating an uncompressed VCF
-    '''
+    """
 
-    outfile = gatk_object.run_hc(outprefix='data/outdir/test_hc2',
+    outfile = gatk_object.run_hc(outprefix="{0}/outdir/test_hc2".format(datadir),
                                  verbose=True,
                                  compress=False)
 
     assert os.path.isfile(outfile) is True
 
-def test_run_hc_interval(gatk_object, clean_tmp):
-    '''
+def test_run_hc_interval(gatk_object, datadir, clean_tmp):
+    """
     Test function to run GATK HC on a BAM file using several intervals
-    '''
+    """
 
-    outfile = gatk_object.run_hc(outprefix='data/outdir/test_hc3',
+    outfile = gatk_object.run_hc(outprefix="{0}/outdir/test_hc3".format(datadir),
                                  verbose=True,
                                  intervals=['chr1:10000-20000',
                                             'chr1:20001-30000'])

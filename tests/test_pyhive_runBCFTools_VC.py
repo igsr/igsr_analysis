@@ -5,22 +5,11 @@ import pytest
 
 # test_pyhive_runBCFTools_VC.py
 
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob('data/outdir/*')
-    for f in files:
-        os.remove(f)
-
-def test_runBCFTools_VC(clean_tmp):
+def test_runBCFTools_VC(bcftools_folder, hive_dir, datadir, clean_tmp):
     """
     Test function to run BCFTools mpileup|call on a BAM file
-
     """
 
-    bcftools_folder = pytest.config.getoption("bcftools_folder")
-    hive_scripts = pytest.config.getoption("hive_lib")+"/scripts/"
     bam_file = pytest.config.getoption("--bam")
     reference = pytest.config.getoption("--reference")
 
@@ -33,8 +22,6 @@ def test_runBCFTools_VC(clean_tmp):
                                                            "\"['chr1','10000','30000']\"", bam_file,
                                                            reference, bcftools_folder, annots)
 
-    print(command)
-
     try:
         subprocess.check_output(command, shell=True)
         assert True
@@ -46,7 +33,6 @@ def test_runBCFTools_VC_woptions(clean_tmp):
     """
     Test function to run BCFTools mpileup|call on a BAM file
     using some options and arguments
-
     """
 
     bcftools_folder = pytest.config.getoption("bcftools_folder")

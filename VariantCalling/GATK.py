@@ -104,7 +104,7 @@ class GATK(object):
             outprefix += ".vcf"
             arguments.append(Arg('-o', outprefix))
 
-        runner = RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder),
+        runner = RunProgram(program='{0}/gatk3'.format(self.gatk_folder),
                             args=arguments, downpipe=pipelist, log_file=log_file)
 
         if verbose is True:
@@ -206,7 +206,7 @@ class GATK(object):
             outprefix += ".vcf"
             arguments.append(Arg('-o', outprefix))
 
-        runner = RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.format(self.gatk_folder),
+        runner = RunProgram(program='{0}/gatk3'.format(self.gatk_folder),
                             downpipe=pipelist, args=arguments, log_file=log_file)
 
         if verbose is True:

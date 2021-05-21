@@ -2,23 +2,17 @@ import os
 import subprocess
 import glob
 import pytest
+import pdb
+import shutil
 
 # test_pyhive_Factories.py
 
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob("data/outdir/*")
-    for f in files:
-        os.remove(f)
+def test_chrfactory(hive_dir, datadir):
 
-def test_chrfactory():
-    fa_ix = pytest.config.getoption("faix")
-    hive_scripts = pytest.config.getoption("hive_lib")+"/scripts/"
+    fa_ix = "{0}/canonical_chros.fa.fai".format(datadir)
 
-    command = "perl {0}/standaloneJob.pl PyHive.Factories.ChrFactory " \
-              "-language python3 -faix {1}".format(hive_scripts, fa_ix)
+    command = "perl {0}/scripts/standaloneJob.pl PyHive.Factories.ChrFactory " \
+              "-language python3 -faix {1}".format(hive_dir, fa_ix)
 
     try:
         subprocess.check_output(command, shell=True)
@@ -27,18 +21,22 @@ def test_chrfactory():
         assert False
         raise Exception(exc.output)
 
-def test_BeagleChunkFactory():
-    vcf_f = pytest.config.getoption("vcf_gts")
-    beaglechunks_folder = pytest.config.getoption("makeBGLCHUNKS_folder")
-    hive_scripts = pytest.config.getoption("hive_lib")+"/scripts/"
-    work_dir = "data/outdir/"
+def test_BeagleChunkFactory(hive_dir, clean_tmp, datadir):
 
-    command = "perl {0}/standaloneJob.pl PyHive.Factories.BeagleChunkFactory " \
+    vcf_f = "{0}/GLs.HG00136.vcf.gz".format(datadir)
+    beaglechunks_folder = None
+    if shutil.which('makeBGLCHUNKS') is None:
+        raise Exception("'makeBGLCHUNKS needs to by in $PATH")
+    else:
+        beaglechunks_folder = os.path.dirname(shutil.which('makeBGLCHUNKS'))
+
+    work_dir = "{0}/outdir/".format(datadir)
+
+    command = "perl {0}/scripts/standaloneJob.pl PyHive.Factories.BeagleChunkFactory " \
               "-language python3 -filepath {1} -makeBGLCHUNKS_folder {2} " \
-              "-work_dir {3} -window {4} -overlap {5}".format(hive_scripts,
+              "-work_dir {3} -window {4} -overlap {5}".format(hive_dir,
                                                               vcf_f, beaglechunks_folder,
                                                               work_dir, 100, 2)
-    print(command)
     try:
         subprocess.check_output(command, shell=True)
         assert True
@@ -46,15 +44,14 @@ def test_BeagleChunkFactory():
         assert False
         raise Exception(exc.output)
 
-def test_bedtools_make_windows():
-    bedtools_folder = pytest.config.getoption("bedtools_folder")
-    hive_scripts = pytest.config.getoption("hive_lib")+"/scripts/"
-    genome_f = 'data/chr1.genome'
-    log_dir = 'data/outdir/'
+def test_bedtools_make_windows(bedtools_folder, hive_dir, datadir):
 
-    command = "perl {0}/standaloneJob.pl PyHive.Factories.CoordFactory -language python3 " \
+    genome_f = "{0}/chr1.genome".format(datadir)
+    log_dir = "{0}/outdir/".format(datadir)
+
+    command = "perl {0}/scripts/standaloneJob.pl PyHive.Factories.CoordFactory -language python3 " \
               "-bedtools_folder {1} -genome_file {2} -window {3} -offsest {4} -log_dir {5}".\
-        format(hive_scripts, bedtools_folder, genome_f, 100000000, 200000, log_dir)
+        format(hive_dir, bedtools_folder, genome_f, 100000000, 200000, log_dir)
     try:
         subprocess.check_output(command, shell=True)
         assert True
@@ -62,15 +59,14 @@ def test_bedtools_make_windows():
         assert False
         raise Exception(exc.output)
 
-def test_bedtools_make_windows_w_chrom():
-    bedtools_folder = pytest.config.getoption("bedtools_folder")
-    hive_scripts = pytest.config.getoption("hive_lib")+"/scripts/"
-    genome_f = 'data/chr1.genome'
-    log_dir = 'data/outdir/'
+def test_bedtools_make_windows_w_chrom(bedtools_folder, hive_dir, datadir, clean_tmp):
 
-    command = "perl {0}/standaloneJob.pl PyHive.Factories.CoordFactory " \
+    genome_f = "{0}/chr1.genome".format(datadir)
+    log_dir = "{0}/outdir/".format(datadir)
+
+    command = "perl {0}/scripts/standaloneJob.pl PyHive.Factories.CoordFactory " \
               "-language python3 -bedtools_folder {1} -genome_file {2} -window {3}\
-    -offsest {4} -chrom chr1 -log_dir {5}".format(hive_scripts,
+    -offsest {4} -chrom chr1 -log_dir {5}".format(hive_dir,
                                                   bedtools_folder,
                                                   genome_f,
                                                   100000000,
@@ -83,20 +79,18 @@ def test_bedtools_make_windows_w_chrom():
         assert False
         raise Exception(exc.output)
 
-def test_bedtools_make_windows_w_subtract(clean_tmp):
-    '''
+def test_bedtools_make_windows_w_subtract(bedtools_folder, hive_dir, datadir, clean_tmp):
+    """
     Testing PyHive runnable with a BED file to subtract
-    '''
-    bedtools_folder = pytest.config.getoption("bedtools_folder")
-    hive_scripts = pytest.config.getoption("hive_lib")+"/scripts/"
-    genome_f = 'data/chr1.genome'
-    subtract = 'data/subtract.bed'
-    log_dir = 'data/outdir/'
+    """
 
-    command = "perl {0}/standaloneJob.pl PyHive.Factories.CoordFactory -language python3 " \
-              "-bedtools_folder {1} -genome_file {2} -window {3}\
-    -offsest {4} -subtract {5} -log_dir {6}".format(hive_scripts, bedtools_folder,
-                                                    genome_f, 100000000, 200000,
+    genome_f = "{0}/chr1.genome".format(datadir)
+    subtract = "{0}/subtract.bed".format(datadir)
+    log_dir = "{0}/outdir/".format(datadir)
+
+    command = "perl {0}/scripts/standaloneJob.pl PyHive.Factories.CoordFactory -language python3 " \
+              "-bedtools_folder {1} -genome_file {2} -window {3} "\
+              "-offsest {4} -subtract {5} -log_dir {6}".format(hive_dir, bedtools_folder, genome_f, 100000000, 200000,
                                                     subtract, log_dir)
     try:
         subprocess.check_output(command, shell=True)

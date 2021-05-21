@@ -1,69 +1,60 @@
 import os
-import glob
 import pytest
 
 from VCF.VCFfilter.MLclassifier import MLclassifier
 
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob('data/outdir/*')
-    for f in files:
-        os.remove(f)
-
-def test_train_snps():
-    '''
+def test_train_snps(bcftools_folder, datadir):
+    """
     Train the model for SNPs
-    '''
+    """
 
-    ML_obj = MLclassifier(bcftools_folder=pytest.config.getoption('bcftools_folder'))
-    outfile = ML_obj.train(outprefix="data/outdir/fitted_logreg_snps",
-                           tp_annotations=pytest.config.getoption('--tp_annotations_snps'),
-                           fp_annotations=pytest.config.getoption('--fp_annotations_snps'))
+    ML_obj = MLclassifier(bcftools_folder=bcftools_folder)
+    outfile = ML_obj.train(outprefix="{0}/outdir/fitted_logreg_snps".format(datadir),
+                           tp_annotations="{0}/TP_annotations_snps.chr20.tsv".format(datadir),
+                           fp_annotations="{0}/FP_annotations_snps.chr20.tsv".format(datadir))
 
     assert os.path.isfile(outfile) is True
 
-def test_train_snps_gz():
-    '''
+def test_train_snps_gz(bcftools_folder, datadir):
+    """
     Train the model for SNPs using 2 gzipped annotation files
-    '''
+    """
 
-    ML_obj = MLclassifier(bcftools_folder=pytest.config.getoption('bcftools_folder'))
-    outfile = ML_obj.train(outprefix="data/outdir/fitted_logreg_snps",
-                           tp_annotations=pytest.config.getoption('--tp_annotations_snps_gz'),
-                           fp_annotations=pytest.config.getoption('--fp_annotations_snps_gz'))
+    ML_obj = MLclassifier(bcftools_folder=bcftools_folder)
+    outfile = ML_obj.train(outprefix="{0}/outdir/fitted_logreg_snps".format(datadir),
+                           tp_annotations="{0}/TP_annotations_snps.chr20.tsv.gz".format(datadir),
+                           fp_annotations="{0}/FP_annotations_snps.chr20.tsv.gz".format(datadir))
 
-def test_train_indels():
-    '''
+def test_train_indels(bcftools_folder, datadir):
+    """
     Train the model for INDELs
-    '''
+    """
 
-    ML_obj = MLclassifier(bcftools_folder=pytest.config.getoption('bcftools_folder'))
-    outfile = ML_obj.train(outprefix="data/outdir/fitted_logreg_indels",
-                           tp_annotations=pytest.config.getoption('--tp_annotations_indels'),
-                           fp_annotations=pytest.config.getoption('--fp_annotations_indels'))
+    ML_obj = MLclassifier(bcftools_folder=bcftools_folder)
+    outfile = ML_obj.train(outprefix="{0}/outdir/fitted_logreg_indels".format(datadir),
+                           tp_annotations="{0}/TP_annotations_indels.chr20.tsv".format(datadir),
+                           fp_annotations="{0}/TP_annotations_indels.chr20.tsv".format(datadir))
 
     assert os.path.isfile(outfile) is True
 
-def test_apply_model():
+def test_apply_model(bcftools_folder, clean_tmp, datadir):
 
-    ML_obj = MLclassifier(bcftools_folder=pytest.config.getoption('bcftools_folder'),
-                          fitted_model='data/outdir/fitted_logreg_snps.sav')
+    ML_obj = MLclassifier(bcftools_folder=bcftools_folder,
+                          fitted_model="{0}/outdir/fitted_logreg_snps.sav".format(datadir))
 
-    outfile = ML_obj.predict(outprefix="data/outdir/predictions",
-                             annotation_f=pytest.config.getoption('--tp_annotations_snps'),
+    outfile = ML_obj.predict(outprefix="{0}/outdir/predictions".format(datadir),
+                             annotation_f="{0}/TP_annotations_snps.chr20.tsv".format(datadir),
                              cutoff=0.95)
 
     assert os.path.isfile(outfile) is True
 
-def test_rfe(clean_tmp):
+def test_rfe(bcftools_folder, datadir, clean_tmp):
 
-    ML_obj = MLclassifier(bcftools_folder=pytest.config.getoption('bcftools_folder'))
+    ML_obj = MLclassifier(bcftools_folder=bcftools_folder)
 
-    select_feats = ML_obj.rfe(tp_annotations=pytest.config.getoption('--tp_annotations_indels'),
-                              fp_annotations=pytest.config.getoption('--fp_annotations_indels'),
-                              n_features=5)
+    select_feats_report = ML_obj.rfe(tp_annotations="{0}/TP_annotations_indels.chr20.tsv".format(datadir),
+        fp_annotations="{0}/TP_annotations_indels.chr20.tsv".format(datadir),
+        n_features=5,
+        outreport="{0}/outdir/out_rfe.txt".format(datadir))
 
-    assert all([a == b for a, b in zip(select_feats, ['[4]IDV', '[5]IMF', '[6]VDB',
-                                                      '[7]SGB', '[11]HOB'])])
+    assert os.path.isfile(select_feats_report) is True
