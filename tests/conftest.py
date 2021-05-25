@@ -13,23 +13,35 @@ def datadir():
     return os.path.abspath('./data/')
 
 @pytest.fixture
-def gatk_object(datadir):
-    '''Returns a GATK object'''
-
-    bam_file = "{0}/exampleBAM.bam".format(datadir)
-    reference = "{0}/exampleFASTA.fasta".format(datadir)
+def gatk_folder(datadir):
+    '''Returns the folder containing the gatk wrapper script'''
 
     gatk_folder = None # folder containing the gatk wrapper script
     if shutil.which('gatk3') is None:
         raise Exception("'gatk3' needs to by in $PATH")
     else:
         gatk_folder = os.path.dirname(shutil.which('gatk3'))
+    
+    return gatk_folder
+
+@pytest.fixture
+def bgzip_folder(datadir):
+    '''Returns the folder containing the bgzip binary'''
 
     bgzip_folder = None # folder containing bgzip
     if shutil.which('bgzip') is None:
         raise Exception("'bgzip' needs to by in $PATH")
     else:
         bgzip_folder = os.path.dirname(shutil.which('bgzip'))
+    
+    return bgzip_folder
+
+@pytest.fixture
+def gatk_object(gatk_folder, datadir, bgzip_folder):
+    '''Returns a GATK object'''
+
+    bam_file = "{0}/exampleBAM.bam".format(datadir)
+    reference = "{0}/exampleFASTA.fasta".format(datadir)
     
     gatk_object = GATK(bam=bam_file, reference=reference,
                        gatk_folder=gatk_folder, bgzip_folder=bgzip_folder)
@@ -69,18 +81,37 @@ def bedtools_folder(datadir):
     return bedtools_folder
 
 @pytest.fixture
+def shapeit_folder(datadir):
+    '''Returns the folder containing the shapeit binary'''
+
+    shapeit_folder = None # folder containing the Shapeit binary
+    if shutil.which('shapeit') is None:
+        raise Exception("'shapeit' needs to by in $PATH")
+    else:
+        shapeit_folder = os.path.dirname(shutil.which('shapeit'))
+    
+    return shapeit_folder
+
+
+@pytest.fixture
 def hive_dir():
     '''Returns directory containing Ensembl ehive codebase'''
     
     assert os.getenv('ENSEMBL_HIVE_DIR'), "$ENSEMBL_HIVE_DIR undefined. You need to set this ENV variable to run this test suite"
     return os.getenv('ENSEMBL_HIVE_DIR')
 
+@pytest.fixture
+def beagle_bins():
+    '''Returns a tuple with directory containing the Beagle .jar file and Beagle's .jar filename'''
+
+    return '~/bin/beagle/', 'beagle.08Jun17.d8b.jar'
+
+
 """
 def pytest_addoption(parser):
     parser.addoption('--hive_lib', default='~/lib/ensembl-hive_2.4/' ,action='store_true', help='Path folder containing eHive scripts')
     parser.addoption('--vcf', default='data/test.vcf.gz' ,action='store_true', help='Path to vcf file')
     parser.addoption('--region', default='data/region.bed' ,action='store_true', help='BED file with a small region in chr1')
-    parser.addoption('--vcf_chr20', default='data/test_chr20.vcf.gz' ,action='store_true', help='Path to vcf file used for testing Beagle')
     parser.addoption('--vcf_gts_ucsc', default='data/GLs.HG00136.ucsc.vcf.gz' ,action='store_true', help='Path to vcf file with GTs with UCSC-style chro names')
     parser.addoption('--vt_folder', default='~/bin/vt/' ,action='store_true', help='Path to folder containing vt binary')
     parser.addoption('--chk_indel_folder', default='~/bin/' ,action='store_true', help='Folder with chk_indel_rg binary')

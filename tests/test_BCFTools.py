@@ -19,14 +19,6 @@ def bcftools_object(datadir, bcftools_folder):
 
     return bcftools_object
 
-@pytest.fixture
-def clean_tmp(datadir):
-    yield
-    print("Cleanup files")
-    files = glob.glob("{0}/outdir/*".format(datadir))
-    for f in files:
-        os.remove(f)
-
 def test_run_bcftools(bcftools_object, datadir, clean_tmp):
     '''
     Test function to run BCFTools on a BAM file in order to call variants

@@ -1,66 +1,74 @@
 import os
 import glob
 import pytest
+import shutil
+import pdb
 
 from VCF.VCFIntegration import Beagle
 
 # test_VcfIntegration_Beagle.py
 @pytest.fixture
-def vcf_object(scope='module'):
-    '''Returns an  object'''
+def vcf_object(beagle_bins, datadir):
+    """Returns an Beagle object"""
+
     print("Creating the object\n")
-    vcf_file = pytest.config.getoption("--vcf")
-    beagle_folder = pytest.config.getoption("--beagle_folder")
-    beagle_jar = pytest.config.getoption("--beagle_jar")
+    vcf_file = "{0}/test.vcf.gz".format(datadir)
+    beagle_folder = beagle_bins[0]
+    beagle_jar = beagle_bins[1]
+
     vcf_object = Beagle(vcf=vcf_file, beagle_jar=beagle_jar,
                         beagle_folder=beagle_folder)
+    
     return vcf_object
 
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob('data/outdir/*')
-    for f in files:
-        os.remove(f)
+def test_run_beagle(vcf_object, datadir, clean_tmp):
 
-def test_run_beagle(vcf_object):
     outfile = vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000",
-                                    outdir="data/outdir/",
+                                    outdir="{0}/outdir/".format(datadir),
                                     window=12000,
                                     overlap=2000,
                                     niterations=15,
                                     verbose=True)
+
     assert os.path.exists(outfile)
 
-def test_run_beagle_multithreaded(vcf_object):
+def test_run_beagle_multithreaded(vcf_object, datadir, clean_tmp):
+
     vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000_mts",
-                          outdir="data/outdir/",
+                          outdir="{0}/outdir/".format(datadir),
                           window=12000,
                           overlap=2000,
                           niterations=15,
                           nthreads=2)
-    assert os.path.exists("data/outdir/NA12878_chr1_1000000_1001000_mts.beagle.vcf.gz")
 
-def test_make_beagle_chunks():
-    vcf_object = Beagle(vcf="data/BEAGLE/GLs.HG00136.vcf.gz",
-                        makeBGLCHUNKS_folder=pytest.config.getoption("--makeBGLCHUNKS_folder"))
+    assert os.path.exists("{0}/outdir/NA12878_chr1_1000000_1001000_mts.beagle.vcf.gz".format(datadir))
+
+def test_make_beagle_chunks(datadir):
+
+    makeBGLCHUNKS_folder = None # folder containing the makeBGLCHUNKS binary
+    if shutil.which('makeBGLCHUNKS') is None:
+        raise Exception("'makeBGLCHUNKS' needs to by in $PATH")
+    else:
+        makeBGLCHUNKS_folder = os.path.dirname(shutil.which('makeBGLCHUNKS'))
+    
+    vcf_object = Beagle(vcf="{0}/BEAGLE/GLs.HG00136.vcf.gz".format(datadir),
+                        makeBGLCHUNKS_folder=makeBGLCHUNKS_folder)
 
     outfile = vcf_object.make_beagle_chunks(window=700,
                                             overlap=200,
-                                            outfile='data/outdir/chunks.coords',
+                                            outfile="{0}/outdir/chunks.coords".format(datadir),
                                             verbose=True)
     assert os.path.exists(outfile)
 
-def test_run_beagle_with_region_correct():
+def test_run_beagle_with_region_correct(datadir, beagle_bins, clean_tmp):
     '''
     Run Beagle on all chunks created in the previous test
     '''
-    vcf_object = Beagle(vcf="data/BEAGLE/GLs.HG00136.vcf.gz",
-                        beagle_folder=pytest.config.getoption("--beagle_folder"),
-                        beagle_jar=pytest.config.getoption("--beagle_jar"))
+    vcf_object = Beagle(vcf="{0}/BEAGLE/GLs.HG00136.vcf.gz".format(datadir),
+                        beagle_folder=beagle_bins[0],
+                        beagle_jar=beagle_bins[1])
 
-    with open('data/outdir/chunks.coords') as f:
+    with open("{0}/outdir/chunks.coords".format(datadir)) as f:
         for line in f:
             line = line.rstrip('\n')
             chroname = line.split('\t')[0]
@@ -68,17 +76,24 @@ def test_run_beagle_with_region_correct():
             end = line.split('\t')[2]
             beagle_out = vcf_object.run_beagle(outprefix="GLs.HG00136.correct",
                                                region="{0}:{1}-{2}".format(chroname, start, end),
-                                               outdir="data/outdir/",
+                                               outdir="{0}/outdir/".format(datadir),
                                                correct=True,
                                                verbose=True)
     assert os.path.exists(beagle_out)
 
-def test_prepareGenFromBeagle4(clean_tmp):
-    vcf_object = Beagle(vcf="data/GLs.HG00136.vcf.gz",
-                        prepareGenFromBeagle4_folder=pytest.config.getoption("--prepareGenFromBeagle4_folder"))
+def test_prepareGenFromBeagle4(datadir, clean_tmp):
+ 
+    prepareGenFromBeagle4_folder = None # folder containing the prepareGenFromBeagle4 binary
+    if shutil.which('prepareGenFromBeagle4') is None:
+        raise Exception("'prepareGenFromBeagle4' needs to by in $PATH")
+    else:
+        prepareGenFromBeagle4_folder = os.path.dirname(shutil.which('prepareGenFromBeagle4'))
 
-    outdict = vcf_object.prepare_Gen_From_Beagle4(prefix_in="data/outdir/GLs.HG00136.correct.22",
-                                                  outprefix='data/outdir/input.shapeit.22',
+    vcf_object = Beagle(vcf="{0}/GLs.HG00136.vcf.gz".format(datadir),
+                        prepareGenFromBeagle4_folder=prepareGenFromBeagle4_folder)
+
+    outdict = vcf_object.prepare_Gen_From_Beagle4(prefix_in="{0}/outdir/GLs.HG00136.correct.22".format(datadir),
+                                                  outprefix="{0}/outdir/input.shapeit.22".format(datadir),
                                                   verbose=True)
     assert os.path.exists(outdict['gen_gz'])
     assert os.path.exists(outdict['gen_sample'])

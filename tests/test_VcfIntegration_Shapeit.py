@@ -1,31 +1,34 @@
 import os
 import glob
 import pytest
+import pdb
+
 from VCF.VCFIntegration import Shapeit
 
 # test_VcfIntegration_Shapeit.py
 
 @pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob('data/outdir/*')
-    for f in files:
-        os.remove(f)
+def shapeit_input(datadir):
+    
+    params = []
+    params.append("{0}/SHAPEIT/input.shapeit.22.gen.gz {0}/SHAPEIT/input.shapeit.22.gen.sample".format(datadir))
+    params.append("{0}/SHAPEIT/input.shapeit.22.hap.gz {0}/SHAPEIT/input.shapeit.22.hap.sample".format(datadir))
+    params.append("{0}/SHAPEIT/scaffold.22.phased.haps {0}/SHAPEIT/scaffold.22.phased.sample".format(datadir))
 
-def test_run_shapeit():
+    return params
 
-    shapeit_o = Shapeit(shapeit_folder=pytest.config.getoption("--shapeit_folder"))
 
-    shapeit_o.run_shapeit(input_gen='data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample',
-                          input_init='data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample',
-                          input_scaffold='data/SHAPEIT/scaffold.22.phased.haps data/SHAPEIT/scaffold.22.phased.sample',
-                          output_prefix='data/outdir/output.shapeit.22', verbose=True)
-    assert os.path.exists('data/outdir/output.shapeit.22.haps.gz')
+def test_run_shapeit(shapeit_folder, shapeit_input, datadir):
 
-def test_run_shapeit_w_options():
+    shapeit_o = Shapeit(shapeit_folder=shapeit_folder)
 
-    shapeit_o = Shapeit(shapeit_folder=pytest.config.getoption("--shapeit_folder"))
+    shapeit_o.run_shapeit(input_gen=shapeit_input[0],
+                          input_init=shapeit_input[1],
+                          input_scaffold=shapeit_input[2],
+                          output_prefix="{0}/outdir/output.shapeit.22".format(datadir), verbose=True)
+    assert os.path.exists("{0}/outdir/output.shapeit.22.haps.gz".format(datadir))
+
+def test_run_shapeit_w_options(shapeit_folder, shapeit_input, datadir):
 
     options = {
         'input-from': 20000000,
@@ -36,14 +39,16 @@ def test_run_shapeit_w_options():
         'states': 400,
         'states-random': 200}
 
-    shapeit_o.run_shapeit(input_gen='data/SHAPEIT/input.shapeit.22.gen.gz data/SHAPEIT/input.shapeit.22.gen.sample',
-                          input_init='data/SHAPEIT/input.shapeit.22.hap.gz data/SHAPEIT/input.shapeit.22.hap.sample',
-                          input_scaffold='data/SHAPEIT/scaffold.22.phased.haps data/SHAPEIT/scaffold.22.phased.sample',
-                          output_prefix='data/outdir/output.shapeit.22.20000000.20100000',
+    shapeit_o = Shapeit(shapeit_folder=shapeit_folder)
+
+    shapeit_o.run_shapeit(input_gen=shapeit_input[0],
+                          input_init=shapeit_input[1],
+                          input_scaffold=shapeit_input[2],
+                          output_prefix="{0}/outdir/output.shapeit.22.20000000.20100000".format(datadir),
                           verbose=True,
                           **options)
 
-    assert os.path.exists('data/outdir/output.shapeit.22.20000000.20100000.haps.gz')
+    assert os.path.exists("{0}/outdir/output.shapeit.22.20000000.20100000.haps.gz".format(datadir))
 
 def test_ligate_shapeitchunks():
     '''
