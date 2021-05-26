@@ -35,7 +35,7 @@ class VcfNormalize:
         bgzip_folder : str, optional
                        Path to folder containing the bgzip binary.
         gatk_folder : str, optional
-                      Path to folder containing the GATK jar file.
+                      Path to folder containing the gatk wrapper script.
         bcftools_folder : str, optional
                           Path to folder containing the bcftools binary.
         """
@@ -284,7 +284,7 @@ class VcfNormalize:
 
         if self.gatk_folder is None:
             raise Exception("Error. I need that the folder containing the GATK "
-                            "jar file is defined!")
+                            "wrapper script!")
 
         if outdir:
             outprefix = "{0}/{1}".format(outdir, outprefix)
@@ -296,8 +296,7 @@ class VcfNormalize:
         args = [Arg('-T', 'VariantsToAllelicPrimitives'), Arg('-R', reference),
                 Arg('-V', self.vcf), Arg('-o', outprefix)]
 
-        runner = RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.
-                            format(self.gatk_folder), args=args)
+        runner = RunProgram(program="{0}/gatk3".format(self.gatk_folder), args=args)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))

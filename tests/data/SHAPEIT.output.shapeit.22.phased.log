@@ -1,19 +1,19 @@
 Mode    : Converter
-Options : --input-haps data/outdir/output.shapeit.22.haps.gz data/outdir/output.shapeit.22.haps.sample --output-vcf data/outdir/output.shapeit.22.phased.vcf --output-log data/SHAPEIT.output.shapeit.22.phased.log
+Options : --input-haps /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/data/outdir/output.shapeit.22.haps.gz /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/data/outdir/output.shapeit.22.haps.sample --output-vcf /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/data/outdir/output.shapeit.22.phased.vcf --output-log /homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/data/SHAPEIT.output.shapeit.22.phased.log
 Version : v2.r837
-Date    : 14/09/2018 14:08:46
+Date    : 26/05/2021 15:41:24
 
 MODE -convert : CONVERTING/SUBSETTING SHAPEIT HAPLOTYPES
 
 Parameters :
-  * Seed : 1536930526
+  * Seed : 1622040084
   * Parallelisation: 1 threads
   * Ref allele is NOT aligned on the reference genome
 
-Reading sample list in [data/outdir/output.shapeit.22.haps.sample]
+Reading sample list in [/homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/data/outdir/output.shapeit.22.haps.sample]
   * 1092 individuals included
 
-Reading site list and haplotypes in [data/outdir/output.shapeit.22.haps.gz]
+Reading site list and haplotypes in [/homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/data/outdir/output.shapeit.22.haps.gz]
   * 1356 sites included
 
 Mapping sites and samples of the haplotype set
@@ -21,6 +21,6 @@ Mapping sites and samples of the haplotype set
   * 0 sites not found
   * 2184 founder haplotypes
 
-Writing haplotypes in [data/outdir/output.shapeit.22.phased.vcf] in VCF format
+Writing haplotypes in [/homes/ernesto/lib/igsr_analysis_master/igsr_analysis/tests/data/outdir/output.shapeit.22.phased.vcf] in VCF format
 
-Running time: 2 seconds
+Running time: 3 seconds

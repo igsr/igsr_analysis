@@ -1,29 +1,27 @@
 import os
 import pytest
+import pdb
+
 from VCF.VcfQC import VcfQC
 
 # test_vcfqc.py
 
 @pytest.fixture
-def vcf_object():
-    '''Returns an  object'''
-    vcf_file = pytest.config.getoption("--vcf")
-    bcftools_folder = pytest.config.getoption("--bcftools_folder")
-    picard_folder = pytest.config.getoption("--picard_folder")
+def vcf_object(picard_folder, datadir, bcftools_folder):
+    """Returns a VcfQC object"""
+    
+    vcf_file = "{0}/test.vcf.gz".format(datadir)
+
     vcf_object = VcfQC(vcf=vcf_file, bcftools_folder=bcftools_folder, picard_folder=picard_folder)
+    
     return vcf_object
 
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    os.remove('data/outdir/test_VcfQC.stats')
-
-def test_stats(vcf_object):
-    '''
+def test_stats(vcf_object, datadir, clean_tmp):
+    """
     Test function to run Bcftools stats on a VCF file
-    '''
-    stats = vcf_object.stats(outpath='data/outdir/test_VcfQC', verbose=True)
+    """
+
+    stats = vcf_object.stats(outpath="{0}/outdir/test_VcfQC".format(datadir), verbose=True)
     assert os.path.isfile(stats.filename) is True
     assert stats.summary_numbers['number of SNPs:'] == 112
     assert stats.summary_numbers['number of indels:'] == 13
@@ -35,36 +33,39 @@ def test_stats(vcf_object):
     assert stats.summary_numbers['number of MNPs:'] == 10
     assert stats.summary_numbers['number of multiallelic sites:'] == 20
 
-def test_stats_with_region(vcf_object):
-    '''
+def test_stats_with_region(vcf_object, datadir, clean_tmp):
+    """
     Test function to run Bcftools stats on a VCF file
     for a certain genomic region
-    '''
-    stats = vcf_object.stats(outpath='data/outdir/test_VcfQC',
+    """
+    stats = vcf_object.stats(outpath="{0}/outdir/test_VcfQC".format(datadir),
                              region='chr1:80000-90000',
                              verbose=True)
+
     assert os.path.isfile(stats.filename) is True
     assert stats.summary_numbers['number of SNPs:'] == 9
     assert stats.summary_numbers['number of indels:'] == 3
 
-def test_get_chros(vcf_object):
-    chr_file = pytest.config.getoption("--chr_file")
+def test_get_chros(vcf_object, datadir, clean_tmp):
+
+    chr_file = "{0}/chr_file.txt".format(datadir)
     dict = vcf_object.get_chros(chr_f=chr_file, verbose=True)
     assert dict['both'][0] == "chr1"
 
-def test_number_variants_in_region(vcf_object):
-    counts = vcf_object.number_variants_in_region(outprefix='data/outdir/test_number_vars_in_region',
-                                                  region=pytest.config.getoption("--region"),
+def test_number_variants_in_region(vcf_object, datadir, clean_tmp):
+
+    counts = vcf_object.number_variants_in_region(outprefix="{0}/outdir/test_number_vars_in_region".format(datadir),
+                                                  region="{0}/region.bed".format(datadir),
                                                   verbose=True)
 
     assert os.path.exists(counts)
 
-def test_run_CollectVariantCallingMetrics(vcf_object, clean_tmp):
-    '''
+def test_run_CollectVariantCallingMetrics(vcf_object, datadir, clean_tmp):
+    """
     Test function for running Picard CollectVariantCallingMetrics
-    '''
+    """
 
-    cvcm = vcf_object.run_CollectVariantCallingMetrics(outprefix='data/outdir/test',
+    cvcm = vcf_object.run_CollectVariantCallingMetrics(outprefix="{0}/outdir/test".format(datadir),
                                                        truth_vcf=vcf_object.vcf,
                                                        verbose=True)
 

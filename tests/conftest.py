@@ -13,6 +13,31 @@ def datadir():
     return os.path.abspath('./data/')
 
 @pytest.fixture
+def vcflib_folder(datadir):
+    """Returns the folder containing the vcflib-related binaries"""
+
+    vcflib_folder = None
+    if shutil.which('vcf2fasta') is None:
+        raise Exception("'vcf2fasta' needs to by in $PATH")
+    else:
+        vcflib_folder = os.path.dirname(shutil.which('vcf2fasta'))
+    
+    return vcflib_folder
+
+@pytest.fixture
+def vt_folder(datadir):
+    """Returns the folder containing the vt binary"""
+
+    vt_folder = None
+    if shutil.which('vt') is None:
+        raise Exception("'vt' needs to by in $PATH")
+    else:
+        vt_folder = os.path.dirname(shutil.which('vt'))
+    
+    return vt_folder
+
+
+@pytest.fixture
 def gatk_folder(datadir):
     '''Returns the folder containing the gatk wrapper script'''
 
@@ -25,10 +50,23 @@ def gatk_folder(datadir):
     return gatk_folder
 
 @pytest.fixture
+def gatk_jar_folder():
+    '''Returns folder containin the GATK jar file'''
+
+    return '/nfs/production/reseq-info/work/bin/GenomeAnalysisTK-3.8-1-0-gf15c1c3ef/'
+
+@pytest.fixture
+def picard_folder():
+    '''Returns the folder containing the picard .jar file'''
+    
+    return '~/bin/'
+
+
+@pytest.fixture
 def bgzip_folder(datadir):
     '''Returns the folder containing the bgzip binary'''
 
-    bgzip_folder = None # folder containing bgzip
+    bgzip_folder = None
     if shutil.which('bgzip') is None:
         raise Exception("'bgzip' needs to by in $PATH")
     else:
@@ -84,14 +122,13 @@ def bedtools_folder(datadir):
 def shapeit_folder(datadir):
     '''Returns the folder containing the shapeit binary'''
 
-    shapeit_folder = None # folder containing the Shapeit binary
+    shapeit_folder = None
     if shutil.which('shapeit') is None:
         raise Exception("'shapeit' needs to by in $PATH")
     else:
         shapeit_folder = os.path.dirname(shutil.which('shapeit'))
     
     return shapeit_folder
-
 
 @pytest.fixture
 def hive_dir():
@@ -105,6 +142,7 @@ def beagle_bins():
     '''Returns a tuple with directory containing the Beagle .jar file and Beagle's .jar filename'''
 
     return '~/bin/beagle/', 'beagle.08Jun17.d8b.jar'
+
 
 
 """
