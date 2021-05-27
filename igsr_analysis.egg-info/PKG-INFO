@@ -1,0 +1,51 @@
+Metadata-Version: 2.1
+Name: igsr-analysis
+Version: 1.0.1
+Summary: This package contains code that is relevant for the analysis (Mapping, BAM qc, Variant Calling, Filtering etc...) of IGSR data.
+Home-page: https://github.com/igsr/igsr_analysis/archive/refs/tags/v1.0.1.tar.gz
+Author: Ernesto Lowy
+Author-email: ernestolowy@gmail.com
+License: MIT
+Description: 
+        This repo contains code that is relevant for the analysis (Mapping, BAM qc, Variant Calling, Filtering etc...) of IGSR data 
+        
+        The International Genome Sample Resource [(IGSR)](http://www.internationalgenome.org/) is a project funded by the [Wellcome Trust](https://wellcome.ac.uk/) created after the finalization of the 1000 Genomes Project in order to maintain and expand the resource. It has the following aims:
+        
+        * Ensure the future access to and usability of the 1000 Genomes reference data
+        * Incorporate additional published genomic data on the 1000 Genomes samples
+        * Expand the data collection to include new populations not represented in the 1000 Genomes Project 
+        
+        This repository contains code used in the different analyses pipelines that we use in the project. To use this code please follow the steps described below
+        
+        ### Preparing environment
+        Modify your $PYTHONPATH to include the required libraries:<br>
+        ```export PYTHONPATH=${ehive_dir}/wrappers/python3/:$PYTHONPATH```
+        
+        Modify your $PERL5LIB to include the required libraries:<br>
+        ```export PERL5LIB=${ehive_dir}/modules/:${igsr_analysis_dir}/:${PERL5LIB}```
+        
+        Modify your $PATH to include the location of the eHive scripts:
+        ```export PATH=${ehive_dir}/scripts/:${PATH}```
+        
+        ### Install the igsr_analysis package from PyPI
+        
+        ```pip install igsr_analysis```
+        
+        And you are ready to go! 
+        
+        ### Conventions used in this README file:
+        
+        ```${igsr_analysis_dir}``` is the folder where you have cloned https://github.com/igsr/igsr_analysis.git<br>
+        ```${ehive_dir}``` is the folder where you have cloned https://github.com/Ensembl/ensembl-hive.git<br>
+        
+        [![DOI](https://zenodo.org/badge/99792445.svg)](https://zenodo.org/badge/latestdoi/99792445)
+        
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.0
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Python: >=3.0.0
+Description-Content-Type: text/markdown
