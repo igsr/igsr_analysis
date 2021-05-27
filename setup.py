@@ -15,11 +15,11 @@ from setuptools import find_packages, setup, Command
 NAME = 'igsr_analysis'
 DESCRIPTION = 'This package contains code that is relevant for the analysis ' \
               '(Mapping, BAM qc, Variant Calling, Filtering etc...) of IGSR data.'
-URL = 'https://github.com/igsr/igsr_analysis/archive/refs/tags/v1.0.1.tar.gz'
+URL = 'https://github.com/igsr/igsr_analysis/archive/refs/tags/v1.1.2.tar.gz'
 EMAIL = 'ernestolowy@gmail.com'
 AUTHOR = 'Ernesto Lowy'
 REQUIRES_PYTHON = '>=3.0.0'
-VERSION = 'v1.0.1'
+VERSION = 'v1.1.2'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
