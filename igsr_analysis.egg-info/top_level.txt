@@ -1,9 +1,0 @@
-BEDTools
-BamQC
-PyHive
-ReseqTrackDB
-SequenceIndex
-Utils
-VCF
-VariantCalling
-p3
