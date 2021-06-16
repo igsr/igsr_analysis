@@ -13,8 +13,8 @@ The problem arises when you need to filter a call set obtained using a non-GATK 
 
 If you find yourself in this situation you might find this pipeline useful.
 
-Foundation of the filtering
----------------------------
+Filtering approach
+------------------
 
 This pipeline implements a supervised Machine Learning (ML) model in order to solve a binary classification problem.
 
@@ -26,13 +26,9 @@ LogisticRegression.html?highlight=logistic%20regression#sklearn.linear_model.Log
 
 The pipeline needs to be run in different stages:
 
-1) Recursive Feature Elimination (RFE) stage (optional)
-
-This step is used to select the desired `n` number of annotations more informative for the variant classification process.
-   Our pipeline uses the implementation from  `Scikit-learn RFE <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html?highlight=rfe#sklearn.feature_selection.RFE>`_ and it works by recursively removing features (annotations),
-   building a logistic regression model using the remaining attributes, and calculating the model accuracy. RFE is able to work out the combination of n attributes that contribute most to the prediction
-2) Training the ML model for the SNPs and INDELs independently
-3) Applying the fitted model generated in step 2 trained model on the VCF that you want to filter
+- Recursive Feature Elimination (RFE) stage (optional). This step is used to select the desired ``n`` number of annotations more informative for the variant classification process. Our pipeline uses the implementation from  `Scikit-learn RFE <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html?highlight=rfe#sklearn.feature_selection.RFE>`_ and it works by recursively removing features (annotations), building a logistic regression model using the remaining attributes, and calculating the model accuracy. RFE is able to work out the combination of ``n`` attributes that contribute the most to the prediction.
+- Training the ML model for the SNPs and INDELs independently
+- Applying the fitted model generated in step 2 trained model on the VCF that you want to filter
 
 USAGE
 -----
