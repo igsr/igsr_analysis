@@ -27,8 +27,8 @@ LogisticRegression.html?highlight=logistic%20regression#sklearn.linear_model.Log
 The pipeline needs to be run in different stages:
 
 - Recursive Feature Elimination (RFE) stage (optional). This step is used to select the desired ``n`` number of annotations more informative for the variant classification process. Our pipeline uses the implementation from  `Scikit-learn RFE <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html?highlight=rfe#sklearn.feature_selection.RFE>`_ and it works by recursively removing features (annotations), building a logistic regression model using the remaining attributes, and calculating the model accuracy. RFE is able to work out the combination of ``n`` attributes that contribute the most to the prediction.
-- Training the ML model for the SNPs and INDELs independently
-- Applying the fitted model generated in step 2 trained model on the VCF that you want to filter
+- Training of the ML model. Our pipeline is capable of filtering SNPs and INDELs. These two variant types are characterized by two different annotation profiles, and this is why the pipeline will train two models for SNPs and INDELs respectively. This step requires high-confidence SNP and INDEL call sets along with the call set to be filtered, and it will generate two serialized trained models together with its estimated accuracy. 
+- Finally, the pipeline will apply the SNPs/INDELs models obtained in the previous step and will filter the variants using a user-supplied sensitivity cutoff. This step will generate a single VCF file containing the filtered variants.
 
 USAGE
 -----
