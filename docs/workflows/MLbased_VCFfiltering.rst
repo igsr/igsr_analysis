@@ -24,16 +24,15 @@ and it is a binary classification problem where we have multiple numerical indep
 This particular type of problem can be modelled using a Logistic regression binary classifier, and more specifically, our pipeline uses the `Scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.
 LogisticRegression.html?highlight=logistic%20regression#sklearn.linear_model.LogisticRegression>`_ Python library implementation.
 
-This pipeline needs to be run in different stages
+The pipeline needs to be run in different stages:
 
-1) Recursive Feature Elimination (RFE) stage (optional).
-   This pipeline uses the `Scikit-learn RFE implementation <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html?highlight=rfe#sklearn.feature_selection.RFE>`_ and it works by recursively removing features (annotations),
-   building a logistic regression model using the remaining attributes and calculating the model accuracy. RFE is able to work out the combination of n attributes that contribute most to the prediction
+1) Recursive Feature Elimination (RFE) stage (optional)
+
+This step is used to select the desired `n` number of annotations more informative for the variant classification process.
+   Our pipeline uses the implementation from  `Scikit-learn RFE <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html?highlight=rfe#sklearn.feature_selection.RFE>`_ and it works by recursively removing features (annotations),
+   building a logistic regression model using the remaining attributes, and calculating the model accuracy. RFE is able to work out the combination of n attributes that contribute most to the prediction
 2) Training the ML model for the SNPs and INDELs independently
 3) Applying the fitted model generated in step 2 trained model on the VCF that you want to filter
-
-* Recursive Feature Elimination
-This step will 
 
 USAGE
 -----
