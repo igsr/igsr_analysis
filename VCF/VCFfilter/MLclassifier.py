@@ -5,7 +5,6 @@ Created on 27 Feb 2017
 '''
 import pandas as pd
 import numpy as np
-import os
 import pdb
 import pickle
 import gc
@@ -68,13 +67,20 @@ class MLclassifier:
 
         if DF_TP_columns.equals((DF_FP_columns)) is False:
             raise Exception("Indices in the passed dataframes are not equal")
-
-        # create 2 dataframes from tsv files skipping the 2 first columns,
-        # as it is assumed that the 1st is 'chr' and 2nd is 'pos'
-        DF_TP = pd.read_csv(tp_annotations, sep="\t", na_values=['.'],
-                            usecols=[i for i in range(2, len(DF_TP_columns))])
-        DF_FP = pd.read_csv(fp_annotations, sep="\t", na_values=['.'],
-                            usecols=[i for i in range(2, len(DF_FP_columns))])
+        
+        DF_TP = None
+        DF_FP = None
+        if DF_TP_columns[2] == '[3](null)' or DF_FP_columns[2] == '[3](null)':
+            # all INFO columns are in dataframe. Parse the DF with different function
+            DF_TP = self.__process_dfINFO(tp_annotations)
+            DF_FP = self.__process_dfINFO(fp_annotations)
+        else:
+            # create 2 dataframes from tsv files skipping the 2 first columns,
+            # as it is assumed that the 1st is 'chr' and 2nd is 'pos'
+            DF_TP = pd.read_csv(tp_annotations, sep="\t", na_values=['.'],
+                                usecols=[i for i in range(2, len(DF_TP_columns))])
+            DF_FP = pd.read_csv(fp_annotations, sep="\t", na_values=['.'],
+                                usecols=[i for i in range(2, len(DF_FP_columns))])
 
         #assign outcome=1 if TP and 0 if FP
         DF_TP = DF_TP.assign(is_valid=1)
@@ -108,6 +114,55 @@ class MLclassifier:
         aDF_std.insert(loc=0, column='is_valid', value=DF_tr['is_valid'].values)
 
         return aDF_std
+    
+    def __get_ids(self, x):
+        ids = []
+        for i in x:
+            # sometimes, the value is None
+            if i is None:
+                continue
+            elms = i.split('=')
+            ids.append(elms[0])
+        new_ids = list(set(ids))
+        return new_ids[0]
+    
+    def __get_values(self, x):
+        values = []
+        for i in x:
+            if i is None:
+                values.append(0)
+                continue
+            elms = i.split('=')
+            if len(elms)==1:
+                # value is of FLAG type
+                values.append(1)
+            else:
+                values.append(elms[1])
+        return values
+
+    def __process_dfINFO(self, annotations):
+        """
+        Function to parse the annotations file when these are obtained
+        by using bcftools query -f '%INFO', i.e. all INFO fields are fetched
+
+        Parameters
+        ----------
+        annotations : str
+                      Path to file with variant annotations obtained using
+                      'bcftools query'
+
+        Returns
+        -------
+        new_DF : dataframe
+        """
+        DF_columns = pd.read_csv(annotations, sep="\t", na_values=['.'], nrows=1).columns
+        DF = pd.read_csv(annotations, sep="\t", na_values=['.'],usecols=[i for i in range(2, len(DF_columns))])
+        DF.rename(columns={"[3](null)":"INFO"},inplace=True)
+        DF = DF.INFO.str.split(";",expand=True,)
+        ids=DF.apply(self.__get_ids)
+        DF.columns=ids
+        new_DF=DF.apply(self.__get_values)
+        return new_DF
 
     def train(self, tp_annotations, fp_annotations, outprefix, test_size=0.25):
         """
