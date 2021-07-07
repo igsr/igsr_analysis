@@ -137,7 +137,12 @@ class MLclassifier:
                 # value is of FLAG type
                 values.append(1)
             else:
-                values.append(elms[1])
+                try:
+                    float(elms[1])
+                except:
+                    values.append(0)
+                else:
+                    values.append(elms[1])
         return values
 
     def __process_dfINFO(self, annotations):
