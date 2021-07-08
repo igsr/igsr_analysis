@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: igsr-analysis
-Version: 1.0.1
+Version: 1.1.3
 Summary: This package contains code that is relevant for the analysis (Mapping, BAM qc, Variant Calling, Filtering etc...) of IGSR data.
-Home-page: https://github.com/igsr/igsr_analysis/archive/refs/tags/v1.0.1.tar.gz
+Home-page: https://github.com/igsr/igsr_analysis/archive/refs/tags/v1.1.3.tar.gz
 Author: Ernesto Lowy
 Author-email: ernestolowy@gmail.com
 License: MIT
