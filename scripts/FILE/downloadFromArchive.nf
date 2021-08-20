@@ -1,7 +1,9 @@
 #!/usr/bin/env nextflow
 
 /* 
- * Script to convert a .cram file to a bam file
+ * Script to download a file from the archive. It will also calculate the MD5s on the
+ * downloaded files.
+ *
  * This workflow relies on Nextflow (see https://www.nextflow.io/tags/workflow.html)
  *
  * @author
@@ -23,13 +25,13 @@ params.ascp = false
 //print usage
 if (params.help) {
     log.info ''
-    log.info 'Script to download .cram file/s from the archive and convert them to .bam'
-    log.info '-------------------------------------------------------------------------'
+    log.info 'Script to download a file/s from the archive'
+    log.info '--------------------------------------------'
     log.info ''
     log.info 'This script uses the ASPERA/WGET for the download.'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow cram2bam.nf --file input.txt --wget true'
+    log.info '    nextflow downloadFromArchive.nf --file input.txt --wget true'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
