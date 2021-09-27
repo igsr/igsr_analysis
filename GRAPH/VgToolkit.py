@@ -208,7 +208,7 @@ class VG(object):
 
         return f"{prefix}.pack"
     
-    def run_call(self, vg_f: str, pack_f: str, prefix: str, verbose: bool=False) -> str:
+    def run_call(self, vg_f: str, pack_f: str, prefix: str, verbose: bool=True) -> str:
         """
         run vg pack
 
