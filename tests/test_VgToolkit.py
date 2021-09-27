@@ -57,3 +57,23 @@ def test_run_augment(vg_object, datadir):
     assert os.path.isfile(outfiles[0]) is True
     assert os.path.isfile(outfiles[1]) is True
 
+def test_run_pack(vg_object, datadir):
+    '''
+    Test function to run 'vg pack' on a .gam file
+    '''
+    outfile = vg_object.run_pack(vg_f=f"{datadir}/VG/x.vg",
+                                  aln_f=f"{datadir}/VG/aln.gam",
+                                  prefix=f"{datadir}/outdir/aln",
+                                  Q=5)
+    
+    assert os.path.isfile(outfile) is True
+
+def test_run_call(vg_object, datadir,clean_tmp):
+    '''
+    Test function to run 'vg call' to generate a VCF file
+    '''
+    outfile = vg_object.run_call(vg_f=f"{datadir}/VG/x.vg",
+                                 pack_f=f"{datadir}/outdir/aln.pack",
+                                 prefix=f"{datadir}/outdir/aln")
+    
+    assert os.path.isfile(outfile) is True
