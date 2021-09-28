@@ -25,7 +25,7 @@ WORKDIR /lib
 RUN git clone https://github.com/igsr/igsr_analysis.git
 ENV PYTHONPATH=/lib/igsr_analysis/
 # Run tests
-WORKDIR /lib/igsr_analysis/tests && rm -rf reports/ && mkdir reports/
+WORKDIR /lib/igsr_analysis/tests
 RUN ["pytest", "-v", "--junitxml=reports/result.xml", "test_BCFTools.py"]
 
 CMD tail -f /dev/null
