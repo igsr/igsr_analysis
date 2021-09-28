@@ -7,7 +7,6 @@ from GRAPH.VgToolkit import VG
 @pytest.fixture
 def vg_object(datadir, bcftools_folder):
     '''Returns a VG object'''
-    VG.vg_folder="/nfs/production/flicek/ensembl/variation/software//vg-v1.34.0/"
     vg_object = VG()
 
     return vg_object
