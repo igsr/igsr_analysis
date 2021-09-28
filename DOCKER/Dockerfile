@@ -26,6 +26,7 @@ RUN git clone https://github.com/igsr/igsr_analysis.git
 ENV PYTHONPATH=/lib/igsr_analysis/
 # Run tests
 WORKDIR /lib/igsr_analysis/tests
-RUN ["pytest", "-v", "--junitxml=reports/result.xml", "test_BCFTools.py" "test_VgToolkit.py"]
+#RUN ["pytest", "-v", "--junitxml=reports/result.xml", "test_BCFTools.py" "test_VgToolkit.py"]
+#RUN ["pytest", "-v", "--junitxml=reports/result.xml", "test_VgToolkit.py"]
 
 CMD tail -f /dev/null
