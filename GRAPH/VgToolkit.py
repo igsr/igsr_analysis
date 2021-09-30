@@ -63,14 +63,19 @@ class VG(object):
         
         return outfiles
 
-    def run_giraffe(self, gbz_f: str, min: str, dist: str, fastq: str, prefix: str, verbose: bool= False ) -> str:
+    def run_giraffe(self, min: str, dist: str, fastq: str, prefix: str, gbz_f: str=None, gwbt_f: str=None, gbwt_g: str=None, verbose: bool= False ) -> str:
         """
         run vg giraffe
 
         Parameters
         ----------
-        gbz_f : str
-               path to GBZ file (GBWT index + GBWTGraph)
+        gbz_f : str, Optional
+                path to GBZ file (GBWT index + GBWTGraph)
+                Not required if gbwt_f and gbwt_g are provided
+        gbwt_f : str, Optional.
+                 path to GBWT index file. Not required if gbz_f is provided
+        gbwt_g : str, Optional 
+                 path to GBWTGraph file. Not required if gbz_f is provided
         min : str
              path to minimizer index file
         dist : str
