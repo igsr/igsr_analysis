@@ -37,14 +37,13 @@ def picard_folder():
     return '~/bin/'
 
 @pytest.fixture
-def gatk_object(gatk_folder, datadir, bgzip_folder):
+def gatk_object(datadir):
     '''Returns a GATK object'''
 
     bam_file = "{0}/exampleBAM.bam".format(datadir)
     reference = "{0}/exampleFASTA.fasta".format(datadir)
     
-    gatk_object = GATK(bam=bam_file, reference=reference,
-                       gatk_folder=gatk_folder, bgzip_folder=bgzip_folder)
+    gatk_object = GATK(bam=bam_file, reference=reference)
 
     return gatk_object
 
