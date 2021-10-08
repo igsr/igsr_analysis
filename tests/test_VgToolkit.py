@@ -5,7 +5,7 @@ import os
 from GRAPH.VgToolkit import VG
 
 @pytest.fixture
-def vg_object(datadir, bcftools_folder):
+def vg_object(datadir):
     '''Returns a VG object'''
     vg_object = VG()
 
@@ -27,6 +27,20 @@ def test_run_autoindex(vg_object, datadir):
 def test_run_giraffe(vg_object, datadir):
     '''
     Test function to run 'vg giraffe' on a FASTQ file
+    '''
+    
+    outfile = vg_object.run_giraffe(Z=f"{datadir}/outdir/test.autoindex.giraffe.gbz",
+                                    m=f"{datadir}/outdir/test.autoindex.min", 
+                                    d=f"{datadir}/outdir/test.autoindex.dist", 
+                                    fastq=f"{datadir}/VG/input.fq", 
+                                    prefix=f"{datadir}/outdir/test")
+
+    assert os.path.isfile(outfile) is True
+
+def test_run_giraffe_HG(vg_object, datadir):
+    '''
+    Test function to run 'vg giraffe' on a FASTQ file using both '--gbwt_f' and 'gbwt_g'
+    options
     '''
     
     outfile = vg_object.run_giraffe(gbz_f=f"{datadir}/outdir/test.autoindex.giraffe.gbz",

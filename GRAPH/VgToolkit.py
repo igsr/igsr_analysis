@@ -17,13 +17,13 @@ class VG(object):
     Class variables
     ---------------
     vg_folder : str, Optional
-                Path to folder containing the vg binaries.
+                Path to folder containing the vg binaries
+    arg : namedtuple
+          Containing a particular argument and its value
     """
     vg_folder = None 
+    arg = namedtuple('Argument', 'option value')
 
-    def __init__(self):
-        pass
-    
     def run_autoindex(self, ref: str, vcf: str, prefix: str, verbose: bool=False):
         """
         run vg autoindex
@@ -44,11 +44,10 @@ class VG(object):
         outfiles : list
                    List of output files
         """
-        Arg = namedtuple('Argument', 'option value')
-        args = [Arg('--workflow', 'giraffe')]
-        args.append(Arg('-r', ref))
-        args.append(Arg('-v', vcf))
-        args.append(Arg('-p', prefix))
+        args = [VG.arg('--workflow', 'giraffe')]
+        args.append(VG.arg('-r', ref))
+        args.append(VG.arg('-v', vcf))
+        args.append(VG.arg('-p', prefix))
 
         program_cmd= f"{VG.vg_folder}/vg autoindex" if VG.vg_folder else "vg autoindex"
         vg_runner = RunProgram(program=program_cmd,
@@ -63,37 +62,32 @@ class VG(object):
         
         return outfiles
 
-    def run_giraffe(self, min: str, dist: str, fastq: str, prefix: str, gbz_f: str=None, gwbt_f: str=None, gbwt_g: str=None, verbose: bool= False ) -> str:
+    def run_giraffe(self, fastq: str, prefix: str,  verbose: bool= False, **kwargs ) -> str:
         """
         run vg giraffe
 
         Parameters
         ----------
-        gbz_f : str, Optional
-                path to GBZ file (GBWT index + GBWTGraph)
-                Not required if gbwt_f and gbwt_g are provided
-        gbwt_f : str, Optional.
-                 path to GBWT index file. Not required if gbz_f is provided
-        gbwt_g : str, Optional 
-                 path to GBWTGraph file. Not required if gbz_f is provided
-        min : str
-             path to minimizer index file
-        dist : str
-              path to the distance index file
         fastq : str
-                path to FASTQ file
+                Path to FASTQ file
         prefix : str
                  Output prefix
-        verbose : bool,  default=False
+        verbose : bool
                   if true, then print the command line used for running this program
+        **kwargs: Arbitrary keyword arguments. Check the `vg giraffe` help for
+                  more information.
         
         Returns
         -------
         gam file : str
                    Path to gam file
         """
-        Arg = namedtuple('Argument', 'option value')
-        args = (Arg('-Z', gbz_f), Arg('-m', min), Arg('-d', dist), Arg('-f', fastq), Arg('>', f"{prefix}.gam"))
+        allowed_keys = ['H', 'Z', 'm', 'd', 'g', 't' ] # allowed arbitrary args
+
+        args = [VG.arg('-f', fastq)]
+        ## add now the **kwargs
+        args.extend([VG.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
+        args.append(VG.arg('>', f"{prefix}.gam"))
 
         program_cmd= f"{VG.vg_folder}/vg giraffe" if VG.vg_folder else "vg giraffe"
 
@@ -121,8 +115,7 @@ class VG(object):
         stats_f : str
                   Path to file containing stats on the alingment
         """
-        Arg = namedtuple('Argument', 'option value')
-        args = (Arg('-a', aln_f), Arg('>', f"{aln_f}.stats"))
+        args = (VG.arg('-a', aln_f), VG.arg('>', f"{aln_f}.stats"))
 
         program_cmd= f"{VG.vg_folder}/vg stats" if VG.vg_folder else "vg stats"
 
@@ -156,8 +149,7 @@ class VG(object):
         aug_aln_f : str
                     Path to augmented.gam file
         """
-        Arg = namedtuple('Argument', 'option value')
-        args = (Arg('', vg_f), Arg('', aln_f), Arg('-A', f"{prefix}.gam"), Arg('>', f"{prefix}.vg"))
+        args = (VG.arg('', vg_f), VG.arg('', aln_f), VG.arg('-A', f"{prefix}.gam"), VG.arg('>', f"{prefix}.vg"))
 
         program_cmd= f"{VG.vg_folder}/vg augment" if VG.vg_folder else "vg augment"
 
@@ -185,7 +177,8 @@ class VG(object):
                  Output prefix
         verbose : bool,  default=False
                   if true, then print the command line used for running this program
-        **kwargs: Arbitrary keyword arguments.
+        **kwargs: Arbitrary keyword arguments. Check the `vg pack` help for
+                  for more information.
         
         Returns
         -------
@@ -194,12 +187,10 @@ class VG(object):
         """
         allowed_keys = ['Q'] # allowed arbitrary args
 
-        Arg = namedtuple('Argument', 'option value')
-        args = [Arg('-x', vg_f), Arg('-g', aln_f), Arg('-o', f"{prefix}.pack")]
+        args = [VG.arg('-x', vg_f), VG.arg('-g', aln_f), VG.arg('-o', f"{prefix}.pack")]
 
         ## add now the **kwargs
-        args.extend([Arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
-
+        args.extend([VG.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
         program_cmd= f"{VG.vg_folder}/vg pack" if VG.vg_folder else "vg pack"
 
@@ -213,7 +204,7 @@ class VG(object):
 
         return f"{prefix}.pack"
     
-    def run_call(self, vg_f: str, pack_f: str, prefix: str, verbose: bool=True) -> str:
+    def run_call(self, vg_f: str, pack_f: str, prefix: str, verbose: bool=False) -> str:
         """
         run vg pack
 
@@ -235,8 +226,7 @@ class VG(object):
         """
         allowed_keys = ['Q'] # allowed arbitrary args
 
-        Arg = namedtuple('Argument', 'option value')
-        args = [Arg('', vg_f), Arg('-k', pack_f), Arg('>', f"{prefix}.vcf")]
+        args = [VG.arg('', vg_f), VG.arg('-k', pack_f), VG.arg('>', f"{prefix}.vcf")]
 
         program_cmd= f"{VG.vg_folder}/vg call" if VG.vg_folder else "vg call"
 
@@ -249,7 +239,3 @@ class VG(object):
         stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
 
         return f"{prefix}.vcf"
-
-
-
-

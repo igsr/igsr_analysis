@@ -9,13 +9,13 @@ from VariantCalling import BCFTools
 # test_BCFTools.py
 
 @pytest.fixture
-def bcftools_object(datadir, bcftools_folder):
+def bcftools_object(datadir):
     '''Returns a BCFTools object'''
 
     bam_file = "{0}/exampleBAM.bam".format(datadir)
     reference = "{0}/exampleFASTA.fasta".format(datadir)
 
-    bcftools_object = BCFTools(bam=bam_file, reference=reference, bcftools_folder=bcftools_folder)
+    bcftools_object = BCFTools(bam=bam_file, reference=reference)
 
     return bcftools_object
 
@@ -26,13 +26,10 @@ def test_run_bcftools(bcftools_object, datadir, clean_tmp):
 
     annots = ['DP', 'SP', 'AD']
 
-    outfile = bcftools_object.run_bcftools(outprefix="{0}/outdir/test".format(datadir),
-                                           annots=annots,
-                                           E=True,
-                                           p=True,
-                                           m_pileup=3,
-                                           m_call=True,
-                                           v=True)
+    outfile = bcftools_object.run_bcftools('m',
+                                           'E',
+                                           prefix="{0}/outdir/test".format(datadir),
+                                           annots=annots)
 
     assert os.path.isfile(outfile) is True
 
@@ -43,14 +40,11 @@ def test_run_bcftools_w_region(bcftools_object, datadir, clean_tmp):
 
     annots = ['DP', 'SP', 'AD']
 
-    outfile = bcftools_object.run_bcftools(outprefix="{0}/outdir/test".format(datadir),
+    outfile = bcftools_object.run_bcftools('m',
+                                           'e',
+                                           prefix="{0}/outdir/test".format(datadir),
                                            annots=annots,
-                                           E=True,
-                                           p=True,
-                                           m_pileup=3,
-                                           m_call=True,
-                                           r="chr1:400-1000",
-                                           v=True)
+                                           r="chr1:400-1000")
 
     assert os.path.isfile(outfile) is True
 
@@ -61,14 +55,11 @@ def test_run_bcftools_w_threads(bcftools_object, datadir, clean_tmp):
 
     annots = ['DP', 'SP', 'AD']
 
-    outfile = bcftools_object.run_bcftools("{0}/outdir/test".format(datadir),
+    outfile = bcftools_object.run_bcftools('m',
+                                           'e',
+                                           prefix="{0}/outdir/test".format(datadir),
                                            annots=annots,
-                                           E=True,
-                                           p=True,
-                                           m_pileup=3,
-                                           m_call=True,
                                            r="chr1:400-1000",
-                                           threads=2,
-                                           v=True)
+                                           threads=2)
 
     assert os.path.isfile(outfile) is True

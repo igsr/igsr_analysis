@@ -32,7 +32,6 @@
     """
     #!/usr/bin/env python
     from GRAPH.VgToolkit import VG
-    print("hello")
     print("${fastq}")
     vg_object = VG()
     outfile = vg_object.run_giraffe(gbz_f=f"{datadir}/outdir/test.autoindex.giraffe.gbz",
