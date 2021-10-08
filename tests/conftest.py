@@ -25,31 +25,6 @@ def vcflib_folder(datadir):
     return vcflib_folder
 
 @pytest.fixture
-def vt_folder(datadir):
-    """Returns the folder containing the vt binary"""
-
-    vt_folder = None
-    if shutil.which('vt') is None:
-        raise Exception("'vt' needs to by in $PATH")
-    else:
-        vt_folder = os.path.dirname(shutil.which('vt'))
-    
-    return vt_folder
-
-
-@pytest.fixture
-def gatk_folder(datadir):
-    '''Returns the folder containing the gatk wrapper script'''
-
-    gatk_folder = None # folder containing the gatk wrapper script
-    if shutil.which('gatk3') is None:
-        raise Exception("'gatk3' needs to by in $PATH")
-    else:
-        gatk_folder = os.path.dirname(shutil.which('gatk3'))
-    
-    return gatk_folder
-
-@pytest.fixture
 def gatk_jar_folder():
     '''Returns folder containin the GATK jar file'''
 
@@ -60,19 +35,6 @@ def picard_folder():
     '''Returns the folder containing the picard .jar file'''
     
     return '~/bin/'
-
-
-@pytest.fixture
-def bgzip_folder(datadir):
-    '''Returns the folder containing the bgzip binary'''
-
-    bgzip_folder = None
-    if shutil.which('bgzip') is None:
-        raise Exception("'bgzip' needs to by in $PATH")
-    else:
-        bgzip_folder = os.path.dirname(shutil.which('bgzip'))
-    
-    return bgzip_folder
 
 @pytest.fixture
 def gatk_object(gatk_folder, datadir, bgzip_folder):
@@ -93,18 +55,6 @@ def clean_tmp(datadir):
     files = glob.glob("{0}/outdir/*".format(datadir))
     for f in files:
         os.remove(f)
-
-@pytest.fixture
-def bcftools_folder(datadir):
-    '''Returns the folder containing the bcftools binary'''
-
-    bcftools_folder = None
-    if shutil.which('bcftools') is None:
-        raise Exception("'bcftools needs to by in $PATH")
-    else:
-        bcftools_folder = os.path.dirname(shutil.which('bcftools'))
-    
-    return bcftools_folder
 
 @pytest.fixture
 def bedtools_folder(datadir):

@@ -12,9 +12,21 @@ from collections import namedtuple
 class GATK(object):
     """
     Class to run the different GATK variant callers
-    """
 
-    def __init__(self, bam, reference, gatk_folder, bgzip_folder=None):
+    Class variables
+    ---------------
+    gatk_folder : str, Optional
+                  Path to folder containing the gatk binary
+    bgzip_folder : str, Optional
+                   Path to the folder containing the bgzip binary
+    arg : namedtuple
+          Containing a particular argument and its value
+    """
+    gatk_folder = None
+    bgzip_folder = None
+    arg = namedtuple('Argument', 'option value')
+
+    def __init__(self, bam, reference):
         """
         Constructor
 
@@ -24,10 +36,6 @@ class GATK(object):
              Path to BAM file used for the variant calling process.
         reference : str
              Path to fasta file containing the reference.
-        gatk_folder : str
-                       Path to folder containing GATK's jar file.
-        bgzip_folder : str, optional
-                       Path to folder containing the bgzip binary.
         """
 
         if os.path.isfile(bam) is False:
@@ -35,18 +43,16 @@ class GATK(object):
 
         self.bam = bam
         self.reference = reference
-        self.gatk_folder = gatk_folder
-        self.bgzip_folder = bgzip_folder
 
-    def run_ug(self, outprefix, glm='SNP', compress=True, nt=1, verbose=None,
-               intervals=None, log_file=None, **kwargs):
+    def run_ug(self, prefix: str, glm='SNP', compress=True, nt=1,
+               intervals=None, log_file=None, verbose: bool= False, **kwargs):
         """
         Run GATK UnifiedGenotyper
 
         Parameters
         ----------
-        outprefix : str
-                    Prefix for output VCF file. i.e. /path/to/file/test.
+        prefix : str
+                 Prefix for output VCF file. i.e. /path/to/file/test.
         glm : str, default=SNP
               Genotype likelihoods calculation model to employ -- SNP is the default option,
               while INDEL is also available for calling indels and BOTH is available for
@@ -61,8 +67,6 @@ class GATK(object):
                       For example: ['chr1:100-200', 'chr2:200-300']. If the list contains
                       more than one interval, then it is useful to set the
                       --interval_set_rule option.
-        verbose : bool, optional
-                  if true, then print the command line used for running this program
         alleles: str, optional
                  Path to VCF.
                  When --genotyping_mode is set to
@@ -74,11 +78,15 @@ class GATK(object):
                      Which type of calls we should output.
         log_file : str, optional
                    Path to file that will used for logging the GATK stderr and stdout.
+        verbose : bool, default=False
+                  Increase verbosity.
+        **kwargs: Arbitrary keyword arguments. Check the `GATK` help for
+                  more information.
 
         Returns
         -------
-        outprefix : str
-            A VCF file.
+        prefix : str
+                A VCF file.
         """
 
         Arg = namedtuple('Argument', 'option value')

@@ -17,7 +17,7 @@ class BCFTools(object):
     Class variables
     ---------------
     bcftools_folder : str, Optional
-                      Path to folder containing the vg binaries
+                      Path to folder containing the bcftools binary
     arg : namedtuple
           Containing a particular argument and its value
     """
@@ -56,11 +56,11 @@ class BCFTools(object):
            Region used for doing the variant calling in the format chr20:10000-20000.
         ploidy: str, optional
                 Predefined ploidy
-        verbose : bool, default=True
+        verbose : bool, default=False
                   Increase verbosity.
         *args: Variable length argument list.
-         **kwargs: Arbitrary keyword arguments. Check the `bcftools` help for
-                   more information.
+        **kwargs: Arbitrary keyword arguments. Check the `bcftools` help for
+                  more information.
 
         Returns
         -------
