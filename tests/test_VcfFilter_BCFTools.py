@@ -7,11 +7,11 @@ from VCF.VCFfilter.BCFTools import BCFTools
 # test_vcfFilter_BCFTools.py
 
 @pytest.fixture
-def vcf_object(datadir, bcftools_folder):
+def vcf_object(datadir):
     """Returns a BCFTools object"""
 
     vcf_file = "{0}/test.vcf.gz".format(datadir)
-    vcf_object = BCFTools(vcf=vcf_file, bcftools_folder=bcftools_folder)
+    vcf_object = BCFTools(vcf=vcf_file)
 
     return vcf_object
 
@@ -21,8 +21,7 @@ def test_filter_by_variant_type(vcf_object, datadir, clean_tmp):
     Will select SNPs from the VCF file
     """
 
-    outfile = vcf_object.filter_by_variant_type(outprefix="{0}/outdir/test".format(datadir),
-                                                verbose=True)
+    outfile = vcf_object.filter_by_variant_type(prefix="{0}/outdir/test".format(datadir))
 
     assert os.path.isfile(outfile) is True
 
@@ -32,7 +31,7 @@ def test_filter_by_variant_type_biallelic(vcf_object, datadir, clean_tmp):
     using the biallelic option
     """
 
-    outfile = vcf_object.filter_by_variant_type(outprefix="{0}/outdir/test".format(datadir),
+    outfile = vcf_object.filter_by_variant_type(prefix="{0}/outdir/test".format(datadir),
                                                 biallelic=True,
                                                 verbose=True)
 
@@ -44,7 +43,7 @@ def test_filter_by_variant_type_biallelic_compressed(vcf_object, datadir, clean_
     using the biallelic option
     """
 
-    outfile = vcf_object.filter_by_variant_type(outprefix="{0}/outdir/test".format(datadir),
+    outfile = vcf_object.filter_by_variant_type(prefix="{0}/outdir/test".format(datadir),
                                                 biallelic=True,
                                                 compress=False,
                                                 verbose=True)
@@ -56,10 +55,8 @@ def test_subset_vcf(vcf_object, datadir, clean_tmp):
     Test method subset_vcf to subset a VCF by using a BED file/region
     """
 
-    outfile = vcf_object.subset_vcf(outprefix="{0}/outdir/test.vcf.gz".format(datadir),
-                                    region="chr1",
-                                    apply_filters="PASS",
-                                    verbose=True)
+    outfile = vcf_object.subset_vcf(prefix="{0}/outdir/test.vcf.gz".format(datadir),
+                                    r="chr1")
 
     assert os.path.isfile(outfile) is True
 

@@ -15,8 +15,20 @@ class BCFTools(object):
     """
     Class to perform different filtering/selecting operations using BCFTools
     https://samtools.github.io/bcftools/bcftools.html
+
+    Class variables
+    ---------------
+    bcftools_folder : str, Optional
+                      Path to folder containing the bcftools binary
+    tabix_folder : str, Optional
+                   Path to folder containing the tabix binary
+     arg : namedtuple
+          Containing a particular argument and its value
     """
-    def __init__(self, vcf, bcftools_folder=None, tabix_folder=None):
+    bcftools_folder, tabix_folder= None,None
+    arg = namedtuple('Argument', 'option value')
+
+    def __init__(self, vcf: str)->None:
         """
         Constructor
 
@@ -24,92 +36,80 @@ class BCFTools(object):
         ----------
         vcf : str
               Path to gzipped vcf file.
-        bcftools_folder : str, optional
-                          Path to folder containing the bcftools binary.
-        tabix_folder : str, optional
-                       Path to folder containing the tabix binary.
         """
 
         if os.path.isfile(vcf) is False:
             raise Exception("File does not exist")
-
         self.vcf = vcf
-        self.bcftools_folder = bcftools_folder
-        self.tabix_folder = tabix_folder
 
-    def subset_vcf(self, outprefix, bed=None, region=None, outdir=None,
-                   create_index=False, verbose=None, action='exclude',
-                   apply_filters=None, threads=1):
+    def subset_vcf(self, prefix: str, bed: str=None, outdir=None,
+                   action='exclude', threads: int=1, verbose: bool=False, **kwargs):
         """
         Subset the vcf file using a BED file/region having the coordinates of the
         variants to exclude/include
 
         Parameters
         ----------
+        prefix : str
+                 Prefix for outputfiles.
         bed : str, optional
               BED file with coordinates to exclude/include.
-        region : str, optional
-                 String with region to consider: chr1, chr1:1000-1500, etc...
-        outprefix : str
-                    Prefix for outputfiles.
         outdir : str, optional
                  If provided, then put output files in this folder.
-        create_index : bool, default=False
-                       Generate a tabix index. 
-        verbose : bool, optional
-                  verbose.
         action : str, default=exclude
                 Exclude or include variants from the bed file passed through the
                 bed option.
-        apply_filters : str, optional
-                       Apply a filter string: i.e. "PASS,."
-        threads : int, optional
-                 Number of output compression threads to use in addition to main thread. Default=0
+        threads : int
+                  Number of extra output compression threads. Default=1.
+        verbose : bool
+                  Increase verbosity.
+        **kwargs: Arbitrary keyword arguments. Check the `GATK` help for
+                  more information.
 
         Returns
         -------
-        outprefix : str
+        prefix : str
                  Path to gzipped VCF file that will have the desired variants excluded/included.
         """
-
+        pdb.set_trace()
         if action != 'include' and action != 'exclude':
             raise Exception("action argument should be either include or exclude")
 
-        if region:
-            bits = outprefix.split(".")
+        if 'r' in kwargs:
+            bits = prefix.split(".")
             vcf_ix = bits.index("vcf")
 
             new = ""
-            if apply_filters is not None:
-                new = bits[vcf_ix - 1] + "_" + region+".filt"
+            if 'f' in kwargs:
+                new = bits[vcf_ix - 1] + "_" + kwargs['r']+".filt"
             else:
-                new = bits[vcf_ix - 1] + "_" + region
+                new = bits[vcf_ix - 1] + "_" + kwargs['r']
             bits[vcf_ix - 1] = new
-            outprefix = ".".join(bits)
+            prefix = ".".join(bits)
 
         if outdir:
-            outprefix = "%s/%s" % (outdir, outprefix)
-
-        Arg = namedtuple('Argument', 'option value')
+            prefix = "%s/%s" % (outdir, prefix)
 
         args = []
         if bed:
             if action == 'exclude':
-                args.append(Arg('-T', '^{0}'.format(bed)))
+                args.append(BCFTools.arg('-T', '^{0}'.format(bed)))
             elif action == 'include':
-                args.append(Arg('-T', '{0}'.format(bed)))
-        elif region:
+                args.append(BCFTools.arg('-T', '{0}'.format(bed)))
+        elif kwargs['r']:
             if action == 'exclude':
-                args.append(Arg('-t', '^{0}'.format(region)))
+                args.append(BCFTools.arg('-t', '^{0}'.format(region)))
             elif action == 'include':
-                args.append(Arg('-r', '{0}'.format(region)))
+                args.append(BCFTools.arg('-r', '{0}'.format(region)))
 
-        args.extend([Arg('-o', outprefix), Arg('-O', 'z'), Arg('--threads', threads)])
+         # add now the **kwargs 
+        allowed_keys = ['O', 'f', 'r'] # allowed arbitrary args
+        args.extend([GATK.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
-        if apply_filters is not None:
-            args.append(Arg('-f', '\"{0}\"'.format(apply_filters)))
+        args.extend([BCFTools.arg('-o', outprefix), Arg('--threads', threads)])
 
-        runner = RunProgram(path=self.bcftools_folder, program='bcftools view',
+        cmd = f"{BCFTools.bcftools_folder}/bcftools view" if BCFTools.bcftools_folder else "bcftools view"
+        runner = RunProgram(program=cmd,
                             args=args, parameters=[self.vcf])
 
         if verbose is True:
@@ -117,7 +117,7 @@ class BCFTools(object):
 
         stdout = runner.run_checkoutput()
 
-        return outprefix
+        return prefix
 
     def filter(self, name, expression, verbose=None):
         """

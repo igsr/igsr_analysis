@@ -45,7 +45,8 @@ class GATK(object):
         self.bam = bam
         self.reference = reference
 
-    def run_caller(self, program: str, prefix: str, compress: bool=True, log_file: str=None, verbose: bool=False, **kwargs)->str:
+    def run_caller(self, program: str, prefix: str, compress: bool=True, log_file: str=None, 
+                   verbose: bool=False, **kwargs)->str:
         """
         Run GATK UnifiedGenotyper/HaplotypeCaller
 
