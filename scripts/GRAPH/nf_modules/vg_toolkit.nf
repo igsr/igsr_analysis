@@ -15,30 +15,33 @@
 
     Parameters
     ----------
-    fastq : FASTQ file to be aligned
+    fastq : String with a fastq or comma-separated fastq paths
 
     Returns
     -------
     TODO
     */
     input:
-    path(fastq)
-    path(gbwtf)
-    path(gbwtgraphf)
+    val(fastq)
+    path(gbwtFile)
+    path(graphname)
     path(minf)
-    path(distf)
+    path(distFile)
+    val(cpus)
+    val(prefix)
 
     script:
     """
     #!/usr/bin/env python
     from GRAPH.VgToolkit import VG
-    print("${fastq}")
     vg_object = VG()
-    outfile = vg_object.run_giraffe(gbz_f=f"{datadir}/outdir/test.autoindex.giraffe.gbz",
-                                    min=f"{datadir}/outdir/test.autoindex.min",
-                                    dist=f"{datadir}/outdir/test.autoindex.dist",
-                                    fastq=f"{datadir}/VG/input.fq",
-                                    prefix=f"{datadir}/outdir/test")
+    outfile = vg_object.run_giraffe(fastq=f"${fastq}",
+                                    H=f"${gbwtFile}",
+                                    g=f"${graphname}",
+                                    m=f"${minf}",
+                                    d=f"${distFile}",
+                                    t=f"${cpus}",
+                                    prefix=f"${prefix}")
     """
 }
 

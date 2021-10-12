@@ -69,7 +69,7 @@ class VG(object):
         Parameters
         ----------
         fastq : str
-                Path to FASTQ file
+                Path to FASTQ or comma-separated FASTQ files (if pair is provided) 
         prefix : str
                  Output prefix
         verbose : bool
@@ -84,7 +84,13 @@ class VG(object):
         """
         allowed_keys = ['H', 'Z', 'm', 'd', 'g', 't' ] # allowed arbitrary args
 
-        args = [VG.arg('-f', fastq)]
+        files = fastq.split(",")
+        files = [x.strip() for x in files]
+        if len(files)>1:
+            args = [VG.arg('-f', files[0]), VG.arg('-f', files[1])]
+        else:
+            args = [VG.arg('-f', files[0])]
+
         ## add now the **kwargs
         args.extend([VG.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
         args.append(VG.arg('>', f"{prefix}.gam"))

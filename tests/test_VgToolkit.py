@@ -32,7 +32,20 @@ def test_run_giraffe(vg_object, datadir):
     outfile = vg_object.run_giraffe(Z=f"{datadir}/outdir/test.autoindex.giraffe.gbz",
                                     m=f"{datadir}/outdir/test.autoindex.min", 
                                     d=f"{datadir}/outdir/test.autoindex.dist", 
-                                    fastq=f"{datadir}/VG/input.fq", 
+                                    fastq=f"{datadir}/VG/input1.fq", 
+                                    prefix=f"{datadir}/outdir/test")
+
+    assert os.path.isfile(outfile) is True
+
+def test_run_giraffe_paired(vg_object, datadir):
+    '''
+    Test function to run 'vg giraffe' on a pair of mated FASTQ files
+    '''
+    
+    outfile = vg_object.run_giraffe(Z=f"{datadir}/outdir/test.autoindex.giraffe.gbz",
+                                    m=f"{datadir}/outdir/test.autoindex.min", 
+                                    d=f"{datadir}/outdir/test.autoindex.dist", 
+                                    fastq=f"{datadir}/VG/input1.fq, {datadir}/VG/input2.fq",
                                     prefix=f"{datadir}/outdir/test")
 
     assert os.path.isfile(outfile) is True
@@ -46,7 +59,7 @@ def test_run_giraffe_HG(vg_object, datadir):
     outfile = vg_object.run_giraffe(gbz_f=f"{datadir}/outdir/test.autoindex.giraffe.gbz",
                                     min=f"{datadir}/outdir/test.autoindex.min", 
                                     dist=f"{datadir}/outdir/test.autoindex.dist", 
-                                    fastq=f"{datadir}/VG/input.fq", 
+                                    fastq=f"{datadir}/VG/input1.fq", 
                                     prefix=f"{datadir}/outdir/test")
 
     assert os.path.isfile(outfile) is True
