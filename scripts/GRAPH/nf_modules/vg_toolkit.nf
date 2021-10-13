@@ -46,8 +46,11 @@
     """
 }
 
-process VG_CALL {
-    
+process AUGMENT {
+    /*
+    This process run 'vg augment'
+    */
+
 }
 
 
