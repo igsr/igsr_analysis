@@ -21,28 +21,33 @@
     -------
     TODO
     */
+    tag "$sampleId: $fastq1 $fastq2"
+
     input:
-    val(fastq)
-    path(gbwtFile)
-    path(graphname)
-    path(minf)
-    path(distFile)
+    tuple val(sampleId), val(fastq1), val(fastq2)
+    val(gwtname)
+    val(graphname)
+    val(minimizername)
+    val(distname)
     val(cpus)
-    val(prefix)
 
     script:
     """
     #!/usr/bin/env python
     from GRAPH.VgToolkit import VG
     vg_object = VG()
-    outfile = vg_object.run_giraffe(fastq=f"${fastq}",
-                                    H=f"${gbwtFile}",
+    outfile = vg_object.run_giraffe(fastq=f"${fastq1},${fastq2}",
+                                    H=f"${gwtname}",
                                     g=f"${graphname}",
-                                    m=f"${minf}",
-                                    d=f"${distFile}",
+                                    m=f"${minimizername}",
+                                    d=f"${distname}",
                                     t=f"${cpus}",
-                                    prefix=f"${prefix}")
+                                    prefix=f"${sampleId}")
     """
+}
+
+process VG_CALL {
+    
 }
 
 
