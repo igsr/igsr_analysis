@@ -107,6 +107,49 @@ class VG(object):
 
         return f"{prefix}.gam"
  
+    def run_chunk(self, *params, prefix: str, verbose: bool= True, **kwargs):
+        """
+        Splits a graph and/or alignment into smaller chunks
+
+        Parameters
+        ----------
+        prefix : str
+                 Output prefix
+        verbose : bool
+                  if true, then print the command line used for running this program.
+        *params: Variable length parameter list.
+        **kwargs: Arbitrary keyword arguments. Check the `vg chunk` help for
+                  more information.
+        
+        """
+        pdb.set_trace()
+        ## add the **kwargs
+        allowed_keys = ['x', 'O'] # allowed arbitrary args
+        args = ([VG.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
+
+        # mandatory parameters
+        if not 'b' in kwargs:
+            raise         
+
+        # add now the *params
+        params_chunk = []
+        allowed_opts = ['M'] # allowed options
+        params_chunk.extend([f"-{x}" for x in params if x in allowed_opts])
+        ext = f"{kwargs['O']}" if 'O' in kwargs else 'vg'
+        params_chunk.extend(['-c', '>', f"{prefix}.{ext}"])
+
+        program_cmd= f"{VG.vg_folder}/vg chunk" if VG.vg_folder else "vg chunk"
+        vg_runner = RunProgram(program=program_cmd,
+                               parameters=params_chunk,
+                               args=args)
+        
+        if verbose is True:
+            print("Command line is: {0}".format(vg_runner.cmd_line))
+
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        
+        return f"{prefix}.{ext}"
+
     def run_stats(self, aln_f: str, verbose: bool= False ) -> str:
         """
         run vg stats

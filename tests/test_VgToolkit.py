@@ -24,6 +24,18 @@ def test_run_autoindex(vg_object, datadir):
     f"{os.getcwd()}/data/outdir/test.autoindex.min"]:
         assert f in ofiles
 
+def test_run_chunk(vg_object, datadir):
+    '''
+    Test function to run 'vg chunk'
+    '''
+
+    outfile = vg_object.run_chunk('M',
+                                  x=f"{datadir}/VG/x.xg",
+                                  O="pg",
+                                  prefix=f"{datadir}/outdir/test")
+    
+    assert os.path.isfile(outfile) is True
+
 def test_run_giraffe(vg_object, datadir):
     '''
     Test function to run 'vg giraffe' on a FASTQ file
