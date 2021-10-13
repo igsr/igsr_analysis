@@ -29,12 +29,13 @@ def test_run_chunk(vg_object, datadir):
     Test function to run 'vg chunk'
     '''
 
-    outfile = vg_object.run_chunk('M',
+    outfiles = vg_object.run_chunk('M',
                                   x=f"{datadir}/VG/x.xg",
                                   O="pg",
-                                  prefix=f"{datadir}/outdir/test")
-    
-    assert os.path.isfile(outfile) is True
+                                  b=f"{datadir}/outdir/test")
+
+    e_ofiles = [f"{datadir}/outdir/test_x.pg"]
+    assert all([a == b for a, b in zip(outfiles, e_ofiles)])
 
 def test_run_giraffe(vg_object, datadir):
     '''
