@@ -37,7 +37,17 @@ def test_run_chunk(vg_object, datadir):
     e_ofiles = [f"{datadir}/outdir/test_x.pg"]
     assert all([a == b for a, b in zip(outfiles, e_ofiles)])
 
-def test_run_giraffe(vg_object, datadir):
+def test_run_snarls(vg_object, datadir):
+    '''
+    Test  function to run 'vg snarls'
+    '''
+
+    outfile = vg_object.run_snarls(graph_f = f"{datadir}/outdir/test_x.pg",
+                                   prefix=f"{datadir}/outdir/test_x")
+    
+    assert os.path.isfile(outfile) is True
+
+def read(vg_object, datadir):
     '''
     Test function to run 'vg giraffe' on a FASTQ file
     '''
@@ -63,20 +73,6 @@ def test_run_giraffe_paired(vg_object, datadir):
 
     assert os.path.isfile(outfile) is True
 
-def test_run_giraffe_HG(vg_object, datadir):
-    '''
-    Test function to run 'vg giraffe' on a FASTQ file using both '--gbwt_f' and 'gbwt_g'
-    options
-    '''
-    
-    outfile = vg_object.run_giraffe(gbz_f=f"{datadir}/outdir/test.autoindex.giraffe.gbz",
-                                    min=f"{datadir}/outdir/test.autoindex.min", 
-                                    dist=f"{datadir}/outdir/test.autoindex.dist", 
-                                    fastq=f"{datadir}/VG/input1.fq", 
-                                    prefix=f"{datadir}/outdir/test")
-
-    assert os.path.isfile(outfile) is True
-
 def test_run_stats(vg_object, datadir):
     '''
     Test function to run 'vg stats' on a .gam file
@@ -89,9 +85,9 @@ def test_run_augment(vg_object, datadir):
     '''
     Test function to run 'vg augment' on a .gam file
     '''
-    outfiles = vg_object.run_augment(vg_f=f"{datadir}/VG/x.vg",
+    outfiles = vg_object.run_augment(graph_f=f"{datadir}/VG/x.vg",
                                     aln_f=f"{datadir}/VG/aln.gam",
-                                    prefix=f"{datadir}/outdir/aug")
+                                    prefix=f"{datadir}/outdir/aln")
 
     assert os.path.isfile(outfiles[0]) is True
     assert os.path.isfile(outfiles[1]) is True
@@ -101,18 +97,18 @@ def test_run_pack(vg_object, datadir):
     Test function to run 'vg pack' on a .gam file
     '''
     outfile = vg_object.run_pack(vg_f=f"{datadir}/VG/x.vg",
-                                  aln_f=f"{datadir}/VG/aln.gam",
-                                  prefix=f"{datadir}/outdir/aln",
-                                  Q=5)
+                                 aln_f=f"{datadir}/VG/aln.gam",
+                                 prefix=f"{datadir}/outdir/aln",
+                                 Q=5)
     
     assert os.path.isfile(outfile) is True
 
-def test_run_call(vg_object, datadir,clean_tmp):
+def test_run_call(vg_object, datadir):
     '''
     Test function to run 'vg call' to generate a VCF file
     '''
-    outfile = vg_object.run_call(vg_f=f"{datadir}/VG/x.vg",
-                                 pack_f=f"{datadir}/outdir/aln.pack",
+    outfile = vg_object.run_call(graph_f=f"{datadir}/VG/x.vg",
+                                 k=f"{datadir}/outdir/aln.pack",
                                  prefix=f"{datadir}/outdir/aln")
     
     assert os.path.isfile(outfile) is True

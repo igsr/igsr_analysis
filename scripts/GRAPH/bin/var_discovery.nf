@@ -1,5 +1,6 @@
 nextflow.enable.dsl=2
-include { GIRAFFE } from "../nf_modules/vg_toolkit.nf"
+include { GIRAFFE; CHUNK; AUGMENT; SNARLS; PACK; CALL } from "../nf_modules/vg_toolkit.nf"
+include { SAVE_FILE } from "../nf_modules/utils.nf"
 
 // params defaults
 params.help = false
@@ -9,20 +10,19 @@ params.prefix = 'output'
 //print usage
 if (params.help) {
     log.info ''
-    log.info 'Pipeline to align FASTQ file/s to a graph using Giraffe'
-    log.info '-------------------------------------------------------'
+    log.info 'Pipeline to identify variants using .gam file/s'
+    log.info '-----------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info '    nextflow alignment_pipeline.nf --fastq ERR3239334.fastq --outprefix out'
+    log.info '    nextflow var_discovery.nf --gam input.gam --xgname input.xg --prefix out'
     log.info ''
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
-    log.info '  --ifile File with comma-separated fields: sample,fastq1,fastq2.'
-    log.info '  --gbwtname  GBWT index file.'
-    log.info '  --graphname  GBWTGraph file.'
-    log.info '  --minimizername  Minimizer index file.'
-    log.info '  --distname  Distance index file.'
+    log.info '  --gam   .gam file with alignments.'
+    log.info '  --xgname  xg index file.'
     log.info '  --prefix  Output prefix.'
+    log.info '  --outdir  Output directory'
+    log.info '  --cpus  Number of cpus to use. Default=1.'
     exit 1
 }
 
@@ -30,21 +30,21 @@ log.info 'Starting the process.....'
 
 // Check input path parameters to see if they exist
 checkPathParamList = [
-    params.gbwtname, params.graphname, params.minimizername, params.distname
+    params.gam, params.xgname
 ]
 
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
-// check mandatory parameter
-if (!params.ifile) exit 1, 'Please specify an input file with --ifile'
-
-Channel.fromPath(params.ifile)
-    .splitCsv()
-    .map { row -> tuple(row[0], row[1], row[2])}
-    .set { value_list}
+// check mandatory parameters
+if (!params.gam) exit 1, 'Please specify an input gam file with --gam'
+if (!params.xgname) exit 1, 'Please specify a xg index file with --xgname'
 
 workflow  {
     main:
-        GIRAFFE( value_list, params.gbwtname, params.graphname, params.minimizername, 
-        params.distname, params.cpus)
+        CHUNK(params.xgname, params.prefix)
+        AUGMENT(CHUNK.out.chunkFile, params.gam, CHUNK.out.chunkFile.baseName)
+        SNARLS(AUGMENT.out.aug_pgFile, AUGMENT.out.aug_pgFile.baseName)
+        PACK(AUGMENT.out.aug_pgFile, AUGMENT.out.aug_gamFile, AUGMENT.out.aug_pgFile.baseName)
+        CALL(AUGMENT.out.aug_pgFile, SNARLS.out.snarlsFile, PACK.out.packFile, CHUNK.out.chunkFile.baseName)
+        SAVE_FILE(CALL.out.vcfFile, params.outdir, CALL.out.vcfFile.baseName+"_final.vcf", mode='move')
 }

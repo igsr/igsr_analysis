@@ -180,39 +180,59 @@ class VG(object):
 
         return f"{aln_f}.stats"
 
-    def run_augment(self, vg_f: str, aln_f: str, prefix: str, verbose: bool=False):
+    def run_augment(self, *params, graph_f: str, aln_f: str, prefix: str, verbose: bool=False, 
+                    **kwargs):
         """
         run vg augment
 
         Parameters
         ----------
-        vg_f : str
-               Path to graph.vg file
+        graph_f : str
+                  Path to graph file
         aln_f : str
                 Path to aln.gam file
         prefix : str
                  Output prefix
+        *params: Variable length parameter list.
+        **kwargs: Arbitrary keyword arguments. Check the `vg augment` help for
+                  more information.
         
         Returns
         -------
         aug_graph_f : str
-                      Path to augmented.vg file
+                      Path to {prefix}.aug.pg file
         aug_aln_f : str
-                    Path to augmented.gam file
+                    Path to {prefix}.aug.gam
         """
-        args = (VG.arg('', vg_f), VG.arg('', aln_f), VG.arg('-A', f"{prefix}.gam"), VG.arg('>', f"{prefix}.vg"))
+
+        ## add the **kwargs
+        allowed_keys = ['Q', 'q', 'm'] # allowed arbitrary args
+        args = ([VG.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
+
+        # add the mandatory argument
+        args.append(VG.arg('-A', f"{prefix}.aug.gam"))
+
+        # add the mandatory params
+        params = [graph_f, aln_f]
+
+        # add now the *params
+        allowed_opts = ['s'] # allowed options
+        params.extend([f"-{x}" for x in params if x in allowed_opts])
+        params.extend(['>', f"{prefix}.aug.pg"])
+
 
         program_cmd= f"{VG.vg_folder}/vg augment" if VG.vg_folder else "vg augment"
 
         vg_runner = RunProgram(program=program_cmd,
-                               args=args)
+                               args=args,
+                               parameters=params)
         
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
         stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
 
-        return f"{prefix}.vg", f"{prefix}.gam"
+        return f"{prefix}.aug.pg", f"{prefix}.aug.gam"
     
     def run_pack(self, vg_f: str, aln_f: str, prefix: str, verbose: bool=False, **kwargs) -> str:
         """
@@ -255,34 +275,38 @@ class VG(object):
 
         return f"{prefix}.pack"
     
-    def run_call(self, vg_f: str, pack_f: str, prefix: str, verbose: bool=False) -> str:
+    def run_call(self, graph_f: str, prefix: str, verbose: bool=False, **kwargs) -> str:
         """
         run vg pack
 
         Parameters
         ----------
-        vg_f : str
-               Path to graph.vg file
-        pack_f : str
-                Path to aln.pack file
+        graph_f : str
+                  Path to graph file
         prefix : str
                  Output prefix
         verbose : bool,  default=False
-                  if true, then print the command line used for running this program
+                  if true, then print the command line used for running this program.
+        **kwargs: Arbitrary keyword arguments. Check the `vg pack` help for
+                  for more information.
         
         Returns
         -------
         {prefix}.vcf : str
                       Path to .vcf file
         """
-        allowed_keys = ['Q'] # allowed arbitrary args
+        allowed_keys = ['k', 'r', 's'] # allowed arbitrary args
 
-        args = [VG.arg('', vg_f), VG.arg('-k', pack_f), VG.arg('>', f"{prefix}.vcf")]
+        ## add now the **kwargs
+        args = [VG.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys]
 
+        parameters = [graph_f, '>', f"{prefix}.vcf"]
+        
         program_cmd= f"{VG.vg_folder}/vg call" if VG.vg_folder else "vg call"
 
         vg_runner = RunProgram(program=program_cmd,
-                               args=args)
+                               args=args,
+                               parameters = parameters)
         
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
@@ -290,3 +314,35 @@ class VG(object):
         stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
 
         return f"{prefix}.vcf"
+
+    def run_snarls(self, graph_f: str, prefix: str, verbose: bool=True):
+        """
+        run vg snarls
+
+        Parameters
+        ----------
+        graph_f : str
+                  Path to Graph file
+        prefix : str
+                 Output prefix
+        verbose : bool,  default=False
+                  if true, then print the command line used for running this program
+        
+        Returns
+        -------
+        {prefix}.snarls : str
+                          Path to .snarls file
+        """
+        parameters = [graph_f, '>', f"{prefix}.snarls"]
+
+        program_cmd= f"{VG.vg_folder}/vg snarls" if VG.vg_folder else "vg snarls"
+
+        vg_runner = RunProgram(program=program_cmd,
+                               parameters=parameters)
+        
+        if verbose is True:
+            print("Command line is: {0}".format(vg_runner.cmd_line))
+
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+
+        return f"{prefix}.snarls"

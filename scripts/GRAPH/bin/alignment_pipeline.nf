@@ -1,10 +1,14 @@
 nextflow.enable.dsl=2
 include { GIRAFFE } from "../nf_modules/vg_toolkit.nf"
+include { SAVE_FILE } from "../nf_modules/utils.nf"
 
 // params defaults
 params.help = false
 params.cpus = 1
 params.prefix = 'output'
+params.gbz = 'NO_FILE'
+params.gbwt = 'NO_FILE'
+params.graph = 'NO_FILE'
 
 //print usage
 if (params.help) {
@@ -18,22 +22,18 @@ if (params.help) {
     log.info 'Options:'
     log.info '	--help	Show this message and exit.'
     log.info '  --ifile File with comma-separated fields: sample,fastq1,fastq2.'
-    log.info '  --gbwtname  GBWT index file.'
-    log.info '  --graphname  GBWTGraph file.'
-    log.info '  --minimizername  Minimizer index file.'
-    log.info '  --distname  Distance index file.'
+    log.info '  --gbwt  GBWT index file.'
+    log.info '  --graph  GBWTGraph file.'
+    log.info '  --gbz  GBZname file.'
+    log.info '  --min  Minimizer index file.'
+    log.info '  --dist  Distance index file.'
     log.info '  --prefix  Output prefix.'
+    log.info '  --outdir  Output directory.'
+    log.info '  --cpus  Number of cpus to use. Default=1.'
     exit 1
 }
 
 log.info 'Starting the process.....'
-
-// Check input path parameters to see if they exist
-checkPathParamList = [
-    params.gbwtname, params.graphname, params.minimizername, params.distname
-]
-
-for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // check mandatory parameter
 if (!params.ifile) exit 1, 'Please specify an input file with --ifile'
@@ -45,6 +45,6 @@ Channel.fromPath(params.ifile)
 
 workflow  {
     main:
-        GIRAFFE( value_list, params.gbwtname, params.graphname, params.minimizername, 
-        params.distname, params.cpus)
+        GIRAFFE( value_list, params.gbwt, params.graph, params.gbz, params.min, params.dist, params.cpus)
+       // SAVE_FILE(GIRAFFE.out.gamFile, params.outdir, GIRAFFE.out.gamFile, mode='move')
 }
