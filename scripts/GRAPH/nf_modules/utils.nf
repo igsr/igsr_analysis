@@ -13,7 +13,7 @@ process SAVE_FILE {
 	publishDir "${dirname}", mode: "${mode}", overwrite: true
 
     input:
-		path(afile)
+		val(afile)
 	    val(dirname)
 	    val(prefix)
 		val(mode)

@@ -103,7 +103,7 @@ def test_run_pack(vg_object, datadir):
     
     assert os.path.isfile(outfile) is True
 
-def test_run_call(vg_object, datadir):
+def test_run_call(vg_object, datadir, clean_tmp):
     '''
     Test function to run 'vg call' to generate a VCF file
     '''

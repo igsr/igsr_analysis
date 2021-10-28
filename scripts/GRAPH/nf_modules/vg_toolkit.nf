@@ -13,8 +13,11 @@
     /*
     This process run 'vg giraffe'
     */
-    tag "$sampleId: $fastq1 $fastq2 $gwtname"
+    tag "$sampleId: $fastq1 $fastq2"
+    publishDir "${outdir}", mode: "move", overwrite: true
 
+    maxForks 1
+    
     input:
     tuple val(sampleId), val(fastq1), val(fastq2)
     val(gwtname) // optional
@@ -22,48 +25,40 @@
     val(gbzname) // optional
     val(minimizername)
     val(distname)
+    val(outdir)
     val(cpus)
 
     output:
-    path("*.gam"), emit: gamFile
+    path("*.gam")
 
     script:
-    if (gbzname != "NO_FILE") {
     """
     #!/usr/bin/env python
     from GRAPH.VgToolkit import VG
     vg_object = VG()
-    outfile = vg_object.run_giraffe(fastq=f"${fastq1},${fastq2}",
-                                    Z=f"${gbzname}",
-                                    m=f"${minimizername}",
-                                    d=f"${distname}",
-                                    t=f"${cpus}",
-                                    prefix=f"${sampleId}")
+
+    outfile = None
+    if f"${gbzname}" != "NO_FILE":
+        outfile = vg_object.run_giraffe(fastq=f"${fastq1},${fastq2}",
+                                        Z=f"${gbzname}",
+                                        m=f"${minimizername}",
+                                        d=f"${distname}",
+                                        t=f"${cpus}",
+                                        prefix=f"${sampleId}")
+    elif f"${gwtname}" != "NO_FILE":
+        outfile = vg_object.run_giraffe(fastq=f"${fastq1},${fastq2}",
+                                        H=f"${gwtname}",
+                                        g=f"${graphname}",
+                                        m=f"${minimizername}",
+                                        d=f"${distname}",
+                                        t=f"${cpus}",
+                                        prefix=f"${sampleId}")
     
     if not outfile:
         raise Exception("No '*.gam' file generated")
     
     print(outfile)
     """
-    } else if (gwtname != "NO_FILE") {
-    """
-    #!/usr/bin/env python
-    from GRAPH.VgToolkit import VG
-    vg_object = VG()
-    outfile = vg_object.run_giraffe(fastq=f"${fastq1},${fastq2}",
-                                    H=f"${gwtname}",
-                                    g=f"${graphname}",
-                                    m=f"${minimizername}",
-                                    d=f"${distname}",
-                                    t=f"${cpus}",
-                                    prefix=f"${sampleId}")
-    
-    if not outfile:
-        raise Exception("No '*.gam' file generated")
-    
-    print(outfile)
-    """
-    }
 }
 
 process CHUNK {

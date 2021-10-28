@@ -1,6 +1,5 @@
 nextflow.enable.dsl=2
 include { GIRAFFE } from "../nf_modules/vg_toolkit.nf"
-include { SAVE_FILE } from "../nf_modules/utils.nf"
 
 // params defaults
 params.help = false
@@ -45,6 +44,5 @@ Channel.fromPath(params.ifile)
 
 workflow  {
     main:
-        GIRAFFE( value_list, params.gbwt, params.graph, params.gbz, params.min, params.dist, params.cpus)
-       // SAVE_FILE(GIRAFFE.out.gamFile, params.outdir, GIRAFFE.out.gamFile, mode='move')
+        GIRAFFE( value_list, params.gbwt, params.graph, params.gbz, params.min, params.dist, params.outdir, params.cpus)
 }
