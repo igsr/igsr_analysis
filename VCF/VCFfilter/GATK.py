@@ -8,37 +8,39 @@ import os
 import json
 import glob
 import ast
+import pdb
 from collections import namedtuple
+from typing import List
 from Utils.RunProgram import RunProgram
 
 class GATK(object):
     """
     Class to filter a VCF file using different GATK components
-    """
 
-    def __init__(self, vcf, reference, caller='UG', bgzip_folder=None, tabix_folder=None,
-                 gatk_folder=None, tmp_dir=None):
+    Class variables
+    ---------------
+    gatk_folder : str, Optional
+                  Path to folder containing the gatk3 binary
+    bgzip_folder : str, Optional
+                   Path to folder containing the bgzip binary
+    tabix_folder : str, Optional
+                   Path to folder containing the bgzip binary
+    arg : namedtuple
+          Containing a particular argument and its value
+    """
+    gatk_folder = None
+    bgzip_folder = None
+    tabix_folder = None
+    arg = namedtuple('Argument', 'option value')
+
+    def __init__(self, vcf : str, caller : str='UG')->None:
         """
         Constructor
 
         Parameters
         ----------
-        vcf : str
-              Path to gzipped vcf file.
-        caller : str, default='UG'
-                 Caller used to generate the VCF: UG, bcftools.
-        reference : str
-                    Path to fasta file containing the reference.
-        bgzip_folder : str, optional
-                       Path to folder containing the bgzip binary.
-        tabix_folder : str, optional
-                       Path to folder containing the tabix binary.
-        gatk_folder : str, optional
-                      Path to folder containing GATK's jar file.
-        tmp_dir : str, optional
-                  Path to java temporary directory. This needs to be
-                  set for GATK modules such as ApplyRecalibrator that
-                  fails because there is not enough space in the default java tmp dir.
+        vcf : Path to gzipped vcf file.
+        caller : Caller used to generate the VCF: UG, bcftools.
         """
 
         if os.path.isfile(vcf) is False:
@@ -46,48 +48,31 @@ class GATK(object):
 
         self.vcf = vcf
         self.caller = caller
-        self.reference = reference
-        self.bgzip_folder = bgzip_folder
-        self.tabix_folder = tabix_folder
-        self.gatk_folder = gatk_folder
-        self.tmp_dir = tmp_dir
 
-    def run_variantrecalibrator(self, resources, mode,
-                                max_gaussians=None, intervals=None,
-                                annotations=None, tranches=None,
-                                outprefix="recalibrate", verbose=None,
-                                log_file=None):
+    def run_variantrecalibrator(self, resources: str,
+                                annotations: List[str]=None, tranches: List[float]=None,
+                                outprefix: str="recalibrate", verbose: bool=False,
+                                log_file: str=None, **kwargs)->dict:
         """
         Run GATK's VariantRecalibrator on a VcfFilter object
 
         Parameters
         ----------
-        resources : str
-                    JSON file with resources to add using the -resources option.
-        mode : {'SNP','INDEL'}
-               Recalibration mode to employ.
-        intervals :  chr1:1-1000, optional
-                     One or more genomic intervals over which to operate.
-        max_gaussians : int, optional
-                        Max number of Gaussians for the positive model.
-        annotations : list, optional
-                      List of annotations to be used. Default=['DP', 'QD', 'FS', 'SOR',
+        resources : JSON file with resources to add using the -resources option.
+        annotations : Aannotations to be used. Default=['DP', 'QD', 'FS', 'SOR',
                       'MQ', 'MQRankSum', 'ReadPosRankSum', 'InbreedingCoeff'].
-        tranches : list, default=[100.0,99.9,99.0,90.0]
-                   Each element in the list will correspond to the  levels of truth
+        tranches : Each element in the list will correspond to the  levels of truth
                    sensitivity at which to slice the data. (in percent, that is 1.0
                    for 1 percent).
-        outprefix : str, default='recalibrate'
-                    out prefix used for -recalFile, -tranchesFile, -rscriptFile.
-        verbose : bool, optional
-                  Increase verbosity
-        log_file : str, optional
-                   Path to file that will used for logging the GATK stderr and stdout.
+        outprefix : out prefix used for -recalFile, -tranchesFile, -rscriptFile.
+        verbose : Increase verbosity.
+        log_file : Path to file that will used for logging the GATK stderr and stdout.
+        **kwargs: Arbitrary keyword arguments. Check the `GATK` help for
+                  more information.
 
         Returns
         -------
-        dict
-            Dictionary with location of tranches and recal files
+        Dictionary with location of tranches and recal files
         """
 
         if annotations is None:
@@ -100,49 +85,49 @@ class GATK(object):
         if self.caller != 'UG':
             raise Exception("VCF caller %s is incompatible" % self.caller)
 
-        if mode not in ('SNP', 'INDEL'):
-            raise Exception("VariantRecalibrator mode is not valid."
-                            "Valid values are 'SNP','INDEL'" % mode)
+        if kwargs['mode']:
+            # prepare the prefix used for output files
+            outprefix += f"_{kwargs['mode']}"
 
-        # prepare the prefix used for output files
-        outprefix += "_%s" % mode
+        args = [GATK.arg('-input', self.vcf), 
+                GATK.arg('-recalFile', f"{outprefix}.recal"),
+                GATK.arg('-tranchesFile', f"{outprefix}.tranches"),
+                GATK.arg('-rscriptFile', f"{outprefix}_plots.R")]
 
-        Arg = namedtuple('Argument', 'option value')
-
-        args = [Arg('-T', 'VariantRecalibrator'), Arg('-R', self.reference),
-                Arg('-input', self.vcf), Arg('-mode', mode),
-                Arg('-recalFile', "{0}.recal".format(outprefix)),
-                Arg('-tranchesFile', "{0}.tranches".format(outprefix)),
-                Arg('-rscriptFile', "{0}_plots.R".format(outprefix))]
+        # add now the **kwargs        
+        allowed_keys = ['R', 'mode' ] # allowed arbitrary args
+        args.extend([GATK.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
         # Read-in the different resources from the resource JSON file
-        resources_str = ""
+        resources_str = None
 
         with open(resources) as data_file:
             data = json.load(data_file)
             bits = data['resources']
             for dummy, dic in enumerate(bits):
-                args.extend([Arg("-resource:%s,known=%s,training=%s,"
-                                 "truth=%s,prior=%.1f" % (dic['resource'],
-                                                          str(dic['known']).lower(),
-                                                          str(dic['training']).lower(),
-                                                          str(dic['truth']).lower(),
-                                                          dic['prior']), dic['path'])])
+                args.extend([GATK.arg("-resource:%s,known=%s,training=%s,"
+                                      "truth=%s,prior=%.1f" % (dic['resource'],
+                                      str(dic['known']).lower(),
+                                      str(dic['training']).lower(),
+                                      str(dic['truth']).lower(),
+                                      dic['prior']), dic['path'])])
 
         # prepare the -an options
         for elt in annotations:
-            args.append(Arg('-an', elt))
+            args.append(GATK.arg('-an', elt))
 
         # prepare the list of -tranche option
         if type(tranches) == str:
             tranches = ast.literal_eval(tranches)
 
         for elt in tranches:
-            args.append(Arg('-tranche', elt))
+            args.append(GATK.arg('-tranche', elt))
 
-        runner = RunProgram(program='java -jar {0}/GenomeAnalysisTK.jar'.
-                            format(self.gatk_folder), args=args,
+        cmd =  f"{GATK.gatk_folder}/gatk3 -T VariantRecalibrator" if GATK.gatk_folder else "gatk3 -T VariantRecalibrator"
+        runner = RunProgram(program=cmd,
+                            args=args,
                             log_file=log_file)
+
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
@@ -167,80 +152,52 @@ class GATK(object):
             'tranches_f': tranches_f[0]
             }
 
-    def run_applyrecalibration(self, mode, recal_file, tranches_file, outprefix,
-                               ts_filter_level=99.0, num_threads=1, compress=True,
-                               verbose=None, log_file=None):
+    def run_applyrecalibration(self, outprefix: str, log_file: str, compress: bool=True,
+                               verbose: bool=True, **kwargs)->str:
         """
         Run GATK's ApplyRecalibration on a VcfFilter object
 
         Parameters
         ----------
-        mode : {'SNP','INDEL'}
-               Recalibration mode to employ.
-        recal_file : str
-                     The input recal file used by ApplyRecalibration.
-        tranches_file : str
-                        The input tranches file describing where to cut the data.
-        outprefix : str
-                    Prefix used for the output.
-        ts_filter_level : float, default=99.0
-                          The truth sensitivity level at which to start filtering.
-        num_threads : int, default=1
-                      Number of data threads to allocate to this analysis.
-        compress : bool, default=True
-                   Compress the recalibrated VCF.
-        verbose : bool, optional
-                  Increase verbosity.
-        log_file : str, optional
-                   Path to file that will used for logging the GATK stderr and stdout.
+        outprefix : Prefix used for the output.
+        compress : Compress the recalibrated VCF.
+        log_file : Path to file that will used for logging the GATK stderr and stdout.
+        verbose : Increase verbosity.
+        **kwargs: Arbitrary keyword arguments. Check the `GATK` help for
+                  more information.
 
         Returns
         -------
-        outfile : str
-                 Path to filtered VCF file.
+        outfile : Path to filtered VCF file.
         """
-
         if self.caller != 'UG':
             raise Exception("VCF type %s is incompatible" % self.caller)
 
-        if mode != 'SNP' and mode != 'INDEL':
-            raise Exception("ApplyRecalibration mode is not valid."
-                            "Valid values are 'SNP','INDEL'" % mode)
+        args = [GATK.arg('-input', self.vcf)]
+
+         # add now the **kwargs  
+        allowed_keys = ['R', 'mode', 'ts_filter_level', 'recalFile', 'nt', 'tranchesFile' ] # allowed arbitrary args
+        args.extend([GATK.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
         # generate output file name
-        outfile = ""
-        if mode == 'SNP':
-            outfile += "%s.recalibrated_snps_raw_indels.vcf" % outprefix
-        elif mode == 'INDEL':
-            outfile += "%s.recalibrated_variants.vcf" % outprefix
-
-        Arg = namedtuple('Argument', 'option value')
-
-        args = []
-
-        args.extend([Arg('-jar', '{0}/GenomeAnalysisTK.jar'.format(self.gatk_folder)),
-                     Arg('-T', 'ApplyRecalibration'),
-                     Arg('-R', self.reference), Arg('-input', self.vcf), Arg('-mode', mode),
-                     Arg('--ts_filter_level', ts_filter_level), Arg('-recalFile', recal_file),
-                     Arg('--num_threads', num_threads),
-                     Arg('-tranchesFile', tranches_file)])
+        if 'mode' in kwargs:
+            if kwargs['mode'] == 'SNP':
+                outprefix += f"{outprefix}.recalibrated_snps_raw_indels.vcf"
+            elif kwargs['mode'] == 'INDEL':
+                outprefix += f"{outprefix}.recalibrated_variants.vcf"
 
         pipelist = None
         if compress is True:
-            outfile += ".gz"
-            compressRunner = RunProgram(path=self.bgzip_folder, program='bgzip',
-                                        parameters=['-c', '>', outfile])
+            outprefix += ".gz"
+            cmd_cmp =  f"{GATK.bgzip_folder}/bgzip" if GATK.bgzip_folder else "bgzip"
+            compressRunner = RunProgram(program=cmd_cmp,
+                                        parameters=['-c', '>', outprefix])
             pipelist = [compressRunner]
         else:
-            args.append(Arg('-o', outfile))
+            args.append(GATK.arg('-o', outprefix))
 
-        program_str = None
-        if self.tmp_dir is not None:
-            program_str = "java -Djava.io.tmpdir={0}".format(self.tmp_dir)
-        else:
-            program_str = "java"
-
-        runner = RunProgram(program=program_str, args=args, downpipe=pipelist, log_file=log_file)
+        cmd =  f"{GATK.gatk_folder}/gatk3 -T ApplyRecalibration" if GATK.gatk_folder else "gatk3 -T ApplyRecalibration"
+        runner = RunProgram(program=cmd, args=args, downpipe=pipelist, log_file=log_file)
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
@@ -249,7 +206,8 @@ class GATK(object):
 
         # create an index for the recalibrated file
         if compress is True:
-            tabixRunner = RunProgram(path=self.tabix_folder, program='tabix', parameters=[outfile])
+            cmd_tabix =  f"{GATK.tabix_folder}/tabix" if GATK.tabix_folder else "tabix"
+            tabixRunner = RunProgram(program=cmd_tabix, parameters=[outprefix])
             stdout = tabixRunner.run_checkoutput()
 
-        return outfile
+        return outprefix

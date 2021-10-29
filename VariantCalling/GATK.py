@@ -52,23 +52,17 @@ class GATK(object):
 
         Parameters
         ----------
-        program : str
-                  Caller used: UnifiedGenotyper, HaplotypeCaller
-        prefix : str
-                 Prefix for output VCF file. i.e. /path/to/file/test.
-        compress : bool, default=True
-                   Compress the output VCF.
-        log_file : str, optional
-                   Path to file that will used for logging the GATK stderr and stdout.
-        verbose : bool, default=False
-                  Increase verbosity.
+        program : Caller used: UnifiedGenotyper, HaplotypeCaller
+        prefix : Prefix for output VCF file. i.e. /path/to/file/test.
+        compress : Compress the output VCF.
+        log_file : Path to file that will used for logging the GATK stderr and stdout.
+        verbose : Increase verbosity.
         **kwargs: Arbitrary keyword arguments. Check the `GATK` help for
                   more information.
 
         Returns
         -------
-        prefix : str
-                A VCF file.
+        prefix : VCF file.
         """
         arguments = [GATK.arg('-T', program), GATK.arg('-R', self.reference),
                      GATK.arg('-I', self.bam)]
@@ -88,8 +82,8 @@ class GATK(object):
             prefix += ".vcf"
             arguments.append(GATK.arg('-o', prefix))
 
-        cmd2 = f"{GATK.gatk_folder}/gatk3" if GATK.gatk_folder else "gatk3"
-        runner = RunProgram(program=cmd2,
+        cmd = f"{GATK.gatk_folder}/gatk3" if GATK.gatk_folder else "gatk3"
+        runner = RunProgram(program=cmd,
                             args=arguments, downpipe=pipelist, log_file=log_file)
 
         if verbose is True:

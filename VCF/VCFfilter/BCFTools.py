@@ -22,7 +22,7 @@ class BCFTools(object):
                       Path to folder containing the bcftools binary
     tabix_folder : str, Optional
                    Path to folder containing the tabix binary
-     arg : namedtuple
+    arg : namedtuple
           Containing a particular argument and its value
     """
     bcftools_folder, tabix_folder= None,None
@@ -34,8 +34,7 @@ class BCFTools(object):
 
         Parameters
         ----------
-        vcf : str
-              Path to gzipped vcf file.
+        vcf : Path to gzipped vcf file.
         """
 
         if os.path.isfile(vcf) is False:
@@ -43,31 +42,25 @@ class BCFTools(object):
         self.vcf = vcf
 
     def subset_vcf(self, prefix: str, bed: str=None,
-                   action='exclude', threads: int=1, verbose: bool=False, **kwargs):
+                   action: str='exclude', threads: int=1, verbose: bool=False, **kwargs)->str:
         """
         Subset the vcf file using a BED file/region having the coordinates of the
         variants to exclude/include
 
         Parameters
         ----------
-        prefix : str
-                 Prefix for outputfiles.
-        bed : str, optional
-              BED file with coordinates to exclude/include.
-        action : str, default=exclude
-                Exclude or include variants from the bed file passed through the
-                bed option.
-        threads : int
-                  Number of extra output compression threads. Default=1.
-        verbose : bool
-                  Increase verbosity.
+        prefix : Prefix for outputfiles.
+        bed : BED file with coordinates to exclude/include.
+        action : Exclude or include variants from the bed file passed through the
+                 bed option.
+        threads : Number of extra output compression threads. Default=1.
+        verbose : Increase verbosity.
         **kwargs: Arbitrary keyword arguments. Check the `bcftools view` help for
                   more information.
 
         Returns
         -------
-        prefix : str
-                 Path to gzipped VCF file that will have the desired variants excluded/included.
+        prefix : Path to gzipped VCF file that will have the desired variants excluded/included.
         """
         if action != 'include' and action != 'exclude':
             raise Exception("action argument should be either include or exclude")
@@ -142,7 +135,8 @@ class BCFTools(object):
         allowed_keys = ['s', 'e', 'O'] # allowed arbitrary args
         arguments.extend([BCFTools.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
-        runner = RunProgram(path=self.bcftools_folder, program='bcftools filter',
+        cmd = f"{BCFTools.bcftools_folder}/bcftools view" if BCFTools.bcftools_folder else "bcftools view"
+        runner = RunProgram(program=cmd,
                             args=arguments, parameters=[self.vcf])
 
         if verbose is True:
@@ -206,8 +200,8 @@ class BCFTools(object):
         elif compress is None:
             raise Exception("'compress' parameter can't be None")
 
-        runner = RunProgram(path=self.bcftools_folder,
-                            program='bcftools view',
+        cmd = f"{BCFTools.bcftools_folder}/bcftools view" if BCFTools.bcftools_folder else "bcftools view"
+        runner = RunProgram(program=cmd,
                             args=args,
                             parameters=params)
 
@@ -246,8 +240,8 @@ class BCFTools(object):
 
         params.append(self.vcf)
 
-        runner = RunProgram(path=self.bcftools_folder,
-                            program='bcftools view',
+        cmd = f"{BCFTools.bcftools_folder}/bcftools view" if BCFTools.bcftools_folder else "bcftools view"
+        runner = RunProgram(program=cmd,
                             args=args,
                             parameters=params)
 

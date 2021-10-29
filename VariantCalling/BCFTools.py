@@ -24,16 +24,14 @@ class BCFTools(object):
     bcftools_folder = None 
     arg = namedtuple('Argument', 'option value')
 
-    def __init__(self, bam, reference):
+    def __init__(self, bam: str, reference: str)->None:
         """
         Constructor
 
         Parameters
         ----------
-        bam : str
-             Path to BAM file used for the variant calling process.
-        reference : str
-                    Path to fasta file containing the reference.
+        bam : Path to BAM file used for the variant calling process.
+        reference : Path to fasta file containing the reference.
         """
         if os.path.isfile(bam) is False:
             raise Exception(f"{bam} file does not exist")
@@ -42,30 +40,24 @@ class BCFTools(object):
         self.reference = reference
 
     def run_bcftools(self, *args, prefix: str, annots=['DP', 'SP', 'AD'], threads: int=1,
-                     r: str=None, ploidy: str='GRCh38', verbose: bool= False, **kwargs ):
+                     r: str=None, ploidy: str='GRCh38', verbose: bool= False, **kwargs )->str:
         """
         Run BCFTools mpileup and then pipe to BCTools call in order to do the variant calling
 
         Parameters
         ----------
-        prefix : str
-                 Prefix for output VCF file.
-        threads : int
-                  Number of extra output compression threads.
-        r: str, optional
-           Region used for doing the variant calling in the format chr20:10000-20000.
-        ploidy: str, optional
-                Predefined ploidy
-        verbose : bool, default=False
-                  Increase verbosity.
+        prefix : Prefix for output VCF file.
+        threads : Number of extra output compression threads.
+        r: Region used for doing the variant calling in the format chr20:10000-20000.
+        ploidy: Predefined ploidy.
+        verbose : Increase verbosity.
         *args: Variable length argument list.
         **kwargs: Arbitrary keyword arguments. Check the `bcftools` help for
                   more information.
 
         Returns
         -------
-        outprefix : str
-            A VCF file with variants.
+        outprefix : VCF file with variants.
         """
         ## mpileup
         arguments_mpileup = [BCFTools.arg('-f', self.reference), BCFTools.arg('--threads', threads) ]
