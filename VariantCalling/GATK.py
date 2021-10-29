@@ -70,7 +70,6 @@ class GATK(object):
         prefix : str
                 A VCF file.
         """
-        pdb.set_trace()
         arguments = [GATK.arg('-T', program), GATK.arg('-R', self.reference),
                      GATK.arg('-I', self.bam)]
 

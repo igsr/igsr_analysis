@@ -42,7 +42,7 @@ class BCFTools(object):
             raise Exception("File does not exist")
         self.vcf = vcf
 
-    def subset_vcf(self, prefix: str, bed: str=None, outdir=None,
+    def subset_vcf(self, prefix: str, bed: str=None,
                    action='exclude', threads: int=1, verbose: bool=False, **kwargs):
         """
         Subset the vcf file using a BED file/region having the coordinates of the
@@ -54,8 +54,6 @@ class BCFTools(object):
                  Prefix for outputfiles.
         bed : str, optional
               BED file with coordinates to exclude/include.
-        outdir : str, optional
-                 If provided, then put output files in this folder.
         action : str, default=exclude
                 Exclude or include variants from the bed file passed through the
                 bed option.
@@ -63,7 +61,7 @@ class BCFTools(object):
                   Number of extra output compression threads. Default=1.
         verbose : bool
                   Increase verbosity.
-        **kwargs: Arbitrary keyword arguments. Check the `GATK` help for
+        **kwargs: Arbitrary keyword arguments. Check the `bcftools view` help for
                   more information.
 
         Returns
@@ -71,7 +69,6 @@ class BCFTools(object):
         prefix : str
                  Path to gzipped VCF file that will have the desired variants excluded/included.
         """
-        pdb.set_trace()
         if action != 'include' and action != 'exclude':
             raise Exception("action argument should be either include or exclude")
 
@@ -87,9 +84,6 @@ class BCFTools(object):
             bits[vcf_ix - 1] = new
             prefix = ".".join(bits)
 
-        if outdir:
-            prefix = "%s/%s" % (outdir, prefix)
-
         args = []
         if bed:
             if action == 'exclude':
@@ -98,15 +92,15 @@ class BCFTools(object):
                 args.append(BCFTools.arg('-T', '{0}'.format(bed)))
         elif kwargs['r']:
             if action == 'exclude':
-                args.append(BCFTools.arg('-t', '^{0}'.format(region)))
+                args.append(BCFTools.arg('-t', '^{0}'.format(kwargs['r'])))
             elif action == 'include':
-                args.append(BCFTools.arg('-r', '{0}'.format(region)))
+                args.append(BCFTools.arg('-r', '{0}'.format(kwargs['r'])))
 
          # add now the **kwargs 
-        allowed_keys = ['O', 'f', 'r'] # allowed arbitrary args
-        args.extend([GATK.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
+        allowed_keys = ['O', 'f'] # allowed arbitrary args
+        args.extend([BCFTools.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
-        args.extend([BCFTools.arg('-o', outprefix), Arg('--threads', threads)])
+        args.extend([BCFTools.arg('-o', prefix), BCFTools.arg('--threads', threads)])
 
         cmd = f"{BCFTools.bcftools_folder}/bcftools view" if BCFTools.bcftools_folder else "bcftools view"
         runner = RunProgram(program=cmd,
@@ -119,34 +113,37 @@ class BCFTools(object):
 
         return prefix
 
-    def filter(self, name, expression, verbose=None):
+    def filter(self, expression: str, verbose: bool=False, **kwargs)->str:
         """
         Run bcftools filter on a VCF file
 
         Parameters
         ----------
-        name : str
-                 annotate FILTER column with <str>.
-        expression : str
-                   exclude sites for which expression is true. i.e. 'INFO/DP>24304 | MQ<34'.
-        verbose : bool, optional
-                  Increase verbosity.
+        verbose : Increase verbosity.
+        **kwargs: Arbitrary keyword arguments. Check the `bcftools` help for
+                  more information.
 
         Returns
         -------
-        outfile : str
-                Path to the filtered VCF file.
+        outfile : Path to the filtered VCF file.
         """
 
-        outfile = self.vcf + ".filtered.vcf.gz"
+        outfile = None
+        if 'O' in kwargs:
+            if kwargs['O'] == 'z':
+                outfile = f"{self.vcf}.filtered.vcf.gz"
+        else:
+            outfile = f"{self.vcf}.vcf"
+        
 
-        Arg = namedtuple('Argument', 'option value')
+        arguments = [BCFTools.arg('-o', outfile)]
 
-        args = [Arg('-s', name), Arg('-e', '\'{0}\''.format(expression)), Arg('-o', outfile),
-                Arg('-O', 'z')]
+        # add now the **kwargs        
+        allowed_keys = ['s', 'e', 'O'] # allowed arbitrary args
+        arguments.extend([BCFTools.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
         runner = RunProgram(path=self.bcftools_folder, program='bcftools filter',
-                            args=args, parameters=[self.vcf])
+                            args=arguments, parameters=[self.vcf])
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
@@ -155,31 +152,26 @@ class BCFTools(object):
 
         return outfile
 
-    def filter_by_variant_type(self, outprefix, v_type="snps", compress=True, biallelic=False,
-                               action="select", verbose=None):
+    def filter_by_variant_type(self, prefix: str, v_type="snps", compress: bool=True, biallelic: bool=False,
+                               action="select", verbose=False)->str:
         """
         Method to filter a VCF file by variant type. For example, to extract
         only the SNPs
 
         Parameters
         ----------
+        prefix : Prefix for output files.
         v_type : {'snps','indels','mnps','other','both'}, default=snps
                  Extract/Filter (depending on the value of the 'action'
                  argument) a certain variant type.
-        compress : bool, default=True
-                   If True then generate a vcf.gz file.
-        biallelic : bool, default=False
-                    Select only biallelic variants.
+        compress : If True then generate a vcf.gz file.
+        biallelic : Select only biallelic variants.
         action : {'select', 'exclude'}, default='select'
-        outprefix : str
-                    Prefix used for the output files.
-        verbose : bool, optional
-                  Increase verbosity.
+        verbose : Increase verbosity.
 
         Returns
         -------
-        outprefix : str
-                 Path to the filtered VCF.
+        prefix : Path to the filtered VCF.
         """
 
         if v_type not in ('snps', 'indels', 'mnps', 'other', 'both'):
@@ -188,30 +180,28 @@ class BCFTools(object):
         if action not in ('select', 'exclude'):
             raise Exception("action value is not valid. Valid values are 'select' or 'exclude'")
 
-        Arg = namedtuple('Argument', 'option value')
-
-        args = []
+        args = [] 
         params = []
 
         if action == "select":
             if v_type != 'both':
-                outprefix = outprefix + ".{0}.".format(v_type)
-                args.append(Arg('-v', v_type))
+                prefix = prefix + ".{0}.".format(v_type)
+                args.append(BCFTools.arg('-v', v_type))
         elif action == "exclude":
             if v_type != 'both':
-                outprefix = outprefix + ".no{0}.".format(v_type)
-                args.append(Arg('-V', v_type))
+                prefix = outprefix + ".no{0}.".format(v_type)
+                args.append(BCFTools.arg('-V', v_type))
         if biallelic is True:
-            outprefix += "biallelic."
+            prefix += "biallelic."
             params.extend(['-m2', '-M2'])
 
         if compress is True:
-            outprefix += "vcf.gz"
-            args.extend([Arg('-o', outprefix), Arg('-O', 'z')])
+            prefix += "vcf.gz"
+            args.extend([BCFTools.arg('-o', prefix), BCFTools.arg('-O', 'z')])
             params.append(self.vcf)
         elif compress is False:
-            outprefix += "vcf"
-            args.extend([Arg('-o', outprefix), Arg('-O', 'v')])
+            prefix += "vcf"
+            args.extend([BCFTools.arg('-o', prefix), BCFTools.arg('-O', 'v')])
             params.append(self.vcf)
         elif compress is None:
             raise Exception("'compress' parameter can't be None")
@@ -226,33 +216,27 @@ class BCFTools(object):
 
         stdout = runner.run_checkoutput()
 
-        return outprefix
+        return prefix
 
-    def select_variants(self, outprefix, uncalled=None, threads=1, verbose=None):
+    def select_variants(self, outprefix : str, uncalled : str = None, threads : int = 1, verbose : bool = False)->str:
         """
         Run bcftools view to select only the variants (exclude the 0|0 genotypes)
 
         Parameters
         ----------
-        outprefix : str
-                    Prefix used for the output file.
-        uncalled : {'exclude','include'}, optional.
+        outprefix : Prefix used for the output file.
+        uncalled : {'exclude','include'},
                    Select/Exclude sites with an uncalled genotype.
-        threads: int, default=0
-                 Number of output compression threads to use in addition to main thread.
-        verbose : bool, optional
-                  Increase verbosity.
+        threads: Number of output compression threads to use in addition to main thread.
+        verbose : Increase verbosity.
 
         Returns
         -------
-        outfile : str
-                Returns the path for the VCF with the selected variants.
+        outfile : Returns the path for the VCF with the selected variants.
         """
         outfile = outprefix + ".onlyvariants.vcf.gz"
 
-        Arg = namedtuple('Argument', 'option value')
-
-        args = [Arg('-o', outfile), Arg('-O', 'z'), Arg('--threads', threads)]
+        args = [BCFTools.arg('-o', outfile), BCFTools.arg('-O', 'z'), BCFTools.arg('--threads', threads)]
 
         params = []
         if uncalled == 'exclude':
