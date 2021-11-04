@@ -42,9 +42,9 @@ if (!params.xgname) exit 1, 'Please specify a xg index file with --xgname'
 workflow  {
     main:
         CHUNK(params.xgname, params.prefix)
-        AUGMENT(CHUNK.out.chunkFile, params.gam, CHUNK.out.chunkFile.baseName)
-        SNARLS(AUGMENT.out.aug_pgFile, AUGMENT.out.aug_pgFile.baseName)
-        PACK(AUGMENT.out.aug_pgFile, AUGMENT.out.aug_gamFile, AUGMENT.out.aug_pgFile.baseName)
-        CALL(AUGMENT.out.aug_pgFile, SNARLS.out.snarlsFile, PACK.out.packFile, CHUNK.out.chunkFile.baseName)
-        SAVE_FILE(CALL.out.vcfFile, params.outdir, CALL.out.vcfFile.baseName+"_final.vcf", mode='move')
+        AUGMENT(CHUNK.out.chunkFile.flatten(), params.gam)
+        SNARLS(AUGMENT.out.aug_pgFile)
+        PACK(AUGMENT.out.aug_pgFile, AUGMENT.out.aug_gamFile)
+        CALL(AUGMENT.out.aug_pgFile, SNARLS.out.snarlsFile, PACK.out.packFile)
+        SAVE_FILE(CALL.out.vcfFile, params.outdir, mode='move')
 }

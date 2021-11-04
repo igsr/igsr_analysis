@@ -70,14 +70,14 @@ process CHUNK {
     val(prefix)
 
     output:
-    path("*.pg"), emit: chunkFile
+    path("*.pg", emit: chunkFile)
 
     script:
     """
     #!/usr/bin/env python
     from GRAPH.VgToolkit import VG
     vg_object = VG()
-    outfiles = vg_object.run_chunk('M',
+    outfiles = vg_object.run_chunk( 'M',
                                     x=f"${xgname}",
                                     O="pg",
                                     b=f"${prefix}")
@@ -97,11 +97,10 @@ process AUGMENT {
     input:
     val(pgname)
     val(gam)
-    val(prefix)
 
     output:
-    path("*.pg"), emit: aug_pgFile
-    path("*.gam"), emit: aug_gamFile
+    path("${pgname.baseName}.aug.pg", emit: aug_pgFile)
+    path("${pgname.baseName}.aug.gam", emit: aug_gamFile)
 
     script:
     """
@@ -110,7 +109,7 @@ process AUGMENT {
     vg_object = VG()
     outfiles = vg_object.run_augment(graph_f=f"${pgname}",
                                      aln_f=f"${gam}",
-                                     prefix=f"${prefix}")
+                                     prefix=f"${pgname.baseName}")
 
     if len(outfiles)<2:
         raise Exception("No output files")
@@ -126,10 +125,9 @@ process SNARLS {
     */
     input:
     val(graph_f)
-    val(prefix)
 
     output:
-    path("*.snarls"), emit: snarlsFile
+    path("${graph_f.baseName}.snarls", emit: snarlsFile)
 
     script:
     """
@@ -137,7 +135,7 @@ process SNARLS {
     from GRAPH.VgToolkit import VG
     vg_object = VG()
     outfile = vg_object.run_snarls(graph_f=f"${graph_f}",
-                                   prefix=f"${prefix}")
+                                   prefix=f"${graph_f.baseName}")
     
     if not outfile:
         raise Exception("No '*.snarls' file generated")
@@ -153,10 +151,9 @@ process PACK {
     input:
     val(graph_f)
     val(gam)
-    val(prefix)
 
     output:
-    path("*.pack"), emit: packFile
+    path("${graph_f.baseName}.pack", emit: packFile)
 
     script:
     """
@@ -165,11 +162,11 @@ process PACK {
     vg_object = VG()
     outfile = vg_object.run_pack(vg_f=f"${graph_f}",
                                  aln_f=f"${gam}",
-                                 prefix=f"${prefix}",
+                                 prefix=f"${graph_f.baseName}",
                                  Q=5)
     
     if not outfile:
-        raise Exception("No '*.snarls' file generated")
+        raise Exception("No '*.pack' file generated")
     
     print(outfile)
     """
@@ -183,10 +180,9 @@ process CALL {
     val(graph_f)
     val(snarl_f)
     val(pack_f)
-    val(prefix)
 
     output:
-    path("*.vcf"), emit: vcfFile
+    path("${graph_f.baseName}.vcf", emit: vcfFile)
 
     script:
     """
@@ -194,7 +190,7 @@ process CALL {
     from GRAPH.VgToolkit import VG
     vg_object = VG()
     outfile = vg_object.run_call(graph_f=f"${graph_f}",
-                                 prefix=f"${prefix}",
+                                 prefix=f"${graph_f.baseName}",
                                  k=f"${pack_f}",
                                  r=f"${snarl_f}")
     

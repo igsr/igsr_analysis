@@ -125,7 +125,7 @@ class VG(object):
                    Files having the different chunks
         """
         ## add the **kwargs
-        allowed_keys = ['x', 'O', 'b'] # allowed arbitrary args
+        allowed_keys = ['x', 'O', 'b', 'n'] # allowed arbitrary args
         args = ([VG.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
         # mandatory parameters
@@ -180,7 +180,7 @@ class VG(object):
 
         return f"{aln_f}.stats"
 
-    def run_augment(self, *params, graph_f: str, aln_f: str, prefix: str, verbose: bool=False, 
+    def run_augment(self, *params, graph_f: str, aln_f: str, prefix: str, verbose: bool=True, 
                     **kwargs):
         """
         run vg augment
@@ -204,7 +204,6 @@ class VG(object):
         aug_aln_f : str
                     Path to {prefix}.aug.gam
         """
-
         ## add the **kwargs
         allowed_keys = ['Q', 'q', 'm'] # allowed arbitrary args
         args = ([VG.arg(f"-{k}", v) for k, v in kwargs.items() if k in allowed_keys])
@@ -213,19 +212,19 @@ class VG(object):
         args.append(VG.arg('-A', f"{prefix}.aug.gam"))
 
         # add the mandatory params
-        params = [graph_f, aln_f]
+        params_aug = [graph_f, aln_f]
 
         # add now the *params
         allowed_opts = ['s'] # allowed options
-        params.extend([f"-{x}" for x in params if x in allowed_opts])
-        params.extend(['>', f"{prefix}.aug.pg"])
+        params_aug.extend([f"-{x}" for x in params if x in allowed_opts])
+        params_aug.extend(['>', f"{prefix}.aug.pg"])
 
 
         program_cmd= f"{VG.vg_folder}/vg augment" if VG.vg_folder else "vg augment"
 
         vg_runner = RunProgram(program=program_cmd,
                                args=args,
-                               parameters=params)
+                               parameters=params_aug)
         
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
@@ -234,7 +233,7 @@ class VG(object):
 
         return f"{prefix}.aug.pg", f"{prefix}.aug.gam"
     
-    def run_pack(self, vg_f: str, aln_f: str, prefix: str, verbose: bool=False, **kwargs) -> str:
+    def run_pack(self, vg_f: str, aln_f: str, prefix: str, verbose: bool=True, **kwargs) -> str:
         """
         run vg pack
 

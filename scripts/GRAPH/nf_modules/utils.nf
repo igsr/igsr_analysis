@@ -7,7 +7,6 @@ process SAVE_FILE {
 	----------
 	file : path to file to save
 	dirname : name of directory used to save 'file'
-	prefix : output name for saved file
 	mode : mode used to save the file: ['move','copy']
 	*/
 	publishDir "${dirname}", mode: "${mode}", overwrite: true
@@ -15,14 +14,13 @@ process SAVE_FILE {
     input:
 		val(afile)
 	    val(dirname)
-	    val(prefix)
 		val(mode)
 
     output:
-        path "${prefix}"
+        path "${afile.baseName}.vcf"
 
     """
-    mv ${afile} ${prefix}
+    mv ${afile} ${afile.baseName}.vcf
     """
     }
     

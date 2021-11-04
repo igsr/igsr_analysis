@@ -86,8 +86,8 @@ def test_run_augment(vg_object, datadir):
     Test function to run 'vg augment' on a .gam file
     '''
     outfiles = vg_object.run_augment(graph_f=f"{datadir}/VG/x.vg",
-                                    aln_f=f"{datadir}/VG/aln.gam",
-                                    prefix=f"{datadir}/outdir/aln")
+                                     aln_f=f"{datadir}/VG/aln.gam",
+                                     prefix=f"{datadir}/outdir/aln")
 
     assert os.path.isfile(outfiles[0]) is True
     assert os.path.isfile(outfiles[1]) is True
