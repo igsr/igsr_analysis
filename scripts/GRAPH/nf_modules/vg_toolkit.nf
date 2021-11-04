@@ -77,7 +77,7 @@ process CHUNK {
     #!/usr/bin/env python
     from GRAPH.VgToolkit import VG
     vg_object = VG()
-    outfiles = vg_object.run_chunk( 'M',
+    outfiles = vg_object.run_chunk( n=2,
                                     x=f"${xgname}",
                                     O="pg",
                                     b=f"${prefix}")
@@ -107,7 +107,8 @@ process AUGMENT {
     #!/usr/bin/env python
     from GRAPH.VgToolkit import VG
     vg_object = VG()
-    outfiles = vg_object.run_augment(graph_f=f"${pgname}",
+    outfiles = vg_object.run_augment('s',
+                                     graph_f=f"${pgname}",
                                      aln_f=f"${gam}",
                                      prefix=f"${pgname.baseName}")
 

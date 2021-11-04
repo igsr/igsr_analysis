@@ -109,7 +109,7 @@ class RunProgram(object):
                              universal_newlines=True)
 
         # stderr
-        patt = re.compile('#* ERROR|Error')
+        patt = re.compile('ERROR|Error')
         is_exception = False
         stderr = ""
         for line in p.stderr:

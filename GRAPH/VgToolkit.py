@@ -56,7 +56,7 @@ class VG(object):
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
-        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=True)
 
         outfiles = glob.glob(f"{prefix}*")
         
@@ -103,7 +103,7 @@ class VG(object):
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
-        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=True)
 
         return f"{prefix}.gam"
  
@@ -146,7 +146,7 @@ class VG(object):
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
-        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=True)
 
         # get output files
         outfiles = glob.glob(f"{kwargs['b']}*.{ext}")
@@ -176,7 +176,7 @@ class VG(object):
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
-        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=True)
 
         return f"{aln_f}.stats"
 
@@ -229,7 +229,7 @@ class VG(object):
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
-        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=True)
 
         return f"{prefix}.aug.pg", f"{prefix}.aug.gam"
     
@@ -270,7 +270,7 @@ class VG(object):
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
-        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=True)
 
         return f"{prefix}.pack"
     
@@ -310,7 +310,7 @@ class VG(object):
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
-        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=True)
 
         return f"{prefix}.vcf"
 
@@ -342,6 +342,6 @@ class VG(object):
         if verbose is True:
             print("Command line is: {0}".format(vg_runner.cmd_line))
 
-        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=False)
+        stdout, stderr, is_error = vg_runner.run_popen(raise_exc=True)
 
         return f"{prefix}.snarls"
