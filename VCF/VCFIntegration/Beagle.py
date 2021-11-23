@@ -8,87 +8,68 @@ from Utils.RunProgram import RunProgram
 from collections import namedtuple
 import tempfile
 import re
+import pdb
 
 class Beagle(object):
     """
     Class to operate on a VCF file and run Beagle and other Beagle-related operations on it
-    """
 
-    def __init__(self, vcf, beagle_folder=None, beagle_jar=None, makeBGLCHUNKS_folder=None,
-                 prepareGenFromBeagle4_folder=None):
+    Class variables
+    ---------------
+    makeBGLCHUNKS_folder : str, Optional
+                           Path to folder containing makeBGLCHUNKS binary
+                           (see https://mathgen.stats.ox.ac.uk/genetics_software/
+                           shapeit/shapeit.html#gettingstarted).
+    prepareGenFromBeagle4_folder : str, Optional
+                                   Path to folder containing makeBGLCHUNKS binary.
+    arg : namedtuple
+          Containing a particular argument and its value
+    """
+    makeBGLCHUNKS_folder = None
+    prepareGenFromBeagle4_folder = None
+    arg = namedtuple('Argument', 'option value')
+
+    def __init__(self, vcf: str, beagle_folder: str, beagle_jar: str):
         """
         Constructor
 
         Parameters
         ----------
-        vcf : str
-              Path to vcf file.
-        beagle_folder : str, optional
-                        Path to folder containing Beagle's jar file.
-        beagle_jar : str, optional
-                     Name of Beagle jar file. i.e. beagle.08Jun17.d8b.jar.
-        makeBGLCHUNKS_folder : str, optional
-                               Path to folder containing makeBGLCHUNKS binary
-                               (see https://mathgen.stats.ox.ac.uk/genetics_software/
-                               shapeit/shapeit.html#gettingstarted).
-        prepareGenFromBeagle4_folder : str, optional
-                                       Path to folder containing makeBGLCHUNKS binary.
+        vcf : Path to vcf file.
+        beagle_folder : Path to folder containing the gatk binary
+        beagle_jar : Name of Beagle jar file. i.e. beagle.08Jun17.d8b.jar.
         """
-
         if os.path.isfile(vcf) is False:
             raise Exception("File does not exist")
 
         self.vcf = vcf
         self.beagle_folder = beagle_folder
         self.beagle_jar = beagle_jar
-        self.makeBGLCHUNKS_folder = makeBGLCHUNKS_folder
-        self.prepareGenFromBeagle4_folder = prepareGenFromBeagle4_folder
 
-    def run_beagle(self, outprefix, outdir=None, region=None, verbose=False,
-                   correct=False, **kwargs):
+    def run_beagle(self, outprefix: str, outdir: str=None, region: str=None, verbose: bool=False,
+                   correct: bool=False, **kwargs)->str:
         """
         Method that wraps Beagle (see https://faculty.washington.edu/browning/beagle/beagle.html)
         and will be used to call genotypes on a VCF file containing GT likelihoods
 
         Parameters
         ----------
-        outprefix: str
-                   Prefix used for output file.
-        outdir : str, optional
-                 outdir for output files.
-        region : str, optional
-                 chr or chr interval that will be analyzed. i.e. chr20 or chr20:10000000-11000000.
-        verbose : bool, optional
-                  if true, then print the command line used for running Beagle.
-        correct : bool, default=False
-                  Note: that it seems there is an incompatibility between zlib libraries used in
+        outprefix: Prefix used for output file.
+        outdir : Outdir for output files.
+        region : Chr or chr interval that will be analyzed. i.e. chr20 or chr20:10000000-11000000.
+        verbose : if true, then print the command line used for running Beagle.
+        correct : Note: that it seems there is an incompatibility between zlib libraries used in
                   Beagle4 and in BOOST on some platforms. This involves either the last
                   line of the file being skipped or a segfault. If correct=True,
                   then this function will fix this issue by recompressing the
                   Beagle4 output files.
-        window : int, default=5000
-                 number of markers to include in each sliding
-                 window.
-        overlap : int, default=3000
-                  specifies the number of markers of overlap between sliding
-                  windows.
-        niterations : int, default=5
-                      specifies the number of phasing iterations.
-        nthreads : int, optional
-                   number of threads. If not specified then the nthreads parameter
-                   will be set equal to the number of CPU cores on the host machine.
+        **kwargs: Arbitrary keyword arguments. Check the `Beagle` help for
+                  more information.
 
         Returns
         -------
-        outfile : str
-                Compressed VCF file with the genotype calls.
+        outfile : Compressed VCF file with the genotype calls.
         """
-
-        if self.beagle_folder is None or self.beagle_jar is None:
-            raise Exception("Provide the folder containing the Beagle jar "
-                            "file and the Beagle jar file name")
-
-        Arg = namedtuple('Argument', 'option value')
         args = []
 
         outfile = ""
@@ -104,14 +85,15 @@ class Beagle(object):
 
         outfile += "beagle"
 
-        args.extend([Arg('gl', self.vcf), Arg('out', outfile)])
+        args.extend([Beagle.arg('gl', self.vcf), Beagle.arg('out', outfile)])
 
-        for k, v in kwargs.items():
-            args.append(Arg(k, v))
+        # add now the **kwargs
+        allowed_keys = ['glm', 'nt', 'L', 'alleles', 'gt_mode', 'out_mode', 'window', 'overlap', 'niterations', 'nthreads'] # allowed arbitrary args
+        args.extend([Beagle.arg(f"{k}", v) for k, v in kwargs.items() if k in allowed_keys])
 
         runner = RunProgram(program='java -jar {0}/{1}'.format(self.beagle_folder,
                                                                self.beagle_jar),
-                            args=args, arg_sep="=")
+                                                               args=args, arg_sep="=")
 
         if verbose is True:
             print("Command line is: {0}".format(runner.cmd_line))
@@ -143,26 +125,21 @@ class Beagle(object):
 
         return outfile
 
-    def make_beagle_chunks(self, window, overlap, outfile, verbose=True):
+    def make_beagle_chunks(self, window: int, overlap: int, outfile: str, verbose: bool = True)->str:
         """
         Method to generate the chromosome chunks for Beagle
         see https://mathgen.stats.ox.ac.uk/genetics_software/shapeit/shapeit.html#gettingstarted
 
         Parameters
         ----------
-        window : int
-                 The chunk size (--window) in number of variant sites.
-        overlap : int
-                  The overlap size (--overlap) in number of variant sites.
-        outfile : str
-                  Output file name. i.e. 'chunk.coordinates'.
-        verbose : bool, default=True
-                  If true, then print the command line used for running this tool.
+        window : The chunk size (--window) in number of variant sites.
+        overlap : The overlap size (--overlap) in number of variant sites.
+        outfile : Output file name. i.e. 'chunk.coordinates'.
+        verbose : If true, then print the command line used for running this tool.
 
         Returns
         -------
-        outfile : str
-                Path to file with the coordinates of the chunk.
+        outfile : Path to file with the coordinates of the chunk.
         """
 
         if self.makeBGLCHUNKS_folder is None:
