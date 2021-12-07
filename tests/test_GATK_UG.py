@@ -74,18 +74,3 @@ def test_run_ug_multithreaded(gatk_object, datadir, clean_tmp):
     outfile = gatk_object.run_caller(program='UnifiedGenotyper',
                                      prefix="{0}/outdir/test2".format(datadir),
                                      nt=2)
-
-def test_run_ug_and_throwerror(gatk_object, datadir, clean_tmp):
-    """
-    Test function to run GATK UG on a BAM file and will raise an Exception 
-    because the output_mode argument is not valid
-    """
-
-    #create timestamp for log file:
-    timestr = time.strftime("%Y%m%d_%H%M%S")
-
-    with pytest.raises(Exception):
-        outfile = gatk_object.run_caller(program='UnifiedGenotyper',
-                                         prefix="{0}/outdir/test2".format(datadir),
-                                         log_file="{0}/outdir/gatk_ug_{1}.log".format(datadir, timestr),
-                                         out_mode='non_valid')
