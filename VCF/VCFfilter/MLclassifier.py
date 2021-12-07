@@ -25,6 +25,8 @@ class MLclassifier:
     bcftools_folder : str, Optional
                       Path to folder containing the bcftools binary
     """
+    bcftools_folder = None
+
     def __init__(self, fitted_model: str=None)->None:
         """
         Constructor

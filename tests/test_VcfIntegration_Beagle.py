@@ -8,33 +8,32 @@ from VCF.VCFIntegration import Beagle
 
 # test_VcfIntegration_Beagle.py
 @pytest.fixture
-def vcf_object(beagle_bins, datadir):
-    """Returns an Beagle object"""
+def beagle_object(beagle_bins, datadir):
+    """Returns a Beagle object"""
 
-    print("Creating the object\n")
     vcf_file = "{0}/test.vcf.gz".format(datadir)
     beagle_folder = beagle_bins[0]
     beagle_jar = beagle_bins[1]
 
-    vcf_object = Beagle(vcf=vcf_file, beagle_jar=beagle_jar,
-                        beagle_folder=beagle_folder)
+    beagleObj = Beagle(vcf=vcf_file, beagle_jar=beagle_jar,
+                       beagle_folder=beagle_folder)
     
-    return vcf_object
+    return beagleObj
 
-def test_run_beagle(vcf_object, datadir, clean_tmp):
+def test_run_beagle(beagle_object, datadir, clean_tmp):
 
-    outfile = vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000",
-                                    outdir="{0}/outdir/".format(datadir),
-                                    window=12000,
-                                    overlap=2000,
-                                    niterations=15,
-                                    verbose=True)
+    outfile = beagle_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000",
+                                       outdir="{0}/outdir/".format(datadir),
+                                       window=12000,
+                                       overlap=2000,
+                                       niterations=15,
+                                       verbose=True)
 
     assert os.path.exists(outfile)
 
-def test_run_beagle_multithreaded(vcf_object, datadir, clean_tmp):
+def test_run_beagle_multithreaded(beagle_object, datadir, clean_tmp):
 
-    vcf_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000_mts",
+    beagle_object.run_beagle(outprefix="NA12878_chr1_1000000_1001000_mts",
                           outdir="{0}/outdir/".format(datadir),
                           window=12000,
                           overlap=2000,
