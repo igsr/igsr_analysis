@@ -12,21 +12,17 @@ class BEDTools:
 
     This is essentially a wrapper for the BEDTools package. The functionality is quite limited and
     additional functions will be added as necessary
+
+    Class variables
+    ---------------
+    bedtools_folder : str, Optional
+                      Path to folder containing the bcftools binary
+    arg : namedtuple
+          Containing a particular argument and its value
     '''
+    bedtools_folder = None
 
-    def __init__(self, bedtools_folder=None):
-        """
-        Constructor
-
-        Parameters
-        ----------
-        bedtools_folder : str, optional
-                          Path to folder with bedtools binary.
-        """
-
-        self.bedtools_folder = bedtools_folder
-
-    def make_windows(self, w, g, s=None, subtract=None, lextend=None, rextend=None, verbose=False):
+    def make_windows(self, w, g, s: int=None, subtract: str=None, lextend=None, rextend=None, verbose=False):
         """
         This method will make windows from a genome file by using 'bedtools makewindows'
 
